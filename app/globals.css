@@ -23,6 +23,37 @@
   --popover-foreground: #ffffff;
 }
 
+/* Glassmorphism shared class */
+.glass {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+}
+
+/* Tilt card with radial glow */
+.tilt-card {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--tilt-rotate-x, 0deg)) rotateY(var(--tilt-rotate-y, 0deg));
+  position: relative;
+  overflow: hidden;
+}
+.tilt-card::after {
+  content: '';
+  position: absolute;
+  top: var(--glow-y, 50%);
+  left: var(--glow-x, 50%);
+  width: 200%;
+  height: 200%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 50%), rgba(255,255,255,0.2), transparent 60%);
+  opacity: 0.6;
+}
+
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -95,4 +126,23 @@ body {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-100%); }
   }
+}
+
+/* Performance-optimized keyframes — GPU compositable (transform + opacity only) */
+@keyframes timer-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.08); }
+}
+
+@keyframes recording-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.animate-timer-pulse {
+  animation: timer-pulse 3s ease-in-out infinite;
+}
+
+.animate-recording-dot {
+  animation: recording-dot 2s ease-in-out infinite;
 }

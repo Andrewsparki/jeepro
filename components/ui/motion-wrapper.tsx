@@ -16,12 +16,12 @@ export function MotionWrapper({ children }: { children: React.ReactNode }) {
     <AnimatePresence mode="wait">
       <motion.div
         key={pathname}
-        initial={{ opacity: 0, scale: 0.98, filter: "blur(4px)", y: 10 }}
-        animate={{ opacity: 1, scale: 1, filter: "blur(0px)", y: 0 }}
-        exit={{ opacity: 0, scale: 0.98, filter: "blur(4px)", y: -10 }}
+        initial={{ opacity: 0, scale: 0.98, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.98, y: -10 }}
         transition={{ 
-          duration: 0.35, 
-          ease: [0.22, 1, 0.36, 1] // Custom easing for that Apple-like feel
+          duration: 0.3, 
+          ease: [0.22, 1, 0.36, 1]
         }}
         className="w-full h-full flex flex-col"
       >

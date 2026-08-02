@@ -28,7 +28,7 @@ export function SidebarItem({ href, icon, label }: SidebarItemProps) {
         {isActive && (
           <motion.div
             layoutId="sidebar-active-indicator"
-            className="absolute inset-0 rounded-lg bg-white/10 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)] backdrop-blur-md"
+            className="absolute inset-0 rounded-lg bg-white/10 border border-white/20"
             initial={false}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
           />

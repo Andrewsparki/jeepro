@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 
 interface Particle {
-  id: number;
   x: number;
   y: number;
   vx: number;
@@ -12,7 +11,7 @@ interface Particle {
   opacity: number;
 }
 
-const PARTICLE_COUNT = 30;
+const PARTICLE_COUNT = 18;
 
 export function FloatingParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -25,7 +24,7 @@ export function FloatingParticles() {
     // Check for reduced motion
     const isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (isReducedMotion) return;
-    
+
     const t = setTimeout(() => setMounted(true), 0);
     return () => clearTimeout(t);
   }, []);
@@ -51,8 +50,7 @@ export function FloatingParticles() {
     resize();
 
     // Initialize particles
-    particles.current = Array.from({ length: PARTICLE_COUNT }).map((_, i) => ({
-      id: i,
+    particles.current = Array.from({ length: PARTICLE_COUNT }).map(() => ({
       x: Math.random() * width,
       y: Math.random() * height,
       vx: (Math.random() - 0.5) * 0.2, // Extremely slow drift
@@ -66,7 +64,17 @@ export function FloatingParticles() {
     };
     window.addEventListener("mousemove", onMouseMove);
 
+    let frameCount = 0;
+    const isLowEnd = typeof navigator !== "undefined" && (navigator.hardwareConcurrency ?? 8) <= 4;
+
     const render = () => {
+      requestRef.current = requestAnimationFrame(render);
+
+      frameCount++;
+      if (isLowEnd && frameCount % 2 !== 0) {
+        return;
+      }
+
       ctx.clearRect(0, 0, width, height);
 
       particles.current.forEach((p) => {
@@ -83,13 +91,16 @@ export function FloatingParticles() {
         // Mouse interaction (slight repulsion/attraction)
         const dx = mouse.current.x - p.x;
         const dy = mouse.current.y - p.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const distSq = dx * dx + dy * dy;
 
-        if (dist < 150) {
-          // Push away very gently
-          const force = (150 - dist) / 150;
-          p.x -= (dx / dist) * force * 0.5;
-          p.y -= (dy / dist) * force * 0.5;
+        if (distSq < 22500) {
+          const dist = Math.sqrt(distSq);
+          if (dist > 0) {
+            // Push away very gently
+            const force = (150 - dist) / 150;
+            p.x -= (dx / dist) * force * 0.5;
+            p.y -= (dy / dist) * force * 0.5;
+          }
         }
 
         // Draw particle
@@ -98,8 +109,6 @@ export function FloatingParticles() {
         ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
         ctx.fill();
       });
-
-      requestRef.current = requestAnimationFrame(render);
     };
 
     requestRef.current = requestAnimationFrame(render);

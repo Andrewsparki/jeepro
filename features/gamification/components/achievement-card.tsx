@@ -1,3 +1,4 @@
+import React from "react";
 import { Achievement } from "../services/gamification";
 import { Play, BookOpen, Trophy, Flame, Clock, Star, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -6,7 +7,7 @@ interface AchievementCardProps {
   achievement: Achievement;
 }
 
-export function AchievementCard({ achievement }: AchievementCardProps) {
+export const AchievementCard = React.memo(function AchievementCard({ achievement }: AchievementCardProps) {
   const IconMap: Record<string, React.ElementType> = {
     "play": Play,
     "book-open": BookOpen,
@@ -20,7 +21,7 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
 
   return (
     <div className={cn(
-      "relative overflow-hidden rounded-2xl border p-4 transition-all duration-300",
+      "relative overflow-hidden rounded-2xl border p-4 transition-[border-color] duration-300",
       achievement.unlocked 
         ? "bg-card border-accent/20 hover:border-accent/50 shadow-sm"
         : "bg-muted/30 border-border/40 opacity-75 grayscale-[0.5]"
@@ -51,4 +52,4 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
       </div>
     </div>
   );
-}
+});

@@ -10,17 +10,27 @@ interface GlassCardProps extends HTMLMotionProps<"div"> {
   interactive?: boolean;
 }
 
-export function GlassCard({ children, className, interactive = false, ...props }: GlassCardProps) {
+export const GlassCard = React.memo(function GlassCard({
+  children,
+  className,
+  interactive = false,
+  style,
+  ...props
+}: GlassCardProps) {
   const { isTouch } = useLighting();
 
   return (
     <motion.div
       className={cn(
-        "relative rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-md",
+        "relative rounded-2xl border border-white/5 bg-[#0a0a0a]/80",
         "shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
         "overflow-hidden",
         className
       )}
+      style={{
+        ...(interactive ? { willChange: "transform" } : {}),
+        ...style,
+      }}
       whileHover={
         interactive && !isTouch
           ? {
@@ -49,13 +59,10 @@ export function GlassCard({ children, className, interactive = false, ...props }
         />
       )}
       
-      {/* Inner subtle highlight (glass rim) */}
-      <div className="pointer-events-none absolute inset-0 rounded-2xl border border-white/10 mix-blend-overlay z-0" />
-      
       {/* Content */}
       <div className="relative z-10">
         {children}
       </div>
     </motion.div>
   );
-}
+});

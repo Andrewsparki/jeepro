@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { DashboardCard } from "./dashboard-card";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +16,7 @@ interface StatCardProps {
   className?: string;
 }
 
-export function StatCard({ title, value, icon, trend, delay = 0, className }: StatCardProps) {
+export const StatCard = React.memo(function StatCard({ title, value, icon, trend, delay = 0, className }: StatCardProps) {
   return (
     <DashboardCard delay={delay} className={cn("flex flex-col gap-4", className)}>
       <div className="flex items-center justify-between">
@@ -36,4 +36,4 @@ export function StatCard({ title, value, icon, trend, delay = 0, className }: St
       </div>
     </DashboardCard>
   );
-}
+});
