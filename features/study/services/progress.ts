@@ -135,22 +135,101 @@ export async function saveStudySession({
   return data as StudySession;
 }
 
+import { getSyllabus } from "@/features/syllabus/services/syllabus";
+import { calculateXPAndLevel, getAchievements } from "@/features/gamification/services/gamification";
+
 export async function getDashboardMetrics() {
-  const progress = await getUserProgress();
-  const sessions = await getStudySessions();
+  const [progress, sessions, syllabus] = await Promise.all([
+    getUserProgress(),
+    getStudySessions(),
+    getSyllabus()
+  ]);
 
   const masteredCount = progress.filter(p => p.status === "Mastered").length;
   const inProgressCount = progress.filter(p => p.status === "In Progress").length;
   
+  // Overall totals
   const totalDurationSeconds = sessions.reduce((acc, s) => acc + s.duration_seconds, 0);
   const studyHours = Math.floor(totalDurationSeconds / 3600);
   const studyMinutes = Math.floor((totalDurationSeconds % 3600) / 60);
   
+  // Today stats
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const todaySessions = sessions.filter(s => new Date(s.started_at) >= today);
+  const todayDurationSeconds = todaySessions.reduce((acc, s) => acc + s.duration_seconds, 0);
+  const todayStudyHours = Math.floor(todayDurationSeconds / 3600);
+  const todayStudyMinutes = Math.floor((todayDurationSeconds % 3600) / 60);
+  const todayStudyTimeFormatted = todayStudyHours > 0 
+    ? `${todayStudyHours}h ${todayStudyMinutes}m` 
+    : `${todayStudyMinutes}m`;
+
+  const topicsCompletedToday = progress.filter(p => p.status === "Mastered" && p.completed_at && new Date(p.completed_at) >= today).length;
+
+  // Streak Calculation
+  let currentStreak = 0;
+  const uniqueStudyDays = new Set(
+    sessions.map(s => {
+      const d = new Date(s.started_at);
+      return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    })
+  );
+
+  const checkDate = new Date();
+  // If no session today, check if streak continued yesterday
+  const todayStr = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
+  if (!uniqueStudyDays.has(todayStr)) {
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  while (true) {
+    const dateStr = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
+    if (uniqueStudyDays.has(dateStr)) {
+      currentStreak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  // Gamification
+  const xpDetails = calculateXPAndLevel(sessions, progress, syllabus);
+  const achievements = getAchievements(sessions, progress, syllabus, currentStreak);
+
+  // Last active chapter for Continue Learning
+  let lastActiveChapter = null;
+  if (sessions.length > 0) {
+    const lastSessionWithChapter = sessions.find(s => s.chapter_id);
+    if (lastSessionWithChapter && lastSessionWithChapter.chapter_id) {
+      // Find the chapter in the syllabus
+      for (const sub of syllabus) {
+        const chap = sub.chapters.find(c => c.id === lastSessionWithChapter.chapter_id);
+        if (chap) {
+          lastActiveChapter = {
+            subjectSlug: sub.slug,
+            subjectName: sub.name,
+            chapterSlug: chap.slug,
+            chapterTitle: chap.title
+          };
+          break;
+        }
+      }
+    }
+  }
+
   return {
     masteredTopics: masteredCount,
     inProgressTopics: inProgressCount,
     studyTimeFormatted: `${studyHours}h ${studyMinutes}m`,
     totalDurationSeconds,
-    sessionsCount: sessions.length
+    sessionsCount: sessions.length,
+    todayStudyTimeFormatted,
+    topicsCompletedToday,
+    currentStreak,
+    xpDetails,
+    achievements,
+    lastActiveChapter,
+    syllabus
   };
 }

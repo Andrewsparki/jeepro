@@ -91,7 +91,9 @@ export function ChapterRow({ chapter, subjectSlug }: ChapterRowProps) {
                       <BookOpen className="w-3.5 h-3.5" />
                       Topics
                     </div>
-                    <span className="text-sm font-medium">{chapter.topics.length} Modules</span>
+                    <span className="text-sm font-medium">
+                      {chapter.topics.filter(t => t.status === "Mastered").length} / {chapter.topics.length} Completed
+                    </span>
                   </div>
                 </div>
 

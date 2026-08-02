@@ -27,16 +27,30 @@ export function StudyTimer() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 50, scale: 0.9 }}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          className="fixed bottom-6 right-6 z-50"
-        >
-          <div className="flex items-center gap-4 bg-background/80 backdrop-blur-xl border border-border/50 shadow-2xl rounded-full pl-5 pr-2 py-2">
-            
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <div className="font-mono text-lg font-medium tracking-wider w-[70px] text-center">
-                {formatTime(elapsedSeconds)}
+            className="fixed bottom-6 right-6 z-50"
+          >
+            <motion.div 
+              className="flex items-center gap-4 bg-background/80 backdrop-blur-xl border border-white/10 shadow-[0_0_20px_rgba(59,130,246,0.15)] rounded-full pl-5 pr-2 py-2"
+              animate={{
+                boxShadow: [
+                  "0 0 20px rgba(59,130,246,0.15)",
+                  "0 0 35px rgba(59,130,246,0.3)",
+                  "0 0 20px rgba(59,130,246,0.15)"
+                ]
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            >
+              
+              <div className="flex items-center gap-3">
+                <motion.div 
+                  className="w-2 h-2 rounded-full bg-red-500" 
+                  animate={{ opacity: [1, 0.4, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <div className="font-mono text-lg font-medium tracking-wider w-[70px] text-center">
+                  {formatTime(elapsedSeconds)}
+                </div>
               </div>
-            </div>
 
             <div className="w-px h-6 bg-border/50" />
 
@@ -50,7 +64,7 @@ export function StudyTimer() {
               End
             </Button>
             
-          </div>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>

@@ -38,6 +38,8 @@ const buttonVariants = cva(
   }
 )
 
+import { MagneticButton } from "./magnetic-button"
+
 function Button({
   className,
   variant = "default",
@@ -50,7 +52,7 @@ function Button({
   }) {
   const Comp = asChild ? Slot.Root : "button"
 
-  return (
+  const buttonElement = (
     <Comp
       data-slot="button"
       data-variant={variant}
@@ -59,6 +61,12 @@ function Button({
       {...props}
     />
   )
+
+  if (variant === "default") {
+    return <MagneticButton>{buttonElement}</MagneticButton>;
+  }
+
+  return buttonElement;
 }
 
 export { Button, buttonVariants }

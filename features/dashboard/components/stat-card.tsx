@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 interface StatCardProps {
   title: string;
-  value: string;
+  value: ReactNode;
   icon: ReactNode;
   trend?: {
     value: string;

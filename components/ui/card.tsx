@@ -1,16 +1,18 @@
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
+import { GlassCard } from "./glass-card"
 
 function Card({ className, ...props }: React.ComponentProps<"div">) {
+  // We use our premium GlassCard for the base Card
   return (
-    <div
+    <GlassCard
       data-slot="card"
       className={cn(
-        "flex flex-col gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm",
+        "flex flex-col gap-6 py-6 text-card-foreground shadow-sm", // Removed duplicate rounded-xl, bg, border as GlassCard handles them beautifully
         className
       )}
-      {...props}
+      // We pass down props, but cast to any because GlassCard uses HTMLMotionProps
+      {...(props as React.ComponentProps<typeof GlassCard>)}
     />
   )
 }
