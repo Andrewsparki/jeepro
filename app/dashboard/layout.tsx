@@ -3,6 +3,8 @@ import { Topbar } from "@/features/dashboard/components/topbar";
 import { StudySessionProvider } from "@/features/study/context/study-session-context";
 import { StudyTimer } from "@/features/study/components/study-timer";
 import { MotionWrapper } from "@/components/ui/motion-wrapper";
+import { CommandPaletteProvider } from "@/features/search/context/command-palette-context";
+import { CommandPalette } from "@/features/search/components/command-palette";
 
 export default function DashboardLayout({
   children,
@@ -10,8 +12,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <StudySessionProvider>
-      <div className="flex min-h-screen w-full bg-transparent">
+    <CommandPaletteProvider>
+      <StudySessionProvider>
+        <div className="flex min-h-screen w-full bg-transparent">
         <Sidebar />
         <div className="flex flex-1 flex-col">
           <Topbar />
@@ -22,7 +25,9 @@ export default function DashboardLayout({
           </main>
         </div>
       </div>
-      <StudyTimer />
-    </StudySessionProvider>
+        <StudyTimer />
+        <CommandPalette />
+      </StudySessionProvider>
+    </CommandPaletteProvider>
   );
 }

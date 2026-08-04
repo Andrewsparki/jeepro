@@ -1,5 +1,8 @@
-import { createClient } from "@/lib/supabase/client";
 import { getUserProgress, ProgressStatus } from "@/features/study/services/progress";
+
+import physicsData from "../data/jee-main/physics.json";
+import chemistryData from "../data/jee-main/chemistry.json";
+import mathData from "../data/jee-main/mathematics.json";
 
 export interface Topic {
   id: string;
@@ -16,11 +19,16 @@ export interface Chapter {
   description: string;
   difficulty: "Easy" | "Medium" | "Hard";
   estimated_study_time: string;
+  weightage?: string;
   order_index: number;
   topics: Topic[];
   completionPercentage: number;
   status: ProgressStatus;
   revisionStatus: string;
+  learningObjectives?: string[];
+  prerequisites?: string[];
+  nextChapter?: string | null;
+  previousChapter?: string | null;
 }
 
 export interface Subject {
@@ -30,66 +38,106 @@ export interface Subject {
   chapters: Chapter[];
 }
 
-type RawTopic = Omit<Topic, "status">;
-type RawChapter = Omit<Chapter, "topics" | "completionPercentage" | "status" | "revisionStatus"> & { topics: RawTopic[] };
-type RawSubject = Omit<Subject, "chapters"> & { chapters: RawChapter[] };
+interface JsonTopic {
+  id: string;
+  name: string;
+  order: number;
+  completed: boolean;
+}
+
+interface JsonChapter {
+  id: string;
+  slug: string;
+  name: string;
+  description?: string;
+  difficulty?: "Easy" | "Medium" | "Hard";
+  estimatedHours: number;
+  weightage?: string;
+  order: number;
+  learningObjectives?: string[];
+  prerequisites?: string[];
+  nextChapter?: string | null;
+  previousChapter?: string | null;
+  topics: JsonTopic[];
+}
+
+interface JsonSubject {
+  subject: string;
+  chapters: JsonChapter[];
+}
+
+function transformSubjectData(data: JsonSubject): Subject {
+  return {
+    id: data.subject.toLowerCase(),
+    slug: data.subject.toLowerCase(),
+    name: data.subject,
+    chapters: data.chapters.map((ch: JsonChapter) => ({
+      id: ch.id,
+      slug: ch.slug,
+      title: ch.name,
+      description: ch.description || "",
+      difficulty: ch.difficulty || "Medium",
+      estimated_study_time: `${ch.estimatedHours}h`,
+      weightage: ch.weightage,
+      order_index: ch.order,
+      learningObjectives: ch.learningObjectives || [],
+      prerequisites: ch.prerequisites || [],
+      nextChapter: ch.nextChapter,
+      previousChapter: ch.previousChapter,
+      completionPercentage: 0,
+      status: "Not Started" as ProgressStatus,
+      revisionStatus: "Up to date",
+      topics: (ch.topics || []).map((t: JsonTopic) => ({
+        id: t.id,
+        chapter_id: ch.id,
+        title: t.name,
+        order_index: t.order,
+        status: "Not Started" as ProgressStatus
+      }))
+    }))
+  };
+}
+
+const ALL_SUBJECTS = [
+  transformSubjectData(physicsData as unknown as JsonSubject),
+  transformSubjectData(chemistryData as unknown as JsonSubject),
+  transformSubjectData(mathData as unknown as JsonSubject)
+];
 
 export async function getSyllabus(): Promise<Subject[]> {
-  const supabase = createClient();
-  
-  const [ { data: subjects, error: subjectsError }, progress ] = await Promise.all([
-    supabase
-      .from("subjects")
-      .select(`
-        *,
-        chapters (
-          *,
-          topics (*)
-        )
-      `)
-      .order('name'),
-    getUserProgress()
-  ]);
-    
-  if (subjectsError) {
-    console.error("Error fetching syllabus:", subjectsError);
-    return [];
-  }
-  
+  const progress = await getUserProgress();
   const progressMap = new Map(progress.map(p => [p.topic_id, p.status]));
   
-  return subjects.map((subject: RawSubject) => {
-    const sortedChapters = (subject.chapters || []).sort((a: RawChapter, b: RawChapter) => a.order_index - b.order_index).map((chapter: RawChapter) => {
-      const sortedTopics = (chapter.topics || []).sort((a: RawTopic, b: RawTopic) => a.order_index - b.order_index).map((t: RawTopic) => ({
+  return ALL_SUBJECTS.map(subject => {
+    const chapters = subject.chapters.map(chapter => {
+      const topics = chapter.topics.map(t => ({
         ...t,
         status: progressMap.get(t.id) || "Not Started"
       }));
       
-      const totalTopics = sortedTopics.length;
-      const masteredTopics = sortedTopics.filter((t: Topic) => t.status === "Mastered").length;
-      const startedTopics = sortedTopics.filter((t: Topic) => t.status !== "Not Started").length;
+      const totalTopics = topics.length;
+      const masteredTopics = topics.filter(t => t.status === "Mastered").length;
+      const startedTopics = topics.filter(t => t.status !== "Not Started").length;
       
       const completionPercentage = totalTopics > 0 ? Math.round((masteredTopics / totalTopics) * 100) : 0;
       
       let status: ProgressStatus = "Not Started";
-      if (completionPercentage === 100) status = "Mastered";
+      if (completionPercentage === 100 && totalTopics > 0) status = "Mastered";
       else if (startedTopics > 0) status = "In Progress";
       
       return {
         ...chapter,
-        topics: sortedTopics,
+        topics,
         completionPercentage,
-        status,
-        revisionStatus: "Up to date", // Mocked for now
-        estimated_study_time: chapter.estimated_study_time
+        status
       };
     });
     
     return {
       ...subject,
-      chapters: sortedChapters
+      chapters
     };
-  }) as Subject[];
+  });
 }
 
 export async function getSubjectBySlug(slug: string): Promise<Subject | null> {

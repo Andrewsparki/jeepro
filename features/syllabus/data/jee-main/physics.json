@@ -1,0 +1,999 @@
+{
+  "exam": "JEE Main",
+  "version": "2027",
+  "subject": "Physics",
+  "chapters": [
+    {
+      "id": "physics-physics-measurement",
+      "order": 1,
+      "name": "Physics & Measurement",
+      "slug": "physics-measurement",
+      "class": 11,
+      "subject": "Physics",
+      "estimatedHours": 4,
+      "weightage": "Low",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-physics-measurement-units-and-measurements",
+          "name": "Units and Measurements",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-physics-measurement-dimensional-analysis",
+          "name": "Dimensional Analysis",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-physics-measurement-errors-in-measurement",
+          "name": "Errors in Measurement",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-physics-measurement-significant-figures",
+          "name": "Significant Figures",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The foundation of physics covering units, dimensions, and measurement techniques.",
+      "learningObjectives": [
+        "Understand fundamental and derived units",
+        "Perform dimensional analysis",
+        "Calculate errors in measurement"
+      ],
+      "prerequisites": [],
+      "difficulty": "Easy",
+      "previousChapter": null,
+      "nextChapter": "kinematics"
+    },
+    {
+      "id": "physics-kinematics",
+      "order": 2,
+      "name": "Kinematics",
+      "slug": "kinematics",
+      "class": 11,
+      "subject": "Physics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-kinematics-motion-in-a-straight-line",
+          "name": "Motion in a Straight Line",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-kinematics-motion-in-a-plane",
+          "name": "Motion in a Plane",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-kinematics-projectile-motion",
+          "name": "Projectile Motion",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-kinematics-relative-velocity",
+          "name": "Relative Velocity",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The study of motion without considering its causes. Fundamental for all of mechanics.",
+      "learningObjectives": [
+        "Analyze 1D and 2D motion",
+        "Solve projectile motion problems",
+        "Understand relative velocity"
+      ],
+      "prerequisites": [
+        "physics-measurement"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "physics-measurement",
+      "nextChapter": "laws-of-motion"
+    },
+    {
+      "id": "physics-laws-of-motion",
+      "order": 3,
+      "name": "Laws of Motion",
+      "slug": "laws-of-motion",
+      "class": 11,
+      "subject": "Physics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-laws-of-motion-newton-s-laws",
+          "name": "Newton's Laws",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-laws-of-motion-conservation-of-momentum",
+          "name": "Conservation of Momentum",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-laws-of-motion-friction",
+          "name": "Friction",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-laws-of-motion-circular-motion-dynamics",
+          "name": "Circular Motion Dynamics",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The foundation of classical mechanics describing the relationship between a body and the forces acting upon it.",
+      "learningObjectives": [
+        "Apply Newton's laws to solving mechanical systems",
+        "Understand friction and its laws",
+        "Analyze circular motion"
+      ],
+      "prerequisites": [
+        "kinematics"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "kinematics",
+      "nextChapter": "work-energy-power"
+    },
+    {
+      "id": "physics-work-energy-power",
+      "order": 4,
+      "name": "Work Energy Power",
+      "slug": "work-energy-power",
+      "class": 11,
+      "subject": "Physics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-work-energy-power-work-energy-theorem",
+          "name": "Work-Energy Theorem",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-work-energy-power-conservative-forces",
+          "name": "Conservative Forces",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-work-energy-power-potential-energy",
+          "name": "Potential Energy",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-work-energy-power-collisions",
+          "name": "Collisions",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Core concepts of energy conservation, work done by forces, and power.",
+      "learningObjectives": [
+        "Apply the work-energy theorem",
+        "Understand conservative and non-conservative forces",
+        "Solve collision problems (elastic and inelastic)"
+      ],
+      "prerequisites": [
+        "laws-of-motion"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "laws-of-motion",
+      "nextChapter": "rotational-motion"
+    },
+    {
+      "id": "physics-rotational-motion",
+      "order": 5,
+      "name": "Rotational Motion",
+      "slug": "rotational-motion",
+      "class": 11,
+      "subject": "Physics",
+      "estimatedHours": 16,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-rotational-motion-center-of-mass",
+          "name": "Center of Mass",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-rotational-motion-torque-and-angular-momentum",
+          "name": "Torque and Angular Momentum",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-rotational-motion-moment-of-inertia",
+          "name": "Moment of Inertia",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-rotational-motion-rolling-motion",
+          "name": "Rolling Motion",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Complex mechanics involving rigid bodies rotating about a fixed or moving axis.",
+      "learningObjectives": [
+        "Calculate center of mass",
+        "Determine moment of inertia for various bodies",
+        "Apply conservation of angular momentum"
+      ],
+      "prerequisites": [
+        "work-energy-power"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "work-energy-power",
+      "nextChapter": "gravitation"
+    },
+    {
+      "id": "physics-gravitation",
+      "order": 6,
+      "name": "Gravitation",
+      "slug": "gravitation",
+      "class": 11,
+      "subject": "Physics",
+      "estimatedHours": 8,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-gravitation-universal-law-of-gravitation",
+          "name": "Universal Law of Gravitation",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-gravitation-acceleration-due-to-gravity",
+          "name": "Acceleration Due to Gravity",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-gravitation-kepler-s-laws",
+          "name": "Kepler's Laws",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-gravitation-escape-velocity-and-satellites",
+          "name": "Escape Velocity and Satellites",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The study of the fundamental force of gravity governing planetary motion.",
+      "learningObjectives": [
+        "Calculate gravitational force and field",
+        "Understand variation of g",
+        "Analyze satellite orbits"
+      ],
+      "prerequisites": [
+        "laws-of-motion",
+        "work-energy-power"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "rotational-motion",
+      "nextChapter": "properties-of-solids-liquids"
+    },
+    {
+      "id": "physics-properties-of-solids-liquids",
+      "order": 7,
+      "name": "Properties of Solids & Liquids",
+      "slug": "properties-of-solids-liquids",
+      "class": 11,
+      "subject": "Physics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "previousChapter": "gravitation",
+      "nextChapter": "thermodynamics"
+    },
+    {
+      "id": "physics-thermodynamics",
+      "order": 8,
+      "name": "Thermodynamics",
+      "slug": "thermodynamics",
+      "class": 11,
+      "subject": "Physics",
+      "estimatedHours": 15,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-thermodynamics-zeroth-and-first-law-of-thermodynamics",
+          "name": "Zeroth and First Law of Thermodynamics",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-thermodynamics-specific-heat-capacity",
+          "name": "Specific Heat Capacity",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-thermodynamics-thermodynamic-processes",
+          "name": "Thermodynamic Processes",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-thermodynamics-carnot-engine-and-second-law",
+          "name": "Carnot Engine and Second Law",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The study of heat, work, and temperature, and their relation to energy and radiation.",
+      "learningObjectives": [
+        "Apply the first law of thermodynamics",
+        "Analyze isothermal, adiabatic, isobaric processes",
+        "Calculate efficiency of heat engines"
+      ],
+      "prerequisites": [
+        "work-energy-power"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "properties-of-solids-liquids",
+      "nextChapter": "kinetic-theory"
+    },
+    {
+      "id": "physics-kinetic-theory",
+      "order": 9,
+      "name": "Kinetic Theory",
+      "slug": "kinetic-theory",
+      "class": 11,
+      "subject": "Physics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "previousChapter": "thermodynamics",
+      "nextChapter": "oscillations-waves"
+    },
+    {
+      "id": "physics-oscillations-waves",
+      "order": 10,
+      "name": "Oscillations & Waves",
+      "slug": "oscillations-waves",
+      "class": 11,
+      "subject": "Physics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "previousChapter": "kinetic-theory",
+      "nextChapter": "electrostatics"
+    },
+    {
+      "id": "physics-electrostatics",
+      "order": 11,
+      "name": "Electrostatics",
+      "slug": "electrostatics",
+      "class": 12,
+      "subject": "Physics",
+      "estimatedHours": 18,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-electrostatics-coulomb-s-law",
+          "name": "Coulomb's Law",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-electrostatics-electric-field-and-gauss-s-law",
+          "name": "Electric Field and Gauss's Law",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-electrostatics-electric-potential",
+          "name": "Electric Potential",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-electrostatics-capacitors-and-capacitance",
+          "name": "Capacitors and Capacitance",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The study of stationary electric charges, fields, and potentials.",
+      "learningObjectives": [
+        "Calculate electric fields for various charge distributions",
+        "Apply Gauss's law",
+        "Calculate equivalent capacitance"
+      ],
+      "prerequisites": [
+        "work-energy-power"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "oscillations-waves",
+      "nextChapter": "current-electricity"
+    },
+    {
+      "id": "physics-current-electricity",
+      "order": 12,
+      "name": "Current Electricity",
+      "slug": "current-electricity",
+      "class": 12,
+      "subject": "Physics",
+      "estimatedHours": 12,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-current-electricity-ohm-s-law-and-resistance",
+          "name": "Ohm's Law and Resistance",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-current-electricity-kirchhoff-s-laws",
+          "name": "Kirchhoff's Laws",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-current-electricity-wheatstone-bridge",
+          "name": "Wheatstone Bridge",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-current-electricity-potentiometer-and-heating-effect",
+          "name": "Potentiometer and Heating Effect",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The flow of electric charge and the analysis of electrical circuits.",
+      "learningObjectives": [
+        "Apply Kirchhoff's laws to complex circuits",
+        "Understand the working of Wheatstone bridge and potentiometer",
+        "Calculate power dissipation"
+      ],
+      "prerequisites": [
+        "electrostatics"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "electrostatics",
+      "nextChapter": "magnetic-effects-of-current-magnetism"
+    },
+    {
+      "id": "physics-magnetic-effects-of-current-magnetism",
+      "order": 13,
+      "name": "Magnetic Effects of Current & Magnetism",
+      "slug": "magnetic-effects-of-current-magnetism",
+      "class": 12,
+      "subject": "Physics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "previousChapter": "current-electricity",
+      "nextChapter": "emi-ac"
+    },
+    {
+      "id": "physics-emi-ac",
+      "order": 14,
+      "name": "EMI & AC",
+      "slug": "emi-ac",
+      "class": 12,
+      "subject": "Physics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "previousChapter": "magnetic-effects-of-current-magnetism",
+      "nextChapter": "electromagnetic-waves"
+    },
+    {
+      "id": "physics-electromagnetic-waves",
+      "order": 15,
+      "name": "Electromagnetic Waves",
+      "slug": "electromagnetic-waves",
+      "class": 12,
+      "subject": "Physics",
+      "estimatedHours": 4,
+      "weightage": "Low",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-electromagnetic-waves-displacement-current",
+          "name": "Displacement Current",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-electromagnetic-waves-em-wave-properties",
+          "name": "EM Wave Properties",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-electromagnetic-waves-electromagnetic-spectrum",
+          "name": "Electromagnetic Spectrum",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The propagation of oscillating electric and magnetic fields.",
+      "learningObjectives": [
+        "Understand the concept of displacement current",
+        "Know the properties and uses of different EM waves"
+      ],
+      "prerequisites": [
+        "electromagnetic-induction-and-alternating-currents"
+      ],
+      "difficulty": "Easy",
+      "previousChapter": "emi-ac",
+      "nextChapter": "optics"
+    },
+    {
+      "id": "physics-optics",
+      "order": 16,
+      "name": "Optics",
+      "slug": "optics",
+      "class": 12,
+      "subject": "Physics",
+      "estimatedHours": 18,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-optics-reflection-and-refraction",
+          "name": "Reflection and Refraction",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-optics-lenses-and-mirrors",
+          "name": "Lenses and Mirrors",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-optics-optical-instruments",
+          "name": "Optical Instruments",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-optics-wave-optics-young-s-double-slit-experiment",
+          "name": "Wave Optics (Young's Double Slit Experiment)",
+          "completed": false,
+          "order": 4
+        },
+        {
+          "id": "physics-optics-diffraction-and-polarization",
+          "name": "Diffraction and Polarization",
+          "completed": false,
+          "order": 5
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The behavior and properties of light, including geometric and wave optics.",
+      "learningObjectives": [
+        "Use lens and mirror formulas",
+        "Analyze interference patterns",
+        "Understand diffraction and polarization"
+      ],
+      "prerequisites": [
+        "electromagnetic-waves"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "electromagnetic-waves",
+      "nextChapter": "dual-nature"
+    },
+    {
+      "id": "physics-dual-nature",
+      "order": 17,
+      "name": "Dual Nature",
+      "slug": "dual-nature",
+      "class": 12,
+      "subject": "Physics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "previousChapter": "optics",
+      "nextChapter": "atoms"
+    },
+    {
+      "id": "physics-atoms",
+      "order": 18,
+      "name": "Atoms",
+      "slug": "atoms",
+      "class": 12,
+      "subject": "Physics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "previousChapter": "dual-nature",
+      "nextChapter": "nuclei"
+    },
+    {
+      "id": "physics-nuclei",
+      "order": 19,
+      "name": "Nuclei",
+      "slug": "nuclei",
+      "class": 12,
+      "subject": "Physics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "previousChapter": "atoms",
+      "nextChapter": "electronic-devices"
+    },
+    {
+      "id": "physics-electronic-devices",
+      "order": 20,
+      "name": "Electronic Devices",
+      "slug": "electronic-devices",
+      "class": 12,
+      "subject": "Physics",
+      "estimatedHours": 8,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-electronic-devices-semiconductors-p-type-n-type",
+          "name": "Semiconductors (p-type, n-type)",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-electronic-devices-p-n-junction-diode",
+          "name": "p-n Junction Diode",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-electronic-devices-rectifiers",
+          "name": "Rectifiers",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-electronic-devices-logic-gates",
+          "name": "Logic Gates",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The physics of semiconductors and basic electronic components.",
+      "learningObjectives": [
+        "Understand semiconductor doping",
+        "Analyze diode circuits",
+        "Solve logic gate problems"
+      ],
+      "prerequisites": [
+        "current-electricity"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "nuclei",
+      "nextChapter": "experimental-skills"
+    },
+    {
+      "id": "physics-experimental-skills",
+      "order": 21,
+      "name": "Experimental Skills",
+      "slug": "experimental-skills",
+      "class": 12,
+      "subject": "Physics",
+      "estimatedHours": 8,
+      "weightage": "Low",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "physics-experimental-skills-vernier-calipers",
+          "name": "Vernier Calipers",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "physics-experimental-skills-screw-gauge",
+          "name": "Screw Gauge",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "physics-experimental-skills-simple-pendulum-energy-loss-graph",
+          "name": "Simple Pendulum Energy-loss Graph",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "physics-experimental-skills-metre-scale-moments",
+          "name": "Metre Scale Moments",
+          "completed": false,
+          "order": 4
+        },
+        {
+          "id": "physics-experimental-skills-young-s-modulus",
+          "name": "Young's Modulus",
+          "completed": false,
+          "order": 5
+        },
+        {
+          "id": "physics-experimental-skills-surface-tension-by-capillary-rise",
+          "name": "Surface Tension by Capillary Rise",
+          "completed": false,
+          "order": 6
+        },
+        {
+          "id": "physics-experimental-skills-viscosity",
+          "name": "Viscosity",
+          "completed": false,
+          "order": 7
+        },
+        {
+          "id": "physics-experimental-skills-resonance-tube",
+          "name": "Resonance Tube",
+          "completed": false,
+          "order": 8
+        },
+        {
+          "id": "physics-experimental-skills-specific-heat-by-mixtures",
+          "name": "Specific Heat by Mixtures",
+          "completed": false,
+          "order": 9
+        },
+        {
+          "id": "physics-experimental-skills-metre-bridge-resistivity",
+          "name": "Metre Bridge Resistivity",
+          "completed": false,
+          "order": 10
+        },
+        {
+          "id": "physics-experimental-skills-ohm-s-law",
+          "name": "Ohm's Law",
+          "completed": false,
+          "order": 11
+        },
+        {
+          "id": "physics-experimental-skills-galvanometer-figure-of-merit",
+          "name": "Galvanometer Figure of Merit",
+          "completed": false,
+          "order": 12
+        },
+        {
+          "id": "physics-experimental-skills-focal-lengths",
+          "name": "Focal Lengths",
+          "completed": false,
+          "order": 13
+        },
+        {
+          "id": "physics-experimental-skills-prism-deviation",
+          "name": "Prism Deviation",
+          "completed": false,
+          "order": 14
+        },
+        {
+          "id": "physics-experimental-skills-refractive-index",
+          "name": "Refractive Index",
+          "completed": false,
+          "order": 15
+        },
+        {
+          "id": "physics-experimental-skills-diode-zener-characteristics",
+          "name": "Diode/Zener Characteristics",
+          "completed": false,
+          "order": 16
+        },
+        {
+          "id": "physics-experimental-skills-component-identification",
+          "name": "Component Identification",
+          "completed": false,
+          "order": 17
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Practical experimental skills required for physics laboratory work.",
+      "learningObjectives": [
+        "Understand measurement using Vernier calipers and screw gauge",
+        "Perform experiments related to mechanics, heat, electricity, and optics"
+      ],
+      "prerequisites": [
+        "physics-measurement"
+      ],
+      "difficulty": "Easy",
+      "previousChapter": "electronic-devices",
+      "nextChapter": null
+    }
+  ]
+}

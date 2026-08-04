@@ -1,113 +1,81 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePerformance } from "@/lib/performance-context";
 
 export function BackgroundSystem() {
   const [mounted, setMounted] = useState(false);
+  const { enableBackgroundAnimation } = usePerformance();
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 0);
     return () => clearTimeout(t);
   }, []);
 
-  if (!mounted) return <div className="fixed inset-0 bg-background -z-50" />;
+  if (!mounted) return <div className="fixed inset-0 bg-[#020617] -z-50" />;
+
+  // Battery saver: static gradient only
+  if (!enableBackgroundAnimation) {
+    return (
+      <div className="fixed inset-0 -z-50 bg-[#030712]">
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            background: "radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37,99,235,0.15), transparent),radial-gradient(ellipse 60% 80% at 80% 100%, rgba(30,58,138,0.15), transparent)",
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
-    <div className="fixed inset-0 pointer-events-none -z-50 overflow-hidden bg-[#020617]">
+    <div className="fixed inset-0 pointer-events-none -z-50 overflow-hidden bg-[#030712]">
       <style>{`
-        @keyframes bg-drift {
-          0% { background-position: 0% 0%; }
-          25% { background-position: 100% 100%; }
-          50% { background-position: 0% 100%; }
-          75% { background-position: 100% 0%; }
-          100% { background-position: 0% 0%; }
+        @keyframes mesh-drift {
+          0%, 100% { transform: translate(0%, 0%) rotate(0deg); }
+          25% { transform: translate(2%, -3%) rotate(1deg); }
+          50% { transform: translate(-1%, 2%) rotate(-1deg); }
+          75% { transform: translate(3%, 1%) rotate(0.5deg); }
         }
-
-        @keyframes blob-float-1 {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(20%, -20%) scale(1.2); }
-          66% { transform: translate(-20%, 20%) scale(0.8); }
-        }
-
-        @keyframes blob-float-2 {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(-30%, 20%) scale(0.9); }
-          66% { transform: translate(10%, -30%) scale(1.3); }
-        }
-
-        @keyframes aurora-spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        @keyframes aurora-spin-reverse {
-          0% { transform: rotate(360deg); }
-          100% { transform: rotate(0deg); }
-        }
-
-        .animate-bg-drift {
-          animation: bg-drift 40s linear infinite;
-        }
-
-        .animate-blob-1 {
-          animation: blob-float-1 25s ease-in-out infinite;
-        }
-
-        .animate-blob-2 {
-          animation: blob-float-2 30s ease-in-out infinite;
-        }
-
-        .animate-aurora-spin {
-          animation: aurora-spin 60s linear infinite;
-        }
-
-        .animate-aurora-reverse {
-          animation: aurora-spin-reverse 75s linear infinite;
+        @keyframes mesh-drift-alt {
+          0%, 100% { transform: translate(0%, 0%) rotate(0deg); }
+          25% { transform: translate(-3%, 2%) rotate(-1deg); }
+          50% { transform: translate(2%, -1%) rotate(1deg); }
+          75% { transform: translate(-1%, -2%) rotate(-0.5deg); }
         }
       `}</style>
 
-      {/* Layer 1: Deep navy to black gradient */}
+      {/* Layer 1: Primary mesh gradient — slow drift */}
       <div
-        className="absolute inset-0 opacity-50 animate-bg-drift"
+        className="absolute inset-0 opacity-40"
         style={{
-          background: "radial-gradient(circle at center, #0f172a 0%, transparent 50%)",
-          backgroundSize: "200% 200%",
-          willChange: "background-position",
-        }}
-      />
-
-      {/* Layer 2: Blurred blue/cyan/purple blobs */}
-      <div
-        className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] rounded-full mix-blend-screen opacity-10 animate-blob-1"
-        style={{
-          background: "radial-gradient(circle, rgba(56,189,248,0.6) 0%, rgba(56,189,248,0.25) 40%, rgba(56,189,248,0) 100%)",
+          background: "radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37,99,235,0.12), transparent), radial-gradient(ellipse 60% 80% at 80% 100%, rgba(30,58,138,0.12), transparent)",
+          animation: "mesh-drift 45s ease-in-out infinite",
           willChange: "transform",
         }}
       />
 
+      {/* Layer 2: Secondary mesh — counter-drift for depth */}
       <div
-        className="absolute bottom-1/4 right-1/4 w-[35vw] h-[35vw] rounded-full mix-blend-screen opacity-10 animate-blob-2"
+        className="absolute inset-0 opacity-25"
         style={{
-          background: "radial-gradient(circle, rgba(168,85,247,0.6) 0%, rgba(168,85,247,0.25) 40%, rgba(168,85,247,0) 100%)",
+          background: "radial-gradient(ellipse 70% 50% at 20% 80%, rgba(29,78,216,0.1), transparent), radial-gradient(ellipse 50% 70% at 90% 20%, rgba(15,23,42,0.2), transparent)",
+          animation: "mesh-drift-alt 55s ease-in-out infinite",
           willChange: "transform",
         }}
       />
 
-      {/* Layer 3: Aurora ribbons */}
-      <div className="absolute inset-0 opacity-[0.03] mix-blend-screen">
-        <div
-          className="absolute inset-0 bg-gradient-to-tr from-transparent via-blue-400 to-transparent w-[150%] h-[150%] -left-1/4 -top-1/4 origin-center animate-aurora-spin"
-          style={{ willChange: "transform" }}
-        />
-        <div
-          className="absolute inset-0 bg-gradient-to-tl from-transparent via-purple-400 to-transparent w-[150%] h-[150%] -left-1/4 -top-1/4 origin-center animate-aurora-reverse"
-          style={{ willChange: "transform" }}
-        />
-      </div>
-
-      {/* Layer 4: CSS Film Grain */}
+      {/* Layer 3: Vignette — dark edges for depth focus */}
       <div
-        className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, rgba(3,7,18,0.7) 100%)",
+        }}
+      />
+
+      {/* Layer 4: Subtle noise texture for depth */}
+      <div
+        className="absolute inset-0 opacity-[0.015] mix-blend-overlay"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
         }}

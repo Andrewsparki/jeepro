@@ -49,8 +49,6 @@ export async function updateTopicProgress(topicId: string, status: ProgressStatu
     return null;
   }
   
-  console.log("updateTopicProgress called with user:", user.id, "topic:", topicId, "status:", status);
-  
   const completedAt = status === "Mastered" ? new Date().toISOString() : null;
   
   const { data, error } = await supabase
@@ -112,8 +110,6 @@ export async function saveStudySession({
     return null;
   }
   
-  console.log("saveStudySession called with user:", user.id, "duration:", durationSeconds);
-
   const { data, error } = await supabase
     .from("study_sessions")
     .insert({
@@ -137,12 +133,14 @@ export async function saveStudySession({
 
 import { getSyllabus } from "@/features/syllabus/services/syllabus";
 import { calculateXPAndLevel, getAchievements } from "@/features/gamification/services/gamification";
+import { getPlannerEvents } from "@/features/planner/services/planner.service";
 
 export async function getDashboardMetrics() {
-  const [progress, sessions, syllabus] = await Promise.all([
+  const [progress, sessions, syllabus, allEvents] = await Promise.all([
     getUserProgress(),
     getStudySessions(),
-    getSyllabus()
+    getSyllabus(),
+    getPlannerEvents()
   ]);
 
   const masteredCount = progress.filter(p => p.status === "Mastered").length;
@@ -218,6 +216,26 @@ export async function getDashboardMetrics() {
     }
   }
 
+  // Today's events
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const todaysEvents = allEvents.filter(e => {
+    const eventTime = new Date(e.start_time);
+    return eventTime >= todayStart && eventTime <= todayEnd;
+  });
+
+  // Weekly stats
+  const startOfWeek = new Date();
+  startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Sunday
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const weeklySessions = sessions.filter(s => new Date(s.started_at) >= startOfWeek);
+  const weeklyDurationSeconds = weeklySessions.reduce((acc, s) => acc + s.duration_seconds, 0);
+  const weeklyStudyHours = Math.floor(weeklyDurationSeconds / 3600);
+
   return {
     masteredTopics: masteredCount,
     inProgressTopics: inProgressCount,
@@ -230,6 +248,8 @@ export async function getDashboardMetrics() {
     xpDetails,
     achievements,
     lastActiveChapter,
-    syllabus
+    syllabus,
+    todaysEvents,
+    weeklyStudyHours
   };
 }

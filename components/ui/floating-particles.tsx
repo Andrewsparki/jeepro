@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePerformance } from "@/lib/performance-context";
+import { useLighting } from "@/components/ui/lighting-provider";
 
 interface Particle {
   x: number;
@@ -11,12 +13,11 @@ interface Particle {
   opacity: number;
 }
 
-const PARTICLE_COUNT = 18;
-
 export function FloatingParticles() {
+  const { enableParticles, particleCount } = usePerformance();
+  const { mouseRef } = useLighting();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number>(0);
-  const mouse = useRef({ x: 0, y: 0 });
   const particles = useRef<Particle[]>([]);
   const [mounted, setMounted] = useState(false);
 
@@ -50,25 +51,22 @@ export function FloatingParticles() {
     resize();
 
     // Initialize particles
-    particles.current = Array.from({ length: PARTICLE_COUNT }).map(() => ({
+    particles.current = Array.from({ length: particleCount }).map(() => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.2, // Extremely slow drift
+      vx: (Math.random() - 0.5) * 0.2,
       vy: (Math.random() - 0.5) * 0.2,
       size: Math.random() * 1.5 + 0.5,
       opacity: Math.random() * 0.4 + 0.1,
     }));
-
-    const onMouseMove = (e: MouseEvent) => {
-      mouse.current = { x: e.clientX, y: e.clientY };
-    };
-    window.addEventListener("mousemove", onMouseMove);
 
     let frameCount = 0;
     const isLowEnd = typeof navigator !== "undefined" && (navigator.hardwareConcurrency ?? 8) <= 4;
 
     const render = () => {
       requestRef.current = requestAnimationFrame(render);
+
+      if (document.hidden) return; // Pause rendering if tab is hidden
 
       frameCount++;
       if (isLowEnd && frameCount % 2 !== 0) {
@@ -77,8 +75,11 @@ export function FloatingParticles() {
 
       ctx.clearRect(0, 0, width, height);
 
+      // Read mouse position from shared ref (no duplicate listener!)
+      const mx = mouseRef.current.x;
+      const my = mouseRef.current.y;
+
       particles.current.forEach((p) => {
-        // Move particle
         p.x += p.vx;
         p.y += p.vy;
 
@@ -88,15 +89,14 @@ export function FloatingParticles() {
         if (p.y < 0) p.y = height;
         if (p.y > height) p.y = 0;
 
-        // Mouse interaction (slight repulsion/attraction)
-        const dx = mouse.current.x - p.x;
-        const dy = mouse.current.y - p.y;
+        // Mouse interaction (slight repulsion)
+        const dx = mx - p.x;
+        const dy = my - p.y;
         const distSq = dx * dx + dy * dy;
 
         if (distSq < 22500) {
           const dist = Math.sqrt(distSq);
           if (dist > 0) {
-            // Push away very gently
             const force = (150 - dist) / 150;
             p.x -= (dx / dist) * force * 0.5;
             p.y -= (dy / dist) * force * 0.5;
@@ -115,12 +115,11 @@ export function FloatingParticles() {
 
     return () => {
       window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", onMouseMove);
       cancelAnimationFrame(requestRef.current);
     };
-  }, [mounted]);
+  }, [mounted, particleCount, mouseRef]);
 
-  if (!mounted) return null;
+  if (!mounted || !enableParticles) return null;
 
   return (
     <canvas

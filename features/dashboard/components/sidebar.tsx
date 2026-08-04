@@ -31,7 +31,7 @@ export function Sidebar() {
   const initials = displayName.substring(0, 1).toUpperCase();
 
   return (
-    <aside className="hidden w-64 flex-col border-r border-border/40 bg-background/50 backdrop-blur-xl md:flex h-screen sticky top-0">
+    <aside className="hidden w-64 flex-col border-r border-border/40 bg-background/95 md:flex h-screen sticky top-0">
       <div className="flex h-14 items-center px-6 border-b border-border/40">
         <Link href="/dashboard" className="flex items-center gap-2 font-bold tracking-tight text-lg">
           <div className="h-6 w-6 rounded-md bg-foreground flex items-center justify-center">
@@ -50,7 +50,7 @@ export function Sidebar() {
       </div>
 
       <div className="p-4 border-t border-border/40 flex flex-col gap-1">
-        <SidebarItem href="/settings" label="Settings" icon={<Settings className="h-5 w-5" />} />
+        <SidebarItem href="/dashboard/settings" label="Settings" icon={<Settings className="h-5 w-5" />} />
         
         <form action={logout} className="w-full mt-2">
           <button type="submit" className={cn(

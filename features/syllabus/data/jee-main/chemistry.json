@@ -1,0 +1,1072 @@
+{
+  "exam": "JEE Main",
+  "version": "2027",
+  "subject": "Chemistry",
+  "chapters": [
+    {
+      "id": "chemistry-some-basic-concepts-in-chemistry",
+      "order": 1,
+      "name": "Some Basic Concepts in Chemistry",
+      "slug": "some-basic-concepts-in-chemistry",
+      "class": 11,
+      "subject": "Chemistry",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-some-basic-concepts-in-chemistry-mole-concept",
+          "name": "Mole concept",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-some-basic-concepts-in-chemistry-stoichiometry",
+          "name": "Stoichiometry",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-some-basic-concepts-in-chemistry-concentration-terms",
+          "name": "Concentration terms",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "chemistry-some-basic-concepts-in-chemistry-empirical-and-molecular-formula",
+          "name": "Empirical and molecular formula",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Fundamental concepts of chemical calculations.",
+      "learningObjectives": [
+        "Calculate moles and molar mass",
+        "Perform stoichiometric calculations",
+        "Determine empirical formulas"
+      ],
+      "prerequisites": [],
+      "difficulty": "Medium",
+      "previousChapter": null,
+      "nextChapter": "atomic-structure"
+    },
+    {
+      "id": "chemistry-atomic-structure",
+      "order": 2,
+      "name": "Atomic Structure",
+      "slug": "atomic-structure",
+      "class": 11,
+      "subject": "Chemistry",
+      "estimatedHours": 12,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-atomic-structure-bohr-model",
+          "name": "Bohr model",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-atomic-structure-quantum-mechanical-model",
+          "name": "Quantum mechanical model",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-atomic-structure-quantum-numbers",
+          "name": "Quantum numbers",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "chemistry-atomic-structure-electronic-configuration",
+          "name": "Electronic configuration",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The fundamental building blocks of matter and quantum mechanical model.",
+      "learningObjectives": [
+        "Understand atomic models",
+        "Determine quantum numbers",
+        "Write electronic configurations"
+      ],
+      "prerequisites": [],
+      "difficulty": "Hard",
+      "previousChapter": "some-basic-concepts-in-chemistry",
+      "nextChapter": "chemical-bonding-and-molecular-structure"
+    },
+    {
+      "id": "chemistry-chemical-bonding-and-molecular-structure",
+      "order": 3,
+      "name": "Chemical Bonding and Molecular Structure",
+      "slug": "chemical-bonding-and-molecular-structure",
+      "class": 11,
+      "subject": "Chemistry",
+      "estimatedHours": 16,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-chemical-bonding-and-molecular-structure-vsepr-theory",
+          "name": "VSEPR theory",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-chemical-bonding-and-molecular-structure-valence-bond-theory",
+          "name": "Valence bond theory",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-chemical-bonding-and-molecular-structure-molecular-orbital-theory",
+          "name": "Molecular orbital theory",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "chemistry-chemical-bonding-and-molecular-structure-hydrogen-bonding",
+          "name": "Hydrogen bonding",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "How atoms combine to form molecules and the structures they create.",
+      "learningObjectives": [
+        "Predict molecular geometry using VSEPR",
+        "Understand hybridization",
+        "Draw MO diagrams"
+      ],
+      "prerequisites": [
+        "atomic-structure"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "atomic-structure",
+      "nextChapter": "chemical-thermodynamics"
+    },
+    {
+      "id": "chemistry-chemical-thermodynamics",
+      "order": 4,
+      "name": "Chemical Thermodynamics",
+      "slug": "chemical-thermodynamics",
+      "class": 11,
+      "subject": "Chemistry",
+      "estimatedHours": 14,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-chemical-thermodynamics-first-law-of-thermodynamics",
+          "name": "First law of thermodynamics",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-chemical-thermodynamics-enthalpy-entropy-and-free-energy",
+          "name": "Enthalpy, entropy, and free energy",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-chemical-thermodynamics-spontaneity-of-reactions",
+          "name": "Spontaneity of reactions",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Energy changes in chemical reactions.",
+      "learningObjectives": [
+        "Calculate enthalpy changes",
+        "Predict spontaneity using Gibbs free energy"
+      ],
+      "prerequisites": [
+        "some-basic-concepts-in-chemistry"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "chemical-bonding-and-molecular-structure",
+      "nextChapter": "solutions"
+    },
+    {
+      "id": "chemistry-solutions",
+      "order": 5,
+      "name": "Solutions",
+      "slug": "solutions",
+      "class": 11,
+      "subject": "Chemistry",
+      "estimatedHours": 12,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-solutions-types-of-solutions",
+          "name": "Types of solutions",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-solutions-raoult-s-law",
+          "name": "Raoult's law",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-solutions-colligative-properties",
+          "name": "Colligative properties",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "chemistry-solutions-van-t-hoff-factor",
+          "name": "Van't Hoff factor",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Properties of homogeneous mixtures.",
+      "learningObjectives": [
+        "Calculate concentration",
+        "Determine colligative properties and molar mass"
+      ],
+      "prerequisites": [
+        "some-basic-concepts-in-chemistry"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "chemical-thermodynamics",
+      "nextChapter": "equilibrium"
+    },
+    {
+      "id": "chemistry-equilibrium",
+      "order": 6,
+      "name": "Equilibrium",
+      "slug": "equilibrium",
+      "class": 11,
+      "subject": "Chemistry",
+      "estimatedHours": 18,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-equilibrium-chemical-equilibrium",
+          "name": "Chemical equilibrium",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-equilibrium-le-chatelier-s-principle",
+          "name": "Le Chatelier's principle",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-equilibrium-ionic-equilibrium",
+          "name": "Ionic equilibrium",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "chemistry-equilibrium-ph-and-buffer-solutions",
+          "name": "pH and buffer solutions",
+          "completed": false,
+          "order": 4
+        },
+        {
+          "id": "chemistry-equilibrium-solubility-product",
+          "name": "Solubility product",
+          "completed": false,
+          "order": 5
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The state in which forward and reverse reaction rates are equal.",
+      "learningObjectives": [
+        "Calculate equilibrium constants",
+        "Apply Le Chatelier's principle",
+        "Calculate pH of solutions"
+      ],
+      "prerequisites": [
+        "chemical-thermodynamics"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "solutions",
+      "nextChapter": "redox-reactions-and-electrochemistry"
+    },
+    {
+      "id": "chemistry-redox-reactions-and-electrochemistry",
+      "order": 7,
+      "name": "Redox Reactions and Electrochemistry",
+      "slug": "redox-reactions-and-electrochemistry",
+      "class": 11,
+      "subject": "Chemistry",
+      "estimatedHours": 16,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-redox-reactions-and-electrochemistry-oxidation-numbers",
+          "name": "Oxidation numbers",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-redox-reactions-and-electrochemistry-balancing-redox-reactions",
+          "name": "Balancing redox reactions",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-redox-reactions-and-electrochemistry-galvanic-cells-and-nernst-equation",
+          "name": "Galvanic cells and Nernst equation",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "chemistry-redox-reactions-and-electrochemistry-electrolysis",
+          "name": "Electrolysis",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Electron transfer reactions and their applications.",
+      "learningObjectives": [
+        "Balance redox equations",
+        "Calculate cell potential using Nernst equation",
+        "Apply Faraday's laws of electrolysis"
+      ],
+      "prerequisites": [
+        "equilibrium"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "equilibrium",
+      "nextChapter": "chemical-kinetics"
+    },
+    {
+      "id": "chemistry-chemical-kinetics",
+      "order": 8,
+      "name": "Chemical Kinetics",
+      "slug": "chemical-kinetics",
+      "class": 11,
+      "subject": "Chemistry",
+      "estimatedHours": 12,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-chemical-kinetics-rate-of-reaction",
+          "name": "Rate of reaction",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-chemical-kinetics-order-and-molecularity",
+          "name": "Order and molecularity",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-chemical-kinetics-integrated-rate-equations",
+          "name": "Integrated rate equations",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "chemistry-chemical-kinetics-arrhenius-equation",
+          "name": "Arrhenius equation",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Rates of chemical reactions and factors affecting them.",
+      "learningObjectives": [
+        "Determine reaction order",
+        "Use integrated rate laws",
+        "Calculate activation energy"
+      ],
+      "prerequisites": [],
+      "difficulty": "Medium",
+      "previousChapter": "redox-reactions-and-electrochemistry",
+      "nextChapter": "classification-of-elements-and-periodicity-in-properties"
+    },
+    {
+      "id": "chemistry-classification-of-elements-and-periodicity-in-properties",
+      "order": 9,
+      "name": "Classification of Elements and Periodicity in Properties",
+      "slug": "classification-of-elements-and-periodicity-in-properties",
+      "class": 11,
+      "subject": "Chemistry",
+      "estimatedHours": 6,
+      "weightage": "Low",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-classification-of-elements-and-periodicity-in-properties-modern-periodic-table",
+          "name": "Modern periodic table",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-classification-of-elements-and-periodicity-in-properties-periodic-trends-atomic-radii-ionization-energy-electron-gain-enthalpy-electronegativity",
+          "name": "Periodic trends (atomic radii, ionization energy, electron gain enthalpy, electronegativity)",
+          "completed": false,
+          "order": 2
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Organization of elements and trends in their properties.",
+      "learningObjectives": [
+        "Understand the layout of the periodic table",
+        "Predict trends in physical and chemical properties"
+      ],
+      "prerequisites": [
+        "atomic-structure"
+      ],
+      "difficulty": "Easy",
+      "previousChapter": "chemical-kinetics",
+      "nextChapter": "p-block-elements"
+    },
+    {
+      "id": "chemistry-p-block-elements",
+      "order": 10,
+      "name": "p-Block Elements",
+      "slug": "p-block-elements",
+      "class": 11,
+      "subject": "Chemistry",
+      "estimatedHours": 18,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-p-block-elements-group-13-to-18-elements",
+          "name": "Group 13 to 18 elements",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-p-block-elements-general-trends",
+          "name": "General trends",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-p-block-elements-important-compounds-and-their-properties",
+          "name": "Important compounds and their properties",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Chemistry of elements in groups 13 through 18.",
+      "learningObjectives": [
+        "Recall properties of p-block elements",
+        "Understand structures of important compounds"
+      ],
+      "prerequisites": [
+        "classification-of-elements-and-periodicity-in-properties",
+        "chemical-bonding-and-molecular-structure"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "classification-of-elements-and-periodicity-in-properties",
+      "nextChapter": "d-and-f-block-elements"
+    },
+    {
+      "id": "chemistry-d-and-f-block-elements",
+      "order": 11,
+      "name": "d- and f-Block Elements",
+      "slug": "d-and-f-block-elements",
+      "class": 12,
+      "subject": "Chemistry",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-d-and-f-block-elements-transition-elements-d-block",
+          "name": "Transition elements (d-block)",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-d-and-f-block-elements-lanthanoids-and-actinoids-f-block",
+          "name": "Lanthanoids and Actinoids (f-block)",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-d-and-f-block-elements-properties-and-trends",
+          "name": "Properties and trends",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Chemistry of transition and inner transition metals.",
+      "learningObjectives": [
+        "Understand properties of d-block elements",
+        "Know oxidation states and magnetic properties"
+      ],
+      "prerequisites": [
+        "classification-of-elements-and-periodicity-in-properties"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "p-block-elements",
+      "nextChapter": "coordination-compounds"
+    },
+    {
+      "id": "chemistry-coordination-compounds",
+      "order": 12,
+      "name": "Coordination Compounds",
+      "slug": "coordination-compounds",
+      "class": 12,
+      "subject": "Chemistry",
+      "estimatedHours": 14,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-coordination-compounds-werner-s-theory",
+          "name": "Werner's theory",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-coordination-compounds-nomenclature",
+          "name": "Nomenclature",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-coordination-compounds-isomerism",
+          "name": "Isomerism",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "chemistry-coordination-compounds-valence-bond-theory-and-crystal-field-theory",
+          "name": "Valence bond theory and Crystal field theory",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Complexes formed by transition metals.",
+      "learningObjectives": [
+        "Name coordination compounds",
+        "Determine isomerism",
+        "Apply VBT and CFT to predict properties"
+      ],
+      "prerequisites": [
+        "d-and-f-block-elements",
+        "chemical-bonding-and-molecular-structure"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "d-and-f-block-elements",
+      "nextChapter": "purification-and-characterisation-of-organic-compounds"
+    },
+    {
+      "id": "chemistry-purification-and-characterisation-of-organic-compounds",
+      "order": 13,
+      "name": "Purification and Characterisation of Organic Compounds",
+      "slug": "purification-and-characterisation-of-organic-compounds",
+      "class": 12,
+      "subject": "Chemistry",
+      "estimatedHours": 6,
+      "weightage": "Low",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-purification-and-characterisation-of-organic-compounds-methods-of-purification",
+          "name": "Methods of purification",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-purification-and-characterisation-of-organic-compounds-qualitative-analysis",
+          "name": "Qualitative analysis",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-purification-and-characterisation-of-organic-compounds-quantitative-analysis",
+          "name": "Quantitative analysis",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Techniques for isolating and analyzing organic substances.",
+      "learningObjectives": [
+        "Understand distillation and chromatography",
+        "Identify functional groups",
+        "Calculate empirical formulas from composition"
+      ],
+      "prerequisites": [],
+      "difficulty": "Easy",
+      "previousChapter": "coordination-compounds",
+      "nextChapter": "some-basic-principles-of-organic-chemistry"
+    },
+    {
+      "id": "chemistry-some-basic-principles-of-organic-chemistry",
+      "order": 14,
+      "name": "Some Basic Principles of Organic Chemistry",
+      "slug": "some-basic-principles-of-organic-chemistry",
+      "class": 12,
+      "subject": "Chemistry",
+      "estimatedHours": 16,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-some-basic-principles-of-organic-chemistry-iupac-nomenclature",
+          "name": "IUPAC nomenclature",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-some-basic-principles-of-organic-chemistry-electronic-effects-inductive-resonance-hyperconjugation",
+          "name": "Electronic effects (inductive, resonance, hyperconjugation)",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-some-basic-principles-of-organic-chemistry-isomerism",
+          "name": "Isomerism",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "chemistry-some-basic-principles-of-organic-chemistry-reaction-intermediates",
+          "name": "Reaction intermediates",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Fundamental concepts underlying organic reactions.",
+      "learningObjectives": [
+        "Name organic compounds",
+        "Understand electronic effects and stability of intermediates",
+        "Identify isomers"
+      ],
+      "prerequisites": [
+        "chemical-bonding-and-molecular-structure"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "purification-and-characterisation-of-organic-compounds",
+      "nextChapter": "hydrocarbons"
+    },
+    {
+      "id": "chemistry-hydrocarbons",
+      "order": 15,
+      "name": "Hydrocarbons",
+      "slug": "hydrocarbons",
+      "class": 12,
+      "subject": "Chemistry",
+      "estimatedHours": 18,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-hydrocarbons-alkanes",
+          "name": "Alkanes",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-hydrocarbons-alkenes",
+          "name": "Alkenes",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-hydrocarbons-alkynes",
+          "name": "Alkynes",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "chemistry-hydrocarbons-aromatic-hydrocarbons-benzene",
+          "name": "Aromatic hydrocarbons (Benzene)",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Compounds containing only carbon and hydrogen.",
+      "learningObjectives": [
+        "Understand preparation and properties of hydrocarbons",
+        "Apply Markovnikov's rule",
+        "Understand electrophilic aromatic substitution"
+      ],
+      "prerequisites": [
+        "some-basic-principles-of-organic-chemistry"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "some-basic-principles-of-organic-chemistry",
+      "nextChapter": "organic-compounds-containing-halogens"
+    },
+    {
+      "id": "chemistry-organic-compounds-containing-halogens",
+      "order": 16,
+      "name": "Organic Compounds Containing Halogens",
+      "slug": "organic-compounds-containing-halogens",
+      "class": 12,
+      "subject": "Chemistry",
+      "estimatedHours": 12,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-organic-compounds-containing-halogens-haloalkanes-and-haloarenes",
+          "name": "Haloalkanes and haloarenes",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-organic-compounds-containing-halogens-substitution-reactions-sn1-sn2",
+          "name": "Substitution reactions (SN1, SN2)",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-organic-compounds-containing-halogens-elimination-reactions",
+          "name": "Elimination reactions",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Alkyl and aryl halides and their reactions.",
+      "learningObjectives": [
+        "Distinguish between SN1 and SN2 mechanisms",
+        "Predict products of elimination reactions"
+      ],
+      "prerequisites": [
+        "hydrocarbons"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "hydrocarbons",
+      "nextChapter": "organic-compounds-containing-oxygen"
+    },
+    {
+      "id": "chemistry-organic-compounds-containing-oxygen",
+      "order": 17,
+      "name": "Organic Compounds Containing Oxygen",
+      "slug": "organic-compounds-containing-oxygen",
+      "class": 12,
+      "subject": "Chemistry",
+      "estimatedHours": 22,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-organic-compounds-containing-oxygen-alcohols-phenols-and-ethers",
+          "name": "Alcohols, Phenols, and Ethers",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-organic-compounds-containing-oxygen-aldehydes-and-ketones",
+          "name": "Aldehydes and Ketones",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-organic-compounds-containing-oxygen-carboxylic-acids",
+          "name": "Carboxylic Acids",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Oxygen-containing functional groups and their chemistry.",
+      "learningObjectives": [
+        "Understand reactions of alcohols and phenols",
+        "Apply nucleophilic addition reactions",
+        "Know properties of carboxylic acids"
+      ],
+      "prerequisites": [
+        "organic-compounds-containing-halogens"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "organic-compounds-containing-halogens",
+      "nextChapter": "organic-compounds-containing-nitrogen"
+    },
+    {
+      "id": "chemistry-organic-compounds-containing-nitrogen",
+      "order": 18,
+      "name": "Organic Compounds Containing Nitrogen",
+      "slug": "organic-compounds-containing-nitrogen",
+      "class": 12,
+      "subject": "Chemistry",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-organic-compounds-containing-nitrogen-amines",
+          "name": "Amines",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-organic-compounds-containing-nitrogen-diazonium-salts",
+          "name": "Diazonium salts",
+          "completed": false,
+          "order": 2
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Nitrogen-containing functional groups.",
+      "learningObjectives": [
+        "Classify amines and compare basicity",
+        "Understand synthetic utility of diazonium salts"
+      ],
+      "prerequisites": [
+        "organic-compounds-containing-oxygen"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "organic-compounds-containing-oxygen",
+      "nextChapter": "biomolecules"
+    },
+    {
+      "id": "chemistry-biomolecules",
+      "order": 19,
+      "name": "Biomolecules",
+      "slug": "biomolecules",
+      "class": 12,
+      "subject": "Chemistry",
+      "estimatedHours": 8,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-biomolecules-carbohydrates",
+          "name": "Carbohydrates",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-biomolecules-proteins",
+          "name": "Proteins",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-biomolecules-vitamins",
+          "name": "Vitamins",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "chemistry-biomolecules-nucleic-acids",
+          "name": "Nucleic acids",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Molecules essential for life processes.",
+      "learningObjectives": [
+        "Understand structures of sugars and amino acids",
+        "Know the role of DNA/RNA"
+      ],
+      "prerequisites": [
+        "organic-compounds-containing-oxygen"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "organic-compounds-containing-nitrogen",
+      "nextChapter": "principles-related-to-practical-chemistry"
+    },
+    {
+      "id": "chemistry-principles-related-to-practical-chemistry",
+      "order": 20,
+      "name": "Principles Related to Practical Chemistry",
+      "slug": "principles-related-to-practical-chemistry",
+      "class": 12,
+      "subject": "Chemistry",
+      "estimatedHours": 8,
+      "weightage": "Low",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "chemistry-principles-related-to-practical-chemistry-titrations-acid-base-redox",
+          "name": "Titrations (Acid-base, Redox)",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "chemistry-principles-related-to-practical-chemistry-salt-analysis",
+          "name": "Salt analysis",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "chemistry-principles-related-to-practical-chemistry-preparation-of-standard-solutions",
+          "name": "Preparation of standard solutions",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Practical laboratory techniques and concepts.",
+      "learningObjectives": [
+        "Perform titration calculations",
+        "Identify cations and anions in salt analysis"
+      ],
+      "prerequisites": [
+        "some-basic-concepts-in-chemistry"
+      ],
+      "difficulty": "Easy",
+      "previousChapter": "biomolecules",
+      "nextChapter": null
+    }
+  ]
+}

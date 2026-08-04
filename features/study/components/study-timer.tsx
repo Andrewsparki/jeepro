@@ -34,7 +34,7 @@ export function StudyTimer() {
             <div className="absolute -inset-1 rounded-full animate-timer-pulse opacity-60" 
               style={{ background: "radial-gradient(circle, rgba(59,130,246,0.4) 0%, transparent 70%)" }}
             />
-            <div className="relative flex items-center gap-4 bg-background/80 backdrop-blur-xl border border-white/10 rounded-full pl-5 pr-2 py-2">
+            <div className="relative flex items-center gap-4 bg-background/80 backdrop-blur-xl border border-glass-border rounded-full pl-5 pr-2 py-2">
               
               <div className="flex items-center gap-3">
                 {/* CSS-animated recording dot — no Framer Motion */}
@@ -49,7 +49,7 @@ export function StudyTimer() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={endSession}
+                onClick={() => endSession()}
                 className="rounded-full hover:bg-destructive/10 hover:text-destructive text-muted-foreground group"
               >
                 <Square className="w-4 h-4 mr-2 fill-current opacity-70 group-hover:opacity-100" />

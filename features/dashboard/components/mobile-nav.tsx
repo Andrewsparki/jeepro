@@ -74,11 +74,11 @@ export function MobileNav() {
         
         <div className="p-4 border-t border-border/40">
            <Link
-                href="/settings"
+                href="/dashboard/settings"
                 onClick={() => setOpen(false)}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-3 text-base font-medium transition-colors hover:text-foreground",
-                  pathname === "/settings" ? "bg-muted/50 text-foreground border border-border/50" : "text-muted-foreground hover:bg-muted/30"
+                  pathname === "/dashboard/settings" ? "bg-muted/50 text-foreground border border-border/50" : "text-muted-foreground hover:bg-muted/30"
                 )}
               >
                 <Settings className="h-5 w-5" />

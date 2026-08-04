@@ -18,10 +18,7 @@ export const DashboardCard = React.memo(function DashboardCard({ children, class
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay, ease: "easeOut" }}
-        className={cn(
-          "rounded-2xl border border-border/40 bg-[#0a0a0a]/80 p-6 shadow-sm transition-[border-color] hover:border-border/60",
-          // any additional className already applied via TiltWrapper
-        )}
+        className="min-h-full w-full p-6 flex flex-col"
       >
         {children}
       </motion.div>

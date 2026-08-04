@@ -1,0 +1,1032 @@
+{
+  "exam": "JEE Main",
+  "version": "2027",
+  "subject": "Mathematics",
+  "chapters": [
+    {
+      "id": "mathematics-sets",
+      "order": 1,
+      "name": "Sets",
+      "slug": "sets",
+      "class": 11,
+      "subject": "Mathematics",
+      "estimatedHours": 5,
+      "weightage": "Low",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-sets-sets-and-their-representations",
+          "name": "Sets and their representations",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-sets-union-intersection-and-complement",
+          "name": "Union, intersection and complement",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-sets-venn-diagrams",
+          "name": "Venn diagrams",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Fundamental concepts of collections of objects.",
+      "learningObjectives": [
+        "Perform set operations",
+        "Solve problems using Venn diagrams"
+      ],
+      "prerequisites": [],
+      "difficulty": "Easy",
+      "previousChapter": null,
+      "nextChapter": "relations"
+    },
+    {
+      "id": "mathematics-relations",
+      "order": 2,
+      "name": "Relations",
+      "slug": "relations",
+      "class": 11,
+      "subject": "Mathematics",
+      "estimatedHours": 8,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-relations-relations-and-functions",
+          "name": "Relations and Functions",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-relations-domain-codomain-and-range",
+          "name": "Domain, codomain and range",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-relations-types-of-relations",
+          "name": "Types of relations",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The mapping between sets and their properties.",
+      "learningObjectives": [
+        "Determine domain and range",
+        "Classify relations (reflexive, symmetric, transitive)"
+      ],
+      "prerequisites": [
+        "sets"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "sets",
+      "nextChapter": "complex-numbers"
+    },
+    {
+      "id": "mathematics-complex-numbers",
+      "order": 3,
+      "name": "Complex Numbers",
+      "slug": "complex-numbers",
+      "class": 11,
+      "subject": "Mathematics",
+      "estimatedHours": 12,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-complex-numbers-algebra-of-complex-numbers",
+          "name": "Algebra of complex numbers",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-complex-numbers-argand-diagram",
+          "name": "Argand diagram",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-complex-numbers-polar-representation",
+          "name": "Polar representation",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "mathematics-complex-numbers-roots-of-unity",
+          "name": "Roots of unity",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Numbers with real and imaginary parts and their geometric representation.",
+      "learningObjectives": [
+        "Perform algebraic operations on complex numbers",
+        "Represent complex numbers geometrically",
+        "Find roots of complex numbers"
+      ],
+      "prerequisites": [],
+      "difficulty": "Medium",
+      "previousChapter": "relations",
+      "nextChapter": "quadratic-equations"
+    },
+    {
+      "id": "mathematics-quadratic-equations",
+      "order": 4,
+      "name": "Quadratic Equations",
+      "slug": "quadratic-equations",
+      "class": 11,
+      "subject": "Mathematics",
+      "estimatedHours": 8,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-quadratic-equations-roots-of-a-quadratic-equation",
+          "name": "Roots of a quadratic equation",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-quadratic-equations-relationship-between-roots-and-coefficients",
+          "name": "Relationship between roots and coefficients",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-quadratic-equations-nature-of-roots",
+          "name": "Nature of roots",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Polynomial equations of degree two and their properties.",
+      "learningObjectives": [
+        "Solve quadratic equations",
+        "Analyze the nature of roots",
+        "Form equations given roots"
+      ],
+      "prerequisites": [],
+      "difficulty": "Medium",
+      "previousChapter": "complex-numbers",
+      "nextChapter": "matrices"
+    },
+    {
+      "id": "mathematics-matrices",
+      "order": 5,
+      "name": "Matrices",
+      "slug": "matrices",
+      "class": 11,
+      "subject": "Mathematics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-matrices-types-of-matrices",
+          "name": "Types of matrices",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-matrices-matrix-operations",
+          "name": "Matrix operations",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-matrices-transpose-and-inverse",
+          "name": "Transpose and inverse",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Rectangular arrays of numbers and their algebraic operations.",
+      "learningObjectives": [
+        "Perform matrix addition and multiplication",
+        "Find the inverse of a matrix"
+      ],
+      "prerequisites": [],
+      "difficulty": "Medium",
+      "previousChapter": "quadratic-equations",
+      "nextChapter": "determinants"
+    },
+    {
+      "id": "mathematics-determinants",
+      "order": 6,
+      "name": "Determinants",
+      "slug": "determinants",
+      "class": 11,
+      "subject": "Mathematics",
+      "estimatedHours": 12,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-determinants-properties-of-determinants",
+          "name": "Properties of determinants",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-determinants-evaluation-of-determinants",
+          "name": "Evaluation of determinants",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-determinants-system-of-linear-equations",
+          "name": "System of linear equations",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Scalar values associated with square matrices.",
+      "learningObjectives": [
+        "Evaluate determinants",
+        "Use properties to simplify determinants",
+        "Solve linear equations using Cramer's rule or matrix method"
+      ],
+      "prerequisites": [
+        "matrices"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "matrices",
+      "nextChapter": "p-c"
+    },
+    {
+      "id": "mathematics-p-c",
+      "order": 7,
+      "name": "P&C",
+      "slug": "p-c",
+      "class": 11,
+      "subject": "Mathematics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-p-c-fundamental-principle-of-counting",
+          "name": "Fundamental principle of counting",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-p-c-permutations",
+          "name": "Permutations",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-p-c-combinations",
+          "name": "Combinations",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Techniques for counting arrangements and selections.",
+      "learningObjectives": [
+        "Calculate permutations and combinations",
+        "Solve complex arrangement problems"
+      ],
+      "prerequisites": [],
+      "difficulty": "Medium",
+      "previousChapter": "determinants",
+      "nextChapter": "binomial"
+    },
+    {
+      "id": "mathematics-binomial",
+      "order": 8,
+      "name": "Binomial",
+      "slug": "binomial",
+      "class": 11,
+      "subject": "Mathematics",
+      "estimatedHours": 8,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-binomial-binomial-theorem-for-positive-integral-index",
+          "name": "Binomial theorem for positive integral index",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-binomial-general-and-middle-terms",
+          "name": "General and middle terms",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-binomial-properties-of-binomial-coefficients",
+          "name": "Properties of binomial coefficients",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Algebraic expansion of powers of a binomial.",
+      "learningObjectives": [
+        "Expand binomials",
+        "Find specific terms",
+        "Evaluate sums of binomial coefficients"
+      ],
+      "prerequisites": [
+        "p-c"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "p-c",
+      "nextChapter": "sequence"
+    },
+    {
+      "id": "mathematics-sequence",
+      "order": 9,
+      "name": "Sequence",
+      "slug": "sequence",
+      "class": 11,
+      "subject": "Mathematics",
+      "estimatedHours": 12,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-sequence-arithmetic-progression-ap",
+          "name": "Arithmetic Progression (AP)",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-sequence-geometric-progression-gp",
+          "name": "Geometric Progression (GP)",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-sequence-harmonic-progression-hp",
+          "name": "Harmonic Progression (HP)",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "mathematics-sequence-am-gm-hm-relations",
+          "name": "AM, GM, HM relations",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Ordered lists of numbers following specific patterns.",
+      "learningObjectives": [
+        "Find nth terms and sums of AP and GP",
+        "Use AM-GM inequality"
+      ],
+      "prerequisites": [],
+      "difficulty": "Hard",
+      "previousChapter": "binomial",
+      "nextChapter": "limits"
+    },
+    {
+      "id": "mathematics-limits",
+      "order": 10,
+      "name": "Limits",
+      "slug": "limits",
+      "class": 11,
+      "subject": "Mathematics",
+      "estimatedHours": 10,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-limits-concept-of-limit",
+          "name": "Concept of limit",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-limits-standard-limits",
+          "name": "Standard limits",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-limits-l-hopital-s-rule",
+          "name": "L'Hopital's rule",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The value a function approaches as the input approaches a point.",
+      "learningObjectives": [
+        "Evaluate limits algebraically",
+        "Apply L'Hopital's rule for indeterminate forms"
+      ],
+      "prerequisites": [],
+      "difficulty": "Medium",
+      "previousChapter": "sequence",
+      "nextChapter": "continuity"
+    },
+    {
+      "id": "mathematics-continuity",
+      "order": 11,
+      "name": "Continuity",
+      "slug": "continuity",
+      "class": 12,
+      "subject": "Mathematics",
+      "estimatedHours": 8,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-continuity-continuity-at-a-point",
+          "name": "Continuity at a point",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-continuity-continuity-on-an-interval",
+          "name": "Continuity on an interval",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-continuity-discontinuity",
+          "name": "Discontinuity",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The property of functions having no breaks or jumps.",
+      "learningObjectives": [
+        "Check continuity at points",
+        "Determine types of discontinuity"
+      ],
+      "prerequisites": [
+        "limits"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "limits",
+      "nextChapter": "differentiability"
+    },
+    {
+      "id": "mathematics-differentiability",
+      "order": 12,
+      "name": "Differentiability",
+      "slug": "differentiability",
+      "class": 12,
+      "subject": "Mathematics",
+      "estimatedHours": 15,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-differentiability-derivative-of-a-function",
+          "name": "Derivative of a function",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-differentiability-rules-of-differentiation",
+          "name": "Rules of differentiation",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-differentiability-maxima-and-minima",
+          "name": "Maxima and Minima",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "mathematics-differentiability-tangents-and-normals",
+          "name": "Tangents and Normals",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The rate of change of a function and its applications.",
+      "learningObjectives": [
+        "Find derivatives of complex functions",
+        "Apply derivatives to find extrema and tangent equations"
+      ],
+      "prerequisites": [
+        "continuity"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "continuity",
+      "nextChapter": "integral"
+    },
+    {
+      "id": "mathematics-integral",
+      "order": 13,
+      "name": "Integral",
+      "slug": "integral",
+      "class": 12,
+      "subject": "Mathematics",
+      "estimatedHours": 20,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-integral-indefinite-integrals",
+          "name": "Indefinite integrals",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-integral-definite-integrals",
+          "name": "Definite integrals",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-integral-properties-of-definite-integrals",
+          "name": "Properties of definite integrals",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "mathematics-integral-area-under-curves",
+          "name": "Area under curves",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The accumulation of quantities and inverse operation of differentiation.",
+      "learningObjectives": [
+        "Evaluate indefinite integrals using substitution and parts",
+        "Apply properties of definite integrals",
+        "Calculate area bounded by curves"
+      ],
+      "prerequisites": [
+        "differentiability"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "differentiability",
+      "nextChapter": "differential-equations"
+    },
+    {
+      "id": "mathematics-differential-equations",
+      "order": 14,
+      "name": "Differential Equations",
+      "slug": "differential-equations",
+      "class": 12,
+      "subject": "Mathematics",
+      "estimatedHours": 12,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-differential-equations-order-and-degree",
+          "name": "Order and degree",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-differential-equations-formation-of-differential-equations",
+          "name": "Formation of differential equations",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-differential-equations-solving-first-order-first-degree-equations",
+          "name": "Solving first-order first-degree equations",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Equations involving derivatives of functions.",
+      "learningObjectives": [
+        "Determine order and degree",
+        "Solve variable separable, homogeneous, and linear differential equations"
+      ],
+      "prerequisites": [
+        "integral"
+      ],
+      "difficulty": "Medium",
+      "previousChapter": "integral",
+      "nextChapter": "coordinate-geometry"
+    },
+    {
+      "id": "mathematics-coordinate-geometry",
+      "order": 15,
+      "name": "Coordinate Geometry",
+      "slug": "coordinate-geometry",
+      "class": 12,
+      "subject": "Mathematics",
+      "estimatedHours": 25,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-coordinate-geometry-straight-lines",
+          "name": "Straight lines",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-coordinate-geometry-circles",
+          "name": "Circles",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-coordinate-geometry-parabola-ellipse-and-hyperbola-conic-sections",
+          "name": "Parabola, Ellipse, and Hyperbola (Conic sections)",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Geometry using a coordinate system.",
+      "learningObjectives": [
+        "Find equations of lines and circles",
+        "Analyze properties of conic sections"
+      ],
+      "prerequisites": [],
+      "difficulty": "Hard",
+      "previousChapter": "differential-equations",
+      "nextChapter": "3d"
+    },
+    {
+      "id": "mathematics-3d",
+      "order": 16,
+      "name": "3D",
+      "slug": "3d",
+      "class": 12,
+      "subject": "Mathematics",
+      "estimatedHours": 15,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-3d-direction-cosines-and-ratios",
+          "name": "Direction cosines and ratios",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-3d-equation-of-a-line-in-space",
+          "name": "Equation of a line in space",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-3d-equation-of-a-plane",
+          "name": "Equation of a plane",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "mathematics-3d-shortest-distance-between-skew-lines",
+          "name": "Shortest distance between skew lines",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Geometry in three dimensions.",
+      "learningObjectives": [
+        "Find equations of lines and planes",
+        "Calculate distances and angles in 3D"
+      ],
+      "prerequisites": [
+        "coordinate-geometry"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "coordinate-geometry",
+      "nextChapter": "vector"
+    },
+    {
+      "id": "mathematics-vector",
+      "order": 17,
+      "name": "Vector",
+      "slug": "vector",
+      "class": 12,
+      "subject": "Mathematics",
+      "estimatedHours": 12,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-vector-vector-addition-and-scalar-multiplication",
+          "name": "Vector addition and scalar multiplication",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-vector-dot-and-cross-product",
+          "name": "Dot and cross product",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-vector-scalar-triple-product",
+          "name": "Scalar triple product",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Quantities having both magnitude and direction.",
+      "learningObjectives": [
+        "Perform vector operations",
+        "Apply dot and cross products to geometry"
+      ],
+      "prerequisites": [],
+      "difficulty": "Hard",
+      "previousChapter": "3d",
+      "nextChapter": "statistics"
+    },
+    {
+      "id": "mathematics-statistics",
+      "order": 18,
+      "name": "Statistics",
+      "slug": "statistics",
+      "class": 12,
+      "subject": "Mathematics",
+      "estimatedHours": 6,
+      "weightage": "Low",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-statistics-mean-median-mode",
+          "name": "Mean, median, mode",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-statistics-variance-and-standard-deviation",
+          "name": "Variance and standard deviation",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-statistics-mean-deviation",
+          "name": "Mean deviation",
+          "completed": false,
+          "order": 3
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Analysis of data sets.",
+      "learningObjectives": [
+        "Calculate measures of central tendency and dispersion"
+      ],
+      "prerequisites": [],
+      "difficulty": "Easy",
+      "previousChapter": "vector",
+      "nextChapter": "probability"
+    },
+    {
+      "id": "mathematics-probability",
+      "order": 19,
+      "name": "Probability",
+      "slug": "probability",
+      "class": 12,
+      "subject": "Mathematics",
+      "estimatedHours": 14,
+      "weightage": "High",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-probability-axiomatic-probability",
+          "name": "Axiomatic probability",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-probability-conditional-probability",
+          "name": "Conditional probability",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-probability-bayes-theorem",
+          "name": "Bayes' theorem",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "mathematics-probability-binomial-distribution",
+          "name": "Binomial distribution",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "The measure of the likelihood that an event will occur.",
+      "learningObjectives": [
+        "Calculate probabilities of events",
+        "Apply conditional probability and Bayes' theorem"
+      ],
+      "prerequisites": [
+        "p-c"
+      ],
+      "difficulty": "Hard",
+      "previousChapter": "statistics",
+      "nextChapter": "trigonometry"
+    },
+    {
+      "id": "mathematics-trigonometry",
+      "order": 20,
+      "name": "Trigonometry",
+      "slug": "trigonometry",
+      "class": 12,
+      "subject": "Mathematics",
+      "estimatedHours": 15,
+      "weightage": "Medium",
+      "status": "not_started",
+      "topics": [
+        {
+          "id": "mathematics-trigonometry-trigonometric-identities",
+          "name": "Trigonometric identities",
+          "completed": false,
+          "order": 1
+        },
+        {
+          "id": "mathematics-trigonometry-trigonometric-equations",
+          "name": "Trigonometric equations",
+          "completed": false,
+          "order": 2
+        },
+        {
+          "id": "mathematics-trigonometry-inverse-trigonometric-functions",
+          "name": "Inverse trigonometric functions",
+          "completed": false,
+          "order": 3
+        },
+        {
+          "id": "mathematics-trigonometry-properties-of-triangles",
+          "name": "Properties of triangles",
+          "completed": false,
+          "order": 4
+        }
+      ],
+      "resources": {
+        "notes": [],
+        "formulas": [],
+        "flashcards": [],
+        "pyqs": [],
+        "practice": [],
+        "ai": {}
+      },
+      "description": "Relationships between angles and sides of triangles.",
+      "learningObjectives": [
+        "Prove identities",
+        "Solve trigonometric equations",
+        "Evaluate inverse trig functions"
+      ],
+      "prerequisites": [],
+      "difficulty": "Medium",
+      "previousChapter": "probability",
+      "nextChapter": null
+    }
+  ]
+}

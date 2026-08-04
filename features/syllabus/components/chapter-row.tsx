@@ -21,16 +21,14 @@ export function ChapterRow({ chapter, subjectSlug }: ChapterRowProps) {
     <div className="border border-border/40 rounded-xl bg-card/20 overflow-hidden transition-colors hover:border-border/60">
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
+        aria-expanded={isExpanded}
         className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 text-left focus-visible:outline-none focus-visible:bg-muted/10"
       >
         <div className="flex items-center gap-4">
           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted/20 flex items-center justify-center text-muted-foreground border border-border/50">
-            <motion.div
-              animate={{ rotate: isExpanded ? 90 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
+            <div className={`transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}>
               <ChevronRight className="w-4 h-4" />
-            </motion.div>
+            </div>
           </div>
           <div>
             <h3 className="font-medium text-lg leading-none">{chapter.title}</h3>

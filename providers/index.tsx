@@ -7,6 +7,8 @@ import { SupabaseProvider } from "@/providers/supabase-provider";
 import { AuthProvider } from "@/features/auth/components/auth-provider";
 import { LightingProvider } from "@/components/ui/lighting-provider";
 import { SmoothScrollProvider } from "@/components/ui/smooth-scroll-provider";
+import { PerformanceProvider } from "@/lib/performance-context";
+import { Toaster } from "@/components/ui/sonner";
 
 // Lazy-load purely decorative components — they should not block initial render
 const BackgroundSystem = dynamic(
@@ -26,17 +28,20 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider>
-      <SmoothScrollProvider>
-        <SupabaseProvider>
-          <AuthProvider>
-            <LightingProvider>
-              <BackgroundSystem />
-              <FloatingParticles />
-              {children}
-            </LightingProvider>
-          </AuthProvider>
-        </SupabaseProvider>
-      </SmoothScrollProvider>
+      <PerformanceProvider>
+        <SmoothScrollProvider>
+          <SupabaseProvider>
+            <AuthProvider>
+              <LightingProvider>
+                <BackgroundSystem />
+                <FloatingParticles />
+                {children}
+                <Toaster position="bottom-right" />
+              </LightingProvider>
+            </AuthProvider>
+          </SupabaseProvider>
+        </SmoothScrollProvider>
+      </PerformanceProvider>
     </ThemeProvider>
   );
 }

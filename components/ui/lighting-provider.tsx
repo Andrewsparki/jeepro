@@ -1,12 +1,17 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import { usePerformance } from "@/lib/performance-context";
 
 interface LightingContextType {
   isTouch: boolean;
+  mouseRef: React.RefObject<{ x: number; y: number }>;
 }
 
-const LightingContext = createContext<LightingContextType>({ isTouch: false });
+const LightingContext = createContext<LightingContextType>({
+  isTouch: false,
+  mouseRef: { current: { x: 0, y: 0 } },
+});
 
 export function useLighting() {
   return useContext(LightingContext);
@@ -19,12 +24,13 @@ export function LightingProvider({ children }: { children: React.ReactNode }) {
   const dirty = useRef(false);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTouch, setIsTouch] = useState(false);
+  const { enableMouseLighting } = usePerformance();
 
   useEffect(() => {
     const touch = window.matchMedia("(pointer: coarse)").matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (touch || isReducedMotion) {
+    if (touch || isReducedMotion || !enableMouseLighting) {
       const t = setTimeout(() => setIsTouch(true), 0);
       return () => clearTimeout(t);
     }
@@ -68,10 +74,12 @@ export function LightingProvider({ children }: { children: React.ReactNode }) {
       }
       if (idleTimer.current) clearTimeout(idleTimer.current);
     };
-  }, []);
+  }, [enableMouseLighting]);
+
+  const contextValue = React.useMemo(() => ({ isTouch, mouseRef: mouse }), [isTouch]);
 
   return (
-    <LightingContext.Provider value={{ isTouch }}>
+    <LightingContext.Provider value={contextValue}>
       <div 
         ref={containerRef} 
         className="min-h-screen w-full"

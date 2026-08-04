@@ -4,6 +4,7 @@ import React from "react";
 import { motion, HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLighting } from "./lighting-provider";
+import { usePerformance } from "@/lib/performance-context";
 
 interface GlassCardProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;
@@ -18,39 +19,37 @@ export const GlassCard = React.memo(function GlassCard({
   ...props
 }: GlassCardProps) {
   const { isTouch } = useLighting();
+  const { enableMouseLighting, enableEntryAnimations } = usePerformance();
+
+  const shouldAnimate = interactive && !isTouch && enableEntryAnimations;
 
   return (
     <motion.div
       className={cn(
-        "relative rounded-2xl border border-white/5 bg-[#0a0a0a]/80",
-        "shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
+        "relative rounded-2xl bg-glass-strong",
+        "shadow-medium",
         "overflow-hidden",
         className
       )}
       style={{
-        ...(interactive ? { willChange: "transform" } : {}),
+        ...(shouldAnimate ? { willChange: "transform" } : {}),
         ...style,
       }}
       whileHover={
-        interactive && !isTouch
+        shouldAnimate
           ? {
-              y: -4,
-              rotateX: 2,
-              rotateY: -2,
-              boxShadow: "0 20px 40px rgba(0,0,0,0.6)",
+              y: -2,
+              rotateX: 0,
+              rotateY: 0,
+              boxShadow: "var(--shadow-strong)",
               transition: { type: "spring", stiffness: 400, damping: 30 }
             }
           : undefined
       }
       {...props}
     >
-      {/* 
-        This pseudo-element creates the mouse-following highlight.
-        Using background-attachment: fixed allows us to position the radial-gradient
-        relative to the viewport (using our global --mouse-x/y vars) while it only
-        renders inside this card!
-      */}
-      {!isTouch && (
+      {/* Mouse-following highlight using CSS vars from LightingProvider */}
+      {!isTouch && enableMouseLighting && (
         <div 
           className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-300"
           style={{

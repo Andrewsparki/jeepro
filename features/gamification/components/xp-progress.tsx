@@ -38,6 +38,12 @@ export function XPProgress({ xpDetails }: XPProgressProps) {
           <span><AnimatedNumber value={xpDetails.nextLevelXP} /> XP needed</span>
         </div>
         
+        <style>{`
+          @keyframes xp-shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+          }
+        `}</style>
         <div className="h-3 w-full bg-muted rounded-full overflow-hidden border border-border/50">
           <motion.div 
             initial={{ width: 0 }}
@@ -46,11 +52,9 @@ export function XPProgress({ xpDetails }: XPProgressProps) {
             className="h-full bg-accent rounded-full relative overflow-hidden"
           >
             {/* Shimmer effect */}
-            <motion.div 
-              initial={{ x: "-100%" }}
-              animate={{ x: "200%" }}
-              transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+            <div 
               className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent" 
+              style={{ animation: 'xp-shimmer 2s linear infinite' }}
             />
           </motion.div>
         </div>

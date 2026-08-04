@@ -1,17 +1,21 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { saveStudySession } from "@/features/study/services/progress";
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from "react";
+import { ActivityType } from "@/features/progress/config/xp-config";
+import { SessionService } from "@/features/study-engine/services/session.service";
+import { toast } from "sonner";
 
 interface StudySessionContextType {
   isActive: boolean;
   elapsedSeconds: number;
+  subjectId?: string;
   chapterId?: string;
   topicId?: string;
+  activityType?: ActivityType;
   refreshKey: number;
   triggerRefresh: () => void;
-  startSession: (chapterId?: string, topicId?: string) => void;
-  endSession: () => Promise<void>;
+  startSession: (subjectId?: string, chapterId?: string, topicId?: string, activityType?: ActivityType) => void;
+  endSession: (completionPercentage?: number) => Promise<void>;
 }
 
 const StudySessionContext = createContext<StudySessionContextType | undefined>(undefined);
@@ -20,9 +24,13 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
   const [isActive, setIsActive] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  
+  const [subjectId, setSubjectId] = useState<string | undefined>();
   const [chapterId, setChapterId] = useState<string | undefined>();
   const [topicId, setTopicId] = useState<string | undefined>();
-  const [refreshKey, setRefreshKey] = useState(0); // Incremented when session ends to trigger dashboard reload
+  const [activityType, setActivityType] = useState<ActivityType | undefined>();
+  
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -34,56 +42,92 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [isActive, startTime]);
 
-  const triggerRefresh = () => setRefreshKey(prev => prev + 1);
+  // Attempt to sync offline sessions on mount
+  useEffect(() => {
+    SessionService.syncOfflineSessions();
+  }, []);
 
-  const startSession = (chId?: string, tId?: string) => {
+  const triggerRefresh = useCallback(() => setRefreshKey(prev => prev + 1), []);
+
+  const startSession = useCallback((subId?: string, chId?: string, tId?: string, actType?: ActivityType) => {
+    setSubjectId(subId);
     setChapterId(chId);
     setTopicId(tId);
+    setActivityType(actType);
     setStartTime(Date.now());
     setElapsedSeconds(0);
     setIsActive(true);
-  };
 
-  const endSession = async () => {
-    if (!isActive || !startTime) return;
+    // Save resume state when starting a session
+    SessionService.syncResumeState({
+      subjectId: subId,
+      chapterId: chId,
+      sectionId: tId,
+      activityType: actType,
+      studyTimerSeconds: 0
+    });
+  }, []);
 
+  const isSavingRef = useRef(false);
+
+  const endSession = useCallback(async (completionPercentage: number = 0) => {
+    if (!isActive || !startTime || isSavingRef.current) return;
+
+    isSavingRef.current = true;
     setIsActive(false);
-    const endTime = Date.now();
-    const duration = Math.floor((endTime - startTime) / 1000);
-    
-    // Optimistic reset of UI
-    setStartTime(null);
-    setElapsedSeconds(0);
-    
-    if (duration >= 0) {
-      await saveStudySession({
-        durationSeconds: duration,
-        startedAt: new Date(startTime).toISOString(),
-        endedAt: new Date(endTime).toISOString(),
-        chapterId,
-        topicId
-      });
-      // Trigger a refresh for components listening to refreshKey
-      triggerRefresh();
-    }
 
-    setChapterId(undefined);
-    setTopicId(undefined);
-  };
+    try {
+      const endTime = Date.now();
+      const duration = Math.floor((endTime - startTime) / 1000);
+      
+      setStartTime(null);
+      setElapsedSeconds(0);
+      
+      if (duration >= 0) {
+        try {
+          await SessionService.endSession({
+            durationSeconds: duration,
+            startedAt: new Date(startTime).toISOString(),
+            endedAt: new Date(endTime).toISOString(),
+            subjectId,
+            chapterId,
+            sectionId: topicId,
+            activityType,
+            completionPercentage
+          });
+          toast.success("Study session saved successfully!");
+        } catch {
+          toast.warning("Network issue: Session saved offline", {
+            description: "We'll sync it automatically when you reconnect."
+          });
+        }
+        triggerRefresh();
+      }
+
+      setSubjectId(undefined);
+      setChapterId(undefined);
+      setTopicId(undefined);
+      setActivityType(undefined);
+    } finally {
+      isSavingRef.current = false;
+    }
+  }, [isActive, startTime, subjectId, chapterId, topicId, activityType, triggerRefresh]);
+
+  const contextValue = React.useMemo(() => ({
+    isActive,
+    elapsedSeconds,
+    subjectId,
+    chapterId,
+    topicId,
+    activityType,
+    refreshKey,
+    triggerRefresh,
+    startSession,
+    endSession,
+  }), [isActive, elapsedSeconds, subjectId, chapterId, topicId, activityType, refreshKey, triggerRefresh, startSession, endSession]);
 
   return (
-    <StudySessionContext.Provider
-      value={{
-        isActive,
-        elapsedSeconds,
-        chapterId,
-        topicId,
-        refreshKey,
-        triggerRefresh,
-        startSession,
-        endSession,
-      }}
-    >
+    <StudySessionContext.Provider value={contextValue}>
       {children}
     </StudySessionContext.Provider>
   );

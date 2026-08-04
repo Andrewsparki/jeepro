@@ -3,6 +3,7 @@
 import React, { useRef, memo } from "react";
 import { motion, useSpring } from "framer-motion";
 import { useLighting } from "./lighting-provider";
+import { usePerformance } from "@/lib/performance-context";
 
 interface MagneticButtonProps {
   children: React.ReactNode;
@@ -18,13 +19,14 @@ export const MagneticButton = memo(function MagneticButton({
   const ref = useRef<HTMLDivElement>(null);
   const isHoveredRef = useRef(false);
   const { isTouch } = useLighting();
+  const { enableMagnetic } = usePerformance();
 
   // We use spring physics for buttery smooth returns and pulls
   const springConfig = { stiffness: 300, damping: 20, mass: 0.5 };
   const x = useSpring(0, springConfig);
   const y = useSpring(0, springConfig);
 
-  if (isTouch) {
+  if (isTouch || !enableMagnetic) {
     return <div className={className}>{children}</div>;
   }
 

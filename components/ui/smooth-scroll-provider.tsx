@@ -3,6 +3,7 @@
 import { ReactLenis, useLenis } from "lenis/react";
 import { useEffect } from "react";
 import type Lenis from "lenis";
+import { usePerformance } from "@/lib/performance-context";
 
 function LenisExposer() {
   const lenis = useLenis();
@@ -18,6 +19,12 @@ function LenisExposer() {
 }
 
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
+  const { enableSmoothScroll } = usePerformance();
+
+  if (!enableSmoothScroll) {
+    return <>{children}</>;
+  }
+
   return (
     <ReactLenis
       root
