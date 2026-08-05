@@ -9,7 +9,7 @@ export const metadata: Metadata = constructMetadata({
 
 export default function PlannerPage() {
   return (
-    <div className="flex-1 h-full bg-background overflow-hidden">
+    <div className="flex-1 h-full bg-background overflow-hidden animate-stagger-container">
       <PlannerWorkspace />
     </div>
   );

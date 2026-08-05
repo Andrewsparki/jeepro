@@ -23,6 +23,74 @@ const JourneyTracker = dynamic(() => import("@/features/dashboard/components/jou
 
 type Metrics = Awaited<ReturnType<typeof getDashboardMetrics>>;
 
+import { Skeleton } from "@/components/ui/skeleton";
+
+function DashboardSkeleton() {
+  return (
+    <DashboardShell>
+      <div className="flex flex-col gap-6 md:gap-8 pb-10 max-w-7xl mx-auto w-full">
+        {/* ROW 1: Hero & Stats */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div className="xl:col-span-8 min-h-[300px]">
+            <Skeleton className="w-full h-full rounded-3xl min-h-[300px]" />
+          </div>
+          <div className="xl:col-span-4 grid grid-cols-2 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="rounded-2xl border border-glass-border bg-glass p-5 flex flex-col justify-between h-[140px]">
+                <div className="flex justify-between items-start">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                </div>
+                <Skeleton className="h-8 w-16 mt-4" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ROW 2: Timeline, Continue Learning & Quick Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-4 rounded-3xl border border-glass-border bg-glass p-6 min-h-[320px]">
+            <Skeleton className="h-6 w-32 mb-2" />
+            <Skeleton className="h-4 w-48 mb-6" />
+            <div className="space-y-6">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex gap-4">
+                  <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+                  <div className="space-y-2 flex-1">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-3 w-2/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="lg:col-span-8 flex flex-col gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="min-h-[240px]">
+                <Skeleton className="h-6 w-40 mb-4" />
+                <Skeleton className="h-[180px] w-full rounded-2xl" />
+              </div>
+              <div className="rounded-3xl border border-glass-border bg-glass p-6 min-h-[240px]">
+                <Skeleton className="h-6 w-32 mb-6" />
+                <Skeleton className="h-24 w-full rounded-xl" />
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <Skeleton className="h-14 flex-1 rounded-xl" />
+              <Skeleton className="h-14 flex-1 rounded-xl" />
+              <Skeleton className="h-14 flex-1 rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </DashboardShell>
+  );
+}
+
+import { LevelUpToast } from "@/features/gamification/components/level-up-toast";
+import { MilestoneCelebration } from "@/features/gamification/components/milestone-celebration";
+
 export default function DashboardPage() {
   const { refreshKey } = useStudySession();
   const { profile, user } = useAuth();
@@ -44,18 +112,14 @@ export default function DashboardPage() {
   }, [refreshKey]);
 
   if (!metrics) {
-    return (
-      <DashboardShell>
-        <div className="flex items-center justify-center min-h-[70vh]">
-          <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      </DashboardShell>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
     <DashboardShell>
-      <div className="flex flex-col gap-6 md:gap-8 pb-10 max-w-[1600px] mx-auto">
+      <LevelUpToast currentLevel={metrics.xpDetails.currentLevel} />
+      <MilestoneCelebration streakDays={metrics.currentStreak} />
+      <div className="flex flex-col gap-6 md:gap-8 pb-10 max-w-7xl mx-auto animate-stagger-container">
         
         {/* ROW 1: Hero & Stats */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
@@ -67,25 +131,29 @@ export default function DashboardPage() {
             <StatCard
               title="Today's Study Time"
               value={metrics.todayStudyTimeFormatted}
-              icon={<Clock className="h-4 w-4" />}
+              icon={<Clock className="h-4 w-4 text-blue-400" />}
+              iconContainerClassName="bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
               delay={0.1}
             />
             <StatCard
               title="Topics Mastered"
               value={<AnimatedNumber value={metrics.topicsCompletedToday} />}
-              icon={<Target className="h-4 w-4" />}
+              icon={<Target className="h-4 w-4 text-emerald-400" />}
+              iconContainerClassName="bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
               delay={0.2}
             />
             <StatCard
               title="Current Streak"
               value={<><AnimatedNumber value={metrics.currentStreak} /> <span className="text-xl">d</span></>}
-              icon={<Flame className="h-4 w-4 text-orange-500" />}
+              icon={<Flame className="h-4 w-4 text-orange-400" />}
+              iconContainerClassName="bg-orange-500/10 border-orange-500/20 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
               delay={0.3}
             />
             <StatCard
               title="Level"
               value={<AnimatedNumber value={metrics.xpDetails.currentLevel} />}
-              icon={<Trophy className="h-4 w-4 text-accent" />}
+              icon={<Trophy className="h-4 w-4 text-amber-400" />}
+              iconContainerClassName="bg-amber-500/10 border-amber-500/20 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
               delay={0.4}
             />
           </div>
@@ -94,7 +162,7 @@ export default function DashboardPage() {
         {/* ROW 2: Timeline, Continue Learning & Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          <DashboardCard className="lg:col-span-4 min-h-[400px]" delay={0.5}>
+          <DashboardCard className="lg:col-span-4 min-h-[320px]" delay={0.5}>
             <div className="mb-6">
               <h3 className="font-semibold text-lg">Today&apos;s Timeline</h3>
               <p className="text-sm text-muted-foreground">Your scheduled sessions</p>
@@ -114,7 +182,7 @@ export default function DashboardPage() {
               </div>
               
               <DashboardCard delay={0.7} className="min-h-[240px] flex flex-col justify-between">
-                <WeeklyProgress hoursCompleted={metrics.weeklyStudyHours} weeklyGoalHours={20} />
+                <WeeklyProgress hoursCompleted={metrics.weeklyStudyHours} weeklyGoalHours={20} sessions={metrics.study_sessions} />
               </DashboardCard>
             </div>
 

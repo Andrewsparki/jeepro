@@ -3,11 +3,13 @@
 import React, { ReactNode } from "react";
 import { DashboardCard } from "./dashboard-card";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface StatCardProps {
   title: string;
   value: ReactNode;
   icon: ReactNode;
+  iconContainerClassName?: string;
   trend?: {
     value: string;
     isPositive: boolean;
@@ -16,21 +18,34 @@ interface StatCardProps {
   className?: string;
 }
 
-export const StatCard = React.memo(function StatCard({ title, value, icon, trend, delay = 0, className }: StatCardProps) {
+export const StatCard = React.memo(function StatCard({ title, value, icon, iconContainerClassName, trend, delay = 0, className }: StatCardProps) {
   return (
-    <DashboardCard delay={delay} className={cn("flex flex-col gap-4", className)}>
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-        <div className="p-2 bg-muted/10 rounded-lg text-muted-foreground">
+    <DashboardCard delay={delay} className={cn("flex flex-col gap-5 overflow-hidden relative cursor-default", className)}>
+      {/* Subtle animated background gradient to give it a "living" feel */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+      
+      <div className="flex items-center justify-between relative z-10">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</h3>
+        <motion.div 
+          animate={{ scale: [1, 1.1, 1], opacity: [0.7, 1, 0.7] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className={cn(
+            "p-2 rounded-xl border",
+            iconContainerClassName || "p-2 bg-accent/10 border-accent/20 rounded-xl text-accent shadow-[0_0_15px_rgba(79,70,229,0.15)]"
+          )}
+        >
           {icon}
-        </div>
+        </motion.div>
       </div>
       
-      <div>
-        <div className="text-3xl font-semibold tracking-tight">{value}</div>
+      <div className="relative z-10 mt-auto">
+        <div className="text-3xl sm:text-4xl font-bold tracking-tighter text-foreground">{value}</div>
         {trend && (
-          <p className={cn("text-xs mt-1 font-medium", trend.isPositive ? "text-green-500" : "text-red-500")}>
-            {trend.isPositive ? "+" : "-"}{trend.value} <span className="text-muted-foreground font-normal">from last week</span>
+          <p className={cn("text-[11px] mt-1.5 font-semibold flex items-center gap-1", trend.isPositive ? "text-success" : "text-danger")}>
+            <span className={cn("px-1 rounded-sm", trend.isPositive ? "bg-success/15" : "bg-danger/15")}>
+              {trend.isPositive ? "↑" : "↓"} {trend.value}
+            </span>
+            <span className="text-muted-foreground font-medium">vs last week</span>
           </p>
         )}
       </div>

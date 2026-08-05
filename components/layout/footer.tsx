@@ -11,7 +11,7 @@ export function Footer() {
             <span className="text-lg font-bold tracking-tight">
               {siteConfig.name}
             </span>
-            <p className="text-sm text-muted max-w-xs text-center md:text-left">
+            <p className="text-sm text-slate-300 max-w-xs text-center md:text-left">
               The most premium JEE preparation platform ever created.
             </p>
           </div>
@@ -20,25 +20,25 @@ export function Footer() {
           <nav className="flex items-center gap-8">
             <Link
               href="/about"
-              className="text-sm text-muted hover:text-foreground transition-colors"
+              className="text-sm text-slate-300 hover:text-foreground transition-colors"
             >
               About
             </Link>
             <Link
               href="/pricing"
-              className="text-sm text-muted hover:text-foreground transition-colors"
+              className="text-sm text-slate-300 hover:text-foreground transition-colors"
             >
               Pricing
             </Link>
             <Link
               href="/privacy"
-              className="text-sm text-muted hover:text-foreground transition-colors"
+              className="text-sm text-slate-300 hover:text-foreground transition-colors"
             >
               Privacy
             </Link>
             <Link
               href="/terms"
-              className="text-sm text-muted hover:text-foreground transition-colors"
+              className="text-sm text-slate-300 hover:text-foreground transition-colors"
             >
               Terms
             </Link>
@@ -47,7 +47,7 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="mt-8 border-t border-border pt-6 text-center">
-          <p className="text-xs text-muted">
+          <p className="text-xs text-slate-400">
             &copy; {new Date().getFullYear()} {siteConfig.name}. All rights
             reserved.
           </p>

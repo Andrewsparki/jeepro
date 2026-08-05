@@ -16,8 +16,6 @@ export function ChapterProgressCard({ completionPercentage }: ChapterProgressCar
           progress={completionPercentage} 
           size={160} 
           strokeWidth={10} 
-          colorClassName="text-foreground" 
-          trackColorClassName="text-muted/10" 
         />
       </div>
       

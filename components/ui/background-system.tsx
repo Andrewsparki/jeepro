@@ -12,16 +12,16 @@ export function BackgroundSystem() {
     return () => clearTimeout(t);
   }, []);
 
-  if (!mounted) return <div className="fixed inset-0 bg-[#020617] -z-50" />;
+  if (!mounted) return <div className="fixed inset-0 bg-background -z-50" />;
 
   // Battery saver: static gradient only
   if (!enableBackgroundAnimation) {
     return (
-      <div className="fixed inset-0 -z-50 bg-[#030712]">
+      <div className="fixed inset-0 -z-50 bg-background">
         <div
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-20"
           style={{
-            background: "radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37,99,235,0.15), transparent),radial-gradient(ellipse 60% 80% at 80% 100%, rgba(30,58,138,0.15), transparent)",
+            background: "radial-gradient(ellipse 80% 60% at 50% -20%, rgba(255,255,255,0.05), transparent),radial-gradient(ellipse 60% 80% at 80% 100%, rgba(255,255,255,0.03), transparent)",
           }}
         />
       </div>
@@ -29,7 +29,7 @@ export function BackgroundSystem() {
   }
 
   return (
-    <div className="fixed inset-0 pointer-events-none -z-50 overflow-hidden bg-[#030712]">
+    <div className="fixed inset-0 pointer-events-none -z-50 overflow-hidden bg-background">
       <style>{`
         @keyframes mesh-drift {
           0%, 100% { transform: translate(0%, 0%) rotate(0deg); }
@@ -45,23 +45,21 @@ export function BackgroundSystem() {
         }
       `}</style>
 
-      {/* Layer 1: Primary mesh gradient — slow drift */}
+      {/* Layer 1: Primary ambient glow — deep, intentional, soft cyan/white mix */}
       <div
         className="absolute inset-0 opacity-40"
         style={{
-          background: "radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37,99,235,0.12), transparent), radial-gradient(ellipse 60% 80% at 80% 100%, rgba(30,58,138,0.12), transparent)",
-          animation: "mesh-drift 45s ease-in-out infinite",
+          background: "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(56,189,248,0.05), transparent), radial-gradient(ellipse 70% 60% at 80% 110%, rgba(255,255,255,0.02), transparent)",
+          animation: "mesh-drift 60s ease-in-out infinite alternate",
           willChange: "transform",
         }}
       />
 
-      {/* Layer 2: Secondary mesh — counter-drift for depth */}
+      {/* Layer 2: Secondary anchor glow — static to provide grounded lighting */}
       <div
-        className="absolute inset-0 opacity-25"
+        className="absolute inset-0 opacity-20"
         style={{
-          background: "radial-gradient(ellipse 70% 50% at 20% 80%, rgba(29,78,216,0.1), transparent), radial-gradient(ellipse 50% 70% at 90% 20%, rgba(15,23,42,0.2), transparent)",
-          animation: "mesh-drift-alt 55s ease-in-out infinite",
-          willChange: "transform",
+          background: "radial-gradient(ellipse 50% 50% at 10% 90%, rgba(37,99,235,0.04), transparent)",
         }}
       />
 
@@ -69,13 +67,13 @@ export function BackgroundSystem() {
       <div
         className="absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, rgba(3,7,18,0.7) 100%)",
+          background: "radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(10,10,10,0.8) 100%)",
         }}
       />
 
       {/* Layer 4: Subtle noise texture for depth */}
       <div
-        className="absolute inset-0 opacity-[0.015] mix-blend-overlay"
+        className="absolute inset-0 opacity-[0.02] mix-blend-overlay"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
         }}

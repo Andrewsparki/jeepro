@@ -31,32 +31,15 @@ export function TestimonialsSection() {
         <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Trusted by top rankers.</h2>
       </div>
 
-      <div className="relative flex overflow-x-hidden w-full group">
-        <div className="animate-marquee flex gap-6 px-6 whitespace-nowrap min-w-full">
-          {testimonials.map((t, idx) => (
+      <div className="relative flex overflow-hidden w-full group">
+        <div className="flex animate-marquee gap-6 w-max hover:[animation-play-state:paused]">
+          {[...testimonials, ...testimonials].map((t, idx) => (
             <div
               key={`${t.name}-${idx}`}
-              className="inline-block w-80 sm:w-96 rounded-2xl border border-border/50 bg-background/50 p-6 backdrop-blur-xl shrink-0"
+              className="inline-block w-[320px] sm:w-[400px] rounded-2xl border border-border/50 bg-background/50 p-6 backdrop-blur-xl shrink-0 transition-transform duration-300 hover:scale-[1.02]"
             >
               <div className="flex flex-col gap-4 whitespace-normal">
-                <p className="text-muted leading-relaxed">&quot;{t.content}&quot;</p>
-                <div>
-                  <h4 className="font-medium text-foreground">{t.name}</h4>
-                  <p className="text-sm text-muted-foreground">{t.role}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        <div className="animate-marquee flex gap-6 px-6 whitespace-nowrap min-w-full absolute top-0" aria-hidden="true" style={{ left: "100%" }}>
-          {testimonials.map((t, idx) => (
-            <div
-              key={`${t.name}-dup-${idx}`}
-              className="inline-block w-80 sm:w-96 rounded-2xl border border-border/50 bg-background/50 p-6 backdrop-blur-xl shrink-0"
-            >
-              <div className="flex flex-col gap-4 whitespace-normal">
-                <p className="text-muted leading-relaxed">&quot;{t.content}&quot;</p>
+                <p className="text-slate-300 leading-relaxed">&quot;{t.content}&quot;</p>
                 <div>
                   <h4 className="font-medium text-foreground">{t.name}</h4>
                   <p className="text-sm text-muted-foreground">{t.role}</p>

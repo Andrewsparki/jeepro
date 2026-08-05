@@ -24,7 +24,7 @@ export function SidebarItem({ href, icon, label }: SidebarItemProps) {
       <Link
         href={href}
         className={cn(
-          "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300 group outline-none focus-visible:ring-2 focus-visible:ring-ring w-full",
+          "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ease-out hover:scale-[1.02] hover:shadow-[0_0_12px_rgba(37,99,235,0.3)] active:scale-[0.98] group outline-none focus-visible:ring-2 focus-visible:ring-ring w-full",
           isActive ? "text-white font-semibold shadow-glow" : "text-muted-foreground hover:text-foreground"
         )}
       >
@@ -38,7 +38,7 @@ export function SidebarItem({ href, icon, label }: SidebarItemProps) {
         )}
         <div className="relative z-10 flex items-center gap-3 w-full">
           <div 
-            className={cn("flex items-center justify-center transition-transform duration-200 hover:scale-110 hover:rotate-[5deg] active:scale-90", isActive && "text-white")}
+            className={cn("flex items-center justify-center transition-colors duration-200", isActive && "text-white")}
           >
             {icon}
           </div>

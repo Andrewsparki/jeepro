@@ -43,3 +43,25 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     </ReactLenis>
   );
 }
+
+export function useSmoothScroll() {
+  const lenis = useLenis();
+
+  return {
+    scrollTo: (target: number | string | HTMLElement, options?: any) => {
+      if (lenis) {
+        lenis.scrollTo(target, options);
+      } else {
+        // Fallback for native scrolling if lenis is disabled
+        if (typeof target === 'number') {
+          window.scrollTo({ top: target, behavior: 'smooth' });
+        } else if (typeof target === 'string') {
+          const el = document.querySelector(target);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        } else if (target instanceof HTMLElement) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+  };
+}

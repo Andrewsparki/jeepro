@@ -55,7 +55,7 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
                 Bookmark
               </Button>
               <Button 
-                onClick={() => startSession(chapter.id)} 
+                onClick={() => startSession(subject.id, chapter.id)} 
                 className="rounded-full px-6 gap-2 bg-foreground text-background hover:bg-foreground/90"
               >
                 {isActive ? "Continue Session" : "Start Session"}

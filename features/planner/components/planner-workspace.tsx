@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { format, isSameDay, parseISO } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Plus, Calendar as CalendarIcon, Link as LinkIcon, RefreshCw, 
+  Plus, Calendar as CalendarIcon, Link as LinkIcon, 
   CheckCircle2, Circle, MoreVertical, Pencil, Trash2, Check 
 } from "lucide-react";
 import { 
@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function PlannerWorkspace() {
   const [events, setEvents] = useState<PlannerEvent[]>([]);
@@ -156,9 +157,31 @@ export function PlannerWorkspace() {
       {/* Main Content (Agenda View) */}
       <div className="flex-1 overflow-y-auto custom-scrollbar pr-4">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-32 text-muted-foreground">
-            <RefreshCw className="w-8 h-8 animate-spin opacity-50 mb-4" />
-            <p>Loading schedule...</p>
+          <div className="space-y-10">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i}>
+                <div className="flex items-center gap-4 mb-4">
+                  <Skeleton className="h-6 w-32" />
+                  <div className="flex-1 h-px bg-border/50" />
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  {Array.from({ length: 2 }).map((_, j) => (
+                    <div key={j} className="flex items-center gap-4 p-4 rounded-2xl border border-glass-border bg-glass">
+                      <Skeleton className="w-6 h-6 rounded-full shrink-0" />
+                      <div className="flex flex-col items-center justify-center min-w-[75px] pr-4 border-r border-border/50">
+                        <Skeleton className="h-4 w-10 mb-1" />
+                        <Skeleton className="h-3 w-8" />
+                      </div>
+                      <div className="flex-1 flex flex-col justify-center min-w-0 space-y-2">
+                        <Skeleton className="h-5 w-48" />
+                        <Skeleton className="h-4 w-24" />
+                      </div>
+                      <Skeleton className="w-8 h-8 rounded-lg shrink-0" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         ) : events.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-center border border-dashed border-border/50 rounded-3xl bg-surface/30">

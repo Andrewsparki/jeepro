@@ -24,7 +24,7 @@ export function WhySection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-xl text-muted leading-relaxed"
+              className="text-xl text-slate-300 leading-relaxed"
             >
               Traditional platforms are cluttered with ads, slow loading times, and generic content. We built JEE Pro from the ground up for the modern student.
             </motion.p>
@@ -34,7 +34,7 @@ export function WhySection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="text-xl text-muted leading-relaxed"
+              className="text-xl text-slate-300 leading-relaxed"
             >
               No distractions. No unnecessary noise. Just a meticulously crafted environment that respects your time and maximizes your focus.
             </motion.p>

@@ -7,6 +7,7 @@ import { ChapterList } from "@/features/syllabus/components/chapter-list";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { getSyllabus, Subject } from "@/features/syllabus/services/syllabus";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SyllabusPage() {
   const [activeSubject, setActiveSubject] = useState("physics");
@@ -30,7 +31,7 @@ export default function SyllabusPage() {
   const currentSubjectData = syllabus[activeSubject];
 
   return (
-    <DashboardShell>
+    <DashboardShell className="animate-stagger-container">
       <SectionHeading 
         title="Syllabus" 
         description="Master the core concepts. Track your progress across all subjects."
@@ -39,13 +40,21 @@ export default function SyllabusPage() {
       <div className="flex flex-col gap-8 mt-4">
         
         {loading ? (
-          <div className="animate-pulse flex space-x-4">
-            <div className="flex-1 space-y-4 py-1">
-              <div className="h-4 bg-muted rounded w-3/4"></div>
-              <div className="space-y-2">
-                <div className="h-4 bg-muted rounded"></div>
-                <div className="h-4 bg-muted rounded w-5/6"></div>
-              </div>
+          <div className="flex flex-col gap-6">
+            <div className="flex gap-4 border-b border-glass-border pb-2">
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-8 w-24" />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Skeleton className="h-24 w-full rounded-xl border border-glass-border bg-glass" />
+              <Skeleton className="h-24 w-full rounded-xl border border-glass-border bg-glass" />
+              <Skeleton className="h-24 w-full rounded-xl border border-glass-border bg-glass" />
+            </div>
+            <div className="space-y-4 mt-4">
+              <Skeleton className="h-20 w-full rounded-2xl border border-glass-border bg-glass" />
+              <Skeleton className="h-20 w-full rounded-2xl border border-glass-border bg-glass" />
+              <Skeleton className="h-20 w-full rounded-2xl border border-glass-border bg-glass" />
             </div>
           </div>
         ) : (

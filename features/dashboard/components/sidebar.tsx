@@ -10,7 +10,8 @@ import {
   LineChart, 
   Calendar, 
   Settings,
-  LogOut
+  LogOut,
+  History
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/features/auth/components/auth-provider";
@@ -22,6 +23,7 @@ const mainNav = [
   { href: "/dashboard/syllabus", label: "Syllabus", icon: <Target className="h-5 w-5" /> },
   { href: "/dashboard/analytics", label: "Analytics", icon: <LineChart className="h-5 w-5" /> },
   { href: "/dashboard/planner", label: "Planner", icon: <Calendar className="h-5 w-5" /> },
+  { href: "/dashboard/history", label: "History", icon: <History className="h-5 w-5" /> },
 ];
 
 export function Sidebar() {

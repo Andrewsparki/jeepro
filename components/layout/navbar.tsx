@@ -22,10 +22,10 @@ export function Navbar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "text-sm font-medium transition-colors",
+                "text-sm font-medium transition-all duration-300 hover:-translate-y-0.5",
                 pathname === item.href
-                  ? "text-foreground"
-                  : "text-muted hover:text-foreground"
+                  ? "text-foreground drop-shadow-sm"
+                  : "text-slate-300 hover:text-foreground"
               )}
             >
               {item.title}
@@ -34,16 +34,16 @@ export function Navbar() {
         </nav>
 
         {/* Auth Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Link
             href="/login"
-            className="text-sm font-medium text-muted hover:text-foreground transition-colors"
+            className="text-sm font-medium text-slate-300 hover:text-foreground transition-all duration-300 hover:-translate-y-0.5"
           >
             Sign in
           </Link>
           <Link
             href="/signup"
-            className="inline-flex items-center justify-center rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+            className="inline-flex items-center justify-center rounded-xl bg-foreground px-5 py-2 text-sm font-medium text-background transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(255,255,255,0.15)] hover:bg-foreground/90"
           >
             Get Started
           </Link>

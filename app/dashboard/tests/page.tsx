@@ -11,7 +11,7 @@ export const metadata: Metadata = constructMetadata({
 
 export default function TestsPage() {
   return (
-    <>
+    <div className="flex flex-col gap-8 h-full animate-stagger-container">
       <PageHeader
         title="Mock Tests"
         description="Full-length and topic-wise mock tests."
@@ -21,6 +21,6 @@ export default function TestsPage() {
         title="Mock tests coming soon"
         description="JEE Main and Advanced pattern tests with detailed analytics will appear here."
       />
-    </>
+    </div>
   );
 }

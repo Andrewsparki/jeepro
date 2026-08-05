@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { format, addHours, parseISO, differenceInHours } from "date-fns";
-import { Loader2, Calendar as CalendarIcon, Clock, Link as LinkIcon } from "lucide-react";
+import { Loader2, Calendar as CalendarIcon, Clock, Link as LinkIcon, Check } from "lucide-react";
 import { createPlannerEvent, updatePlannerEvent, EventType, PlannerEvent } from "@/features/planner/services/planner.service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface CreateEventDialogProps {
   isOpen: boolean;
@@ -179,17 +180,25 @@ function CreateEventFormContent({
               Type
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {EVENT_TYPES.map((type) => (
-                <Button
-                  key={type}
-                  type="button"
-                  variant="outline"
-                  className={`h-9 justify-start text-xs font-medium ${eventType === type ? "border-primary text-primary bg-primary/5" : "bg-surface border-border/50"}`}
-                  onClick={() => setEventType(type)}
-                >
-                  {type}
-                </Button>
-              ))}
+              {EVENT_TYPES.map((type) => {
+                const isSelected = eventType === type;
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setEventType(type)}
+                    className={cn(
+                      "h-10 px-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all duration-200 border cursor-pointer",
+                      isSelected
+                        ? "bg-accent/20 border-accent text-foreground shadow-[0_0_15px_rgba(79,70,229,0.3)] scale-[1.02]"
+                        : "bg-white/[0.03] border-white/10 text-muted-foreground hover:bg-white/[0.06] hover:text-foreground hover:border-white/20"
+                    )}
+                  >
+                    <span className="truncate">{type}</span>
+                    {isSelected && <Check className="w-3.5 h-3.5 text-accent shrink-0 ml-1" />}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -226,18 +235,25 @@ function CreateEventFormContent({
             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
               Duration (Hours)
             </label>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4].map((hours) => (
-                <Button
-                  key={hours}
-                  type="button"
-                  variant="outline"
-                  className={`flex-1 h-8 text-xs ${durationHours === hours ? "border-primary text-primary bg-primary/5" : "bg-surface border-border/50"}`}
-                  onClick={() => setDurationHours(hours)}
-                >
-                  {hours}h
-                </Button>
-              ))}
+            <div className="grid grid-cols-4 gap-2">
+              {[1, 2, 3, 4].map((hours) => {
+                const isSelected = durationHours === hours;
+                return (
+                  <button
+                    key={hours}
+                    type="button"
+                    onClick={() => setDurationHours(hours)}
+                    className={cn(
+                      "h-9 rounded-xl text-xs font-semibold flex items-center justify-center transition-all duration-200 border cursor-pointer",
+                      isSelected
+                        ? "bg-accent border-accent text-white shadow-[0_0_15px_rgba(79,70,229,0.4)] scale-[1.03]"
+                        : "bg-white/[0.03] border-white/10 text-muted-foreground hover:bg-white/[0.06] hover:text-foreground hover:border-white/20"
+                    )}
+                  >
+                    {hours}h
+                  </button>
+                );
+              })}
             </div>
           </div>
 

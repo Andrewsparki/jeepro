@@ -52,7 +52,10 @@ export class SessionService {
         throw new Error("User not authenticated.");
       }
 
-      const { data, error } = await supabase.rpc('end_study_session_transaction', {
+      const isUuid = (str?: string | null) => 
+        Boolean(str && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str));
+
+      const { error } = await supabase.rpc('end_study_session_transaction', {
         p_user_id: user.id,
         p_duration_seconds: sessionData.durationSeconds,
         p_started_at: sessionData.startedAt,
@@ -63,18 +66,15 @@ export class SessionService {
       });
 
       if (error) {
-        console.error('[SessionService] RPC Error:', error);
+        console.error('[SessionService] RPC Error:', error.message || error.details || error);
         throw error;
-      }
-
-      if (!data) {
-        throw new Error("Transaction rolled back or failed on the database level.");
       }
 
       console.info('[SessionService] Session ended successfully.');
 
-    } catch (error) {
-      console.error('[SessionService] Backend sync failed, queueing offline:', error);
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : (error as { details?: string })?.details || String(error);
+      console.error('[SessionService] Backend sync failed, queueing offline:', errorMsg);
       this.queueSessionForSync({ ...sessionData, xpEarned });
       throw error; // Re-throw so caller can toast error
     }
@@ -87,8 +87,12 @@ export class SessionService {
     try {
       const existing = localStorage.getItem(this.OFFLINE_QUEUE_KEY);
       const queue = existing ? JSON.parse(existing) : [];
-      queue.push({ ...session, _queuedAt: new Date().toISOString() });
-      localStorage.setItem(this.OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+      // Prevent duplicate queue entries
+      const isDuplicate = queue.some((q: Parameters<typeof SessionService.endSession>[0]) => q.startedAt === session.startedAt && q.durationSeconds === session.durationSeconds);
+      if (!isDuplicate) {
+        queue.push({ ...session, _queuedAt: new Date().toISOString() });
+        localStorage.setItem(this.OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+      }
     } catch (e) {
       console.error('[SessionService] Failed to write to localStorage', e);
     }
@@ -104,27 +108,20 @@ export class SessionService {
 
       console.info(`[SessionService] Found ${queue.length} offline sessions. Attempting sync...`);
 
-      const successful: string[] = [];
+      // Clear local storage queue first to avoid re-queue loops during processing
+      localStorage.removeItem(this.OFFLINE_QUEUE_KEY);
+
       for (const session of queue) {
         try {
-          // Re-attempt without re-queueing on fail inside the loop
           await this.endSession(session);
-          successful.push(session._queuedAt);
         } catch {
-          console.warn('[SessionService] Sync failed for session:', session);
+          console.warn('[SessionService] Purged un-syncable offline session from queue:', session);
         }
       }
-
-      // Remove successful from queue
-      const remaining = queue.filter(q => !successful.includes(q._queuedAt));
-      if (remaining.length === 0) {
-        localStorage.removeItem(this.OFFLINE_QUEUE_KEY);
-        console.info('[SessionService] Offline sync complete.');
-      } else {
-        localStorage.setItem(this.OFFLINE_QUEUE_KEY, JSON.stringify(remaining));
-      }
+      console.info('[SessionService] Offline sync complete.');
     } catch (e) {
       console.error('[SessionService] Error processing offline queue', e);
+      localStorage.removeItem(this.OFFLINE_QUEUE_KEY);
     }
   }
 
@@ -135,6 +132,9 @@ export class SessionService {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    const isUuid = (str?: string | null) => 
+      Boolean(str && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str));
 
     const { error } = await supabase
       .from("user_resume_state")
@@ -147,12 +147,12 @@ export class SessionService {
         current_tab: state.currentTab || null,
         scroll_position: state.scrollPosition || 0,
         study_timer_seconds: state.studyTimerSeconds || 0,
-        planner_event_id: state.plannerEventId || null,
+        planner_event_id: isUuid(state.plannerEventId) ? state.plannerEventId : null,
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' });
 
     if (error) {
-      console.error("[SessionService] Error syncing resume state:", error);
+      console.error("[SessionService] Error syncing resume state:", error.message || error.details || error.code || error);
     }
   }
 

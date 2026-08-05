@@ -9,7 +9,7 @@ export function DashboardPreview() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center mb-16">
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">A workspace you&apos;ll love.</h2>
-          <p className="mt-4 text-lg text-muted">
+          <p className="mt-4 text-lg text-slate-300">
             The dashboard is engineered to give you a complete overview of your preparation, instantly.
           </p>
         </div>
@@ -37,7 +37,7 @@ export function DashboardPreview() {
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/50 pb-6">
               <div>
                 <h3 className="text-xl font-medium">Welcome back, Student</h3>
-                <p className="text-sm text-muted">Here&apos;s your progress for today.</p>
+                <p className="text-sm text-slate-300">Here&apos;s your progress for today.</p>
               </div>
               <div className="flex gap-2">
                 <div className="h-8 w-24 bg-muted/10 rounded-md" />

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { MasteryNode, RevisionSchedule, ProgressStatus } from "../models/mastery";
 
 export class MasteryService {
@@ -6,9 +7,9 @@ export class MasteryService {
    * @throws {Error} Not implemented
    */
   static async calculateMastery(
-    nodeId: string, 
-    timeSpent: number, 
-    performanceScore: number
+    _nodeId: string, 
+    _timeSpent: number, 
+    _performanceScore: number
   ): Promise<MasteryNode> {
     throw new Error("Method not implemented.");
   }
@@ -17,7 +18,7 @@ export class MasteryService {
    * Retrieves all topics that are due for spaced repetition.
    * @throws {Error} Not implemented
    */
-  static async getRevisionQueue(subjectId?: string): Promise<RevisionSchedule[]> {
+  static async getRevisionQueue(_subjectId?: string): Promise<RevisionSchedule[]> {
     throw new Error("Method not implemented.");
   }
 
@@ -25,7 +26,7 @@ export class MasteryService {
    * Updates the global status of a chapter (e.g., from In Progress to Mastered).
    * @throws {Error} Not implemented
    */
-  static async updateChapterStatus(chapterId: string, status: ProgressStatus): Promise<void> {
+  static async updateChapterStatus(_chapterId: string, _status: ProgressStatus): Promise<void> {
     throw new Error("Method not implemented.");
   }
 }

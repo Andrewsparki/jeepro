@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { useStudySession } from "@/features/study/context/study-session-context";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function StudyHomePage() {
   const [syllabus, setSyllabus] = useState<Subject[]>([]);
@@ -25,7 +26,7 @@ export default function StudyHomePage() {
   }, [refreshKey]);
 
   return (
-    <DashboardShell>
+    <DashboardShell className="animate-stagger-container">
       <SectionHeading 
         title="Study" 
         description="Select a subject to continue your preparation."
@@ -35,7 +36,7 @@ export default function StudyHomePage() {
         {loading ? (
           <div className="grid gap-6 md:grid-cols-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="animate-pulse rounded-xl border border-border/40 bg-card/20 p-6 h-48" />
+              <Skeleton key={i} className="rounded-xl border border-glass-border bg-glass p-6 h-48" />
             ))}
           </div>
         ) : (

@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, History, Loader2, Calculator } from "lucide-react";
+import { Search, Filter, History, Calculator } from "lucide-react";
 import { Formula, searchFormulas } from "@/features/study/services/formulas";
 import { Chapter } from "@/features/syllabus/services/syllabus";
 import { FormulaCard } from "./components/formula-card";
 import { WorkspaceEmptyState } from "./components/workspace-empty-state";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface FormulasTabProps {
   chapter: Chapter;
@@ -110,9 +111,18 @@ export function FormulasTab({ chapter }: FormulasTabProps) {
       {/* Results Area */}
       <div className="flex-1">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <Loader2 className="w-8 h-8 animate-spin mb-4 opacity-50" />
-            <p className="text-sm">Searching knowledge base...</p>
+          <div className="grid grid-cols-1 gap-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="p-6 rounded-2xl border border-glass-border bg-glass">
+                <Skeleton className="h-6 w-1/3 mb-4 rounded" />
+                <Skeleton className="h-4 w-2/3 mb-2 rounded" />
+                <Skeleton className="h-4 w-1/2 rounded" />
+                <div className="flex gap-2 mt-6">
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : filteredFormulas.length === 0 ? (
           <motion.div 

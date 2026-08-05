@@ -22,7 +22,7 @@ export function CTASection() {
           <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl mb-6">
             Ready to upgrade your preparation?
           </h2>
-          <p className="text-xl text-muted mb-10 max-w-2xl mx-auto">
+          <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">
             Join thousands of serious JEE aspirants who have switched to a better, faster, and more focused environment.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

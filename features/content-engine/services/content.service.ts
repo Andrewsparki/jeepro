@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { StudyContent, ContentType, Bookmark } from "../models/content";
 
 export class ContentService {
@@ -6,9 +7,9 @@ export class ContentService {
    * @throws {Error} Not implemented
    */
   static async fetchContent(
-    subjectId: string, 
-    chapterId: string, 
-    type?: ContentType
+    _subjectId: string, 
+    _chapterId: string, 
+    _type?: ContentType
   ): Promise<StudyContent[]> {
     throw new Error("Method not implemented.");
   }
@@ -17,7 +18,7 @@ export class ContentService {
    * Toggles bookmark status for a specific piece of content.
    * @throws {Error} Not implemented
    */
-  static async toggleBookmark(contentId: string, type: ContentType): Promise<Bookmark | void> {
+  static async toggleBookmark(_contentId: string, _type: ContentType): Promise<Bookmark | void> {
     throw new Error("Method not implemented.");
   }
 
@@ -25,7 +26,7 @@ export class ContentService {
    * Generates a smart AI summary for a collection of content blocks.
    * @throws {Error} Not implemented
    */
-  static async generateSmartSummary(contentIds: string[]): Promise<string> {
+  static async generateSmartSummary(_contentIds: string[]): Promise<string> {
     throw new Error("Method not implemented.");
   }
 }

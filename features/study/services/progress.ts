@@ -14,11 +14,52 @@ export interface UserTopicProgress {
 export interface StudySession {
   id: string;
   user_id: string;
+  subject_id?: string | null;
   chapter_id?: string | null;
   topic_id?: string | null;
+  section_id?: string | null;
+  activity_type?: string | null;
+  completion_percentage?: number | null;
   duration_seconds: number;
   started_at: string;
   ended_at: string;
+  xp_earned?: number | null; // For UI display, might not exist in db
+  notes?: string | null; // Future ready
+}
+
+export async function deleteStudySessions(sessionIds: string[]): Promise<boolean> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { error } = await supabase
+    .from("study_sessions")
+    .delete()
+    .eq("user_id", user.id)
+    .in("id", sessionIds);
+    
+  if (error) {
+    console.error("Error deleting study sessions:", error.message);
+    return false;
+  }
+  return true;
+}
+
+export async function clearAllStudySessions(): Promise<boolean> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { error } = await supabase
+    .from("study_sessions")
+    .delete()
+    .eq("user_id", user.id);
+    
+  if (error) {
+    console.error("Error clearing study sessions:", error.message);
+    return false;
+  }
+  return true;
 }
 
 export async function getUserProgress(): Promise<UserTopicProgress[]> {
@@ -250,6 +291,8 @@ export async function getDashboardMetrics() {
     lastActiveChapter,
     syllabus,
     todaysEvents,
-    weeklyStudyHours
+    weeklyStudyHours,
+    study_sessions: sessions,
+    progress,
   };
 }

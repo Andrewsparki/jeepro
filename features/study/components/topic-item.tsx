@@ -88,7 +88,7 @@ export function TopicItem({ topic, index }: TopicItemProps) {
                 </Button>
                 <Button 
                   size="sm" 
-                  onClick={() => startSession(topic.chapter_id, topic.id)}
+                  onClick={() => startSession(undefined, topic.chapter_id, topic.id)}
                   className="gap-2 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 hover:text-blue-400 border-none"
                 >
                   <PlayCircle className="w-4 h-4" />

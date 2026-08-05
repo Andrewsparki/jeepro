@@ -13,6 +13,7 @@ export interface Achievement {
 export interface XPDetails {
   currentLevel: number;
   currentXP: number;
+  totalXP: number;
   nextLevelXP: number;
   progressPercentage: number;
 }
@@ -66,6 +67,7 @@ export function calculateXPAndLevel(
   return {
     currentLevel,
     currentXP: totalXP, // Using total accumulated XP (could also display relative XP)
+    totalXP,
     nextLevelXP: totalXP - xpRemaining + xpForNextLevel,
     progressPercentage
   };

@@ -2,6 +2,7 @@ import React from "react";
 import { Achievement } from "../services/gamification";
 import { Play, BookOpen, Trophy, Flame, Clock, Star, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import confetti from "canvas-confetti";
 
 interface AchievementCardProps {
   achievement: Achievement;
@@ -19,13 +20,33 @@ export const AchievementCard = React.memo(function AchievementCard({ achievement
   
   const Icon = achievement.unlocked ? (IconMap[achievement.icon] || Trophy) : Lock;
 
+  const handleCelebrate = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!achievement.unlocked) return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (rect.left + rect.width / 2) / window.innerWidth;
+    const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+    confetti({
+      particleCount: 15,
+      spread: 40,
+      origin: { x, y },
+      colors: ["#3B82F6", "#8B5CF6", "#EC4899", "#10B981"],
+      disableForReducedMotion: true,
+      zIndex: 100,
+    });
+  };
+
   return (
-    <div className={cn(
-      "relative overflow-hidden rounded-2xl border p-4 transition-[border-color] duration-300",
-      achievement.unlocked 
-        ? "bg-card border-accent/20 hover:border-accent/50 shadow-sm"
-        : "bg-muted/30 border-border/40 opacity-75 grayscale-[0.5]"
-    )}>
+    <div 
+      onClick={handleCelebrate}
+      className={cn(
+        "relative overflow-hidden rounded-2xl border p-4 transition-[border-color,transform] duration-300",
+        achievement.unlocked 
+          ? "bg-card border-accent/20 hover:border-accent/50 shadow-sm cursor-pointer hover:scale-[1.02]"
+          : "bg-muted/30 border-border/40 opacity-75 grayscale-[0.5]"
+      )}
+    >
       {achievement.unlocked && (
         <div className="absolute top-0 right-0 w-24 h-24 bg-accent/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
       )}

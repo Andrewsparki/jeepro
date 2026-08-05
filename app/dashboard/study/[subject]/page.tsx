@@ -9,6 +9,7 @@ import { getSubjectBySlug, Subject } from "@/features/syllabus/services/syllabus
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SubjectChaptersPage() {
   const params = useParams();
@@ -44,12 +45,12 @@ export default function SubjectChaptersPage() {
       </div>
 
       {loading ? (
-        <div className="animate-pulse flex flex-col gap-6">
-          <div className="h-10 bg-muted rounded w-1/4"></div>
-          <div className="h-4 bg-muted rounded w-2/4"></div>
+        <div className="flex flex-col gap-6">
+          <Skeleton className="h-10 w-1/4 rounded" />
+          <Skeleton className="h-4 w-2/4 rounded" />
           <div className="space-y-4 mt-8">
-            <div className="h-32 bg-muted rounded"></div>
-            <div className="h-32 bg-muted rounded"></div>
+            <Skeleton className="h-32 w-full rounded-2xl border border-glass-border bg-glass" />
+            <Skeleton className="h-32 w-full rounded-2xl border border-glass-border bg-glass" />
           </div>
         </div>
       ) : subject ? (

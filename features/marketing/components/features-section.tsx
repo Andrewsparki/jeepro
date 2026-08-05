@@ -48,7 +48,7 @@ export function FeaturesSection() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Everything you need. Nothing you don&apos;t.</h2>
-          <p className="mt-6 text-lg leading-8 text-muted">
+          <p className="mt-6 text-lg leading-8 text-slate-300">
             A cohesive suite of tools engineered specifically for JEE Main and Advanced aspirants.
           </p>
         </div>
@@ -67,7 +67,7 @@ export function FeaturesSection() {
                 <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                 <feature.icon className="h-8 w-8 text-muted-foreground mb-6" />
                 <h3 className="text-xl font-medium text-foreground mb-3">{feature.title}</h3>
-                <p className="text-muted leading-relaxed">{feature.description}</p>
+                <p className="text-slate-300 leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
