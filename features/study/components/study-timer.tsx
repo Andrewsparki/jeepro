@@ -4,9 +4,11 @@ import { useStudySession } from "@/features/study/context/study-session-context"
 import { motion, AnimatePresence } from "framer-motion";
 import { Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
 
 export function StudyTimer() {
   const { isActive, elapsedSeconds, endSession } = useStudySession();
+  const pathname = usePathname();
 
   const formatTime = (totalSeconds: number) => {
     const hrs = Math.floor(totalSeconds / 3600);
@@ -19,9 +21,11 @@ export function StudyTimer() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const isHidden = pathname === "/dashboard/focus";
+
   return (
     <AnimatePresence>
-      {isActive && (
+      {isActive && !isHidden && (
         <motion.div
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
