@@ -16,6 +16,7 @@ import { DashboardHero } from "@/features/dashboard/components/dashboard-hero";
 import { QuickActions } from "@/features/dashboard/components/quick-actions";
 import { TodaysTimeline } from "@/features/dashboard/components/todays-timeline";
 import { ContinueLearning } from "@/features/dashboard/components/continue-learning";
+import { MotivationalQuotes } from "@/features/dashboard/components/motivational-quotes";
 
 // Dynamic imports for below-the-fold content to improve initial load
 const WeeklyProgress = dynamic(() => import("@/features/dashboard/components/weekly-progress").then(mod => mod.WeeklyProgress));
@@ -31,12 +32,12 @@ function DashboardSkeleton() {
       <div className="flex flex-col gap-6 md:gap-8 pb-10 max-w-7xl mx-auto w-full">
         {/* ROW 1: Hero & Stats */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-          <div className="xl:col-span-8 min-h-[300px]">
-            <Skeleton className="w-full h-full rounded-3xl min-h-[300px]" />
+          <div className="xl:col-span-8 min-h-[260px]">
+            <Skeleton className="w-full h-full rounded-3xl min-h-[260px]" />
           </div>
           <div className="xl:col-span-4 grid grid-cols-2 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="rounded-2xl border border-glass-border bg-glass p-5 flex flex-col justify-between h-[140px]">
+              <div key={i} className="rounded-2xl border border-glass-border bg-glass p-5 flex flex-col justify-between h-[125px]">
                 <div className="flex justify-between items-start">
                   <Skeleton className="h-4 w-20" />
                   <Skeleton className="h-8 w-8 rounded-full" />
@@ -46,6 +47,9 @@ function DashboardSkeleton() {
             ))}
           </div>
         </div>
+
+        {/* Motivational Quotes Banner Skeleton */}
+        <Skeleton className="w-full h-[120px] rounded-3xl" />
 
         {/* ROW 2: Timeline, Continue Learning & Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -122,8 +126,8 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-6 md:gap-8 pb-10 max-w-7xl mx-auto animate-stagger-container">
         
         {/* ROW 1: Hero & Stats */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-          <div className="xl:col-span-8 min-h-full">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+          <div className="xl:col-span-8">
             <DashboardHero userName={firstName} lastActiveChapter={metrics.lastActiveChapter} />
           </div>
           
@@ -134,6 +138,7 @@ export default function DashboardPage() {
               icon={<Clock className="h-4 w-4 text-blue-400" />}
               iconContainerClassName="bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
               delay={0.1}
+              hoverTint="blue"
             />
             <StatCard
               title="Topics Mastered"
@@ -141,6 +146,7 @@ export default function DashboardPage() {
               icon={<Target className="h-4 w-4 text-emerald-400" />}
               iconContainerClassName="bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
               delay={0.2}
+              hoverTint="emerald"
             />
             <StatCard
               title="Current Streak"
@@ -148,6 +154,7 @@ export default function DashboardPage() {
               icon={<Flame className="h-4 w-4 text-orange-400" />}
               iconContainerClassName="bg-orange-500/10 border-orange-500/20 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
               delay={0.3}
+              hoverTint="orange"
             />
             <StatCard
               title="Level"
@@ -155,9 +162,13 @@ export default function DashboardPage() {
               icon={<Trophy className="h-4 w-4 text-amber-400" />}
               iconContainerClassName="bg-amber-500/10 border-amber-500/20 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
               delay={0.4}
+              hoverTint="amber"
             />
           </div>
         </div>
+
+        {/* Motivational Quotes Banner */}
+        <MotivationalQuotes />
 
         {/* ROW 2: Timeline, Continue Learning & Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

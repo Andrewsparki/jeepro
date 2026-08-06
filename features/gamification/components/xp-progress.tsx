@@ -139,7 +139,7 @@ export function XPProgress({ xpDetails }: XPProgressProps) {
               100% { transform: translateX(300%); }
             }
           `}</style>
-          <div className="h-3 w-full bg-surface border border-white/10 rounded-full overflow-hidden p-0.5 transition-all duration-150 ease-out hover:scale-[1.01] hover:shadow-[0_0_12px_rgba(37,99,235,0.3)] active:scale-[0.98] cursor-default">
+          <div className="h-3 w-full bg-surface border border-white/10 rounded-full overflow-hidden p-0.5 transition-all duration-150 ease-out hover:shadow-[0_0_12px_rgba(37,99,235,0.3)] cursor-default">
             <motion.div 
               initial={{ width: 0 }}
               animate={{ width: `${xpDetails.progressPercentage}%` }}

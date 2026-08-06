@@ -23,7 +23,7 @@ export const ContinueLearning = React.memo(function ContinueLearning({ lastActiv
         <div className="absolute inset-0 bg-gradient-to-b from-accent/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
         
         {/* Animated Background Mesh */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-accent/5 rounded-full blur-[40px] opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-accent/5 rounded-full blur-[40px] opacity-50 group-hover:opacity-100 transition-all duration-1000" />
         
         <div className="p-4 rounded-2xl bg-surface border border-border/50 text-accent mb-6 relative shadow-lg">
           <div className="absolute -top-2 -right-2 text-accent">
@@ -39,7 +39,7 @@ export const ContinueLearning = React.memo(function ContinueLearning({ lastActiv
         
         <Button 
           onClick={() => router.push("/dashboard/syllabus")}
-          className="bg-foreground text-background hover:bg-foreground/90 rounded-full transition-all hover:scale-105 active:scale-95 group/btn relative z-10 px-8 py-5 h-auto font-bold tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+          className="bg-foreground text-background hover:bg-foreground/90 rounded-full transition-all group/btn relative z-10 px-8 py-5 h-auto font-bold tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
         >
           Explore Syllabus
           <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
@@ -50,13 +50,13 @@ export const ContinueLearning = React.memo(function ContinueLearning({ lastActiv
 
   return (
     <div 
-      className="group relative flex flex-col h-full rounded-2xl border border-border/50 bg-surface p-6 hover:border-accent/40 transition-all duration-300 cursor-pointer overflow-hidden shadow-sm hover:shadow-md"
+      className="group relative flex flex-col h-full rounded-2xl border border-border/50 bg-surface p-6 hover:border-accent/40 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-pointer overflow-hidden shadow-sm hover:shadow-md"
       onClick={() => router.push(`/dashboard/study/${lastActiveChapter.subjectSlug}/${lastActiveChapter.chapterSlug}`)}
     >
-      <div className="absolute top-0 right-0 w-48 h-48 bg-accent/5 rounded-full blur-[40px] -mr-16 -mt-16 pointer-events-none group-hover:bg-accent/15 group-hover:scale-110 transition-all duration-700" />
+      <div className="absolute top-0 right-0 w-48 h-48 bg-accent/5 rounded-full blur-[40px] -mr-16 -mt-16 pointer-events-none group-hover:bg-accent/15 transition-all duration-700" />
       
       <div className="flex items-start justify-between relative z-10 mb-4">
-        <div className="p-3 rounded-xl bg-accent/10 text-accent border border-accent/20 group-hover:scale-110 group-hover:bg-accent group-hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(79,70,229,0.1)] group-hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]">
+        <div className="p-3 rounded-xl bg-accent/10 text-accent border border-accent/20 group-hover:bg-accent group-hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(79,70,229,0.1)] group-hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]">
           <Play className="h-5 w-5 ml-0.5" fill="currentColor" />
         </div>
         <div className="text-[10px] font-bold px-3 py-1.5 rounded-full bg-surface border border-border/50 text-muted-foreground uppercase tracking-widest shadow-sm">

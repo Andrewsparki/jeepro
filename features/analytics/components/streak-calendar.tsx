@@ -5,6 +5,7 @@ import { StudySession } from "@/features/study/services/progress";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday } from "date-fns";
 import { Calendar, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { GlassCard } from "@/components/ui/glass-card";
 
 interface StreakCalendarProps {
   sessions: StudySession[];
@@ -36,7 +37,7 @@ export function StreakCalendar({ sessions }: StreakCalendarProps) {
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="premium-card p-6 flex flex-col h-full group relative overflow-hidden">
+    <GlassCard hoverTint="orange" className="p-6 flex flex-col h-full group relative overflow-hidden">
       <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-[80px] pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
       
       <div className="flex items-center justify-between mb-6 relative z-10">
@@ -93,18 +94,18 @@ export function StreakCalendar({ sessions }: StreakCalendarProps) {
           })}
         </div>
       </div>
-    </div>
+    </GlassCard>
   );
 }
 
 export function StreakCalendarSkeleton() {
   return (
-    <div className="premium-card p-6 h-[400px] flex flex-col">
+    <GlassCard hoverTint="orange" className="p-6 h-[400px] flex flex-col">
        <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-xl bg-muted/20 animate-pulse" />
           <div className="h-6 w-32 bg-muted/20 rounded-md animate-pulse" />
        </div>
        <div className="flex-1 w-full bg-muted/10 rounded-xl animate-pulse" />
-    </div>
+    </GlassCard>
   );
 }

@@ -26,28 +26,28 @@ export function QuickActions() {
       className="grid grid-cols-2 md:grid-cols-4 gap-4"
     >
       <motion.div variants={item}>
-        <Button className="w-full h-14 rounded-xl gap-2 font-medium text-base bg-foreground text-background hover:bg-foreground/90 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+        <Button className="w-full h-14 rounded-xl gap-2 font-medium text-base bg-foreground text-background hover:bg-foreground/90 transition-all shadow-sm hover:shadow-md">
           <Play className="w-5 h-5 fill-current" />
           Start Study
         </Button>
       </motion.div>
 
       <motion.div variants={item}>
-        <Button variant="outline" className="w-full h-14 rounded-xl gap-2 font-medium text-base bg-card/30 backdrop-blur-sm border-border/40 hover:bg-card/60 transition-all hover:-translate-y-0.5 hover:border-blue-500/30 hover:text-blue-500">
+        <Button variant="outline" className="w-full h-14 rounded-xl gap-2 font-medium text-base bg-card/30 backdrop-blur-sm border-border/40 hover:bg-card/60 transition-all hover:border-blue-500/30 hover:text-blue-500">
           <PenTool className="w-5 h-5" />
           Practice PYQs
         </Button>
       </motion.div>
 
       <motion.div variants={item}>
-        <Button variant="outline" className="w-full h-14 rounded-xl gap-2 font-medium text-base bg-card/30 backdrop-blur-sm border-border/40 hover:bg-card/60 transition-all hover:-translate-y-0.5 hover:border-orange-500/30 hover:text-orange-500">
+        <Button variant="outline" className="w-full h-14 rounded-xl gap-2 font-medium text-base bg-card/30 backdrop-blur-sm border-border/40 hover:bg-card/60 transition-all hover:border-orange-500/30 hover:text-orange-500">
           <RotateCw className="w-5 h-5" />
           Revise
         </Button>
       </motion.div>
 
       <motion.div variants={item}>
-        <Button variant="outline" className="w-full h-14 rounded-xl gap-2 font-medium text-base bg-card/30 backdrop-blur-sm border-border/40 hover:bg-card/60 transition-all hover:-translate-y-0.5 hover:border-green-500/30 hover:text-green-500">
+        <Button variant="outline" className="w-full h-14 rounded-xl gap-2 font-medium text-base bg-card/30 backdrop-blur-sm border-border/40 hover:bg-card/60 transition-all hover:border-green-500/30 hover:text-green-500">
           <CheckCircle2 className="w-5 h-5" />
           Mark Complete
         </Button>

@@ -4,6 +4,7 @@ import React, { ReactNode } from "react";
 import { DashboardCard } from "./dashboard-card";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { HoverTint } from "@/components/ui/glass-card";
 
 interface StatCardProps {
   title: string;
@@ -16,13 +17,12 @@ interface StatCardProps {
   };
   delay?: number;
   className?: string;
+  hoverTint?: HoverTint;
 }
 
-export const StatCard = React.memo(function StatCard({ title, value, icon, iconContainerClassName, trend, delay = 0, className }: StatCardProps) {
+export const StatCard = React.memo(function StatCard({ title, value, icon, iconContainerClassName, trend, delay = 0, className, hoverTint }: StatCardProps) {
   return (
-    <DashboardCard delay={delay} className={cn("flex flex-col gap-5 overflow-hidden relative cursor-default", className)}>
-      {/* Subtle animated background gradient to give it a "living" feel */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+    <DashboardCard delay={delay} hoverTint={hoverTint} className={cn("flex flex-col gap-5 overflow-hidden relative cursor-default", className)}>
       
       <div className="flex items-center justify-between relative z-10">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</h3>

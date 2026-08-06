@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { format, startOfDay, addDays } from "date-fns";
 import { Trophy } from "lucide-react";
+import { GlassCard } from "@/components/ui/glass-card";
 
 interface XPGrowthChartProps {
   sessions: StudySession[];
@@ -63,7 +64,7 @@ export function XPGrowthChart({ sessions }: XPGrowthChartProps) {
   const maxXP = data.length > 0 ? data[data.length - 1].xp : 100;
 
   return (
-    <div className="premium-card flex flex-col h-[400px]">
+    <GlassCard hoverTint="amber" className="flex flex-col h-[400px]">
       <div className="flex items-center justify-between mb-6 relative z-10 px-6 pt-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-yellow-500/10 rounded-xl text-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.15)] border border-yellow-500/20">
@@ -136,7 +137,7 @@ export function XPGrowthChart({ sessions }: XPGrowthChartProps) {
           </ResponsiveContainer>
         )}
       </div>
-    </div>
+    </GlassCard>
   );
 }
 

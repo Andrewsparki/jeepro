@@ -41,9 +41,9 @@ export const AchievementCard = React.memo(function AchievementCard({ achievement
     <div 
       onClick={handleCelebrate}
       className={cn(
-        "relative overflow-hidden rounded-2xl border p-4 transition-[border-color,transform] duration-300",
+        "relative overflow-hidden rounded-2xl border p-4 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
         achievement.unlocked 
-          ? "bg-card border-accent/20 hover:border-accent/50 shadow-sm cursor-pointer hover:scale-[1.02]"
+          ? "bg-card border-accent/20 hover:border-accent/50 hover:shadow-md cursor-pointer"
           : "bg-muted/30 border-border/40 opacity-75 grayscale-[0.5]"
       )}
     >

@@ -92,7 +92,7 @@ export const DashboardHero = React.memo(function DashboardHero({
 
         {/* Right Side: Current Context */}
         {lastActiveChapter && (
-          <div className="w-full md:w-[360px] shrink-0 rounded-2xl bg-surface border border-border/50 backdrop-blur-xl p-7 shadow-soft transition-all duration-300 hover:bg-surface-hover hover:border-border hover:shadow-medium">
+          <div className="w-full md:w-[360px] shrink-0 rounded-2xl bg-surface border border-border/50 backdrop-blur-xl p-7 shadow-soft transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-surface-hover hover:border-white/16 hover:shadow-medium">
             <div className="flex items-center justify-between mb-5">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current Focus</span>
               <div className="px-2.5 py-1 rounded-md bg-accent/15 text-accent text-xs font-semibold">

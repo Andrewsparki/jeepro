@@ -3,17 +3,18 @@
 import React, { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { TiltWrapper } from "@/components/ui/tilt-wrapper";
+import { GlassCard, HoverTint } from "@/components/ui/glass-card";
 
 interface DashboardCardProps {
   children: ReactNode;
   className?: string;
   delay?: number;
+  hoverTint?: HoverTint;
 }
 
-export const DashboardCard = React.memo(function DashboardCard({ children, className, delay = 0 }: DashboardCardProps) {
+export const DashboardCard = React.memo(function DashboardCard({ children, className, delay = 0, hoverTint }: DashboardCardProps) {
   return (
-    <TiltWrapper className={cn("premium-card transition-all duration-300 ease-out hover:-translate-y-[2px] hover:shadow-medium group", className)}>
+    <GlassCard hoverTint={hoverTint} className={className}>
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -22,6 +23,6 @@ export const DashboardCard = React.memo(function DashboardCard({ children, class
       >
         {children}
       </motion.div>
-    </TiltWrapper>
+    </GlassCard>
   );
 });

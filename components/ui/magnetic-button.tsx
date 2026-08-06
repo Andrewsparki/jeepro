@@ -66,8 +66,6 @@ export const MagneticButton = memo(function MagneticButton({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
       style={{
         x,
         y,

@@ -6,6 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Activity, BookOpen, PenTool, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { GlassCard } from "@/components/ui/glass-card";
 
 interface ActivityTimelineProps {
   sessions: StudySession[];
@@ -35,7 +36,7 @@ export function ActivityTimeline({ sessions }: ActivityTimelineProps) {
   };
 
   return (
-    <div className="premium-card p-6 flex flex-col h-[400px]">
+    <GlassCard hoverTint="purple" className="p-6 flex flex-col h-[400px]">
       <div className="flex items-center gap-3 mb-6 relative z-10 shrink-0">
         <div className="p-2.5 bg-accent/10 rounded-xl text-accent shadow-[0_0_15px_rgba(var(--accent-rgb),0.15)] border border-accent/20">
           <Activity className="w-5 h-5" />
@@ -64,7 +65,7 @@ export function ActivityTimeline({ sessions }: ActivityTimelineProps) {
               >
                 {/* Node */}
                 <div className={cn(
-                  "absolute -left-[17px] top-1 w-[34px] h-[34px] rounded-full border-4 border-background flex items-center justify-center transition-transform duration-300 group-hover:scale-110",
+                  "absolute -left-[17px] top-1 w-[34px] h-[34px] rounded-full border-4 border-background flex items-center justify-center transition-transform duration-300",
                   getSubjectColorClass(session.subject_id || "")
                 )}>
                   {getSubjectIcon(session.subject_id || "")}
@@ -96,7 +97,7 @@ export function ActivityTimeline({ sessions }: ActivityTimelineProps) {
       
       {/* Scroll Fade Overlay */}
       <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-card to-transparent pointer-events-none rounded-b-2xl" />
-    </div>
+    </GlassCard>
   );
 }
 

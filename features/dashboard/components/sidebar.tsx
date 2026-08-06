@@ -70,6 +70,10 @@ export function Sidebar() {
             <LogOut className="h-4 w-4 opacity-50 hover:opacity-100 transition-opacity flex-shrink-0" />
           </button>
         </form>
+
+        <div className="mt-3 pt-2 text-[10px] text-center text-muted-foreground/40 tracking-widest uppercase font-medium flex items-center justify-center gap-1 select-none">
+          Made with <span className="text-rose-500">❤️</span> by Andrew
+        </div>
       </div>
     </aside>
   );

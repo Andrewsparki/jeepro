@@ -1,12 +1,17 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { GlassCard } from "./glass-card"
+import { GlassCard, HoverTint } from "./glass-card"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+export interface CardProps extends React.ComponentProps<"div"> {
+  hoverTint?: HoverTint;
+}
+
+function Card({ className, hoverTint, ...props }: CardProps) {
   // We use our premium GlassCard for the base Card
   return (
     <GlassCard
       data-slot="card"
+      hoverTint={hoverTint}
       className={cn(
         "flex flex-col gap-6 py-6 text-card-foreground shadow-sm", // Removed duplicate rounded-xl, bg, border as GlassCard handles them beautifully
         className

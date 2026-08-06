@@ -24,7 +24,7 @@ export function SidebarItem({ href, icon, label }: SidebarItemProps) {
       <Link
         href={href}
         className={cn(
-          "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ease-out hover:scale-[1.02] hover:shadow-[0_0_12px_rgba(37,99,235,0.3)] active:scale-[0.98] group outline-none focus-visible:ring-2 focus-visible:ring-ring w-full",
+          "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ease-out hover:shadow-[0_0_12px_rgba(37,99,235,0.3)] group outline-none focus-visible:ring-2 focus-visible:ring-ring w-full",
           isActive ? "text-white font-semibold shadow-glow" : "text-muted-foreground hover:text-foreground"
         )}
       >

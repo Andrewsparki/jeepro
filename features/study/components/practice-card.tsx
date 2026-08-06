@@ -21,7 +21,7 @@ export function PracticeCard() {
         {/* PYQs */}
         <WorkspaceCard delay={0.4} hoverEffect className="p-6 md:p-6 group border-orange-500/10">
           <div className="flex flex-col h-full justify-between gap-6">
-            <div className="w-12 h-12 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-full bg-orange-500/10 text-orange-500 flex items-center justify-center transition-transform">
               <Library className="w-6 h-6" />
             </div>
             <div>

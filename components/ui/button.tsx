@@ -5,20 +5,20 @@ import { Slot } from "radix-ui"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 ease-out outline-none active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] outline-none hover:brightness-[1.05] focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: "bg-accent text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_1px_2px_rgba(0,0,0,0.4)] hover:bg-accent/90 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_4px_12px_rgba(79,70,229,0.3)]",
+        default: "bg-accent text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_1px_2px_rgba(0,0,0,0.4)] hover:bg-accent/95 hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_6px_16px_rgba(79,70,229,0.35)]",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 shadow-sm focus-visible:ring-destructive/50",
+          "bg-destructive text-white hover:bg-destructive/90 shadow-sm focus-visible:ring-destructive/50 hover:shadow-[0_6px_16px_rgba(239,68,68,0.3)]",
         outline:
-          "border border-white/10 bg-transparent shadow-sm hover:bg-white/5 hover:text-foreground",
+          "border border-white/10 bg-transparent shadow-sm hover:bg-white/5 hover:border-white/20 hover:text-foreground hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)]",
         secondary:
-          "bg-white/5 text-secondary-foreground shadow-sm hover:bg-white/10",
+          "bg-white/5 text-secondary-foreground shadow-sm hover:bg-white/10 hover:border-white/15 hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)]",
         ghost:
-          "hover:bg-white/5 hover:text-foreground",
-        link: "text-primary underline-offset-4 hover:underline hover:shadow-none",
+          "hover:bg-white/5 hover:text-foreground hover:translate-y-0",
+        link: "text-primary underline-offset-4 hover:underline hover:shadow-none hover:translate-y-0",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

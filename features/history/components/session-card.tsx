@@ -49,6 +49,19 @@ export function SessionCard({
   const xpEarned = session.xp_earned || Math.floor(session.duration_seconds / 60) * 2; // Mock fallback if db doesn't have it
   const completionPercent = session.completion_percentage || 100; // Mock fallback
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.15 }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, x: 30 },
+    show: { opacity: 1, x: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } }
+  };
+
   return (
     <motion.div 
       layout
@@ -122,10 +135,10 @@ export function SessionCard({
               </SheetHeader>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+            <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
               
               {/* Header Info */}
-              <div className="flex items-start gap-4">
+              <motion.div variants={itemVariants} className="flex items-start gap-4">
                 <div className="w-14 h-14 rounded-2xl bg-accent/10 shadow-[0_0_15px_rgba(var(--accent-rgb),0.15)] text-accent flex items-center justify-center shrink-0 border border-accent/20">
                   <Library className="w-6 h-6" />
                 </div>
@@ -135,10 +148,10 @@ export function SessionCard({
                     <span className="inline-flex items-center gap-1"><BookOpen className="w-4 h-4" /> {subjectName}</span>
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-4">
+              <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
                 <div className="p-4 rounded-2xl glass border border-border/50 flex flex-col gap-1 relative overflow-hidden group">
                   <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <Trophy className="w-5 h-5 text-yellow-500 mb-2" />
@@ -152,10 +165,10 @@ export function SessionCard({
                   <span className="text-2xl font-bold tracking-tight text-foreground">{activityType}</span>
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Activity Type</span>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Completion Progress */}
-              <div className="p-5 rounded-2xl glass border border-border/50 flex flex-col gap-4">
+              <motion.div variants={itemVariants} className="p-5 rounded-2xl glass border border-border/50 flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-green-500">
                     <CheckCircle2 className="w-5 h-5" />
@@ -171,10 +184,10 @@ export function SessionCard({
                     className="h-full bg-gradient-to-r from-green-500 to-emerald-400" 
                   />
                 </div>
-              </div>
+              </motion.div>
 
               {/* Timeline Section */}
-              <div>
+              <motion.div variants={itemVariants}>
                 <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Session Timeline</h4>
                 <div className="relative pl-4 border-l-2 border-border/50 space-y-6">
                   <div className="relative">
@@ -192,9 +205,9 @@ export function SessionCard({
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
-            </div>
+            </motion.div>
           </div>
         </SheetContent>
       </Sheet>

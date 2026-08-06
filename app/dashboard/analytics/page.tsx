@@ -147,18 +147,21 @@ export default function AnalyticsPage() {
             suffix="h"
             icon={<Clock className="w-6 h-6 text-blue-400" />}
             iconColorClass="text-blue-400 bg-blue-500/10 border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+            hoverTint="blue"
           />
           <AnimatedStatCard
             title="Sessions"
             value={metrics.sessionsCount}
             icon={<Target className="w-6 h-6 text-emerald-400" />}
             iconColorClass="text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+            hoverTint="emerald"
           />
           <AnimatedStatCard
             title="Total XP"
             value={metrics.xpDetails.totalXP}
             icon={<Trophy className="w-6 h-6 text-amber-400" />}
             iconColorClass="text-amber-400 bg-amber-500/10 border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+            hoverTint="amber"
           />
           <AnimatedStatCard
             title="Current Streak"
@@ -166,6 +169,7 @@ export default function AnalyticsPage() {
             suffix=" Days"
             icon={<Flame className="w-6 h-6 text-orange-400" />}
             iconColorClass="text-orange-400 bg-orange-500/10 border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
+            hoverTint="orange"
           />
         </div>
 

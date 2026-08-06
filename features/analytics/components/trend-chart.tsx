@@ -14,6 +14,7 @@ import {
 import { format, subDays, startOfDay, isSameDay } from "date-fns";
 import { Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { GlassCard } from "@/components/ui/glass-card";
 
 interface TrendChartProps {
   sessions: StudySession[];
@@ -56,7 +57,7 @@ export function TrendChart({ sessions }: TrendChartProps) {
   const maxHours = Math.max(...data.map(d => d.hours), 1); // Avoid 0 domain
 
   return (
-    <div className="premium-card flex flex-col h-[400px]">
+    <GlassCard hoverTint="blue" className="flex flex-col h-[400px]">
       <div className="flex items-center justify-between mb-6 relative z-10 px-6 pt-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-accent/10 rounded-xl text-accent shadow-[0_0_15px_rgba(79,70,229,0.15)] border border-accent/20">
@@ -141,7 +142,7 @@ export function TrendChart({ sessions }: TrendChartProps) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </GlassCard>
   );
 }
 

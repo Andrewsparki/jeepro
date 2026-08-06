@@ -20,7 +20,7 @@ export function RevisionCard() {
         
         {/* Flashcards */}
         <WorkspaceCard delay={0.7} hoverEffect className="p-6 md:p-6 group flex flex-col justify-between gap-6 border-purple-500/10 h-full">
-          <div className="w-12 h-12 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center transition-transform">
             <Layers className="w-6 h-6" />
           </div>
           <div>
@@ -34,7 +34,7 @@ export function RevisionCard() {
 
         {/* Weak Areas */}
         <WorkspaceCard delay={0.8} hoverEffect className="p-6 md:p-6 group flex flex-col justify-between gap-6 h-full">
-          <div className="w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center transition-transform">
             <Activity className="w-6 h-6" />
           </div>
           <div>
@@ -48,7 +48,7 @@ export function RevisionCard() {
 
         {/* Spaced Repetition */}
         <WorkspaceCard delay={0.9} hoverEffect className="p-6 md:p-6 group flex flex-col justify-between gap-6 h-full">
-          <div className="w-12 h-12 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center transition-transform">
             <BrainCircuit className="w-6 h-6" />
           </div>
           <div>

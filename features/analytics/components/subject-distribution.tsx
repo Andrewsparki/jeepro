@@ -5,6 +5,7 @@ import { StudySession } from "@/features/study/services/progress";
 import { Subject } from "@/features/syllabus/services/syllabus";
 
 import { BarChart2 } from "lucide-react";
+import { GlassCard } from "@/components/ui/glass-card";
 import { 
   Radar, 
   RadarChart, 
@@ -56,7 +57,7 @@ export function SubjectDistribution({ sessions, syllabus }: SubjectDistributionP
   }, [sessions, syllabus]);
 
   return (
-    <div className="premium-card flex flex-col h-[400px]">
+    <GlassCard hoverTint="purple" className="flex flex-col h-[400px]">
       <div className="flex items-center gap-3 mb-2 relative z-10 px-6 pt-6">
         <div className="p-2.5 bg-accent/10 rounded-xl text-accent shadow-[0_0_15px_rgba(79,70,229,0.15)] border border-accent/20">
           <BarChart2 className="w-5 h-5" />
@@ -111,7 +112,7 @@ export function SubjectDistribution({ sessions, syllabus }: SubjectDistributionP
           </ResponsiveContainer>
         )}
       </div>
-    </div>
+    </GlassCard>
   );
 }
 

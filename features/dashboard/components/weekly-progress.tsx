@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, TrendingUp } from "lucide-react";
-import { motion } from "framer-motion";
+import { CheckCircle2 } from "lucide-react";
 import { StudySession } from "@/features/study/services/progress";
 import { AnimatedNumber } from "@/components/ui/animated-number";
+import { ComposedChart, Area, Line, ResponsiveContainer, XAxis, Tooltip } from "recharts";
+import { format } from "date-fns";
 
 interface WeeklyProgressProps {
   hoursCompleted: number;
@@ -15,7 +16,7 @@ interface WeeklyProgressProps {
 
 export const WeeklyProgress = React.memo(function WeeklyProgress({ 
   hoursCompleted, 
-  weeklyGoalHours = 20, // Default goal
+  weeklyGoalHours = 20,
   sessions = []
 }: WeeklyProgressProps) {
   
@@ -23,122 +24,193 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
   const isGoalMet = hoursCompleted >= weeklyGoalHours;
   
   // Real consistency data for the mini graph (last 7 days)
-  const activityData = Array.from({ length: 7 }).map((_, i) => {
-    const day = new Date();
-    day.setDate(day.getDate() - (6 - i)); // 0 = 6 days ago, 6 = today
-    day.setHours(0, 0, 0, 0);
-    const nextDay = new Date(day);
-    nextDay.setDate(day.getDate() + 1);
+  const chartData = useMemo(() => {
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    return Array.from({ length: 7 }).map((_, i) => {
+      const dayDate = new Date();
+      dayDate.setDate(dayDate.getDate() - (6 - i));
+      dayDate.setHours(0, 0, 0, 0);
+      const nextDay = new Date(dayDate);
+      nextDay.setDate(dayDate.getDate() + 1);
 
-    const daySessions = sessions.filter(s => {
-      const sessionDate = new Date(s.started_at);
-      return sessionDate >= day && sessionDate < nextDay;
+      const daySessions = sessions.filter(s => {
+        const sessionDate = new Date(s.started_at);
+        return sessionDate >= dayDate && sessionDate < nextDay;
+      });
+
+      const seconds = daySessions.reduce((acc, s) => acc + s.duration_seconds, 0);
+      const hours = seconds / 3600;
+      
+      return {
+        name: days[dayDate.getDay()],
+        fullDate: format(dayDate, "MMM d"),
+        actual: Number(hours.toFixed(1)),
+        target: Number((weeklyGoalHours / 7).toFixed(1))
+      };
     });
-
-    const seconds = daySessions.reduce((acc, s) => acc + s.duration_seconds, 0);
-    const hours = seconds / 3600;
-    const dailyGoal = weeklyGoalHours / 7;
-    return Math.min(1, hours / dailyGoal);
-  });
+  }, [sessions, weeklyGoalHours]);
 
   return (
-    <div className="flex flex-col h-full justify-between gap-5 relative">
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-xs font-semibold text-accent tracking-widest uppercase">Weekly Target</p>
+    <div className="flex flex-col h-full justify-between relative group">
+      
+      {/* Header section */}
+      <div className="relative z-10 px-1 pt-1">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[10px] font-bold text-sky-400 tracking-[0.2em] uppercase">Weekly Target</p>
           {isGoalMet && (
-            <div className="flex items-center gap-1.5 text-success text-[11px] font-bold bg-success/10 border border-success/20 px-2.5 py-1 rounded-md shadow-[0_0_10px_rgba(16,185,129,0.15)]">
+            <div className="flex items-center gap-1.5 text-sky-300 text-[10px] font-bold bg-sky-950/40 border border-sky-500/20 px-2.5 py-1 rounded-md shadow-[0_0_10px_rgba(56,189,248,0.15)]">
               <CheckCircle2 className="w-3.5 h-3.5" /> Goal Met
             </div>
           )}
         </div>
         
-        <div className="flex items-end justify-between mb-2">
+        <div className="flex flex-wrap items-end justify-between gap-2">
           <div className="flex items-baseline gap-1.5">
-            <h2 className="text-4xl font-bold tracking-tighter text-foreground flex items-baseline">
+            <h2 className="text-4xl font-bold tracking-tighter text-foreground flex items-baseline drop-shadow-[0_0_15px_rgba(56,189,248,0.3)]">
               <AnimatedNumber value={hoursCompleted} />
-              <span className="text-2xl ml-0.5">h</span>
+              <span className="text-2xl ml-0.5 text-sky-400">h</span>
             </h2>
             <p className="text-lg text-muted-foreground pb-0.5 font-medium">/ {weeklyGoalHours}h</p>
           </div>
-          {!isGoalMet && (
-            <div className="text-right">
-              <p className="text-xs font-semibold text-foreground flex items-center justify-end gap-1">
-                <AnimatedNumber value={weeklyGoalHours - hoursCompleted} />h remaining
-              </p>
-              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mt-0.5">Est. Sun</p>
-            </div>
-          )}
+          
+          <div className="text-right">
+             <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mb-0.5">Progress</p>
+             <p className="text-lg font-bold text-sky-400 drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]">
+               <AnimatedNumber value={Math.round(progressPercentage)} />%
+             </p>
+          </div>
         </div>
       </div>
 
-      <div className="space-y-5 mt-auto">
-        <div className="space-y-3">
-          <div className="flex justify-between text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-            <span>Progress</span>
-            <span className={isGoalMet ? "text-success" : "text-accent"}><AnimatedNumber value={Math.round(progressPercentage)} />%</span>
-          </div>
-          
-          {/* Premium Capsule Progress Bar */}
-          <div className="h-2.5 w-full bg-surface border border-border/50 rounded-full overflow-hidden shadow-inner relative">
-            <motion.div 
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPercentage}%` }}
-              transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-              className={cn("h-full rounded-full relative overflow-hidden", isGoalMet ? "bg-success" : "bg-accent")}
-            >
-              {/* Shimmer effect inside the bar */}
-              <div 
-                className="absolute inset-0 w-[200%] bg-gradient-to-r from-transparent via-white/30 to-transparent" 
-                style={{ animation: "shimmer 3s infinite linear" }} 
-              />
-            </motion.div>
-            
-            {/* Glowing tail/head indicator for the progress bar */}
-            <motion.div
-              initial={{ left: 0, opacity: 0 }}
-              animate={{ left: `calc(${progressPercentage}% - 8px)`, opacity: progressPercentage > 0 ? 1 : 0 }}
-              transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] border-2 border-accent hidden sm:block"
-              style={{ zIndex: 10, borderColor: isGoalMet ? 'var(--success)' : 'var(--accent)' }}
-            />
-          </div>
-          
-          <style>{`
-            @keyframes shimmer {
-              0% { transform: translateX(-100%); }
-              100% { transform: translateX(50%); }
-            }
-          `}</style>
-        </div>
+      {/* Futuristic Glowing Chart */}
+      <div className="flex-1 mt-4 w-[calc(100%+32px)] -mx-4 relative min-h-[140px] select-none pointer-events-auto">
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+            <defs>
+              <filter id="neonGlowCyan" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              
+              <filter id="neonGlowPurple" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
 
-        <div className="pt-4 border-t border-border/40 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0 shadow-[0_0_10px_rgba(79,70,229,0.1)]">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-foreground leading-none mb-1.5 tracking-tight">Consistency</p>
-              <p className="text-[11px] font-medium text-muted-foreground leading-none uppercase tracking-wider">On track this week</p>
-            </div>
-          </div>
-          
-          {/* Mini Activity Graph */}
-          <div className="flex items-end gap-1.5 h-10 shrink-0">
-            {activityData.map((val, i) => (
-              <motion.div 
-                key={i}
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: `${Math.max(20, val * 100)}%`, opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.4 + i * 0.05, ease: "easeOut" }}
-                className={cn(
-                  "w-2 rounded-sm",
-                  val > 0.8 ? "bg-accent" : val > 0.3 ? "bg-accent/60" : "bg-surface border border-border/50"
-                )}
-              />
-            ))}
-          </div>
-        </div>
+              <linearGradient id="gradCyan" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#38bdf8" stopOpacity={0.25} />
+                <stop offset="100%" stopColor="#38bdf8" stopOpacity={0} />
+              </linearGradient>
+              
+              <linearGradient id="gradPurple" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#a855f7" stopOpacity={0.15} />
+                <stop offset="100%" stopColor="#a855f7" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            
+            <XAxis 
+               dataKey="name" 
+               axisLine={false} 
+               tickLine={false} 
+               tick={{ fontSize: 9, fill: '#64748b', fontWeight: 700 }} 
+               dy={10}
+            />
+            
+            {/* Custom Tooltip matching the premium dark aesthetic */}
+            <Tooltip 
+               cursor={{ stroke: 'rgba(255,255,255,0.05)', strokeWidth: 30 }}
+               content={({ active, payload }) => {
+                 if (active && payload && payload.length) {
+                   return (
+                     <div className="bg-[#0a0a0c]/95 border border-white/5 backdrop-blur-xl p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
+                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                         {payload[0].payload.fullDate}
+                       </p>
+                       <div className="space-y-1.5">
+                         <div className="flex items-center justify-between gap-4">
+                           <div className="flex items-center gap-1.5">
+                             <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
+                             <span className="text-xs font-semibold text-white">Actual</span>
+                           </div>
+                           <span className="text-xs font-bold text-sky-400">{payload[1]?.value}h</span>
+                         </div>
+                         <div className="flex items-center justify-between gap-4">
+                           <div className="flex items-center gap-1.5">
+                             <div className="w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                             <span className="text-xs font-semibold text-white">Target</span>
+                           </div>
+                           <span className="text-xs font-bold text-purple-400">{payload[0]?.value}h</span>
+                         </div>
+                       </div>
+                     </div>
+                   );
+                 }
+                 return null;
+               }}
+            />
+            
+            <Area 
+              type="monotone" 
+              dataKey="target" 
+              stroke="none" 
+              fill="url(#gradPurple)" 
+              isAnimationActive={true} 
+            />
+            <Area 
+              type="monotone" 
+              dataKey="actual" 
+              stroke="none" 
+              fill="url(#gradCyan)" 
+              isAnimationActive={true} 
+            />
+            
+            <Line 
+               type="monotone" 
+               dataKey="target" 
+               name="Target"
+               stroke="#a855f7" 
+               strokeWidth={2} 
+               dot={false} 
+               activeDot={false}
+               style={{ filter: 'url(#neonGlowPurple)' }} 
+               isAnimationActive={true}
+               animationDuration={1500}
+            />
+            
+            <Line 
+               type="monotone" 
+               dataKey="actual" 
+               name="Actual"
+               stroke="#38bdf8" 
+               strokeWidth={2.5} 
+               dot={{ r: 3, fill: '#0f172a', strokeWidth: 1.5, stroke: '#38bdf8' }} 
+               activeDot={{ r: 5, fill: '#fff', stroke: '#38bdf8', strokeWidth: 2, style: { filter: 'url(#neonGlowCyan)' } }} 
+               style={{ filter: 'url(#neonGlowCyan)' }} 
+               isAnimationActive={true}
+               animationDuration={2000}
+               animationEasing="ease-out"
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Footer legend */}
+      <div className="flex justify-center items-center gap-6 mt-1 border-t border-white/[0.03] pt-3 relative z-10">
+         <div className="flex items-center gap-1.5">
+           <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
+           <span className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground/70">Actual</span>
+         </div>
+         <div className="flex items-center gap-1.5">
+           <div className="w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+           <span className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground/70">Target</span>
+         </div>
       </div>
     </div>
   );
