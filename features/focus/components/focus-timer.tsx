@@ -80,7 +80,7 @@ export const FocusTimer = React.memo(function FocusTimer({
   });
 
   // Format helper for digits
-  const getFormattedTimeString = (totalSeconds: number) => {
+  const getFormattedTimeString = React.useCallback((totalSeconds: number) => {
     const rounded = mode === 'stopwatch' ? Math.floor(totalSeconds) : Math.ceil(totalSeconds);
     const hrs = Math.floor(rounded / 3600);
     const mins = Math.floor((rounded % 3600) / 60);
@@ -90,7 +90,7 @@ export const FocusTimer = React.memo(function FocusTimer({
       return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+  }, [mode]);
 
   const [formattedTime, setFormattedTime] = React.useState(() => 
     getFormattedTimeString(displayTimeValue.get())

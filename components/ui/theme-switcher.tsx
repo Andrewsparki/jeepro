@@ -11,6 +11,7 @@ export function ThemeSwitcher({ className }: { className?: string }) {
 
   // Avoid hydration mismatch by waiting for mount
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

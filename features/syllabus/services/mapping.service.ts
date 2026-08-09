@@ -73,26 +73,20 @@ export async function prefetchMapping() {
       })
     );
   }
-  console.log(`[mapping] Cache populated. Subjects: ${Object.keys(cachedSubjectMap).length}, Chapters: ${Object.keys(cachedChapterMap).length}, Topics: ${Object.keys(cachedTopicMap).length}`);
 }
 
 /**
  * Given a subject slug (or UUID), returns the UUID.
  */
 export async function getSubjectUuid(slugOrId: string | null | undefined): Promise<string | null> {
-  console.log(`[mapping] getSubjectUuid called with input: "${slugOrId}"`);
   if (!slugOrId) return null;
   if (isUuid(slugOrId)) {
-    console.log(`[mapping] getSubjectUuid: Input "${slugOrId}" is already a UUID. Returning it.`);
     return slugOrId;
   }
   await prefetchMapping();
-  console.log(`[mapping] getSubjectUuid: Looking up "${slugOrId}" in cachedSubjectMap. Cache size: ${Object.keys(cachedSubjectMap || {}).length}`);
   const resolved = cachedSubjectMap?.[slugOrId];
   if (!resolved) {
     console.warn(`[mapping] getSubjectUuid: No UUID found for subject "${slugOrId}". WHY: The slug "${slugOrId}" is not present as a key in the cachedSubjectMap. (Reference tables might be empty, or the slug in the frontend JSON doesn't exactly match the slug in the database). Falling back to raw value.`);
-  } else {
-    console.log(`[mapping] getSubjectUuid: Found UUID "${resolved}" for subject "${slugOrId}"`);
   }
   return resolved || slugOrId;
 }
@@ -101,19 +95,14 @@ export async function getSubjectUuid(slugOrId: string | null | undefined): Promi
  * Given a chapter slug or JSON ID (or UUID), returns the UUID or string identifier.
  */
 export async function getChapterUuid(slugOrId: string | null | undefined): Promise<string | null> {
-  console.log(`[mapping] getChapterUuid called with input: "${slugOrId}"`);
   if (!slugOrId) return null;
   if (isUuid(slugOrId)) {
-    console.log(`[mapping] getChapterUuid: Input "${slugOrId}" is already a UUID. Returning it.`);
     return slugOrId;
   }
   await prefetchMapping();
-  console.log(`[mapping] getChapterUuid: Looking up "${slugOrId}" in cachedChapterMap. Cache size: ${Object.keys(cachedChapterMap || {}).length}`);
   const resolved = cachedChapterMap?.[slugOrId];
   if (!resolved) {
     console.warn(`[mapping] getChapterUuid: No UUID found for chapter "${slugOrId}". WHY: The string "${slugOrId}" (which could be a slug or a JSON ID) is not present as a key in cachedChapterMap. (Either missing in DB, or string mismatch between JSON and DB). Falling back to raw value.`);
-  } else {
-    console.log(`[mapping] getChapterUuid: Found UUID "${resolved}" for chapter "${slugOrId}"`);
   }
   return resolved || slugOrId;
 }
@@ -122,19 +111,14 @@ export async function getChapterUuid(slugOrId: string | null | undefined): Promi
  * Given a JSON topic ID (or UUID), returns the UUID or string identifier.
  */
 export async function getTopicUuid(jsonId: string | null | undefined): Promise<string | null> {
-  console.log(`[mapping] getTopicUuid called with input: "${jsonId}"`);
   if (!jsonId) return null;
   if (isUuid(jsonId)) {
-    console.log(`[mapping] getTopicUuid: Input "${jsonId}" is already a UUID. Returning it.`);
     return jsonId;
   }
   await prefetchMapping();
-  console.log(`[mapping] getTopicUuid: Looking up "${jsonId}" in cachedTopicMap. Cache size: ${Object.keys(cachedTopicMap || {}).length}`);
   const resolved = cachedTopicMap?.[jsonId];
   if (!resolved) {
     console.warn(`[mapping] getTopicUuid: No UUID found for topic "${jsonId}". WHY: The JSON ID "${jsonId}" could not be mapped to a DB topic UUID during prefetch (either the parent chapter was missing, or the topic title didn't match exactly). Falling back to raw value.`);
-  } else {
-    console.log(`[mapping] getTopicUuid: Found UUID "${resolved}" for topic "${jsonId}"`);
   }
   return resolved || jsonId;
 }

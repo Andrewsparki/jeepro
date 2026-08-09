@@ -135,39 +135,34 @@ export async function updateChapterProgress(subjectSlug: string, chapterSlug: st
     return null;
   }
 
-  const wasAlreadyMastered = chapter.status === "Mastered" || chapter.completionPercentage === 100;
-  const completedAt = status === "Mastered" ? new Date().toISOString() : null;
-  const updatedAt = new Date().toISOString();
-
-  // Prepare batch upsert payload for all topics in the chapter
-  const upsertData: { user_id: string; topic_id: string; status: ProgressStatus; completed_at: string | null; updated_at: string }[] = [];
+  const topicUuids: string[] = [];
   
   await Promise.all(chapter.topics.map(async topic => {
     const topicUuid = await getTopicUuid(topic.id);
     if (topicUuid) {
-      upsertData.push({
-        user_id: user.id,
-        topic_id: topicUuid,
-        status,
-        completed_at: completedAt,
-        updated_at: updatedAt
-      });
+      topicUuids.push(topicUuid);
     }
   }));
 
-  if (upsertData.length === 0) return [];
+  if (topicUuids.length === 0) return [];
 
-  const { data, error } = await supabase
-    .from("user_topic_progress")
-    .upsert(upsertData, { onConflict: 'user_id,topic_id' })
-    .select();
+  const { data: changed, error } = await supabase.rpc('upsert_topic_progress_transactional', {
+    p_topic_ids: topicUuids,
+    p_status: status
+  });
 
   if (error) {
     console.error("Error updating chapter progress:", error.message, error.details, error.hint);
     return null;
   }
 
-  if (status === "Mastered" && !wasAlreadyMastered) {
+  const { data } = await supabase
+    .from("user_topic_progress")
+    .select("*")
+    .eq("user_id", user.id)
+    .in("topic_id", topicUuids);
+
+  if (changed && status === "Mastered") {
     try {
       await updateMissionProgress("chapter_completion", 1);
     } catch (err) {
@@ -175,7 +170,7 @@ export async function updateChapterProgress(subjectSlug: string, chapterSlug: st
     }
   }
 
-  return data as UserTopicProgress[];
+  return (data || []) as UserTopicProgress[];
 }
 
 export async function updateSubjectProgress(subjectSlug: string, status: ProgressStatus): Promise<UserTopicProgress[] | null> {
@@ -195,42 +190,39 @@ export async function updateSubjectProgress(subjectSlug: string, status: Progres
   }
 
   let newlyMasteredChaptersCount = 0;
-  if (status === "Mastered") {
-    newlyMasteredChaptersCount = subject.chapters.filter(
-      c => c.status !== "Mastered" && c.completionPercentage < 100
-    ).length;
-  }
+  const allTopicUuids: string[] = [];
 
-  const completedAt = status === "Mastered" ? new Date().toISOString() : null;
-  const updatedAt = new Date().toISOString();
-
-  const upsertData: { user_id: string; topic_id: string; status: ProgressStatus; completed_at: string | null; updated_at: string }[] = [];
   for (const chapter of subject.chapters) {
+    const chapterTopicUuids: string[] = [];
     for (const topic of chapter.topics) {
       const topicUuid = await getTopicUuid(topic.id);
-      if (!topicUuid) continue;
-      
-      upsertData.push({
-        user_id: user.id,
-        topic_id: topicUuid,
-        status,
-        completed_at: completedAt,
-        updated_at: updatedAt
+      if (topicUuid) {
+        chapterTopicUuids.push(topicUuid);
+        allTopicUuids.push(topicUuid);
+      }
+    }
+    
+    if (chapterTopicUuids.length > 0) {
+      const { data: changed, error } = await supabase.rpc('upsert_topic_progress_transactional', {
+        p_topic_ids: chapterTopicUuids,
+        p_status: status
       });
+      
+      if (error) {
+        console.error(`Error updating chapter progress for ${chapter.slug}:`, error.message);
+      } else if (changed && status === "Mastered") {
+        newlyMasteredChaptersCount++;
+      }
     }
   }
 
-  if (upsertData.length === 0) return [];
+  if (allTopicUuids.length === 0) return [];
 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("user_topic_progress")
-    .upsert(upsertData, { onConflict: 'user_id,topic_id' })
-    .select();
-
-  if (error) {
-    console.error("Error updating subject progress:", error.message, error.details, error.hint);
-    return null;
-  }
+    .select("*")
+    .eq("user_id", user.id)
+    .in("topic_id", allTopicUuids);
 
   if (status === "Mastered" && newlyMasteredChaptersCount > 0) {
     try {
@@ -240,7 +232,7 @@ export async function updateSubjectProgress(subjectSlug: string, status: Progres
     }
   }
 
-  return data as UserTopicProgress[];
+  return (data || []) as UserTopicProgress[];
 }
 
 export async function getStudySessions(): Promise<StudySession[]> {

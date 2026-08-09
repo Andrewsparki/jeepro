@@ -39,7 +39,10 @@ export function ProfileSection() {
           <div className="relative group shrink-0">
             <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-surface-hover border border-white/10 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:border-accent/50 shadow-xl">
               {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                </>
               ) : (
                 <UserCircle className="w-16 h-16 text-muted-foreground opacity-50" />
               )}

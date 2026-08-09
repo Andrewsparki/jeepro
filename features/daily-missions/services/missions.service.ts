@@ -147,10 +147,10 @@ export async function updateMissionProgress(missionType: MissionType, valueToAdd
 
   const todayStr = getLocalDateString();
 
-  // Fetch the specific mission
+  // Fetch the specific mission's ID
   const { data: mission, error: fetchError } = await supabase
     .from("daily_missions")
-    .select("*")
+    .select("id, completed")
     .eq("user_id", user.id)
     .eq("date", todayStr)
     .eq("mission_type", missionType)
@@ -163,30 +163,21 @@ export async function updateMissionProgress(missionType: MissionType, valueToAdd
     return;
   }
 
-  if (mission.completed) return; // Already finished
+  if (mission.completed) return; // Already finished, avoid RPC call if possible
 
-  const newValue = mission.current_value + valueToAdd;
-  const isCompleted = newValue >= mission.target_value;
-
-  const updates: Record<string, string | number | boolean> = {
-    current_value: Math.min(newValue, mission.target_value), // Cap at target for UI
-    updated_at: new Date().toISOString()
-  };
-
-  if (isCompleted) {
-    updates.completed = true;
-    updates.completed_at = new Date().toISOString();
-  }
-
-  const { error: updateError } = await supabase
-    .from("daily_missions")
-    .update(updates)
-    .eq("id", mission.id);
+  // Use Atomic RPC to prevent read-modify-write data loss
+  const { data: updatedMission, error: updateError } = await supabase
+    .rpc("increment_daily_mission", {
+      p_mission_id: mission.id,
+      p_amount: valueToAdd
+    });
 
   if (updateError) {
-    console.error("Error updating mission progress:", updateError.message);
+    console.error("Error updating mission progress via RPC:", updateError.message);
     return;
   }
+
+  const isCompleted = updatedMission?.completed;
 
   // XP is calculated on the fly in gamification.ts by summing all completed missions
   // However, we should still handle the bonus xp awarded state if all are completed
