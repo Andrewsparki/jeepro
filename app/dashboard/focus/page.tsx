@@ -51,13 +51,51 @@ export default function FocusPage() {
     return defaultBreakTime * 4;
   };
 
-  // Sync initial time if mode changes while not started
-  useEffect(() => {
-    if (!isActive && sessionAccumulated === 0) {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      setPhaseAccumulated(0);
+  const handleRestart = () => {
+    setIsActive(false);
+    setSessionAccumulated(0);
+    setPhaseAccumulated(0);
+    setLastResumeTime(null);
+    setInitialStartTime(null);
+    setPhase("study");
+  };
+
+  const handleEndSession = async (overrideSessionElapsed?: number) => {
+    const finalElapsed = typeof overrideSessionElapsed === 'number' ? overrideSessionElapsed : getSessionElapsed();
+    
+    setIsActive(false);
+    setSessionAccumulated(finalElapsed);
+    setPhaseAccumulated(getPhaseElapsed());
+    setLastResumeTime(null);
+    
+    if (finalElapsed < 10) {
+      // Silently discard spam/accidental starts
+      handleRestart();
+    } else if (finalElapsed < 60) {
+      toast("Session too short to record.");
+      handleRestart();
+    } else {
+      const endedAt = new Date();
+      const startedAt = initialStartTime || new Date(endedAt.getTime() - finalElapsed * 1000);
+      const exactDuration = Math.floor(finalElapsed);
+      
+      try {
+        await SessionService.endSession({
+          durationSeconds: exactDuration,
+          startedAt: startedAt.toISOString(),
+          endedAt: endedAt.toISOString(),
+        });
+        toast.success("Study session saved successfully!");
+      } catch (e) {
+        console.error("Session sync failed:", e);
+        toast.warning("Network issue: Session saved offline", {
+          description: "We'll sync it automatically when you reconnect."
+        });
+      }
+      triggerRefresh();
+      setIsCompletionModalOpen(true);
     }
-  }, [timerMode, defaultStudyTime, isActive, sessionAccumulated]);
+  };
 
   function handleTimerComplete() {
     const finalSession = getSessionElapsed();
@@ -118,58 +156,12 @@ export default function FocusPage() {
     }
   };
 
-  const handleRestart = () => {
-    setIsActive(false);
-    setSessionAccumulated(0);
-    setPhaseAccumulated(0);
-    setLastResumeTime(null);
-    setInitialStartTime(null);
-    setPhase("study");
-  };
-
   const handleStartBreak = () => {
     setIsActive(false);
     setSessionAccumulated(getSessionElapsed());
     setPhaseAccumulated(0);
     setLastResumeTime(null);
     setPhase("shortBreak");
-  };
-
-  const handleEndSession = async (overrideSessionElapsed?: number | any) => {
-    const finalElapsed = typeof overrideSessionElapsed === 'number' ? overrideSessionElapsed : getSessionElapsed();
-    
-    setIsActive(false);
-    setSessionAccumulated(finalElapsed);
-    setPhaseAccumulated(getPhaseElapsed());
-    setLastResumeTime(null);
-    
-    if (finalElapsed < 10) {
-      // Silently discard spam/accidental starts
-      handleRestart();
-    } else if (finalElapsed < 60) {
-      toast("Session too short to record.");
-      handleRestart();
-    } else {
-      const endedAt = new Date();
-      const startedAt = initialStartTime || new Date(endedAt.getTime() - finalElapsed * 1000);
-      const exactDuration = Math.floor(finalElapsed);
-      
-      try {
-        await SessionService.endSession({
-          durationSeconds: exactDuration,
-          startedAt: startedAt.toISOString(),
-          endedAt: endedAt.toISOString(),
-        });
-        toast.success("Study session saved successfully!");
-      } catch (e) {
-        console.error("Session sync failed:", e);
-        toast.warning("Network issue: Session saved offline", {
-          description: "We'll sync it automatically when you reconnect."
-        });
-      }
-      triggerRefresh();
-      setIsCompletionModalOpen(true);
-    }
   };
 
   useKeyboardShortcuts({

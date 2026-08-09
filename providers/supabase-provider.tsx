@@ -33,7 +33,7 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
     });
 
     // Initial session check
-    supabase.auth.getSession().then((res: any) => {
+    supabase.auth.getSession().then((res: { data: { session: Session | null } }) => {
       const { session } = res.data;
       if (isMounted) {
         setSession(session);

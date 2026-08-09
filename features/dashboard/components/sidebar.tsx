@@ -20,6 +20,7 @@ import { logout } from "@/features/auth/actions/auth";
 import { useFocusStore } from "@/features/focus/store/focus-store";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 
 const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-5 w-5" /> },
@@ -46,18 +47,19 @@ export function Sidebar() {
       {!isHidden && (
         <motion.aside 
           initial={{ width: 0, opacity: 0, x: -50 }}
-          animate={{ width: 256, opacity: 1, x: 0 }}
+          animate={{ width: 260, opacity: 1, x: 0 }}
           exit={{ width: 0, opacity: 0, x: -50 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="hidden flex-col border-r border-border/40 bg-background/95 md:flex h-screen sticky top-0 overflow-hidden whitespace-nowrap"
+          className="hidden flex-col border-r border-border/40 bg-background/95 md:flex fixed top-0 bottom-0 left-0 z-30 overflow-hidden whitespace-nowrap"
         >
-          <div className="flex h-14 items-center px-6 border-b border-border/40 shrink-0">
+          <div className="flex h-[64px] items-center justify-between px-6 border-b border-border/40 shrink-0">
             <Link href="/dashboard" className="flex items-center gap-2 font-bold tracking-tight text-lg">
-              <div className="h-6 w-6 rounded-md bg-foreground flex items-center justify-center">
+              <div className="h-6 w-6 rounded-md bg-foreground flex items-center justify-center shrink-0">
                 <span className="text-background text-xs font-black">J</span>
               </div>
-              {siteConfig.name}
+              <span className="truncate">{siteConfig.name}</span>
             </Link>
+            <ThemeSwitcher className="shrink-0" />
           </div>
 
           <div className="flex-1 overflow-y-auto py-6 px-4">

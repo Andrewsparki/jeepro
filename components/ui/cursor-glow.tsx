@@ -120,8 +120,16 @@ export function CursorGlow() {
     const trailNodes = Array.from({ length: MAX_TRAIL_POINTS }, () => ({ x: -500, y: -500 }));
 
     const onMouseMove = (e: MouseEvent) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
+      const zoomStr = typeof window !== "undefined" ? window.getComputedStyle(document.documentElement).zoom : "";
+      let zoom = 1;
+      if (zoomStr) {
+        const val = parseFloat(zoomStr);
+        if (!isNaN(val)) {
+          zoom = zoomStr.includes("%") ? val / 100 : (val > 2 ? val / 100 : val);
+        }
+      }
+      targetX = e.clientX / zoom;
+      targetY = e.clientY / zoom;
       targetOpacity = 0.95;
 
       if (leadNode.x === -500) {

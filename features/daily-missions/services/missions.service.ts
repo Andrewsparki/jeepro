@@ -168,7 +168,7 @@ export async function updateMissionProgress(missionType: MissionType, valueToAdd
   const newValue = mission.current_value + valueToAdd;
   const isCompleted = newValue >= mission.target_value;
 
-  const updates: any = {
+  const updates: Record<string, string | number | boolean> = {
     current_value: Math.min(newValue, mission.target_value), // Cap at target for UI
     updated_at: new Date().toISOString()
   };
@@ -197,8 +197,8 @@ export async function updateMissionProgress(missionType: MissionType, valueToAdd
       .eq("user_id", user.id)
       .eq("date", todayStr);
 
-    if (allMissions && allMissions.every((m: any) => m.completed)) {
-      const alreadyAwarded = allMissions.some((m: any) => m.bonus_xp_awarded);
+    if (allMissions && allMissions.every((m: DailyMission) => m.completed)) {
+      const alreadyAwarded = allMissions.some((m: DailyMission) => m.bonus_xp_awarded);
       if (!alreadyAwarded) {
         await supabase
           .from("daily_missions")

@@ -1,38 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* JEE OS Premium Palette (Studio Gray) */
-  --bg-primary: #0A0A0A; /* Neutral dark, Apple-like */
-  --bg-secondary: #121212;
-  --bg-elevated: #1A1A1A;
-  
-  --surface: rgba(255, 255, 255, 0.03); 
-  --surface-hover: rgba(255, 255, 255, 0.06); 
-  --surface-active: rgba(255, 255, 255, 0.09);
-
-  --glass: rgba(10, 10, 10, 0.65);
-  --glass-strong: rgba(5, 5, 5, 0.85); 
-  --glass-border: rgba(255, 255, 255, 0.08); /* Crisp, thin border */
-
-  --text-primary: #FAFAFA;
-  --text-secondary: #A1A1AA;
-  --text-muted: #71717A;
-
-  --accent: #4F46E5; /* Sophisticated Indigo */
-  --accent-soft: rgba(79, 70, 229, 0.15);
-  --accent-glow: rgba(79, 70, 229, 0.4);
-
-  --success: #10B981;
-  --warning: #F59E0B;
-  --danger: #EF4444;
-
-  /* Sharp, multi-layered elevation shadows */
-  --shadow-soft: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 2px 8px rgba(0, 0, 0, 0.2);
-  --shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 12px 32px rgba(0, 0, 0, 0.25);
-  --shadow-medium: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-strong: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 16px 48px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 24px rgba(79, 70, 229, 0.3);
-
+  /* Base Variables - Structure, Animation, Motion */
   /* Unified Radii */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
@@ -50,13 +19,14 @@
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* Legacy Aliases */
+  
+  --radius: var(--radius-lg);
+  
+  /* Shared standard semantic properties */
   --background: var(--bg-primary);
   --foreground: var(--text-primary);
   --card: var(--glass);
   --border: var(--glass-border);
-  --muted: rgba(255, 255, 255, 0.07);
   --muted-foreground: var(--text-secondary);
   --primary: var(--text-primary);
   --primary-foreground: var(--bg-primary);
@@ -68,7 +38,120 @@
   --destructive-foreground: #ffffff;
   --ring: var(--accent);
   --input: var(--surface);
-  --radius: var(--radius-lg);
+}
+
+/* Midnight Theme (Default) */
+:root, .midnight, .dark {
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #121212;
+  --bg-elevated: #1A1A1A;
+  
+  --surface: rgba(255, 255, 255, 0.03); 
+  --surface-hover: rgba(255, 255, 255, 0.06); 
+  --surface-active: rgba(255, 255, 255, 0.09);
+
+  --glass: rgba(10, 10, 10, 0.65);
+  --glass-strong: rgba(5, 5, 5, 0.85); 
+  --glass-border: rgba(255, 255, 255, 0.08); 
+
+  --text-primary: #FAFAFA;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+
+  --accent: #4F46E5;
+  --accent-soft: rgba(79, 70, 229, 0.15);
+  --accent-glow: rgba(79, 70, 229, 0.4);
+
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+
+  --shadow-soft: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 12px 32px rgba(0, 0, 0, 0.25);
+  --shadow-medium: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-strong: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 16px 48px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 24px rgba(79, 70, 229, 0.3);
+
+  --card-highlight-start: rgba(255, 255, 255, 0.03);
+  --card-highlight-end: rgba(255, 255, 255, 0);
+  
+  --muted: rgba(255, 255, 255, 0.07);
+}
+
+/* AMOLED Theme */
+.amoled {
+  --bg-primary: #000000;
+  --bg-secondary: #0A0A0A;
+  --bg-elevated: #121212;
+
+  --surface: rgba(255, 255, 255, 0.02);
+  --surface-hover: rgba(255, 255, 255, 0.05);
+  --surface-active: rgba(255, 255, 255, 0.08);
+
+  --glass: rgba(0, 0, 0, 0.65);
+  --glass-strong: rgba(0, 0, 0, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.05);
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+
+  --accent: #4F46E5;
+  --accent-soft: rgba(79, 70, 229, 0.15);
+  --accent-glow: rgba(79, 70, 229, 0.4);
+
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+
+  --shadow-soft: 0 0 0 1px rgba(255, 255, 255, 0.03), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 12px 32px rgba(0, 0, 0, 0.4);
+  --shadow-medium: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-strong: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 16px 48px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 24px rgba(79, 70, 229, 0.3);
+
+  --card-highlight-start: rgba(255, 255, 255, 0.02);
+  --card-highlight-end: rgba(255, 255, 255, 0);
+
+  --muted: rgba(255, 255, 255, 0.04);
+}
+
+/* Light Theme */
+.light {
+  --bg-primary: #FDFDFD;
+  --bg-secondary: #F4F4F5;
+  --bg-elevated: #FFFFFF;
+
+  --surface: rgba(0, 0, 0, 0.03);
+  --surface-hover: rgba(0, 0, 0, 0.06);
+  --surface-active: rgba(0, 0, 0, 0.09);
+
+  --glass: rgba(253, 253, 253, 0.65);
+  --glass-strong: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.08);
+
+  --text-primary: #09090B;
+  --text-secondary: #52525B;
+  --text-muted: #A1A1AA;
+
+  --accent: #4F46E5;
+  --accent-soft: rgba(79, 70, 229, 0.1);
+  --accent-glow: rgba(79, 70, 229, 0.2);
+
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+
+  --shadow-soft: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 12px 32px rgba(0, 0, 0, 0.08);
+  --shadow-medium: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-strong: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 16px 48px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 24px rgba(79, 70, 229, 0.2);
+
+  --card-highlight-start: rgba(0, 0, 0, 0.02);
+  --card-highlight-end: rgba(0, 0, 0, 0);
+
+  --muted: rgba(0, 0, 0, 0.07);
 }
 
 /* Glassmorphism shared class */
@@ -84,16 +167,15 @@
 
 /* Clean, crisp gradient for cards */
 .premium-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%), var(--glass-strong);
+  background: linear-gradient(180deg, var(--card-highlight-start) 0%, var(--card-highlight-end) 100%), var(--glass-strong);
   box-shadow: var(--shadow-soft);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform, box-shadow;
+  transition: border-color 200ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1), background-color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: box-shadow;
 }
 
 .premium-card:hover {
-  transform: translate3d(0, -2px, 0);
   box-shadow: var(--shadow-hover);
 }
 
@@ -149,6 +231,10 @@
 
 * {
   border-color: var(--border);
+}
+
+html {
+  zoom: 77%;
 }
 
 body {
@@ -238,8 +324,8 @@ body {
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0px);
+    transform: none;
+    filter: none;
   }
 }
 
@@ -274,3 +360,18 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
 }
+
+/* Fix Radix UI Floating / Portal elements positioning offset under 77% CSS zoom */
+div[data-radix-portal],
+[data-radix-menu-content],
+[data-radix-popper-content-wrapper] {
+  zoom: 1.2987012987 !important; /* 1 / 0.77 */
+}
+
+/* Scale the content back down to match the rest of the 77% layout scale */
+div[data-radix-portal] > *,
+[data-radix-menu-content] > *,
+[data-radix-popper-content-wrapper] > * {
+  zoom: 0.77 !important;
+}
+

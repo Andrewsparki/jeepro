@@ -15,22 +15,22 @@ interface GlassCardProps extends HTMLMotionProps<"div"> {
 }
 
 const tintClassMap: Record<string, string> = {
-  blue: "hover:shadow-[0_8px_30px_rgba(59,130,246,0.15)] hover:border-blue-500/20",
-  emerald: "hover:shadow-[0_8px_30px_rgba(16,185,129,0.15)] hover:border-emerald-500/20",
-  amber: "hover:shadow-[0_8px_30px_rgba(245,158,11,0.15)] hover:border-amber-500/20",
-  orange: "hover:shadow-[0_8px_30px_rgba(249,115,22,0.15)] hover:border-orange-500/20",
-  purple: "hover:shadow-[0_8px_30px_rgba(168,85,247,0.15)] hover:border-purple-500/20",
-  yellow: "hover:shadow-[0_8px_30px_rgba(234,179,8,0.15)] hover:border-yellow-500/20",
+  blue: "hover:shadow-[0_8px_30px_rgba(59,130,246,0.12)] hover:border-blue-500/20",
+  emerald: "hover:shadow-[0_8px_30px_rgba(16,185,129,0.12)] hover:border-emerald-500/20",
+  amber: "hover:shadow-[0_8px_30px_rgba(245,158,11,0.12)] hover:border-amber-500/20",
+  orange: "hover:shadow-[0_8px_30px_rgba(249,115,22,0.12)] hover:border-orange-500/20",
+  purple: "hover:shadow-[0_8px_30px_rgba(168,85,247,0.12)] hover:border-purple-500/20",
+  yellow: "hover:shadow-[0_8px_30px_rgba(234,179,8,0.12)] hover:border-yellow-500/20",
   none: "hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]",
 };
 
 const tintGradientMap: Record<string, string> = {
-  blue: "from-blue-500/5",
-  emerald: "from-emerald-500/5",
-  amber: "from-amber-500/5",
-  orange: "from-orange-500/5",
-  purple: "from-purple-500/5",
-  yellow: "from-yellow-500/5",
+  blue: "from-blue-500/10",
+  emerald: "from-emerald-500/10",
+  amber: "from-amber-500/10",
+  orange: "from-orange-500/10",
+  purple: "from-purple-500/10",
+  yellow: "from-yellow-500/10",
   none: "",
 };
 

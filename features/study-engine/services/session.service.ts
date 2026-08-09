@@ -129,7 +129,7 @@ export class SessionService {
       const existing = localStorage.getItem(this.OFFLINE_QUEUE_KEY);
       if (!existing) return;
 
-      let queue: any[];
+      let queue: unknown[];
       try {
         queue = JSON.parse(existing);
       } catch {
@@ -140,24 +140,24 @@ export class SessionService {
       if (!Array.isArray(queue) || queue.length === 0) return;
 
       // Aggressively filter out any corrupted entries
-      const isValid = (q: any): boolean => {
+      const isValid = (q: unknown): q is { startedAt: string; durationSeconds: number; endedAt: string } => {
+        const item = q as Record<string, unknown> | null;
         return (
-          typeof q === 'object' && q !== null &&
-          typeof q.durationSeconds === 'number' &&
-          Number.isFinite(q.durationSeconds) &&
-          q.durationSeconds > 0 &&
-          typeof q.startedAt === 'string' &&
-          typeof q.endedAt === 'string'
+          typeof item === 'object' && item !== null &&
+          typeof item.durationSeconds === 'number' &&
+          Number.isFinite(item.durationSeconds) &&
+          item.durationSeconds > 0 &&
+          typeof item.startedAt === 'string' &&
+          typeof item.endedAt === 'string'
         );
       };
 
-      const validQueue = queue.filter(isValid);
+      const validQueue = queue.filter(isValid) as Parameters<typeof SessionService.endSession>[0][];
       if (validQueue.length !== queue.length) {
         console.warn(`[SessionService] Purged ${queue.length - validQueue.length} corrupt offline session(s).`);
         localStorage.setItem(this.OFFLINE_QUEUE_KEY, JSON.stringify(validQueue));
-        queue = validQueue;
       }
-      if (queue.length === 0) {
+      if (validQueue.length === 0) {
         localStorage.removeItem(this.OFFLINE_QUEUE_KEY);
         return;
       }
@@ -166,14 +166,14 @@ export class SessionService {
       if (this.isSyncingOfflineSessions) return;
       this.isSyncingOfflineSessions = true;
 
-      console.info(`[SessionService] Found ${queue.length} offline sessions. Attempting sync...`);
+      console.info(`[SessionService] Found ${validQueue.length} offline sessions. Attempting sync...`);
 
-      const removeFromQueue = (session: any) => {
+      const removeFromQueue = (session: { startedAt: string; durationSeconds: number }) => {
         try {
           const raw = localStorage.getItem(this.OFFLINE_QUEUE_KEY);
           if (!raw) return;
           const current = JSON.parse(raw);
-          const updated = current.filter((q: any) => 
+          const updated = current.filter((q: { startedAt: string; durationSeconds: number }) => 
             !(q.startedAt === session.startedAt && q.durationSeconds === session.durationSeconds)
           );
           if (updated.length === 0) {
@@ -184,7 +184,7 @@ export class SessionService {
         } catch { /* localStorage failure, ignore */ }
       };
 
-      for (const session of queue) {
+      for (const session of validQueue) {
         try {
           await this.endSession(session);
           removeFromQueue(session);

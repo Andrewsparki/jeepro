@@ -7,6 +7,8 @@ import { CommandPaletteProvider } from "@/features/search/context/command-palett
 import { CommandPalette } from "@/features/search/components/command-palette";
 import { KonamiCode } from "@/components/ui/konami-code";
 
+import { DashboardMainContent } from "@/features/dashboard/components/dashboard-main-content";
+
 export default function DashboardLayout({
   children,
 }: {
@@ -18,14 +20,14 @@ export default function DashboardLayout({
         <KonamiCode />
         <div className="flex min-h-screen w-full bg-transparent">
         <Sidebar />
-        <div className="flex flex-1 flex-col">
+        <DashboardMainContent>
           <Topbar />
           <main className="flex-1 p-4 md:p-6 lg:p-8 relative">
             <MotionWrapper>
               {children}
             </MotionWrapper>
           </main>
-        </div>
+        </DashboardMainContent>
       </div>
         <StudyTimer />
         <CommandPalette />

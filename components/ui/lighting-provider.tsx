@@ -36,7 +36,15 @@ export function LightingProvider({ children }: { children: React.ReactNode }) {
     }
 
     const onMouseMove = (e: MouseEvent) => {
-      mouse.current = { x: e.clientX, y: e.clientY };
+      const zoomStr = typeof window !== "undefined" ? window.getComputedStyle(document.documentElement).zoom : "";
+      let zoom = 1;
+      if (zoomStr) {
+        const val = parseFloat(zoomStr);
+        if (!isNaN(val)) {
+          zoom = zoomStr.includes("%") ? val / 100 : (val > 2 ? val / 100 : val);
+        }
+      }
+      mouse.current = { x: e.clientX / zoom, y: e.clientY / zoom };
       dirty.current = true;
 
       // Restart RAF loop if it was stopped due to idle

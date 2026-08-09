@@ -60,18 +60,23 @@ export function FloatingParticles() {
       opacity: Math.random() * 0.4 + 0.1,
     }));
 
-    let frameCount = 0;
+    let lastTime = 0;
     const isLowEnd = typeof navigator !== "undefined" && (navigator.hardwareConcurrency ?? 8) <= 4;
+    // Low-end devices: skip frames if less than ~32ms elapsed (cap at ~30fps)
+    const MIN_FRAME_MS = isLowEnd ? 32 : 0;
 
-    const render = () => {
+    const render = (time: number) => {
       requestRef.current = requestAnimationFrame(render);
 
       if (document.hidden) return; // Pause rendering if tab is hidden
 
-      frameCount++;
-      if (isLowEnd && frameCount % 2 !== 0) {
-        return;
-      }
+      const dt = lastTime ? time - lastTime : 16.67;
+      if (dt < MIN_FRAME_MS) return; // Throttle on low-end by time, not frame count
+      lastTime = time;
+
+      // Normalize velocity to be consistent across refresh rates
+      // vx/vy were authored for ~60fps (16.67ms per frame)
+      const dtFactor = dt / 16.67;
 
       ctx.clearRect(0, 0, width, height);
 
@@ -80,8 +85,8 @@ export function FloatingParticles() {
       const my = mouseRef.current.y;
 
       particles.current.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
+        p.x += p.vx * dtFactor;
+        p.y += p.vy * dtFactor;
 
         // Wrap around screen
         if (p.x < 0) p.x = width;
@@ -98,8 +103,8 @@ export function FloatingParticles() {
           const dist = Math.sqrt(distSq);
           if (dist > 0) {
             const force = (150 - dist) / 150;
-            p.x -= (dx / dist) * force * 0.5;
-            p.y -= (dy / dist) * force * 0.5;
+            p.x -= (dx / dist) * force * 0.5 * dtFactor;
+            p.y -= (dy / dist) * force * 0.5 * dtFactor;
           }
         }
 

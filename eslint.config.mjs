@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "scratch/**",
+    "seed_syllabus.ts",
+    "verify_slugs.ts",
+    "generate_json.py",
   ]),
 ]);
 

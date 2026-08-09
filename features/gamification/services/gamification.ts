@@ -33,7 +33,7 @@ export function calculateXPAndLevel(
   sessions: StudySession[],
   progress: UserTopicProgress[],
   syllabus: Subject[],
-  completedMissions: any[] = []
+  completedMissions: { reward_xp?: number; bonus_xp_awarded?: boolean; date?: string }[] = []
 ): XPDetails {
   let totalXP = 0;
 
