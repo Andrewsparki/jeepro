@@ -68,7 +68,10 @@ const LevelProgressChart = dynamic(
   { ssr: false, loading: () => <LevelProgressChartSkeleton /> }
 );
 
+import { useStudySession } from "@/features/study/context/study-session-context";
+
 export default function AnalyticsPage() {
+  const { refreshKey } = useStudySession();
   const [metrics, setMetrics] = useState<Awaited<ReturnType<typeof getDashboardMetrics>> | null>(null);
   
   useEffect(() => {
@@ -77,7 +80,7 @@ export default function AnalyticsPage() {
       setMetrics(data);
     }
     loadData();
-  }, []);
+  }, [refreshKey]);
 
   if (!metrics) {
     // Return completely skeletonized page to avoid layout shifts
@@ -131,6 +134,9 @@ export default function AnalyticsPage() {
 
   const { study_sessions, syllabus, progress } = metrics;
   const totalHours = Math.floor(metrics.totalDurationSeconds / 3600);
+  const totalMinutes = Math.floor((metrics.totalDurationSeconds % 3600) / 60);
+  const studyTimeSuffix = totalHours > 0 ? `h ${totalMinutes}m` : "m";
+  const studyTimeValue = totalHours > 0 ? totalHours : totalMinutes;
 
   return (
     <DashboardShell>
@@ -143,8 +149,8 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <AnimatedStatCard
             title="Total Study Time"
-            value={totalHours}
-            suffix="h"
+            value={studyTimeValue}
+            suffix={studyTimeSuffix}
             icon={<Clock className="w-6 h-6 text-blue-400" />}
             iconColorClass="text-blue-400 bg-blue-500/10 border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
             hoverTint="blue"

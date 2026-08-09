@@ -24,7 +24,7 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
     
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event: string, session: Session | null) => {
       if (isMounted) {
         setSession(session);
         setUser(session?.user ?? null);
@@ -33,13 +33,14 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
     });
 
     // Initial session check
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then((res: any) => {
+      const { session } = res.data;
       if (isMounted) {
         setSession(session);
         setUser(session?.user ?? null);
         setIsLoading(false);
       }
-    }).catch(err => {
+    }).catch((err: unknown) => {
       console.error("Auth session error:", err);
       if (isMounted) setIsLoading(false);
     });

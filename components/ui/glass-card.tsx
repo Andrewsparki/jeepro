@@ -24,6 +24,16 @@ const tintClassMap: Record<string, string> = {
   none: "hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]",
 };
 
+const tintGradientMap: Record<string, string> = {
+  blue: "from-blue-500/5",
+  emerald: "from-emerald-500/5",
+  amber: "from-amber-500/5",
+  orange: "from-orange-500/5",
+  purple: "from-purple-500/5",
+  yellow: "from-yellow-500/5",
+  none: "",
+};
+
 export const GlassCard = React.memo(function GlassCard({
   children,
   className,
@@ -33,19 +43,32 @@ export const GlassCard = React.memo(function GlassCard({
   ...props
 }: GlassCardProps) {
   const tintClass = hoverTint && hoverTint !== "none" ? tintClassMap[hoverTint] : "hover:shadow-[0_8px_30px_rgba(var(--accent),0.1)] hover:border-white/10";
+  const gradientClass = hoverTint && hoverTint !== "none" ? tintGradientMap[hoverTint] : "from-accent/5";
+
+  const hasHoverEffect = interactive || hoverTint !== "none";
 
   return (
     <motion.div
-      whileHover={interactive || hoverTint !== "none" ? { y: -4 } : {}}
+      whileHover={interactive ? { y: -4 } : {}}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
         "relative premium-card overflow-hidden transition-all duration-250 ease-[cubic-bezier(0.22,1,0.36,1)]",
-        tintClass,
+        hasHoverEffect && "group",
+        hasHoverEffect && tintClass,
         className
       )}
       style={style}
       {...props}
     >
+      {/* Universal Hover Tint */}
+      {hasHoverEffect && (
+        <div 
+          className={cn(
+            "pointer-events-none absolute inset-0 bg-gradient-to-br to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] z-0",
+            gradientClass
+          )}
+        />
+      )}
       {/* Content */}
       {children}
     </motion.div>

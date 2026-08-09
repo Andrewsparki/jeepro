@@ -7,12 +7,21 @@ import { ChapterList } from "@/features/syllabus/components/chapter-list";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { getSyllabus, Subject } from "@/features/syllabus/services/syllabus";
+import { updateSubjectProgress } from "@/features/study/services/progress";
+import { useStudySession } from "@/features/study/context/study-session-context";
+import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { CheckCircle2, RotateCcw } from "lucide-react";
+import confetti from "canvas-confetti";
 
 export default function SyllabusPage() {
+  const { triggerRefresh } = useStudySession();
   const [activeSubject, setActiveSubject] = useState("physics");
   const [syllabus, setSyllabus] = useState<Record<string, Subject>>({});
   const [loading, setLoading] = useState(true);
+
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -25,10 +34,42 @@ export default function SyllabusPage() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [refreshKey]);
+
+  const refreshSyllabus = () => setRefreshKey(k => k + 1);
 
   const subjects = Object.values(syllabus).map(s => ({ id: s.slug, label: s.name }));
   const currentSubjectData = syllabus[activeSubject];
+
+  const handleSubjectAction = async (action: 'complete' | 'reset') => {
+    if (!currentSubjectData) return;
+    
+    setLoading(true);
+    const newStatus = action === 'complete' ? 'Mastered' : 'Not Started';
+    
+    try {
+      const result = await updateSubjectProgress(currentSubjectData.slug, newStatus);
+      if (!result) {
+        throw new Error("Failed to update subject progress");
+      }
+      if (action === 'complete') {
+        confetti({
+          particleCount: 150,
+          spread: 100,
+          origin: { y: 0.6 },
+          colors: ['#22c55e', '#16a34a', '#86efac', '#3b82f6', '#8b5cf6'],
+          disableForReducedMotion: true
+        });
+      }
+      triggerRefresh();
+      refreshSyllabus();
+    } catch (error) {
+      console.error("Failed to update subject progress", error);
+      toast.error("Failed to update subject progress. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <DashboardShell className="animate-stagger-container">
@@ -84,6 +125,27 @@ export default function SyllabusPage() {
             </div>
 
             {/* Overview Stats for Active Subject */}
+            <div className="flex items-center justify-between mt-2">
+              <h2 className="text-xl font-semibold">{currentSubjectData?.name} Overview</h2>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleSubjectAction('reset')}
+                  className="gap-2 text-muted-foreground hover:text-foreground"
+                >
+                  <RotateCcw className="w-4 h-4" /> Reset
+                </Button>
+                <Button 
+                  size="sm" 
+                  onClick={() => handleSubjectAction('complete')}
+                  className="gap-2 bg-green-500/10 text-green-500 hover:bg-green-500/20 border border-green-500/20 hover:border-green-500/30"
+                >
+                  <CheckCircle2 className="w-4 h-4" /> Mark All Complete
+                </Button>
+              </div>
+            </div>
+
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="rounded-xl border border-border/40 bg-card/20 p-4">
                 <p className="text-sm text-muted-foreground">Chapters Completed</p>
@@ -116,7 +178,11 @@ export default function SyllabusPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <ChapterList chapters={currentSubjectData.chapters} subjectSlug={currentSubjectData.slug} />
+                <ChapterList 
+                  chapters={currentSubjectData.chapters} 
+                  subjectSlug={currentSubjectData.slug} 
+                  onUpdate={refreshSyllabus}
+                />
               </motion.div>
             )}
           </>

@@ -1,0 +1,1871 @@
+[
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "physics-measurement",
+    "jsonId": "physics-physics-measurement",
+    "jsonName": "Physics & Measurement",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "physics-measurement",
+    "jsonId": "physics-physics-measurement-units-and-measurements",
+    "jsonName": "Units and Measurements",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "physics-measurement",
+    "jsonId": "physics-physics-measurement-dimensional-analysis",
+    "jsonName": "Dimensional Analysis",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "physics-measurement",
+    "jsonId": "physics-physics-measurement-errors-in-measurement",
+    "jsonName": "Errors in Measurement",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "physics-measurement",
+    "jsonId": "physics-physics-measurement-significant-figures",
+    "jsonName": "Significant Figures",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "kinematics",
+    "jsonId": "physics-kinematics-motion-in-a-straight-line",
+    "jsonName": "Motion in a Straight Line",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "kinematics",
+    "jsonId": "physics-kinematics-motion-in-a-plane",
+    "jsonName": "Motion in a Plane",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "kinematics",
+    "jsonId": "physics-kinematics-relative-velocity",
+    "jsonName": "Relative Velocity",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC_SUGGESTION",
+    "chapterSlug": "kinematics",
+    "jsonName": "Relative Velocity",
+    "dbName": "Relative Velocity in 1D and 2D",
+    "issue": "Found similar name in chapter"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "laws-of-motion",
+    "jsonId": "physics-laws-of-motion",
+    "jsonName": "Laws of Motion",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "laws-of-motion",
+    "jsonId": "physics-laws-of-motion-newton-s-laws",
+    "jsonName": "Newton's Laws",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "laws-of-motion",
+    "jsonId": "physics-laws-of-motion-conservation-of-momentum",
+    "jsonName": "Conservation of Momentum",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "laws-of-motion",
+    "jsonId": "physics-laws-of-motion-friction",
+    "jsonName": "Friction",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "laws-of-motion",
+    "jsonId": "physics-laws-of-motion-circular-motion-dynamics",
+    "jsonName": "Circular Motion Dynamics",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "work-energy-power",
+    "jsonId": "physics-work-energy-power",
+    "jsonName": "Work Energy Power",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "work-energy-power",
+    "jsonId": "physics-work-energy-power-work-energy-theorem",
+    "jsonName": "Work-Energy Theorem",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "work-energy-power",
+    "jsonId": "physics-work-energy-power-conservative-forces",
+    "jsonName": "Conservative Forces",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "work-energy-power",
+    "jsonId": "physics-work-energy-power-potential-energy",
+    "jsonName": "Potential Energy",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "work-energy-power",
+    "jsonId": "physics-work-energy-power-collisions",
+    "jsonName": "Collisions",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "gravitation",
+    "jsonId": "physics-gravitation",
+    "jsonName": "Gravitation",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "gravitation",
+    "jsonId": "physics-gravitation-universal-law-of-gravitation",
+    "jsonName": "Universal Law of Gravitation",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "gravitation",
+    "jsonId": "physics-gravitation-acceleration-due-to-gravity",
+    "jsonName": "Acceleration Due to Gravity",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "gravitation",
+    "jsonId": "physics-gravitation-kepler-s-laws",
+    "jsonName": "Kepler's Laws",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "gravitation",
+    "jsonId": "physics-gravitation-escape-velocity-and-satellites",
+    "jsonName": "Escape Velocity and Satellites",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "properties-of-solids-liquids",
+    "jsonId": "physics-properties-of-solids-liquids",
+    "jsonName": "Properties of Solids & Liquids",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "thermodynamics",
+    "jsonId": "physics-thermodynamics-zeroth-and-first-law-of-thermodynamics",
+    "jsonName": "Zeroth and First Law of Thermodynamics",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC_SUGGESTION",
+    "chapterSlug": "thermodynamics",
+    "jsonName": "Zeroth and First Law of Thermodynamics",
+    "dbName": "Zeroth and First Law",
+    "issue": "Found similar name in chapter"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "thermodynamics",
+    "jsonId": "physics-thermodynamics-thermodynamic-processes",
+    "jsonName": "Thermodynamic Processes",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "thermodynamics",
+    "jsonId": "physics-thermodynamics-carnot-engine-and-second-law",
+    "jsonName": "Carnot Engine and Second Law",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC_SUGGESTION",
+    "chapterSlug": "thermodynamics",
+    "jsonName": "Carnot Engine and Second Law",
+    "dbName": "Carnot Engine",
+    "issue": "Found similar name in chapter"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "kinetic-theory",
+    "jsonId": "physics-kinetic-theory",
+    "jsonName": "Kinetic Theory",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "oscillations-waves",
+    "jsonId": "physics-oscillations-waves",
+    "jsonName": "Oscillations & Waves",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "electrostatics",
+    "jsonId": "physics-electrostatics",
+    "jsonName": "Electrostatics",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "electrostatics",
+    "jsonId": "physics-electrostatics-coulomb-s-law",
+    "jsonName": "Coulomb's Law",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "electrostatics",
+    "jsonId": "physics-electrostatics-electric-field-and-gauss-s-law",
+    "jsonName": "Electric Field and Gauss's Law",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "electrostatics",
+    "jsonId": "physics-electrostatics-electric-potential",
+    "jsonName": "Electric Potential",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "electrostatics",
+    "jsonId": "physics-electrostatics-capacitors-and-capacitance",
+    "jsonName": "Capacitors and Capacitance",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "current-electricity",
+    "jsonId": "physics-current-electricity",
+    "jsonName": "Current Electricity",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "current-electricity",
+    "jsonId": "physics-current-electricity-ohm-s-law-and-resistance",
+    "jsonName": "Ohm's Law and Resistance",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "current-electricity",
+    "jsonId": "physics-current-electricity-kirchhoff-s-laws",
+    "jsonName": "Kirchhoff's Laws",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "current-electricity",
+    "jsonId": "physics-current-electricity-wheatstone-bridge",
+    "jsonName": "Wheatstone Bridge",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "current-electricity",
+    "jsonId": "physics-current-electricity-potentiometer-and-heating-effect",
+    "jsonName": "Potentiometer and Heating Effect",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "magnetic-effects-of-current-magnetism",
+    "jsonId": "physics-magnetic-effects-of-current-magnetism",
+    "jsonName": "Magnetic Effects of Current & Magnetism",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "emi-ac",
+    "jsonId": "physics-emi-ac",
+    "jsonName": "EMI & AC",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "electromagnetic-waves",
+    "jsonId": "physics-electromagnetic-waves",
+    "jsonName": "Electromagnetic Waves",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "electromagnetic-waves",
+    "jsonId": "physics-electromagnetic-waves-displacement-current",
+    "jsonName": "Displacement Current",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "electromagnetic-waves",
+    "jsonId": "physics-electromagnetic-waves-em-wave-properties",
+    "jsonName": "EM Wave Properties",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "electromagnetic-waves",
+    "jsonId": "physics-electromagnetic-waves-electromagnetic-spectrum",
+    "jsonName": "Electromagnetic Spectrum",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "optics",
+    "jsonId": "physics-optics",
+    "jsonName": "Optics",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "optics",
+    "jsonId": "physics-optics-reflection-and-refraction",
+    "jsonName": "Reflection and Refraction",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "optics",
+    "jsonId": "physics-optics-lenses-and-mirrors",
+    "jsonName": "Lenses and Mirrors",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "optics",
+    "jsonId": "physics-optics-optical-instruments",
+    "jsonName": "Optical Instruments",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "optics",
+    "jsonId": "physics-optics-wave-optics-young-s-double-slit-experiment",
+    "jsonName": "Wave Optics (Young's Double Slit Experiment)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "optics",
+    "jsonId": "physics-optics-diffraction-and-polarization",
+    "jsonName": "Diffraction and Polarization",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "dual-nature",
+    "jsonId": "physics-dual-nature",
+    "jsonName": "Dual Nature",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "atoms",
+    "jsonId": "physics-atoms",
+    "jsonName": "Atoms",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "nuclei",
+    "jsonId": "physics-nuclei",
+    "jsonName": "Nuclei",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "electronic-devices",
+    "jsonId": "physics-electronic-devices",
+    "jsonName": "Electronic Devices",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "electronic-devices",
+    "jsonId": "physics-electronic-devices-semiconductors-p-type-n-type",
+    "jsonName": "Semiconductors (p-type, n-type)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "electronic-devices",
+    "jsonId": "physics-electronic-devices-p-n-junction-diode",
+    "jsonName": "p-n Junction Diode",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "electronic-devices",
+    "jsonId": "physics-electronic-devices-rectifiers",
+    "jsonName": "Rectifiers",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "electronic-devices",
+    "jsonId": "physics-electronic-devices-logic-gates",
+    "jsonName": "Logic Gates",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "physics",
+    "jsonSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills",
+    "jsonName": "Experimental Skills",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-vernier-calipers",
+    "jsonName": "Vernier Calipers",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-screw-gauge",
+    "jsonName": "Screw Gauge",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-simple-pendulum-energy-loss-graph",
+    "jsonName": "Simple Pendulum Energy-loss Graph",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-metre-scale-moments",
+    "jsonName": "Metre Scale Moments",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-young-s-modulus",
+    "jsonName": "Young's Modulus",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-surface-tension-by-capillary-rise",
+    "jsonName": "Surface Tension by Capillary Rise",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-viscosity",
+    "jsonName": "Viscosity",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-resonance-tube",
+    "jsonName": "Resonance Tube",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-specific-heat-by-mixtures",
+    "jsonName": "Specific Heat by Mixtures",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-metre-bridge-resistivity",
+    "jsonName": "Metre Bridge Resistivity",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-ohm-s-law",
+    "jsonName": "Ohm's Law",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-galvanometer-figure-of-merit",
+    "jsonName": "Galvanometer Figure of Merit",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-focal-lengths",
+    "jsonName": "Focal Lengths",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-prism-deviation",
+    "jsonName": "Prism Deviation",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-refractive-index",
+    "jsonName": "Refractive Index",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-diode-zener-characteristics",
+    "jsonName": "Diode/Zener Characteristics",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "experimental-skills",
+    "jsonId": "physics-experimental-skills-component-identification",
+    "jsonName": "Component Identification",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "some-basic-concepts-in-chemistry",
+    "jsonId": "chemistry-some-basic-concepts-in-chemistry",
+    "jsonName": "Some Basic Concepts in Chemistry",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "some-basic-concepts-in-chemistry",
+    "jsonId": "chemistry-some-basic-concepts-in-chemistry-mole-concept",
+    "jsonName": "Mole concept",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "some-basic-concepts-in-chemistry",
+    "jsonId": "chemistry-some-basic-concepts-in-chemistry-stoichiometry",
+    "jsonName": "Stoichiometry",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "some-basic-concepts-in-chemistry",
+    "jsonId": "chemistry-some-basic-concepts-in-chemistry-concentration-terms",
+    "jsonName": "Concentration terms",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "some-basic-concepts-in-chemistry",
+    "jsonId": "chemistry-some-basic-concepts-in-chemistry-empirical-and-molecular-formula",
+    "jsonName": "Empirical and molecular formula",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "atomic-structure",
+    "jsonId": "chemistry-atomic-structure-bohr-model",
+    "jsonName": "Bohr model",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC_SUGGESTION",
+    "chapterSlug": "atomic-structure",
+    "jsonName": "Bohr model",
+    "dbName": "Bohr Model",
+    "issue": "Found case-insensitive match but not exact match"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "atomic-structure",
+    "jsonId": "chemistry-atomic-structure-quantum-mechanical-model",
+    "jsonName": "Quantum mechanical model",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "atomic-structure",
+    "jsonId": "chemistry-atomic-structure-quantum-numbers",
+    "jsonName": "Quantum numbers",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC_SUGGESTION",
+    "chapterSlug": "atomic-structure",
+    "jsonName": "Quantum numbers",
+    "dbName": "Quantum Numbers",
+    "issue": "Found case-insensitive match but not exact match"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "atomic-structure",
+    "jsonId": "chemistry-atomic-structure-electronic-configuration",
+    "jsonName": "Electronic configuration",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC_SUGGESTION",
+    "chapterSlug": "atomic-structure",
+    "jsonName": "Electronic configuration",
+    "dbName": "Electronic Configuration",
+    "issue": "Found case-insensitive match but not exact match"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "chemical-bonding-and-molecular-structure",
+    "jsonId": "chemistry-chemical-bonding-and-molecular-structure",
+    "jsonName": "Chemical Bonding and Molecular Structure",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "chemical-bonding-and-molecular-structure",
+    "jsonId": "chemistry-chemical-bonding-and-molecular-structure-vsepr-theory",
+    "jsonName": "VSEPR theory",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "chemical-bonding-and-molecular-structure",
+    "jsonId": "chemistry-chemical-bonding-and-molecular-structure-valence-bond-theory",
+    "jsonName": "Valence bond theory",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "chemical-bonding-and-molecular-structure",
+    "jsonId": "chemistry-chemical-bonding-and-molecular-structure-molecular-orbital-theory",
+    "jsonName": "Molecular orbital theory",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "chemical-bonding-and-molecular-structure",
+    "jsonId": "chemistry-chemical-bonding-and-molecular-structure-hydrogen-bonding",
+    "jsonName": "Hydrogen bonding",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "chemical-thermodynamics",
+    "jsonId": "chemistry-chemical-thermodynamics",
+    "jsonName": "Chemical Thermodynamics",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "chemical-thermodynamics",
+    "jsonId": "chemistry-chemical-thermodynamics-first-law-of-thermodynamics",
+    "jsonName": "First law of thermodynamics",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "chemical-thermodynamics",
+    "jsonId": "chemistry-chemical-thermodynamics-enthalpy-entropy-and-free-energy",
+    "jsonName": "Enthalpy, entropy, and free energy",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "chemical-thermodynamics",
+    "jsonId": "chemistry-chemical-thermodynamics-spontaneity-of-reactions",
+    "jsonName": "Spontaneity of reactions",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "solutions",
+    "jsonId": "chemistry-solutions",
+    "jsonName": "Solutions",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "solutions",
+    "jsonId": "chemistry-solutions-types-of-solutions",
+    "jsonName": "Types of solutions",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "solutions",
+    "jsonId": "chemistry-solutions-raoult-s-law",
+    "jsonName": "Raoult's law",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "solutions",
+    "jsonId": "chemistry-solutions-colligative-properties",
+    "jsonName": "Colligative properties",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "solutions",
+    "jsonId": "chemistry-solutions-van-t-hoff-factor",
+    "jsonName": "Van't Hoff factor",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "equilibrium",
+    "jsonId": "chemistry-equilibrium",
+    "jsonName": "Equilibrium",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "equilibrium",
+    "jsonId": "chemistry-equilibrium-chemical-equilibrium",
+    "jsonName": "Chemical equilibrium",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "equilibrium",
+    "jsonId": "chemistry-equilibrium-le-chatelier-s-principle",
+    "jsonName": "Le Chatelier's principle",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "equilibrium",
+    "jsonId": "chemistry-equilibrium-ionic-equilibrium",
+    "jsonName": "Ionic equilibrium",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "equilibrium",
+    "jsonId": "chemistry-equilibrium-ph-and-buffer-solutions",
+    "jsonName": "pH and buffer solutions",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "equilibrium",
+    "jsonId": "chemistry-equilibrium-solubility-product",
+    "jsonName": "Solubility product",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "redox-reactions-and-electrochemistry",
+    "jsonId": "chemistry-redox-reactions-and-electrochemistry",
+    "jsonName": "Redox Reactions and Electrochemistry",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "redox-reactions-and-electrochemistry",
+    "jsonId": "chemistry-redox-reactions-and-electrochemistry-oxidation-numbers",
+    "jsonName": "Oxidation numbers",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "redox-reactions-and-electrochemistry",
+    "jsonId": "chemistry-redox-reactions-and-electrochemistry-balancing-redox-reactions",
+    "jsonName": "Balancing redox reactions",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "redox-reactions-and-electrochemistry",
+    "jsonId": "chemistry-redox-reactions-and-electrochemistry-galvanic-cells-and-nernst-equation",
+    "jsonName": "Galvanic cells and Nernst equation",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "redox-reactions-and-electrochemistry",
+    "jsonId": "chemistry-redox-reactions-and-electrochemistry-electrolysis",
+    "jsonName": "Electrolysis",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "chemical-kinetics",
+    "jsonId": "chemistry-chemical-kinetics",
+    "jsonName": "Chemical Kinetics",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "chemical-kinetics",
+    "jsonId": "chemistry-chemical-kinetics-rate-of-reaction",
+    "jsonName": "Rate of reaction",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "chemical-kinetics",
+    "jsonId": "chemistry-chemical-kinetics-order-and-molecularity",
+    "jsonName": "Order and molecularity",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "chemical-kinetics",
+    "jsonId": "chemistry-chemical-kinetics-integrated-rate-equations",
+    "jsonName": "Integrated rate equations",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "chemical-kinetics",
+    "jsonId": "chemistry-chemical-kinetics-arrhenius-equation",
+    "jsonName": "Arrhenius equation",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "classification-of-elements-and-periodicity-in-properties",
+    "jsonId": "chemistry-classification-of-elements-and-periodicity-in-properties",
+    "jsonName": "Classification of Elements and Periodicity in Properties",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "classification-of-elements-and-periodicity-in-properties",
+    "jsonId": "chemistry-classification-of-elements-and-periodicity-in-properties-modern-periodic-table",
+    "jsonName": "Modern periodic table",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "classification-of-elements-and-periodicity-in-properties",
+    "jsonId": "chemistry-classification-of-elements-and-periodicity-in-properties-periodic-trends-atomic-radii-ionization-energy-electron-gain-enthalpy-electronegativity",
+    "jsonName": "Periodic trends (atomic radii, ionization energy, electron gain enthalpy, electronegativity)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "p-block-elements",
+    "jsonId": "chemistry-p-block-elements",
+    "jsonName": "p-Block Elements",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "p-block-elements",
+    "jsonId": "chemistry-p-block-elements-group-13-to-18-elements",
+    "jsonName": "Group 13 to 18 elements",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "p-block-elements",
+    "jsonId": "chemistry-p-block-elements-general-trends",
+    "jsonName": "General trends",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "p-block-elements",
+    "jsonId": "chemistry-p-block-elements-important-compounds-and-their-properties",
+    "jsonName": "Important compounds and their properties",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "d-and-f-block-elements",
+    "jsonId": "chemistry-d-and-f-block-elements",
+    "jsonName": "d- and f-Block Elements",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "d-and-f-block-elements",
+    "jsonId": "chemistry-d-and-f-block-elements-transition-elements-d-block",
+    "jsonName": "Transition elements (d-block)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "d-and-f-block-elements",
+    "jsonId": "chemistry-d-and-f-block-elements-lanthanoids-and-actinoids-f-block",
+    "jsonName": "Lanthanoids and Actinoids (f-block)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "d-and-f-block-elements",
+    "jsonId": "chemistry-d-and-f-block-elements-properties-and-trends",
+    "jsonName": "Properties and trends",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "coordination-compounds",
+    "jsonId": "chemistry-coordination-compounds",
+    "jsonName": "Coordination Compounds",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "coordination-compounds",
+    "jsonId": "chemistry-coordination-compounds-werner-s-theory",
+    "jsonName": "Werner's theory",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "coordination-compounds",
+    "jsonId": "chemistry-coordination-compounds-nomenclature",
+    "jsonName": "Nomenclature",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "coordination-compounds",
+    "jsonId": "chemistry-coordination-compounds-isomerism",
+    "jsonName": "Isomerism",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "coordination-compounds",
+    "jsonId": "chemistry-coordination-compounds-valence-bond-theory-and-crystal-field-theory",
+    "jsonName": "Valence bond theory and Crystal field theory",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "purification-and-characterisation-of-organic-compounds",
+    "jsonId": "chemistry-purification-and-characterisation-of-organic-compounds",
+    "jsonName": "Purification and Characterisation of Organic Compounds",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "purification-and-characterisation-of-organic-compounds",
+    "jsonId": "chemistry-purification-and-characterisation-of-organic-compounds-methods-of-purification",
+    "jsonName": "Methods of purification",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "purification-and-characterisation-of-organic-compounds",
+    "jsonId": "chemistry-purification-and-characterisation-of-organic-compounds-qualitative-analysis",
+    "jsonName": "Qualitative analysis",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "purification-and-characterisation-of-organic-compounds",
+    "jsonId": "chemistry-purification-and-characterisation-of-organic-compounds-quantitative-analysis",
+    "jsonName": "Quantitative analysis",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "some-basic-principles-of-organic-chemistry",
+    "jsonId": "chemistry-some-basic-principles-of-organic-chemistry",
+    "jsonName": "Some Basic Principles of Organic Chemistry",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "some-basic-principles-of-organic-chemistry",
+    "jsonId": "chemistry-some-basic-principles-of-organic-chemistry-iupac-nomenclature",
+    "jsonName": "IUPAC nomenclature",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "some-basic-principles-of-organic-chemistry",
+    "jsonId": "chemistry-some-basic-principles-of-organic-chemistry-electronic-effects-inductive-resonance-hyperconjugation",
+    "jsonName": "Electronic effects (inductive, resonance, hyperconjugation)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "some-basic-principles-of-organic-chemistry",
+    "jsonId": "chemistry-some-basic-principles-of-organic-chemistry-isomerism",
+    "jsonName": "Isomerism",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "some-basic-principles-of-organic-chemistry",
+    "jsonId": "chemistry-some-basic-principles-of-organic-chemistry-reaction-intermediates",
+    "jsonName": "Reaction intermediates",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "hydrocarbons",
+    "jsonId": "chemistry-hydrocarbons",
+    "jsonName": "Hydrocarbons",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "hydrocarbons",
+    "jsonId": "chemistry-hydrocarbons-alkanes",
+    "jsonName": "Alkanes",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "hydrocarbons",
+    "jsonId": "chemistry-hydrocarbons-alkenes",
+    "jsonName": "Alkenes",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "hydrocarbons",
+    "jsonId": "chemistry-hydrocarbons-alkynes",
+    "jsonName": "Alkynes",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "hydrocarbons",
+    "jsonId": "chemistry-hydrocarbons-aromatic-hydrocarbons-benzene",
+    "jsonName": "Aromatic hydrocarbons (Benzene)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "organic-compounds-containing-halogens",
+    "jsonId": "chemistry-organic-compounds-containing-halogens",
+    "jsonName": "Organic Compounds Containing Halogens",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "organic-compounds-containing-halogens",
+    "jsonId": "chemistry-organic-compounds-containing-halogens-haloalkanes-and-haloarenes",
+    "jsonName": "Haloalkanes and haloarenes",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "organic-compounds-containing-halogens",
+    "jsonId": "chemistry-organic-compounds-containing-halogens-substitution-reactions-sn1-sn2",
+    "jsonName": "Substitution reactions (SN1, SN2)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "organic-compounds-containing-halogens",
+    "jsonId": "chemistry-organic-compounds-containing-halogens-elimination-reactions",
+    "jsonName": "Elimination reactions",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "organic-compounds-containing-oxygen",
+    "jsonId": "chemistry-organic-compounds-containing-oxygen",
+    "jsonName": "Organic Compounds Containing Oxygen",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "organic-compounds-containing-oxygen",
+    "jsonId": "chemistry-organic-compounds-containing-oxygen-alcohols-phenols-and-ethers",
+    "jsonName": "Alcohols, Phenols, and Ethers",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "organic-compounds-containing-oxygen",
+    "jsonId": "chemistry-organic-compounds-containing-oxygen-aldehydes-and-ketones",
+    "jsonName": "Aldehydes and Ketones",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "organic-compounds-containing-oxygen",
+    "jsonId": "chemistry-organic-compounds-containing-oxygen-carboxylic-acids",
+    "jsonName": "Carboxylic Acids",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "organic-compounds-containing-nitrogen",
+    "jsonId": "chemistry-organic-compounds-containing-nitrogen",
+    "jsonName": "Organic Compounds Containing Nitrogen",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "organic-compounds-containing-nitrogen",
+    "jsonId": "chemistry-organic-compounds-containing-nitrogen-amines",
+    "jsonName": "Amines",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "organic-compounds-containing-nitrogen",
+    "jsonId": "chemistry-organic-compounds-containing-nitrogen-diazonium-salts",
+    "jsonName": "Diazonium salts",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "biomolecules",
+    "jsonId": "chemistry-biomolecules",
+    "jsonName": "Biomolecules",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "biomolecules",
+    "jsonId": "chemistry-biomolecules-carbohydrates",
+    "jsonName": "Carbohydrates",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "biomolecules",
+    "jsonId": "chemistry-biomolecules-proteins",
+    "jsonName": "Proteins",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "biomolecules",
+    "jsonId": "chemistry-biomolecules-vitamins",
+    "jsonName": "Vitamins",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "biomolecules",
+    "jsonId": "chemistry-biomolecules-nucleic-acids",
+    "jsonName": "Nucleic acids",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "chemistry",
+    "jsonSlug": "principles-related-to-practical-chemistry",
+    "jsonId": "chemistry-principles-related-to-practical-chemistry",
+    "jsonName": "Principles Related to Practical Chemistry",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "principles-related-to-practical-chemistry",
+    "jsonId": "chemistry-principles-related-to-practical-chemistry-titrations-acid-base-redox",
+    "jsonName": "Titrations (Acid-base, Redox)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "principles-related-to-practical-chemistry",
+    "jsonId": "chemistry-principles-related-to-practical-chemistry-salt-analysis",
+    "jsonName": "Salt analysis",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "principles-related-to-practical-chemistry",
+    "jsonId": "chemistry-principles-related-to-practical-chemistry-preparation-of-standard-solutions",
+    "jsonName": "Preparation of standard solutions",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "sets",
+    "jsonId": "mathematics-sets",
+    "jsonName": "Sets",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "sets",
+    "jsonId": "mathematics-sets-sets-and-their-representations",
+    "jsonName": "Sets and their representations",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "sets",
+    "jsonId": "mathematics-sets-union-intersection-and-complement",
+    "jsonName": "Union, intersection and complement",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "sets",
+    "jsonId": "mathematics-sets-venn-diagrams",
+    "jsonName": "Venn diagrams",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "relations",
+    "jsonId": "mathematics-relations",
+    "jsonName": "Relations",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "relations",
+    "jsonId": "mathematics-relations-relations-and-functions",
+    "jsonName": "Relations and Functions",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "relations",
+    "jsonId": "mathematics-relations-domain-codomain-and-range",
+    "jsonName": "Domain, codomain and range",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "relations",
+    "jsonId": "mathematics-relations-types-of-relations",
+    "jsonName": "Types of relations",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "complex-numbers",
+    "jsonId": "mathematics-complex-numbers",
+    "jsonName": "Complex Numbers",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "complex-numbers",
+    "jsonId": "mathematics-complex-numbers-algebra-of-complex-numbers",
+    "jsonName": "Algebra of complex numbers",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "complex-numbers",
+    "jsonId": "mathematics-complex-numbers-argand-diagram",
+    "jsonName": "Argand diagram",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "complex-numbers",
+    "jsonId": "mathematics-complex-numbers-polar-representation",
+    "jsonName": "Polar representation",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "complex-numbers",
+    "jsonId": "mathematics-complex-numbers-roots-of-unity",
+    "jsonName": "Roots of unity",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "quadratic-equations",
+    "jsonId": "mathematics-quadratic-equations",
+    "jsonName": "Quadratic Equations",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "quadratic-equations",
+    "jsonId": "mathematics-quadratic-equations-roots-of-a-quadratic-equation",
+    "jsonName": "Roots of a quadratic equation",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "quadratic-equations",
+    "jsonId": "mathematics-quadratic-equations-relationship-between-roots-and-coefficients",
+    "jsonName": "Relationship between roots and coefficients",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "quadratic-equations",
+    "jsonId": "mathematics-quadratic-equations-nature-of-roots",
+    "jsonName": "Nature of roots",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "matrices",
+    "jsonId": "mathematics-matrices-types-of-matrices",
+    "jsonName": "Types of matrices",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "matrices",
+    "jsonId": "mathematics-matrices-matrix-operations",
+    "jsonName": "Matrix operations",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "TOPIC_SUGGESTION",
+    "chapterSlug": "matrices",
+    "jsonName": "Matrix operations",
+    "dbName": "Matrix Operations",
+    "issue": "Found case-insensitive match but not exact match"
+  },
+  {
+    "type": "TOPIC",
+    "chapterSlug": "matrices",
+    "jsonId": "mathematics-matrices-transpose-and-inverse",
+    "jsonName": "Transpose and inverse",
+    "issue": "Not found in DB by exact title match within chapter"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "determinants",
+    "jsonId": "mathematics-determinants",
+    "jsonName": "Determinants",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "determinants",
+    "jsonId": "mathematics-determinants-properties-of-determinants",
+    "jsonName": "Properties of determinants",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "determinants",
+    "jsonId": "mathematics-determinants-evaluation-of-determinants",
+    "jsonName": "Evaluation of determinants",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "determinants",
+    "jsonId": "mathematics-determinants-system-of-linear-equations",
+    "jsonName": "System of linear equations",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "p-c",
+    "jsonId": "mathematics-p-c",
+    "jsonName": "P&C",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "p-c",
+    "jsonId": "mathematics-p-c-fundamental-principle-of-counting",
+    "jsonName": "Fundamental principle of counting",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "p-c",
+    "jsonId": "mathematics-p-c-permutations",
+    "jsonName": "Permutations",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "p-c",
+    "jsonId": "mathematics-p-c-combinations",
+    "jsonName": "Combinations",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "binomial",
+    "jsonId": "mathematics-binomial",
+    "jsonName": "Binomial",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "binomial",
+    "jsonId": "mathematics-binomial-binomial-theorem-for-positive-integral-index",
+    "jsonName": "Binomial theorem for positive integral index",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "binomial",
+    "jsonId": "mathematics-binomial-general-and-middle-terms",
+    "jsonName": "General and middle terms",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "binomial",
+    "jsonId": "mathematics-binomial-properties-of-binomial-coefficients",
+    "jsonName": "Properties of binomial coefficients",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "sequence",
+    "jsonId": "mathematics-sequence",
+    "jsonName": "Sequence",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "sequence",
+    "jsonId": "mathematics-sequence-arithmetic-progression-ap",
+    "jsonName": "Arithmetic Progression (AP)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "sequence",
+    "jsonId": "mathematics-sequence-geometric-progression-gp",
+    "jsonName": "Geometric Progression (GP)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "sequence",
+    "jsonId": "mathematics-sequence-harmonic-progression-hp",
+    "jsonName": "Harmonic Progression (HP)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "sequence",
+    "jsonId": "mathematics-sequence-am-gm-hm-relations",
+    "jsonName": "AM, GM, HM relations",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "limits",
+    "jsonId": "mathematics-limits",
+    "jsonName": "Limits",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "limits",
+    "jsonId": "mathematics-limits-concept-of-limit",
+    "jsonName": "Concept of limit",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "limits",
+    "jsonId": "mathematics-limits-standard-limits",
+    "jsonName": "Standard limits",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "limits",
+    "jsonId": "mathematics-limits-l-hopital-s-rule",
+    "jsonName": "L'Hopital's rule",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "continuity",
+    "jsonId": "mathematics-continuity",
+    "jsonName": "Continuity",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "continuity",
+    "jsonId": "mathematics-continuity-continuity-at-a-point",
+    "jsonName": "Continuity at a point",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "continuity",
+    "jsonId": "mathematics-continuity-continuity-on-an-interval",
+    "jsonName": "Continuity on an interval",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "continuity",
+    "jsonId": "mathematics-continuity-discontinuity",
+    "jsonName": "Discontinuity",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "differentiability",
+    "jsonId": "mathematics-differentiability",
+    "jsonName": "Differentiability",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "differentiability",
+    "jsonId": "mathematics-differentiability-derivative-of-a-function",
+    "jsonName": "Derivative of a function",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "differentiability",
+    "jsonId": "mathematics-differentiability-rules-of-differentiation",
+    "jsonName": "Rules of differentiation",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "differentiability",
+    "jsonId": "mathematics-differentiability-maxima-and-minima",
+    "jsonName": "Maxima and Minima",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "differentiability",
+    "jsonId": "mathematics-differentiability-tangents-and-normals",
+    "jsonName": "Tangents and Normals",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "integral",
+    "jsonId": "mathematics-integral",
+    "jsonName": "Integral",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "integral",
+    "jsonId": "mathematics-integral-indefinite-integrals",
+    "jsonName": "Indefinite integrals",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "integral",
+    "jsonId": "mathematics-integral-definite-integrals",
+    "jsonName": "Definite integrals",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "integral",
+    "jsonId": "mathematics-integral-properties-of-definite-integrals",
+    "jsonName": "Properties of definite integrals",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "integral",
+    "jsonId": "mathematics-integral-area-under-curves",
+    "jsonName": "Area under curves",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "differential-equations",
+    "jsonId": "mathematics-differential-equations",
+    "jsonName": "Differential Equations",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "differential-equations",
+    "jsonId": "mathematics-differential-equations-order-and-degree",
+    "jsonName": "Order and degree",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "differential-equations",
+    "jsonId": "mathematics-differential-equations-formation-of-differential-equations",
+    "jsonName": "Formation of differential equations",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "differential-equations",
+    "jsonId": "mathematics-differential-equations-solving-first-order-first-degree-equations",
+    "jsonName": "Solving first-order first-degree equations",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "coordinate-geometry",
+    "jsonId": "mathematics-coordinate-geometry",
+    "jsonName": "Coordinate Geometry",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "coordinate-geometry",
+    "jsonId": "mathematics-coordinate-geometry-straight-lines",
+    "jsonName": "Straight lines",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "coordinate-geometry",
+    "jsonId": "mathematics-coordinate-geometry-circles",
+    "jsonName": "Circles",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "coordinate-geometry",
+    "jsonId": "mathematics-coordinate-geometry-parabola-ellipse-and-hyperbola-conic-sections",
+    "jsonName": "Parabola, Ellipse, and Hyperbola (Conic sections)",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "3d",
+    "jsonId": "mathematics-3d",
+    "jsonName": "3D",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "3d",
+    "jsonId": "mathematics-3d-direction-cosines-and-ratios",
+    "jsonName": "Direction cosines and ratios",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "3d",
+    "jsonId": "mathematics-3d-equation-of-a-line-in-space",
+    "jsonName": "Equation of a line in space",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "3d",
+    "jsonId": "mathematics-3d-equation-of-a-plane",
+    "jsonName": "Equation of a plane",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "3d",
+    "jsonId": "mathematics-3d-shortest-distance-between-skew-lines",
+    "jsonName": "Shortest distance between skew lines",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "vector",
+    "jsonId": "mathematics-vector",
+    "jsonName": "Vector",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "vector",
+    "jsonId": "mathematics-vector-vector-addition-and-scalar-multiplication",
+    "jsonName": "Vector addition and scalar multiplication",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "vector",
+    "jsonId": "mathematics-vector-dot-and-cross-product",
+    "jsonName": "Dot and cross product",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "vector",
+    "jsonId": "mathematics-vector-scalar-triple-product",
+    "jsonName": "Scalar triple product",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "statistics",
+    "jsonId": "mathematics-statistics",
+    "jsonName": "Statistics",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "statistics",
+    "jsonId": "mathematics-statistics-mean-median-mode",
+    "jsonName": "Mean, median, mode",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "statistics",
+    "jsonId": "mathematics-statistics-variance-and-standard-deviation",
+    "jsonName": "Variance and standard deviation",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "statistics",
+    "jsonId": "mathematics-statistics-mean-deviation",
+    "jsonName": "Mean deviation",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "probability",
+    "jsonId": "mathematics-probability",
+    "jsonName": "Probability",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "probability",
+    "jsonId": "mathematics-probability-axiomatic-probability",
+    "jsonName": "Axiomatic probability",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "probability",
+    "jsonId": "mathematics-probability-conditional-probability",
+    "jsonName": "Conditional probability",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "probability",
+    "jsonId": "mathematics-probability-bayes-theorem",
+    "jsonName": "Bayes' theorem",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "probability",
+    "jsonId": "mathematics-probability-binomial-distribution",
+    "jsonName": "Binomial distribution",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "CHAPTER",
+    "subject": "mathematics",
+    "jsonSlug": "trigonometry",
+    "jsonId": "mathematics-trigonometry",
+    "jsonName": "Trigonometry",
+    "issue": "Not found in DB"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "trigonometry",
+    "jsonId": "mathematics-trigonometry-trigonometric-identities",
+    "jsonName": "Trigonometric identities",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "trigonometry",
+    "jsonId": "mathematics-trigonometry-trigonometric-equations",
+    "jsonName": "Trigonometric equations",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "trigonometry",
+    "jsonId": "mathematics-trigonometry-inverse-trigonometric-functions",
+    "jsonName": "Inverse trigonometric functions",
+    "issue": "Parent chapter not found, cannot map topic"
+  },
+  {
+    "type": "TOPIC_ORPHAN",
+    "chapterSlug": "trigonometry",
+    "jsonId": "mathematics-trigonometry-properties-of-triangles",
+    "jsonName": "Properties of triangles",
+    "issue": "Parent chapter not found, cannot map topic"
+  }
+]

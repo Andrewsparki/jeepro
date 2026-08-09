@@ -19,7 +19,7 @@ interface FocusControlsProps {
 export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }: FocusControlsProps) {
   const { isImmersive, toggleImmersive, defaultStudyTime, setDefaultStudyTime, timerMode, setTimerMode } = useFocusStore();
 
-  const premiumTransition = { duration: 0.25, ease: [0.22, 1, 0.36, 1] };
+  const premiumTransition: import("framer-motion").Transition = { duration: 0.25, ease: [0.22, 1, 0.36, 1] };
 
   return (
     <div className="flex flex-col items-center gap-6 mt-14 p-6 sm:px-10 rounded-[2.5rem] bg-black/20 backdrop-blur-3xl border-t border-white/5 shadow-2xl relative z-20">
@@ -32,6 +32,7 @@ export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }:
           onClick={onRestart}
           className="h-14 w-14 flex items-center justify-center rounded-full border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/15 hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)] text-muted-foreground hover:text-foreground transition-colors shadow-lg"
           title="Restart (R)"
+          aria-label="Restart Timer"
         >
           <RotateCcw className="w-5 h-5" />
         </motion.button>
@@ -48,6 +49,8 @@ export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }:
               : "bg-accent text-accent-foreground border border-accent/50"
           )}
           title={isActive ? "Pause (Space)" : "Start (Space)"}
+          aria-label={isActive ? "Pause Timer" : "Start Timer"}
+          aria-pressed={isActive}
         >
           {/* Subtle glow behind the play button when not active */}
           {!isActive && (
@@ -76,6 +79,7 @@ export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }:
           onClick={onEnd}
           className="h-14 w-14 flex items-center justify-center rounded-full border border-white/5 bg-white/5 hover:bg-destructive/20 hover:border-destructive/30 hover:shadow-[0_8px_30px_rgba(239,68,68,0.15)] text-muted-foreground hover:text-destructive transition-colors shadow-lg group"
           title="End Session"
+          aria-label="End Session"
         >
           <Square className="w-4 h-4 fill-current opacity-70 group-hover:opacity-100 transition-opacity" />
         </motion.button>

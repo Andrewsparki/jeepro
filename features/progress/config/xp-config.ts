@@ -1,5 +1,8 @@
 export const XP_CONFIG = {
-  // Activity base rewards
+  // Duration based rewards
+  PER_MINUTE_MULTIPLIER: 2, // 2 XP per minute of focus
+  
+  // Activity base rewards (added on top of duration)
   ACTIVITIES: {
     STUDY_GUIDE: 5,
     FORMULA_SHEET: 8,
@@ -20,12 +23,22 @@ export const XP_CONFIG = {
   STREAK: {
     MILESTONE_DAYS: [7, 14, 30, 50, 100],
     MILESTONE_BONUS_XP: 100, // Flat bonus when hitting a milestone
+  },
+
+  // Task Completion
+  MILESTONES: {
+    TOPIC_COMPLETED: 50,
+    CHAPTER_COMPLETED: 200,
+    SUBJECT_COMPLETED: 1000,
+    DAILY_MISSION_COMPLETED: 25,
+    ALL_DAILY_MISSIONS_COMPLETED: 100
   }
 };
 
 export type ActivityType = "Study Guide" | "Formula Sheet" | "Practice" | "PYQs" | "Flashcards" | "AI Tutor" | "Revision" | "Mock Test" | "Planner";
 
-export function getXPForActivity(activity: ActivityType): number {
+export function getXPForActivity(activity?: ActivityType | null): number {
+  if (!activity) return 0;
   switch (activity) {
     case "Study Guide": return XP_CONFIG.ACTIVITIES.STUDY_GUIDE;
     case "Formula Sheet": return XP_CONFIG.ACTIVITIES.FORMULA_SHEET;
@@ -36,4 +49,15 @@ export function getXPForActivity(activity: ActivityType): number {
     case "Mock Test": return XP_CONFIG.ACTIVITIES.MOCK_TEST;
     default: return 0;
   }
+}
+
+/**
+ * Single source of truth for Session XP Calculation.
+ * Session XP = (Duration in minutes * Per minute multiplier) + Activity Bonus
+ */
+export function calculateSessionXP(durationSeconds: number, activityType?: ActivityType | null): number {
+  const minutes = Math.floor(durationSeconds / 60);
+  const durationXP = minutes * XP_CONFIG.PER_MINUTE_MULTIPLIER;
+  const bonusXP = getXPForActivity(activityType);
+  return durationXP + bonusXP;
 }

@@ -65,12 +65,15 @@ export function FocusDistribution({ sessions }: FocusDistributionProps) {
   // Background track data
   const trackData = [{ name: "Track", value: 1 }];
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderLegend = (props: any) => {
     const { payload } = props;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const validItems = payload.filter((item: any) => item.value !== "Track");
 
     return (
       <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-2">
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {validItems.map((entry: any, index: number) => (
           <li 
             key={`item-${index}`} 
@@ -165,6 +168,7 @@ export function FocusDistribution({ sessions }: FocusDistributionProps) {
                   }}
                   itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 700, fontSize: '14px' }}
                   labelStyle={{ display: 'none' }}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   formatter={(value: any, name: any, props: any) => [
                     <div key="tooltip-content" className="flex items-center gap-2">
                       <span className="text-foreground">{value} sessions</span>

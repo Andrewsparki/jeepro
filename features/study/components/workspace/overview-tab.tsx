@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { Chapter, Subject } from "@/features/syllabus/services/syllabus";
+import { XP_CONFIG } from "@/features/progress/config/xp-config";
 import { 
   ArrowRight, CheckCircle2, Play, Calculator, Target, Calendar, 
   Brain, Flame, Activity, ListChecks
@@ -29,7 +30,9 @@ export function OverviewTab({ chapter, subject }: OverviewTabProps) {
       ? subject.chapters[currentIndex - 1] 
       : null;
     const completed = Math.floor((chapter.completionPercentage / 100) * chapter.topics.length);
-    const xp = chapter.completionPercentage * 15;
+    const topicXP = completed * XP_CONFIG.MILESTONES.TOPIC_COMPLETED;
+    const chapterBonus = chapter.completionPercentage === 100 ? XP_CONFIG.MILESTONES.CHAPTER_COMPLETED : 0;
+    const xp = topicXP + chapterBonus;
     return { nextChapter: next, previousChapter: prev, topicsCompleted: completed, xpEarned: xp };
   }, [chapter, subject]);
 

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import { getChapterUuid, getTopicUuid } from "@/features/syllabus/services/mapping.service";
 
 export type ProgressStatus = "Not Started" | "In Progress" | "Mastered" | "Needs Revision";
 
@@ -92,11 +93,17 @@ export async function updateTopicProgress(topicId: string, status: ProgressStatu
   
   const completedAt = status === "Mastered" ? new Date().toISOString() : null;
   
+  const topicUuid = await getTopicUuid(topicId);
+  if (!topicUuid) {
+    console.error(`updateTopicProgress: Could not resolve UUID for topic ID: ${topicId}`);
+    return null;
+  }
+
   const { data, error } = await supabase
     .from("user_topic_progress")
     .upsert({
       user_id: user.id,
-      topic_id: topicId,
+      topic_id: topicUuid,
       status,
       completed_at: completedAt,
       updated_at: new Date().toISOString()
@@ -110,6 +117,130 @@ export async function updateTopicProgress(topicId: string, status: ProgressStatu
   }
   
   return data as UserTopicProgress;
+}
+
+export async function updateChapterProgress(subjectSlug: string, chapterSlug: string, status: ProgressStatus): Promise<UserTopicProgress[] | null> {
+  const supabase = createClient();
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    console.error("updateChapterProgress: No authenticated user");
+    return null;
+  }
+
+  // Get the chapter to find its topics
+  const chapter = await getChapterBySlug(subjectSlug, chapterSlug);
+  if (!chapter) {
+    console.error("updateChapterProgress: Chapter not found");
+    return null;
+  }
+
+  const wasAlreadyMastered = chapter.status === "Mastered" || chapter.completionPercentage === 100;
+  const completedAt = status === "Mastered" ? new Date().toISOString() : null;
+  const updatedAt = new Date().toISOString();
+
+  // Prepare batch upsert payload for all topics in the chapter
+  const upsertData: { user_id: string; topic_id: string; status: ProgressStatus; completed_at: string | null; updated_at: string }[] = [];
+  
+  await Promise.all(chapter.topics.map(async topic => {
+    const topicUuid = await getTopicUuid(topic.id);
+    if (topicUuid) {
+      upsertData.push({
+        user_id: user.id,
+        topic_id: topicUuid,
+        status,
+        completed_at: completedAt,
+        updated_at: updatedAt
+      });
+    }
+  }));
+
+  if (upsertData.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("user_topic_progress")
+    .upsert(upsertData, { onConflict: 'user_id,topic_id' })
+    .select();
+
+  if (error) {
+    console.error("Error updating chapter progress:", error.message, error.details, error.hint);
+    return null;
+  }
+
+  if (status === "Mastered" && !wasAlreadyMastered) {
+    try {
+      await updateMissionProgress("chapter_completion", 1);
+    } catch (err) {
+      console.error("Error updating mission progress for chapter:", err);
+    }
+  }
+
+  return data as UserTopicProgress[];
+}
+
+export async function updateSubjectProgress(subjectSlug: string, status: ProgressStatus): Promise<UserTopicProgress[] | null> {
+  const supabase = createClient();
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    console.error("updateSubjectProgress: No authenticated user");
+    return null;
+  }
+
+  // Get the subject to find all topics across all chapters
+  const subject = await getSubjectBySlug(subjectSlug);
+  if (!subject) {
+    console.error("updateSubjectProgress: Subject not found");
+    return null;
+  }
+
+  let newlyMasteredChaptersCount = 0;
+  if (status === "Mastered") {
+    newlyMasteredChaptersCount = subject.chapters.filter(
+      c => c.status !== "Mastered" && c.completionPercentage < 100
+    ).length;
+  }
+
+  const completedAt = status === "Mastered" ? new Date().toISOString() : null;
+  const updatedAt = new Date().toISOString();
+
+  const upsertData: { user_id: string; topic_id: string; status: ProgressStatus; completed_at: string | null; updated_at: string }[] = [];
+  for (const chapter of subject.chapters) {
+    for (const topic of chapter.topics) {
+      const topicUuid = await getTopicUuid(topic.id);
+      if (!topicUuid) continue;
+      
+      upsertData.push({
+        user_id: user.id,
+        topic_id: topicUuid,
+        status,
+        completed_at: completedAt,
+        updated_at: updatedAt
+      });
+    }
+  }
+
+  if (upsertData.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from("user_topic_progress")
+    .upsert(upsertData, { onConflict: 'user_id,topic_id' })
+    .select();
+
+  if (error) {
+    console.error("Error updating subject progress:", error.message, error.details, error.hint);
+    return null;
+  }
+
+  if (status === "Mastered" && newlyMasteredChaptersCount > 0) {
+    try {
+      await updateMissionProgress("chapter_completion", newlyMasteredChaptersCount);
+    } catch (err) {
+      console.error("Error updating mission progress for subject completion:", err);
+    }
+  }
+
+  return data as UserTopicProgress[];
 }
 
 export async function getStudySessions(): Promise<StudySession[]> {
@@ -131,18 +262,22 @@ export async function getStudySessions(): Promise<StudySession[]> {
   return data as StudySession[];
 }
 
+import { updateMissionProgress } from "@/features/daily-missions/services/missions.service";
+
 export async function saveStudySession({
   durationSeconds,
   startedAt,
   endedAt,
   chapterId,
-  topicId
+  topicId,
+  activityType
 }: {
   durationSeconds: number;
   startedAt: string;
   endedAt: string;
   chapterId?: string;
   topicId?: string;
+  activityType?: string;
 }): Promise<StudySession | null> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -151,6 +286,9 @@ export async function saveStudySession({
     return null;
   }
   
+  const chapterUuid = await getChapterUuid(chapterId);
+  const topicUuid = await getTopicUuid(topicId);
+
   const { data, error } = await supabase
     .from("study_sessions")
     .insert({
@@ -158,8 +296,9 @@ export async function saveStudySession({
       duration_seconds: durationSeconds,
       started_at: startedAt,
       ended_at: endedAt,
-      chapter_id: chapterId || null,
-      topic_id: topicId || null,
+      chapter_id: chapterUuid || null,
+      topic_id: topicUuid || null,
+      activity_type: activityType || null,
     })
     .select()
     .single();
@@ -169,19 +308,33 @@ export async function saveStudySession({
     return null;
   }
 
+  // Hook into Daily Missions
+  try {
+    const durationMins = Math.floor(durationSeconds / 60);
+    if (durationMins > 0) {
+      await updateMissionProgress("study_duration", durationMins);
+    }
+    await updateMissionProgress("focus_sessions", 1);
+  } catch (err) {
+    console.error("Error updating mission progress for session:", err);
+  }
+
   return data as StudySession;
 }
 
-import { getSyllabus } from "@/features/syllabus/services/syllabus";
+import { getSyllabus, getChapterBySlug, getSubjectBySlug } from "@/features/syllabus/services/syllabus";
 import { calculateXPAndLevel, getAchievements } from "@/features/gamification/services/gamification";
 import { getPlannerEvents } from "@/features/planner/services/planner.service";
+import { getTodayMissions, getAllCompletedMissions } from "@/features/daily-missions/services/missions.service";
 
 export async function getDashboardMetrics() {
-  const [progress, sessions, syllabus, allEvents] = await Promise.all([
+  const [progress, sessions, syllabus, allEvents, dailyMissions, allCompletedMissions] = await Promise.all([
     getUserProgress(),
     getStudySessions(),
     getSyllabus(),
-    getPlannerEvents()
+    getPlannerEvents(),
+    getTodayMissions(),
+    getAllCompletedMissions()
   ]);
 
   const masteredCount = progress.filter(p => p.status === "Mastered").length;
@@ -233,7 +386,7 @@ export async function getDashboardMetrics() {
   }
 
   // Gamification
-  const xpDetails = calculateXPAndLevel(sessions, progress, syllabus);
+  const xpDetails = calculateXPAndLevel(sessions, progress, syllabus, allCompletedMissions);
   const achievements = getAchievements(sessions, progress, syllabus, currentStreak);
 
   // Last active chapter for Continue Learning
@@ -283,6 +436,8 @@ export async function getDashboardMetrics() {
     studyTimeFormatted: `${studyHours}h ${studyMinutes}m`,
     totalDurationSeconds,
     sessionsCount: sessions.length,
+    todayStudyHours,
+    todayStudyMinutes,
     todayStudyTimeFormatted,
     topicsCompletedToday,
     currentStreak,
@@ -294,5 +449,6 @@ export async function getDashboardMetrics() {
     weeklyStudyHours,
     study_sessions: sessions,
     progress,
+    dailyMissions,
   };
 }

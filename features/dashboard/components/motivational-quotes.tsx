@@ -59,14 +59,15 @@ const quotes = [
 ];
 
 export function MotivationalQuotes() {
-  const [history, setHistory] = useState<number[]>([]);
+  const [history, setHistory] = useState<number[]>(() => {
+    const startIdx = Math.floor(Math.random() * quotes.length);
+    return [startIdx];
+  });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Initial random quote on mount
-    const startIdx = Math.floor(Math.random() * quotes.length);
-    setHistory([startIdx]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
@@ -103,7 +104,11 @@ export function MotivationalQuotes() {
   const canGoBack = currentIndex > 0;
 
   return (
-    <div className="relative premium-card overflow-hidden group min-h-[140px] flex items-center p-8 sm:px-12 bg-gradient-to-br from-glass/30 to-transparent">
+    <motion.div 
+      layout
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="relative premium-card overflow-hidden group min-h-[140px] flex items-center p-8 sm:px-12 bg-gradient-to-br from-glass/30 to-transparent"
+    >
       
       {/* Decorative Quote Icon */}
       <Quote className="absolute top-4 left-4 w-6 h-6 text-white/5 opacity-50 rotate-180 pointer-events-none" />
@@ -142,7 +147,7 @@ export function MotivationalQuotes() {
               className="flex flex-col items-center"
             >
               <h4 className="text-lg sm:text-xl md:text-2xl font-serif tracking-tight text-foreground/90 leading-relaxed max-w-[90%]">
-                "{currentQuote.text}"
+                &quot;{currentQuote.text}&quot;
               </h4>
               <p className="mt-4 text-[11px] uppercase tracking-widest font-semibold text-muted-foreground/70">
                 — {currentQuote.author}
@@ -161,6 +166,6 @@ export function MotivationalQuotes() {
         </button>
       </div>
       
-    </div>
+    </motion.div>
   );
 }

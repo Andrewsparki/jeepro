@@ -1,13 +1,14 @@
 "use client";
 
-import { useStudySession } from "@/features/study/context/study-session-context";
+import { useStudySession, useStudyTimer } from "@/features/study/context/study-session-context";
 import { motion, AnimatePresence } from "framer-motion";
 import { Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 
 export function StudyTimer() {
-  const { isActive, elapsedSeconds, endSession } = useStudySession();
+  const { isActive, endSession } = useStudySession();
+  const elapsedSeconds = useStudyTimer();
   const pathname = usePathname();
 
   const formatTime = (totalSeconds: number) => {

@@ -9,6 +9,8 @@ import { AmbientAudio } from "@/features/focus/components/ambient-audio";
 import { useKeyboardShortcuts } from "@/features/focus/hooks/use-keyboard-shortcuts";
 import { FocusCompletionModal } from "@/features/focus/components/focus-completion-modal";
 import { useStudySession } from "@/features/study/context/study-session-context";
+import { SessionService } from "@/features/study-engine/services/session.service";
+import { calculateSessionXP } from "@/features/progress/config/xp-config";
 import { toast } from "sonner";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,70 +24,49 @@ export default function FocusPage() {
     isImmersive 
   } = useFocusStore();
 
-  const { startSession, endSession } = useStudySession();
+  const { triggerRefresh } = useStudySession();
 
-  // Local state for timer (tracked as precise floats in seconds)
+  // Local state for timer (absolute time)
   const [isActive, setIsActive] = useState(false);
-  const [timeLeft, setTimeLeft] = useState<number>(timerMode === 'stopwatch' ? 0 : defaultStudyTime);
   const [phase, setPhase] = useState<"study" | "shortBreak" | "longBreak">("study");
   const [pomodoroCount, setPomodoroCount] = useState(0);
   
-  // Track actual studied time for XP (stopwatch counts up, countdown counts total elapsed)
-  const [sessionElapsedSeconds, setSessionElapsedSeconds] = useState<number>(0);
-
+  // Track total elapsed seconds for the current phase/session
+  const [sessionAccumulated, setSessionAccumulated] = useState<number>(0);
+  const [phaseAccumulated, setPhaseAccumulated] = useState<number>(0);
+  const [lastResumeTime, setLastResumeTime] = useState<number | null>(null);
   const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
+  
+  // Overall session start for saving
+  const [initialStartTime, setInitialStartTime] = useState<Date | null>(null);
+
+  // Helper functions for exact elapsed time
+  const getSessionElapsed = () => sessionAccumulated + (isActive && lastResumeTime ? (Date.now() - lastResumeTime) / 1000 : 0);
+  const getPhaseElapsed = () => phaseAccumulated + (isActive && lastResumeTime ? (Date.now() - lastResumeTime) / 1000 : 0);
+
+  const getTotalTime = () => {
+    if (timerMode === 'stopwatch') return 0;
+    if (phase === 'study') return defaultStudyTime;
+    if (phase === 'shortBreak') return defaultBreakTime;
+    return defaultBreakTime * 4;
+  };
 
   // Sync initial time if mode changes while not started
   useEffect(() => {
-    if (!isActive && sessionElapsedSeconds === 0) {
-      if (timerMode === 'stopwatch') setTimeLeft(0);
-      else setTimeLeft(defaultStudyTime);
+    if (!isActive && sessionAccumulated === 0) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      setPhaseAccumulated(0);
     }
-  }, [timerMode, defaultStudyTime, isActive, sessionElapsedSeconds]);
+  }, [timerMode, defaultStudyTime, isActive, sessionAccumulated]);
 
-  // High-resolution animation frame loop for perfect timer sync
-  useEffect(() => {
-    let animationFrameId: number;
-    let lastTime = performance.now();
-
-    const loop = (currentTime: number) => {
-      const delta = (currentTime - lastTime) / 1000; // in seconds
-      lastTime = currentTime;
-
-      setSessionElapsedSeconds(s => s + delta);
-      
-      setTimeLeft(t => {
-        if (timerMode === 'stopwatch') {
-          return t + delta;
-        } else {
-          const next = t - delta;
-          if (next <= 0) return 0;
-          return next;
-        }
-      });
-
-      if (isActive) {
-        animationFrameId = requestAnimationFrame(loop);
-      }
-    };
-
-    if (isActive) {
-      lastTime = performance.now();
-      animationFrameId = requestAnimationFrame(loop);
-    }
-
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isActive, timerMode]);
-
-  // Handle completion exactly once
-  useEffect(() => {
-    if (isActive && timerMode !== 'stopwatch' && timeLeft <= 0) {
-      handleTimerComplete();
-    }
-  }, [isActive, timerMode, timeLeft]);
-
-  const handleTimerComplete = () => {
+  function handleTimerComplete() {
+    const finalSession = getSessionElapsed();
+    
     setIsActive(false);
+    setLastResumeTime(null);
+    setPhaseAccumulated(0); // Reset phase for next step
+    setSessionAccumulated(finalSession);
+    
     toast("Time's up!");
     
     if (timerMode === 'pomodoro') {
@@ -94,53 +75,99 @@ export default function FocusPage() {
         setPomodoroCount(nextCount);
         if (nextCount % pomodoroCycles === 0) {
           setPhase('longBreak');
-          setTimeLeft(defaultBreakTime * 4); // Long break = 4x short break
         } else {
           setPhase('shortBreak');
-          setTimeLeft(defaultBreakTime);
         }
       } else {
         setPhase('study');
-        setTimeLeft(defaultStudyTime);
       }
     } else {
       // Countdown ended
-      handleEndSession();
+      handleEndSession(finalSession);
     }
-  };
+  }
+
+  // Reliable background-safe interval solely for auto-completion (does not trigger renders)
+  useEffect(() => {
+    if (!isActive || timerMode === 'stopwatch') return;
+
+    const interval = setInterval(() => {
+      const elapsed = getPhaseElapsed();
+      const total = getTotalTime();
+      if (total > 0 && total - elapsed <= 0) {
+        handleTimerComplete();
+      }
+    }, 500); // Check twice a second
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, timerMode, phase, sessionAccumulated, phaseAccumulated, lastResumeTime, defaultStudyTime, defaultBreakTime]);
 
   const togglePlayPause = () => {
-    if (!isActive && sessionElapsedSeconds === 0) {
-      // Just starting a fresh session
-      startSession(undefined, undefined, undefined, undefined);
+    if (!isActive) {
+      if (sessionAccumulated === 0) {
+        setInitialStartTime(new Date());
+      }
+      setLastResumeTime(Date.now());
+      setIsActive(true);
+    } else {
+      setSessionAccumulated(getSessionElapsed());
+      setPhaseAccumulated(getPhaseElapsed());
+      setLastResumeTime(null);
+      setIsActive(false);
     }
-    setIsActive(!isActive);
   };
 
   const handleRestart = () => {
     setIsActive(false);
-    setSessionElapsedSeconds(0);
+    setSessionAccumulated(0);
+    setPhaseAccumulated(0);
+    setLastResumeTime(null);
+    setInitialStartTime(null);
     setPhase("study");
-    if (timerMode === 'stopwatch') setTimeLeft(0);
-    else setTimeLeft(defaultStudyTime);
   };
 
   const handleStartBreak = () => {
     setIsActive(false);
+    setSessionAccumulated(getSessionElapsed());
+    setPhaseAccumulated(0);
+    setLastResumeTime(null);
     setPhase("shortBreak");
-    setTimeLeft(defaultBreakTime);
   };
 
-  const handleEndSession = () => {
+  const handleEndSession = async (overrideSessionElapsed?: number | any) => {
+    const finalElapsed = typeof overrideSessionElapsed === 'number' ? overrideSessionElapsed : getSessionElapsed();
+    
     setIsActive(false);
-    if (sessionElapsedSeconds < 10) {
+    setSessionAccumulated(finalElapsed);
+    setPhaseAccumulated(getPhaseElapsed());
+    setLastResumeTime(null);
+    
+    if (finalElapsed < 10) {
       // Silently discard spam/accidental starts
       handleRestart();
-    } else if (sessionElapsedSeconds < 60) {
+    } else if (finalElapsed < 60) {
       toast("Session too short to record.");
       handleRestart();
     } else {
-      endSession(100);
+      const endedAt = new Date();
+      const startedAt = initialStartTime || new Date(endedAt.getTime() - finalElapsed * 1000);
+      const exactDuration = Math.floor(finalElapsed);
+      
+      try {
+        await SessionService.endSession({
+          durationSeconds: exactDuration,
+          startedAt: startedAt.toISOString(),
+          endedAt: endedAt.toISOString(),
+        });
+        toast.success("Study session saved successfully!");
+      } catch (e) {
+        console.error("Session sync failed:", e);
+        toast.warning("Network issue: Session saved offline", {
+          description: "We'll sync it automatically when you reconnect."
+        });
+      }
+      triggerRefresh();
       setIsCompletionModalOpen(true);
     }
   };
@@ -152,13 +179,6 @@ export default function FocusPage() {
     onOpenNote: () => toast("Quick Note (Coming soon)")
   });
 
-  const getTotalTime = () => {
-    if (timerMode === 'stopwatch') return 0;
-    if (phase === 'study') return defaultStudyTime;
-    if (phase === 'shortBreak') return defaultBreakTime;
-    return defaultBreakTime * 4;
-  };
-
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] relative px-4 sm:px-8 overflow-hidden">
       {/* Premium Ambient Backlight */}
@@ -166,6 +186,7 @@ export default function FocusPage() {
       
       <AnimatePresence>
         <motion.div
+          layout
           key="focus-page"
           initial={{ opacity: 0, filter: "blur(10px)" }}
           animate={{ opacity: 1, filter: "blur(0px)" }}
@@ -185,7 +206,8 @@ export default function FocusPage() {
 
           <FocusTimer
             mode={timerMode}
-            time={timeLeft}
+            accumulatedTime={timerMode === 'stopwatch' ? sessionAccumulated : phaseAccumulated}
+            lastResumeTime={lastResumeTime}
             totalTime={getTotalTime()}
             isActive={isActive}
             phase={timerMode === 'pomodoro' ? phase : undefined}
@@ -210,8 +232,8 @@ export default function FocusPage() {
           setIsCompletionModalOpen(open);
           if (!open) handleRestart();
         }}
-        durationSeconds={sessionElapsedSeconds}
-        xpEarned={Math.floor(sessionElapsedSeconds / 60) * 10} // Dummy calc, real calc is handled by backend
+        durationSeconds={sessionAccumulated}
+        xpEarned={calculateSessionXP(sessionAccumulated)}
       />
     </div>
   );

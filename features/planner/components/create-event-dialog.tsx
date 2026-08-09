@@ -6,9 +6,10 @@ import { Loader2, Calendar as CalendarIcon, Clock, Link as LinkIcon, Check } fro
 import { createPlannerEvent, updatePlannerEvent, EventType, PlannerEvent } from "@/features/planner/services/planner.service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+import { Modal } from "@/components/ui/modal";
 
 interface CreateEventDialogProps {
   isOpen: boolean;
@@ -38,10 +39,12 @@ export function CreateEventDialog({
   defaultChapterId, 
   defaultSubjectId 
 }: CreateEventDialogProps) {
-  if (!isOpen) return null;
-
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      className="max-w-[425px] p-0 overflow-hidden"
+    >
       <CreateEventFormContent
         key={initialEvent?.id || "new-event"}
         onClose={onClose}
@@ -51,7 +54,7 @@ export function CreateEventDialog({
         defaultChapterId={defaultChapterId}
         defaultSubjectId={defaultSubjectId}
       />
-    </Dialog>
+    </Modal>
   );
 }
 
@@ -144,19 +147,19 @@ function CreateEventFormContent({
   };
 
   return (
-    <DialogContent className="sm:max-w-[425px] bg-background border-glass-border">
-      <DialogHeader>
-        <DialogTitle className="text-xl">
+    <div className="p-6">
+      <div className="flex flex-col gap-2 text-center sm:text-left">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">
           {initialEvent ? "Edit Session" : "Schedule Session"}
-        </DialogTitle>
-        <DialogDescription>
+        </h2>
+        <p className="text-sm text-muted-foreground">
           {initialEvent 
             ? "Make changes to your scheduled study session." 
             : "Plan your study time. This will sync to Google Calendar if connected."}
-        </DialogDescription>
-      </DialogHeader>
+        </p>
+      </div>
       
-      <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+      <form onSubmit={handleSubmit} className="space-y-6 mt-6">
         <div className="space-y-4">
           
           {/* Title */}
@@ -165,7 +168,6 @@ function CreateEventFormContent({
               Session Title
             </label>
             <Input 
-              autoFocus
               placeholder="e.g. Mechanics Deep Dive" 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -259,13 +261,13 @@ function CreateEventFormContent({
 
         </div>
 
-        <DialogFooter className="border-t border-border/50 pt-4 mt-6">
+        <div className="border-t border-white/10 pt-4 mt-6">
           <div className="flex w-full justify-between items-center">
             <span className="text-xs text-muted-foreground flex items-center gap-1.5">
               <LinkIcon className="w-3.5 h-3.5" /> Auto-sync enabled
             </span>
             <div className="flex gap-2">
-              <Button type="button" variant="ghost" onClick={onClose}>
+              <Button type="button" variant="ghost" onClick={onClose} className="hover:bg-white/5">
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting || !title.trim()}>
@@ -274,8 +276,8 @@ function CreateEventFormContent({
               </Button>
             </div>
           </div>
-        </DialogFooter>
+        </div>
       </form>
-    </DialogContent>
+    </div>
   );
 }

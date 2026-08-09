@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { StudySession } from "@/features/study/services/progress";
+import { calculateSessionXP, ActivityType } from "@/features/progress/config/xp-config";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { 
@@ -46,7 +47,9 @@ export function SessionCard({
   const durationSecs = session.duration_seconds % 60;
   
   const activityType = session.activity_type || "Open Study";
-  const xpEarned = session.xp_earned || Math.floor(session.duration_seconds / 60) * 2; // Mock fallback if db doesn't have it
+  const xpEarned = typeof session.xp_earned === 'number' 
+    ? session.xp_earned 
+    : calculateSessionXP(session.duration_seconds, session.activity_type as ActivityType | undefined);
   const completionPercent = session.completion_percentage || 100; // Mock fallback
 
   const containerVariants = {
@@ -77,8 +80,8 @@ export function SessionCard({
         className="p-5 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-start gap-4">
-          <div className="pt-1" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-4">
+          <div onClick={(e) => e.stopPropagation()}>
             <Checkbox 
               checked={isSelected}
               onCheckedChange={(checked) => onSelect(session.id, checked)}

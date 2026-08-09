@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Clock, Activity, Flame, X, Trophy } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface FocusCompletionModalProps {
   isOpen: boolean;
@@ -13,19 +12,29 @@ interface FocusCompletionModalProps {
   xpEarned: number;
 }
 
+import { useEffect, useState } from "react";
+import { getDashboardMetrics } from "@/features/study/services/progress";
+
 export function FocusCompletionModal({
   isOpen,
   onOpenChange,
   durationSeconds,
   xpEarned,
 }: FocusCompletionModalProps) {
-  
+  const [metrics, setMetrics] = useState<Awaited<ReturnType<typeof getDashboardMetrics>> | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      getDashboardMetrics().then(setMetrics).catch(console.error);
+    }
+  }, [isOpen]);
+
   const formatTime = (secs: number) => {
     const mins = Math.floor(secs / 60);
     return `${mins}m`;
   };
 
-  const containerVariants = {
+  const containerVariants: import("framer-motion").Variants = {
     hidden: { opacity: 0, scale: 0.95, filter: "blur(10px)" },
     visible: { 
       opacity: 1, 
@@ -41,14 +50,14 @@ export function FocusCompletionModal({
     exit: { opacity: 0, scale: 0.95, filter: "blur(10px)", transition: { duration: 0.3 } }
   };
 
-  const itemVariants = {
+  const itemVariants: import("framer-motion").Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden bg-black/60 backdrop-blur-3xl border-white/10 shadow-2xl rounded-3xl" hideCloseButton>
+      <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden bg-black/60 backdrop-blur-3xl border-white/10 shadow-2xl rounded-3xl" showCloseButton={false}>
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -93,17 +102,17 @@ export function FocusCompletionModal({
 
                 <motion.div variants={itemVariants} className="flex flex-col items-start p-4 rounded-2xl bg-white/5 border border-white/5 relative overflow-hidden group">
                   <div className="flex items-center gap-2 mb-3 text-muted-foreground w-full">
-                    <Activity className="w-4 h-4 text-emerald-400" />
-                    <span className="text-[11px] uppercase tracking-wider font-medium">Score</span>
+                    <Trophy className="w-4 h-4 text-emerald-400" />
+                    <span className="text-[11px] uppercase tracking-wider font-medium">Level</span>
                   </div>
                   <span className="text-3xl font-light tabular-nums tracking-tighter text-emerald-400">
-                    94<span className="text-xl text-emerald-400/50">%</span>
+                    {metrics ? metrics.xpDetails.currentLevel : '-'}
                   </span>
                 </motion.div>
 
                 <motion.div variants={itemVariants} className="flex flex-col items-start p-4 rounded-2xl bg-white/5 border border-white/5 relative overflow-hidden group">
                   <div className="flex items-center gap-2 mb-3 text-muted-foreground w-full">
-                    <Trophy className="w-4 h-4 text-amber-400" />
+                    <Activity className="w-4 h-4 text-amber-400" />
                     <span className="text-[11px] uppercase tracking-wider font-medium">XP Earned</span>
                   </div>
                   <span className="text-3xl font-light tabular-nums tracking-tighter text-amber-400">
@@ -117,7 +126,8 @@ export function FocusCompletionModal({
                     <span className="text-[11px] uppercase tracking-wider font-medium">Streak</span>
                   </div>
                   <span className="text-3xl font-light tabular-nums tracking-tighter text-foreground">
-                    3<span className="text-xl text-muted-foreground ml-1">Days</span>
+                    {metrics ? metrics.currentStreak : '-'}
+                    <span className="text-xl text-muted-foreground ml-1">Days</span>
                   </span>
                 </motion.div>
               </div>

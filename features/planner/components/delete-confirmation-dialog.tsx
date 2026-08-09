@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { PlannerEvent } from "@/features/planner/services/planner.service";
 
+import { Modal } from "@/components/ui/modal";
+
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,24 +30,27 @@ export function DeleteConfirmationDialog({ isOpen, onClose, onConfirm, event }: 
     }
   };
 
-  if (!event) return null;
-
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && !isDeleting && onClose()}>
-      <DialogContent className="sm:max-w-[400px] bg-background border-glass-border">
-        <DialogHeader>
-          <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-2">
+    <Modal
+      isOpen={isOpen && Boolean(event)}
+      onClose={() => !isDeleting && onClose()}
+      closeOnOutsideClick={!isDeleting}
+      className="max-w-[400px] p-6 sm:p-8"
+    >
+      {event && (
+        <>
+          <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-3">
             <AlertTriangle className="w-5 h-5 text-red-500" />
           </div>
-          <DialogTitle className="text-lg font-semibold">Delete Study Session?</DialogTitle>
-          <DialogDescription className="text-muted-foreground pt-1">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
+            Delete Study Session?
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             Are you sure you want to delete <span className="font-semibold text-foreground">&quot;{event.title}&quot;</span>? 
             {event.google_event_id && " This will also remove the synced event from Google Calendar."}
-          </DialogDescription>
-        </DialogHeader>
+          </p>
 
-        <DialogFooter className="border-t border-border/50 pt-4 mt-4">
-          <div className="flex gap-2 justify-end w-full">
+          <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <Button type="button" variant="ghost" disabled={isDeleting} onClick={onClose}>
               Cancel
             </Button>
@@ -64,8 +69,8 @@ export function DeleteConfirmationDialog({ isOpen, onClose, onConfirm, event }: 
               Delete Event
             </Button>
           </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </>
+      )}
+    </Modal>
   );
 }

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 interface StudySessionContextType {
   isActive: boolean;
-  elapsedSeconds: number;
+  startTime: number | null;
   subjectId?: string;
   chapterId?: string;
   topicId?: string;
@@ -23,7 +23,6 @@ const StudySessionContext = createContext<StudySessionContextType | undefined>(u
 export function StudySessionProvider({ children }: { children: ReactNode }) {
   const [isActive, setIsActive] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   
   const [subjectId, setSubjectId] = useState<string | undefined>();
   const [chapterId, setChapterId] = useState<string | undefined>();
@@ -31,16 +30,6 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
   const [activityType, setActivityType] = useState<ActivityType | undefined>();
   
   const [refreshKey, setRefreshKey] = useState(0);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isActive && startTime) {
-      interval = setInterval(() => {
-        setElapsedSeconds(Math.floor((Date.now() - startTime) / 1000));
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, startTime]);
 
   // Attempt to sync offline sessions on mount
   useEffect(() => {
@@ -55,7 +44,6 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
     setTopicId(tId);
     setActivityType(actType);
     setStartTime(Date.now());
-    setElapsedSeconds(0);
     setIsActive(true);
 
     // Save resume state when starting a session
@@ -81,7 +69,6 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
       const duration = Math.floor((endTime - startTime) / 1000);
       
       setStartTime(null);
-      setElapsedSeconds(0);
       
       if (duration >= 0) {
         try {
@@ -115,7 +102,7 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
 
   const contextValue = React.useMemo(() => ({
     isActive,
-    elapsedSeconds,
+    startTime,
     subjectId,
     chapterId,
     topicId,
@@ -124,7 +111,7 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
     triggerRefresh,
     startSession,
     endSession,
-  }), [isActive, elapsedSeconds, subjectId, chapterId, topicId, activityType, refreshKey, triggerRefresh, startSession, endSession]);
+  }), [isActive, startTime, subjectId, chapterId, topicId, activityType, refreshKey, triggerRefresh, startSession, endSession]);
 
   return (
     <StudySessionContext.Provider value={contextValue}>
@@ -139,4 +126,24 @@ export function useStudySession() {
     throw new Error("useStudySession must be used within a StudySessionProvider");
   }
   return context;
+}
+
+export function useStudyTimer() {
+  const { isActive, startTime } = useStudySession();
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!isActive || !startTime) return;
+    
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNow(Date.now());
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [isActive, startTime]);
+
+  if (!isActive || !startTime) return 0;
+  return Math.floor((now - startTime) / 1000);
 }

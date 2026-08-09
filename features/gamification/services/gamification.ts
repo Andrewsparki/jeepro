@@ -18,27 +18,39 @@ export interface XPDetails {
   progressPercentage: number;
 }
 
+import { XP_CONFIG, calculateSessionXP, ActivityType } from "@/features/progress/config/xp-config";
+
 export const XP_CONSTANTS = {
-  SESSION_COMPLETED: 20,
-  TOPIC_MASTERED: 50,
-  CHAPTER_MASTERED: 200,
-  BASE_LEVEL_XP: 500, // XP needed for level 2
-  LEVEL_MULTIPLIER: 1.5, // Each level takes 1.5x more XP
+  // We keep these for backward compatibility in imports, but they pull from central config
+  SESSION_COMPLETED: 20, // deprecated, don't use
+  TOPIC_MASTERED: XP_CONFIG.MILESTONES.TOPIC_COMPLETED,
+  CHAPTER_MASTERED: XP_CONFIG.MILESTONES.CHAPTER_COMPLETED,
+  BASE_LEVEL_XP: XP_CONFIG.LEVELING.BASE_LEVEL_XP,
+  LEVEL_MULTIPLIER: XP_CONFIG.LEVELING.LEVEL_MULTIPLIER,
 };
 
 export function calculateXPAndLevel(
   sessions: StudySession[],
   progress: UserTopicProgress[],
-  syllabus: Subject[]
+  syllabus: Subject[],
+  completedMissions: any[] = []
 ): XPDetails {
   let totalXP = 0;
 
   // 1. Session XP
-  totalXP += sessions.length * XP_CONSTANTS.SESSION_COMPLETED;
+  // Rely on the database exact `xp_earned` to prevent any deviations!
+  // If `xp_earned` is null (e.g. legacy row before the update), calculate exactly as fallback.
+  for (const session of sessions) {
+    if (typeof session.xp_earned === 'number') {
+      totalXP += session.xp_earned;
+    } else {
+      totalXP += calculateSessionXP(session.duration_seconds, session.activity_type as ActivityType | undefined);
+    }
+  }
 
-  // 2. Topic XP
+  // 2. Topic Milestone XP
   const masteredTopics = progress.filter(p => p.status === "Mastered").length;
-  totalXP += masteredTopics * XP_CONSTANTS.TOPIC_MASTERED;
+  totalXP += masteredTopics * XP_CONFIG.MILESTONES.TOPIC_COMPLETED;
 
   // 3. Chapter XP
   let masteredChapters = 0;
@@ -49,17 +61,27 @@ export function calculateXPAndLevel(
       }
     }
   }
-  totalXP += masteredChapters * XP_CONSTANTS.CHAPTER_MASTERED;
+  totalXP += masteredChapters * XP_CONFIG.MILESTONES.CHAPTER_COMPLETED;
+
+  // 4. Daily Missions XP
+  for (const mission of completedMissions) {
+    totalXP += mission.reward_xp || 0;
+    // Add bonus XP once per unique date where all 3 missions were finished
+    // We assume the DB correctly flags bonus_xp_awarded only when the criteria is met
+  }
+  
+  const datesWithBonus = new Set(completedMissions.filter(m => m.bonus_xp_awarded).map(m => m.date));
+  totalXP += datesWithBonus.size * XP_CONFIG.MILESTONES.ALL_DAILY_MISSIONS_COMPLETED;
 
   // Calculate Level
   let currentLevel = 1;
-  let xpForNextLevel = XP_CONSTANTS.BASE_LEVEL_XP;
+  let xpForNextLevel = XP_CONFIG.LEVELING.BASE_LEVEL_XP;
   let xpRemaining = totalXP;
 
   while (xpRemaining >= xpForNextLevel) {
     xpRemaining -= xpForNextLevel;
     currentLevel++;
-    xpForNextLevel = Math.floor(xpForNextLevel * XP_CONSTANTS.LEVEL_MULTIPLIER);
+    xpForNextLevel = Math.floor(xpForNextLevel * XP_CONFIG.LEVELING.LEVEL_MULTIPLIER);
   }
 
   const progressPercentage = Math.min(100, Math.round((xpRemaining / xpForNextLevel) * 100));

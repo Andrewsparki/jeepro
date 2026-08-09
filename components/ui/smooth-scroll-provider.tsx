@@ -48,7 +48,7 @@ export function useSmoothScroll() {
   const lenis = useLenis();
 
   return {
-    scrollTo: (target: number | string | HTMLElement, options?: any) => {
+    scrollTo: (target: number | string | HTMLElement, options?: Record<string, unknown>) => {
       if (lenis) {
         lenis.scrollTo(target, options);
       } else {

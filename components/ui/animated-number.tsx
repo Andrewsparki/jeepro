@@ -8,8 +8,8 @@ export function AnimatedNumber({ value }: { value: number }) {
   const { isTouch } = useLighting();
   
   // Spring to animate the value
-  const springValue = useSpring(value, {
-    stiffness: 300,
+  const springValue = useSpring(0, {
+    stiffness: 100,
     damping: 30,
     mass: 1,
   });

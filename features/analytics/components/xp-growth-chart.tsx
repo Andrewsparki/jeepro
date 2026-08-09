@@ -2,8 +2,9 @@
 
 import { useMemo } from "react";
 import { StudySession } from "@/features/study/services/progress";
+import { calculateSessionXP, ActivityType } from "@/features/progress/config/xp-config";
 import { 
-  AreaChart, 
+  AreaChart,  
   Area, 
   XAxis, 
   YAxis, 
@@ -32,7 +33,9 @@ export function XPGrowthChart({ sessions }: XPGrowthChartProps) {
     // Group by day and accumulate
     sorted.forEach(session => {
       const sessionDate = startOfDay(new Date(session.started_at));
-      const xpEarned = session.xp_earned || Math.floor(session.duration_seconds / 60); // fallback 1 XP per min
+      const xpEarned = typeof session.xp_earned === 'number' 
+        ? session.xp_earned 
+        : calculateSessionXP(session.duration_seconds, session.activity_type as ActivityType | undefined);
       
       cumulativeXP += xpEarned;
 

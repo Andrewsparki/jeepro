@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getSubjectUuidServer, getChapterUuidServer } from "@/features/syllabus/services/mapping-server.service";
 
 export type EventType = "Study Session" | "Revision Session" | "Formula Review" | "PYQ Practice" | "Mock Test" | "Custom Task";
 
@@ -52,9 +53,13 @@ export async function createPlannerEvent(event: PlannerEvent): Promise<PlannerEv
     google_event_id = await pushToGoogleCalendar(event, providerToken);
   }
 
+  // Resolve slugs to UUIDs before persisting
+  const resolvedSubjectId = await getSubjectUuidServer(event.subject_id);
+  const resolvedChapterId = await getChapterUuidServer(event.chapter_id);
+
   const { data, error } = await supabase
     .from("planner_events")
-    .insert([{ ...event, user_id: user.id, google_event_id }])
+    .insert([{ ...event, user_id: user.id, google_event_id, subject_id: resolvedSubjectId || null, chapter_id: resolvedChapterId || null }])
     .select()
     .single();
 
@@ -81,6 +86,10 @@ export async function updatePlannerEvent(event: PlannerEvent): Promise<PlannerEv
     await updateGoogleCalendarEvent(event, providerToken);
   }
 
+  // Resolve slugs to UUIDs before persisting
+  const resolvedSubjectId = await getSubjectUuidServer(event.subject_id);
+  const resolvedChapterId = await getChapterUuidServer(event.chapter_id);
+
   const { data, error } = await supabase
     .from("planner_events")
     .update({
@@ -89,8 +98,8 @@ export async function updatePlannerEvent(event: PlannerEvent): Promise<PlannerEv
       start_time: event.start_time,
       end_time: event.end_time,
       status: event.status,
-      subject_id: event.subject_id,
-      chapter_id: event.chapter_id,
+      subject_id: resolvedSubjectId || null,
+      chapter_id: resolvedChapterId || null,
       updated_at: new Date().toISOString()
     })
     .eq("id", event.id)

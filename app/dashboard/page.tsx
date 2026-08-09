@@ -95,6 +95,8 @@ function DashboardSkeleton() {
 import { LevelUpToast } from "@/features/gamification/components/level-up-toast";
 import { MilestoneCelebration } from "@/features/gamification/components/milestone-celebration";
 
+import { DailyMissionsCard } from "@/features/daily-missions/components/daily-missions-card";
+
 export default function DashboardPage() {
   const { refreshKey } = useStudySession();
   const { profile, user } = useAuth();
@@ -134,7 +136,18 @@ export default function DashboardPage() {
           <div className="xl:col-span-4 grid grid-cols-2 gap-4">
             <StatCard
               title="Today's Study Time"
-              value={metrics.todayStudyTimeFormatted}
+              value={
+                <div className="flex items-baseline gap-1">
+                  {metrics.todayStudyHours > 0 && (
+                    <>
+                      <AnimatedNumber value={metrics.todayStudyHours} />
+                      <span className="text-xl font-normal text-muted-foreground/80 -ml-0.5">h</span>
+                    </>
+                  )}
+                  <AnimatedNumber value={metrics.todayStudyMinutes} />
+                  <span className="text-xl font-normal text-muted-foreground/80 -ml-0.5">m</span>
+                </div>
+              }
               icon={<Clock className="h-4 w-4 text-blue-400" />}
               iconContainerClassName="bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
               delay={0.1}
@@ -205,7 +218,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ROW 3: Journey & Bottom content */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           <DashboardCard className="lg:col-span-5" delay={0.8}>
             <div className="mb-6">
               <h3 className="font-semibold text-lg">Your Journey</h3>
@@ -214,9 +227,8 @@ export default function DashboardPage() {
             <JourneyTracker xpDetails={metrics.xpDetails} achievements={metrics.achievements} />
           </DashboardCard>
           
-          {/* Empty column for future expansion or additional stats */}
-          <div className="lg:col-span-7 rounded-3xl border border-dashed border-border/40 bg-muted/10 flex items-center justify-center p-8 text-center text-muted-foreground">
-             <p className="text-sm">Additional modules (like Active Recall spaced repetition) will appear here.</p>
+          <div className="lg:col-span-7">
+             <DailyMissionsCard missions={metrics.dailyMissions} delay={0.9} />
           </div>
         </div>
 

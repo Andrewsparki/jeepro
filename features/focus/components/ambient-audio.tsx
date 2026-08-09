@@ -9,7 +9,7 @@ import { Volume2, VolumeX, Music, Check, CloudRain, Library, Trees, Waves, Audio
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn } from "@/lib/utils";
 
-const SOUNDS: { id: AmbientSound; label: string; icon: any }[] = [
+const SOUNDS: { id: AmbientSound; label: string; icon: React.ElementType }[] = [
   { id: 'none', label: 'None', icon: Music },
   { id: 'rain', label: 'Rain', icon: CloudRain },
   { id: 'library', label: 'Library', icon: Library },

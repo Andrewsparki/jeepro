@@ -1,4 +1,5 @@
 import { getUserProgress, ProgressStatus } from "@/features/study/services/progress";
+import { prefetchMapping, getTopicUuid } from "@/features/syllabus/services/mapping.service";
 
 import physicsData from "../data/jee-main/physics.json";
 import chemistryData from "../data/jee-main/chemistry.json";
@@ -105,14 +106,31 @@ const ALL_SUBJECTS = [
 ];
 
 export async function getSyllabus(): Promise<Subject[]> {
+  // Ensure UUID mapping cache is warm before resolving topic IDs
+  await prefetchMapping();
+
   const progress = await getUserProgress();
+  // progress records are keyed by DB UUID (user_topic_progress.topic_id)
   const progressMap = new Map(progress.map(p => [p.topic_id, p.status]));
   
+  // Build a JSON-topic-ID → status map by resolving each JSON ID to its DB UUID
+  const resolvedStatusMap = new Map<string, ProgressStatus>();
+  for (const subject of ALL_SUBJECTS) {
+    for (const chapter of subject.chapters) {
+      for (const topic of chapter.topics) {
+        const uuid = await getTopicUuid(topic.id);
+        if (uuid && progressMap.has(uuid)) {
+          resolvedStatusMap.set(topic.id, progressMap.get(uuid)!);
+        }
+      }
+    }
+  }
+
   return ALL_SUBJECTS.map(subject => {
     const chapters = subject.chapters.map(chapter => {
       const topics = chapter.topics.map(t => ({
         ...t,
-        status: progressMap.get(t.id) || "Not Started"
+        status: resolvedStatusMap.get(t.id) || "Not Started"
       }));
       
       const totalTopics = topics.length;

@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/ui/glass-card";
 
+import { ReactLenis } from "lenis/react";
+
 interface ActivityTimelineProps {
   sessions: StudySession[];
 }
@@ -44,9 +46,14 @@ export function ActivityTimeline({ sessions }: ActivityTimelineProps) {
         <h3 className="font-bold text-xl tracking-tight text-foreground">Activity Timeline</h3>
       </div>
 
-      <div 
+      <ReactLenis
+        options={{
+          lerp: 0.1,
+          duration: 1.2,
+          smoothWheel: true,
+          syncTouch: true,
+        }}
         className="flex-1 overflow-y-auto pr-4 -mr-4 space-y-6 relative z-10 custom-scrollbar"
-        data-lenis-prevent="true"
       >
         {recentSessions.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full opacity-50">
@@ -93,7 +100,7 @@ export function ActivityTimeline({ sessions }: ActivityTimelineProps) {
             ))}
           </div>
         )}
-      </div>
+      </ReactLenis>
       
       {/* Scroll Fade Overlay */}
       <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-card to-transparent pointer-events-none rounded-b-2xl" />

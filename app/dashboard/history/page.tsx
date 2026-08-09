@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { DashboardShell } from "@/features/dashboard/components/dashboard-shell";
 import { getStudySessions, StudySession, deleteStudySessions, clearAllStudySessions } from "@/features/study/services/progress";
 import { getSyllabus, Subject } from "@/features/syllabus/services/syllabus";
+import { calculateSessionXP, ActivityType } from "@/features/progress/config/xp-config";
 import { isToday, isThisWeek, isThisMonth } from "date-fns";
 import { Calendar } from "lucide-react";
 import { HistoryToolbar, SortOption } from "@/features/history/components/history-toolbar";
@@ -12,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useDialog } from "@/providers/dialog-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 function HistorySkeleton() {
   return (
     <DashboardShell>
@@ -59,7 +61,10 @@ function HistorySkeleton() {
   );
 }
 
+import { useStudySession } from "@/features/study/context/study-session-context";
+
 export default function HistoryPage() {
+  const { refreshKey } = useStudySession();
   const { alert, confirm } = useDialog();
   const [sessions, setSessions] = useState<StudySession[]>([]);
   const [syllabus, setSyllabus] = useState<Subject[]>([]);
@@ -85,7 +90,7 @@ export default function HistoryPage() {
       setLoading(false);
     }
     loadData();
-  }, []);
+  }, [refreshKey]);
 
   const getSubjectName = useCallback((chapterId?: string | null) => {
     if (!chapterId) return "General";
@@ -201,25 +206,32 @@ export default function HistoryPage() {
   const handleExportCSV = () => {
     if (processedSessions.length === 0) return;
     const headers = ["Session ID", "Subject", "Chapter", "Activity", "Start Time", "End Time", "Duration (s)", "XP Earned", "Completion %"];
-    const rows = processedSessions.map(s => [
-      s.id,
-      getSubjectName(s.chapter_id),
-      getChapterTitle(s.chapter_id),
-      s.activity_type || "Open Study",
-      new Date(s.started_at).toISOString(),
-      new Date(s.ended_at).toISOString(),
-      s.duration_seconds.toString(),
-      (s.xp_earned || Math.floor(s.duration_seconds / 60) * 2).toString(),
-      (s.completion_percentage || 100).toString()
-    ]);
-    
-    const csvContent = [headers.join(","), ...rows.map(r => r.map(c => `"${c}"`).join(","))].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
+    const rows = processedSessions.map(s => {
+      const xpEarned = typeof s.xp_earned === 'number' ? s.xp_earned : calculateSessionXP(s.duration_seconds, s.activity_type as ActivityType | undefined);
+      return [
+        s.id,
+        getSubjectName(s.chapter_id),
+        getChapterTitle(s.chapter_id),
+        s.activity_type || "Open Study",
+        new Date(s.started_at).toLocaleString(),
+        new Date(s.ended_at).toLocaleString(),
+        s.duration_seconds.toString(),
+        xpEarned.toString(),
+        (s.completion_percentage || 100).toString()
+      ];
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + headers.map(h => `"${h}"`).join(",") + "\n"
+      + rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+      
+    const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
-    link.href = url;
-    link.download = `study_history_${new Date().toISOString().split('T')[0]}.csv`;
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `study_history_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
 
   const handleExportJSON = () => {
@@ -232,7 +244,7 @@ export default function HistoryPage() {
       startedAt: s.started_at,
       endedAt: s.ended_at,
       durationSeconds: s.duration_seconds,
-      xpEarned: s.xp_earned || Math.floor(s.duration_seconds / 60) * 2,
+      xpEarned: typeof s.xp_earned === 'number' ? s.xp_earned : calculateSessionXP(s.duration_seconds, s.activity_type as ActivityType | undefined),
       completionPercentage: s.completion_percentage || 100
     }));
     
@@ -308,10 +320,22 @@ export default function HistoryPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="text-center py-20 text-muted-foreground border border-dashed border-border/50 rounded-2xl"
+                className="flex flex-col items-center justify-center text-center py-24 px-4 border border-dashed border-border/50 rounded-3xl bg-glass-surface"
               >
-                <Calendar className="w-10 h-10 mx-auto mb-4 opacity-50" />
-                <p>No study sessions found matching your criteria.</p>
+                <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center mb-6">
+                  <Calendar className="w-8 h-8 text-accent opacity-80" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">No study sessions found</h3>
+                <p className="text-sm text-muted-foreground max-w-md mb-8">
+                  {searchQuery || timeFilter !== 'all' || subjectFilter !== 'all' 
+                    ? "Try adjusting your filters to find what you're looking for." 
+                    : "You haven't recorded any study sessions yet. Start your first session to begin tracking your progress!"}
+                </p>
+                {!(searchQuery || timeFilter !== 'all' || subjectFilter !== 'all') && (
+                  <Button asChild className="rounded-full px-8 shadow-[0_0_20px_rgba(79,70,229,0.2)]">
+                    <a href="/dashboard/focus">Start Focus Session</a>
+                  </Button>
+                )}
               </motion.div>
             ) : (
               processedSessions.map((session) => (

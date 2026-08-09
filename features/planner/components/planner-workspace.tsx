@@ -184,21 +184,22 @@ export function PlannerWorkspace() {
             ))}
           </div>
         ) : events.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 text-center border border-dashed border-border/50 rounded-3xl bg-surface/30">
-            <div className="w-16 h-16 rounded-full bg-surface border border-glass-border flex items-center justify-center mb-4">
-              <CalendarIcon className="w-8 h-8 text-muted-foreground opacity-50" />
+          <div className="flex flex-col items-center justify-center py-32 text-center border border-dashed border-border/50 rounded-3xl bg-glass-surface">
+            <div className="w-20 h-20 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(79,70,229,0.15)]">
+              <CalendarIcon className="w-10 h-10 text-accent opacity-90" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Your planner is empty</h3>
-            <p className="text-sm text-muted-foreground max-w-sm mb-6">
-              Create your first study session or revision reminder to stay on track.
+            <h3 className="text-2xl font-bold mb-3 tracking-tight">Your planner is empty</h3>
+            <p className="text-sm text-muted-foreground max-w-md mb-8">
+              Stay organized and on track. Create your first study session, plan revisions, or schedule mock tests to boost your productivity.
             </p>
             <Button 
               onClick={() => {
                 setEditingEvent(null);
                 setIsCreateOpen(true);
               }} 
-              variant="outline"
+              className="rounded-full px-8 h-12 shadow-[0_0_20px_rgba(79,70,229,0.25)] hover:shadow-[0_0_30px_rgba(79,70,229,0.4)] transition-all font-medium text-base"
             >
+              <Plus className="w-5 h-5 mr-2" />
               Schedule your first session
             </Button>
           </div>
