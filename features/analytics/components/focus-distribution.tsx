@@ -157,25 +157,29 @@ export function FocusDistribution({ sessions }: FocusDistributionProps) {
 
                 <Tooltip 
                   cursor={false}
-                  contentStyle={{ 
-                    backgroundColor: 'rgba(10, 10, 10, 0.9)', 
-                    borderColor: 'rgba(59, 130, 246, 0.2)',
-                    borderRadius: '16px',
-                    backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
-                    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5), 0 0 15px rgba(59,130,246,0.15)',
-                    padding: '12px 16px',
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div className="bg-[#0a0a0c]/95 border border-blue-500/10 backdrop-blur-xl p-3 rounded-xl shadow-2xl z-50 min-w-[140px]">
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                            {data.name}
+                          </p>
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: data.legendColor, boxShadow: `0 0 8px ${data.legendColor}` }} />
+                              <span className="text-xs font-semibold text-white">Sessions</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-white">{data.value}</span>
+                              <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md border border-blue-500/20">{data.percentage}%</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
-                  itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 700, fontSize: '14px' }}
-                  labelStyle={{ display: 'none' }}
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  formatter={(value: any, name: any, props: any) => [
-                    <div key="tooltip-content" className="flex items-center gap-2">
-                      <span className="text-foreground">{value} sessions</span>
-                      <span className="text-blue-400 font-bold text-xs bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">{props.payload.percentage}%</span>
-                    </div>, 
-                    <span key="tooltip-name" className="text-muted-foreground text-[11px] font-bold uppercase tracking-wider">{name}</span>
-                  ]}
                 />
                 
                 <Legend 

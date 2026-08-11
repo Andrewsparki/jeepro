@@ -86,9 +86,12 @@ export async function getSubjectUuid(slugOrId: string | null | undefined): Promi
   await prefetchMapping();
   const resolved = cachedSubjectMap?.[slugOrId];
   if (!resolved) {
-    console.warn(`[mapping] getSubjectUuid: No UUID found for subject "${slugOrId}". WHY: The slug "${slugOrId}" is not present as a key in the cachedSubjectMap. (Reference tables might be empty, or the slug in the frontend JSON doesn't exactly match the slug in the database). Falling back to raw value.`);
+    console.warn(`[mapping] getSubjectUuid: No UUID found for subject "${slugOrId}". WHY: The slug "${slugOrId}" is not present as a key in the cachedSubjectMap. (Reference tables might be empty, or the slug in the frontend JSON doesn't exactly match the slug in the database).`);
+    return null;
+  } else {
+    console.log(`[mapping] getSubjectUuid: Found UUID "${resolved}" for subject "${slugOrId}"`);
   }
-  return resolved || slugOrId;
+  return resolved;
 }
 
 /**
@@ -102,9 +105,12 @@ export async function getChapterUuid(slugOrId: string | null | undefined): Promi
   await prefetchMapping();
   const resolved = cachedChapterMap?.[slugOrId];
   if (!resolved) {
-    console.warn(`[mapping] getChapterUuid: No UUID found for chapter "${slugOrId}". WHY: The string "${slugOrId}" (which could be a slug or a JSON ID) is not present as a key in cachedChapterMap. (Either missing in DB, or string mismatch between JSON and DB). Falling back to raw value.`);
+    console.warn(`[mapping] getChapterUuid: No UUID found for chapter "${slugOrId}". WHY: The string "${slugOrId}" (which could be a slug or a JSON ID) is not present as a key in cachedChapterMap. (Either missing in DB, or string mismatch between JSON and DB).`);
+    return null;
+  } else {
+    console.log(`[mapping] getChapterUuid: Found UUID "${resolved}" for chapter "${slugOrId}"`);
   }
-  return resolved || slugOrId;
+  return resolved;
 }
 
 /**
@@ -118,7 +124,10 @@ export async function getTopicUuid(jsonId: string | null | undefined): Promise<s
   await prefetchMapping();
   const resolved = cachedTopicMap?.[jsonId];
   if (!resolved) {
-    console.warn(`[mapping] getTopicUuid: No UUID found for topic "${jsonId}". WHY: The JSON ID "${jsonId}" could not be mapped to a DB topic UUID during prefetch (either the parent chapter was missing, or the topic title didn't match exactly). Falling back to raw value.`);
+    console.warn(`[mapping] getTopicUuid: No UUID found for topic "${jsonId}". WHY: The JSON ID "${jsonId}" could not be mapped to a DB topic UUID during prefetch (either the parent chapter was missing, or the topic title didn't match exactly).`);
+    return null;
+  } else {
+    console.log(`[mapping] getTopicUuid: Found UUID "${resolved}" for topic "${jsonId}"`);
   }
-  return resolved || jsonId;
+  return resolved;
 }

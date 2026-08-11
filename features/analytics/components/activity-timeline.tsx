@@ -46,7 +46,7 @@ export function ActivityTimeline({ sessions }: ActivityTimelineProps) {
       </div>
 
       <div
-        className="flex-1 overflow-y-auto pr-4 -mr-4 space-y-6 relative z-10 custom-scrollbar"
+        className="flex-1 overflow-y-auto pr-4 -mr-4 space-y-6 relative z-10 custom-scrollbar scroll-smooth"
       >
         {recentSessions.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full opacity-50">

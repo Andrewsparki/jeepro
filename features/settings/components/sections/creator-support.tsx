@@ -5,6 +5,7 @@ import { Heart, Coffee, Copy, CheckCircle2 } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export function CreatorSupport() {
   const [copied, setCopied] = useState(false);
@@ -17,11 +18,38 @@ export function CreatorSupport() {
 
   return (
     <div className="py-12 mt-12 mb-8">
-      <GlassCard interactive className="p-8 sm:p-12 relative overflow-hidden group">
+      <GlassCard interactive hoverTint="rose" className="p-8 sm:p-12 relative overflow-hidden group">
         
-        {/* Subtle decorative background */}
-        <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity duration-1000">
-          <Heart className="w-64 h-64 -rotate-12 text-rose-500" />
+        {/* Subtle decorative background with glowing heart & popping particles */}
+        <div className="absolute top-0 right-0 p-12 pointer-events-none z-0 flex items-center justify-center">
+          {/* Big glowing heart */}
+          <Heart className="w-64 h-64 -rotate-12 text-rose-500/20 fill-rose-500/10 opacity-40 group-hover:opacity-100 group-hover:drop-shadow-[0_0_30px_rgba(244,63,94,0.6)] group-hover:scale-105 transition-all duration-700 ease-out" />
+          
+          {/* Small popping hearts */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            {[...Array(5)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute text-rose-500/60"
+                initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  scale: [0.5, 1.2, 0.8],
+                  x: (Math.random() - 0.5) * 150,
+                  y: -50 - Math.random() * 100,
+                }}
+                transition={{
+                  duration: 1.5 + Math.random(),
+                  repeat: Infinity,
+                  repeatDelay: Math.random() * 2,
+                  ease: "easeOut",
+                  delay: Math.random() * 2
+                }}
+              >
+                <Heart className="w-6 h-6 fill-rose-500/30" />
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         <div className="relative z-10 flex flex-col items-center text-center max-w-lg mx-auto">

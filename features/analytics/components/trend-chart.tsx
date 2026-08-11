@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { StudySession } from "@/features/study/services/progress";
 import { 
-  AreaChart, 
+  ComposedChart, 
+  Line,
   Area, 
   XAxis, 
   YAxis, 
@@ -87,11 +88,19 @@ export function TrendChart({ sessions }: TrendChartProps) {
       
       <div className="flex-1 w-full min-h-0 relative z-10 px-4 pb-4">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
+          <ComposedChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
             <defs>
+              <filter id="neonGlowAccent" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
               <linearGradient id="colorHoursTrend" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.4} />
-                <stop offset="95%" stopColor="var(--accent)" stopOpacity={0.0} />
+                <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.25} />
+                <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} opacity={0.3} />
@@ -115,31 +124,48 @@ export function TrendChart({ sessions }: TrendChartProps) {
               dx={-5}
             />
             <Tooltip 
-              contentStyle={{ 
-                backgroundColor: 'rgba(10, 10, 10, 0.85)', 
-                borderColor: 'rgba(255,255,255,0.1)',
-                borderRadius: '16px',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
-                padding: '16px 20px',
-              }}
-              itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 700, fontSize: '16px' }}
-              labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '8px', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}
-              cursor={{ stroke: 'var(--accent)', strokeWidth: 1, strokeDasharray: '4 4', opacity: 0.5 }}
+               cursor={{ stroke: 'rgba(255,255,255,0.05)', strokeWidth: 30 }}
+               content={({ active, payload }) => {
+                 if (active && payload && payload.length) {
+                   return (
+                     <div className="bg-[#0a0a0c]/95 border border-white/5 backdrop-blur-xl p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
+                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                         {payload[0].payload.displayDate}
+                       </p>
+                       <div className="flex items-center justify-between gap-4">
+                         <div className="flex items-center gap-1.5">
+                           <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
+                           <span className="text-xs font-semibold text-white">Study Time</span>
+                         </div>
+                         <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{payload[0]?.value}h</span>
+                       </div>
+                     </div>
+                   );
+                 }
+                 return null;
+               }}
             />
             <Area 
               type="monotone" 
               dataKey="hours" 
-              stroke="var(--accent)" 
-              strokeWidth={3}
+              stroke="none" 
               fillOpacity={1}
               fill="url(#colorHoursTrend)"
-              activeDot={{ r: 6, fill: "var(--accent)", stroke: "hsl(var(--background))", strokeWidth: 3 }}
-              animationDuration={1500}
-              animationEasing="ease-out"
+              isAnimationActive={true}
             />
-          </AreaChart>
+            <Line 
+               type="monotone" 
+               dataKey="hours" 
+               stroke="var(--accent)" 
+               strokeWidth={2.5} 
+               dot={{ r: 3, fill: '#0f172a', strokeWidth: 1.5, stroke: 'var(--accent)' }} 
+               activeDot={{ r: 5, fill: '#fff', stroke: 'var(--accent)', strokeWidth: 2, style: { filter: 'url(#neonGlowAccent)' } }} 
+               style={{ filter: 'url(#neonGlowAccent)' }} 
+               isAnimationActive={true}
+               animationDuration={1500}
+               animationEasing="ease-out"
+            />
+          </ComposedChart>
         </ResponsiveContainer>
       </div>
     </GlassCard>

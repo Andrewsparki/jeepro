@@ -132,7 +132,16 @@ export default function AnalyticsPage() {
     );
   }
 
-  const { study_sessions, syllabus, progress } = metrics;
+  const {
+    totalDurationSeconds,
+    sessionsCount,
+    currentStreak,
+    xpDetails,
+    syllabus,
+    study_sessions,
+    progress,
+    xpEvents,
+  } = metrics;
   const totalHours = Math.floor(metrics.totalDurationSeconds / 3600);
   const totalMinutes = Math.floor((metrics.totalDurationSeconds % 3600) / 60);
   const studyTimeSuffix = totalHours > 0 ? `h ${totalMinutes}m` : "m";
@@ -189,7 +198,7 @@ export default function AnalyticsPage() {
 
         {/* Row 2: XP Growth + Streak Calendar */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <XPGrowthChart sessions={study_sessions} />
+          <XPGrowthChart events={xpEvents} />
           <StreakCalendar sessions={study_sessions} />
         </div>
 

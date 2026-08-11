@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/client";
 import { getChapterUuid, getTopicUuid } from "@/features/syllabus/services/mapping.service";
 
+const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
 export type ProgressStatus = "Not Started" | "In Progress" | "Mastered" | "Needs Revision";
 
 export interface UserTopicProgress {
@@ -94,8 +96,8 @@ export async function updateTopicProgress(topicId: string, status: ProgressStatu
   const completedAt = status === "Mastered" ? new Date().toISOString() : null;
   
   const topicUuid = await getTopicUuid(topicId);
-  if (!topicUuid) {
-    console.error(`updateTopicProgress: Could not resolve UUID for topic ID: ${topicId}`);
+  if (!topicUuid || !isUuid(topicUuid)) {
+    console.error(`updateTopicProgress: Could not resolve valid UUID for topic ID: ${topicId}. Got: ${topicUuid}`);
     return null;
   }
 
@@ -139,30 +141,39 @@ export async function updateChapterProgress(subjectSlug: string, chapterSlug: st
   
   await Promise.all(chapter.topics.map(async topic => {
     const topicUuid = await getTopicUuid(topic.id);
-    if (topicUuid) {
+    if (topicUuid && isUuid(topicUuid)) {
       topicUuids.push(topicUuid);
+    } else {
+      console.warn(`updateChapterProgress: Skipped topic ${topic.id} because a valid UUID could not be resolved.`);
     }
   }));
 
   if (topicUuids.length === 0) return [];
 
-  const { data: changed, error } = await supabase.rpc('upsert_topic_progress_transactional', {
-    p_topic_ids: topicUuids,
-    p_status: status
-  });
+  const isNewlyMastered = status === "Mastered" && chapter.status !== "Mastered" && chapter.completionPercentage < 100;
+  
+  const completedAt = status === "Mastered" ? new Date().toISOString() : null;
+  const updatedAt = new Date().toISOString();
+
+  const upsertData = topicUuids.map(uuid => ({
+    user_id: user.id,
+    topic_id: uuid,
+    status,
+    completed_at: completedAt,
+    updated_at: updatedAt
+  }));
+
+  const { data, error } = await supabase
+    .from("user_topic_progress")
+    .upsert(upsertData, { onConflict: 'user_id,topic_id' })
+    .select();
 
   if (error) {
     console.error("Error updating chapter progress:", error.message, error.details, error.hint);
     return null;
   }
 
-  const { data } = await supabase
-    .from("user_topic_progress")
-    .select("*")
-    .eq("user_id", user.id)
-    .in("topic_id", topicUuids);
-
-  if (changed && status === "Mastered") {
+  if (isNewlyMastered) {
     try {
       await updateMissionProgress("chapter_completion", 1);
     } catch (err) {
@@ -190,39 +201,45 @@ export async function updateSubjectProgress(subjectSlug: string, status: Progres
   }
 
   let newlyMasteredChaptersCount = 0;
-  const allTopicUuids: string[] = [];
+  if (status === "Mastered") {
+    newlyMasteredChaptersCount = subject.chapters.filter(
+      c => c.status !== "Mastered" && c.completionPercentage < 100
+    ).length;
+  }
+
+  const completedAt = status === "Mastered" ? new Date().toISOString() : null;
+  const updatedAt = new Date().toISOString();
+  
+  const upsertData: { user_id: string; topic_id: string; status: ProgressStatus; completed_at: string | null; updated_at: string }[] = [];
 
   for (const chapter of subject.chapters) {
-    const chapterTopicUuids: string[] = [];
     for (const topic of chapter.topics) {
       const topicUuid = await getTopicUuid(topic.id);
-      if (topicUuid) {
-        chapterTopicUuids.push(topicUuid);
-        allTopicUuids.push(topicUuid);
-      }
-    }
-    
-    if (chapterTopicUuids.length > 0) {
-      const { data: changed, error } = await supabase.rpc('upsert_topic_progress_transactional', {
-        p_topic_ids: chapterTopicUuids,
-        p_status: status
-      });
-      
-      if (error) {
-        console.error(`Error updating chapter progress for ${chapter.slug}:`, error.message);
-      } else if (changed && status === "Mastered") {
-        newlyMasteredChaptersCount++;
+      if (topicUuid && isUuid(topicUuid)) {
+        upsertData.push({
+          user_id: user.id,
+          topic_id: topicUuid,
+          status,
+          completed_at: completedAt,
+          updated_at: updatedAt
+        });
+      } else {
+        console.warn(`updateSubjectProgress: Skipped topic ${topic.id} because a valid UUID could not be resolved.`);
       }
     }
   }
 
-  if (allTopicUuids.length === 0) return [];
+  if (upsertData.length === 0) return [];
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("user_topic_progress")
-    .select("*")
-    .eq("user_id", user.id)
-    .in("topic_id", allTopicUuids);
+    .upsert(upsertData, { onConflict: 'user_id,topic_id' })
+    .select();
+
+  if (error) {
+    console.error("Error updating subject progress:", error.message, error.details, error.hint);
+    return null;
+  }
 
   if (status === "Mastered" && newlyMasteredChaptersCount > 0) {
     try {
@@ -288,8 +305,8 @@ export async function saveStudySession({
       duration_seconds: durationSeconds,
       started_at: startedAt,
       ended_at: endedAt,
-      chapter_id: chapterUuid || null,
-      topic_id: topicUuid || null,
+      chapter_id: chapterUuid && isUuid(chapterUuid) ? chapterUuid : null,
+      topic_id: topicUuid && isUuid(topicUuid) ? topicUuid : null,
       activity_type: activityType || null,
     })
     .select()
@@ -315,7 +332,7 @@ export async function saveStudySession({
 }
 
 import { getSyllabus, getChapterBySlug, getSubjectBySlug } from "@/features/syllabus/services/syllabus";
-import { calculateXPAndLevel, getAchievements } from "@/features/gamification/services/gamification";
+import { calculateXPAndLevel, getAchievements, generateXPEvents } from "@/features/gamification/services/gamification";
 import { getPlannerEvents } from "@/features/planner/services/planner.service";
 import { getTodayMissions, getAllCompletedMissions } from "@/features/daily-missions/services/missions.service";
 
@@ -380,6 +397,7 @@ export async function getDashboardMetrics() {
   // Gamification
   const xpDetails = calculateXPAndLevel(sessions, progress, syllabus, allCompletedMissions);
   const achievements = getAchievements(sessions, progress, syllabus, currentStreak);
+  const xpEvents = generateXPEvents(sessions, progress, syllabus, allCompletedMissions);
 
   // Last active chapter for Continue Learning
   let lastActiveChapter = null;
@@ -442,5 +460,6 @@ export async function getDashboardMetrics() {
     study_sessions: sessions,
     progress,
     dailyMissions,
+    xpEvents,
   };
 }

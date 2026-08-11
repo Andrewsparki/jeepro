@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { StudySession } from "@/features/study/services/progress";
-import { calculateSessionXP, ActivityType } from "@/features/progress/config/xp-config";
+import { XPEvent } from "@/features/gamification/services/gamification";
 import { 
-  AreaChart,  
+  ComposedChart,
+  Line,  
   Area, 
   XAxis, 
   YAxis, 
@@ -17,13 +17,13 @@ import { Trophy } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 
 interface XPGrowthChartProps {
-  sessions: StudySession[];
+  events: XPEvent[];
 }
 
-export function XPGrowthChart({ sessions }: XPGrowthChartProps) {
+export function XPGrowthChart({ events }: XPGrowthChartProps) {
   const data = useMemo(() => {
-    // Sort sessions by date ascending
-    const sorted = [...sessions].sort((a, b) => new Date(a.started_at).getTime() - new Date(b.started_at).getTime());
+    // Sort events by date ascending
+    const sorted = [...events].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
     
     if (sorted.length === 0) return [];
 
@@ -31,22 +31,19 @@ export function XPGrowthChart({ sessions }: XPGrowthChartProps) {
     const chartData: { date: Date; displayDate: string; xp: number }[] = [];
     
     // Group by day and accumulate
-    sorted.forEach(session => {
-      const sessionDate = startOfDay(new Date(session.started_at));
-      const xpEarned = typeof session.xp_earned === 'number' 
-        ? session.xp_earned 
-        : calculateSessionXP(session.duration_seconds, session.activity_type as ActivityType | undefined);
+    sorted.forEach(event => {
+      const eventDate = startOfDay(new Date(event.timestamp));
       
-      cumulativeXP += xpEarned;
+      cumulativeXP += event.xp;
 
       // Check if we already have this day
-      const existingDay = chartData.find(d => d.date.getTime() === sessionDate.getTime());
+      const existingDay = chartData.find(d => d.date.getTime() === eventDate.getTime());
       if (existingDay) {
         existingDay.xp = cumulativeXP;
       } else {
         chartData.push({
-          date: sessionDate,
-          displayDate: format(sessionDate, "MMM d"),
+          date: eventDate,
+          displayDate: format(eventDate, "MMM d"),
           xp: cumulativeXP
         });
       }
@@ -62,7 +59,7 @@ export function XPGrowthChart({ sessions }: XPGrowthChartProps) {
     }
 
     return chartData;
-  }, [sessions]);
+  }, [events]);
 
   const maxXP = data.length > 0 ? data[data.length - 1].xp : 100;
 
@@ -85,11 +82,19 @@ export function XPGrowthChart({ sessions }: XPGrowthChartProps) {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
+            <ComposedChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
               <defs>
+                <filter id="neonGlowYellow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
                 <linearGradient id="colorXP" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#EAB308" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#EAB308" stopOpacity={0.0} />
+                  <stop offset="0%" stopColor="#EAB308" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#EAB308" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} opacity={0.3} />
@@ -112,31 +117,48 @@ export function XPGrowthChart({ sessions }: XPGrowthChartProps) {
                 dx={-5}
               />
               <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'rgba(10, 10, 10, 0.85)', 
-                  borderColor: 'rgba(255,255,255,0.1)',
-                  borderRadius: '16px',
-                  backdropFilter: 'blur(16px)',
-                  WebkitBackdropFilter: 'blur(16px)',
-                  boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
-                  padding: '16px 20px',
-                }}
-                itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 700, fontSize: '16px' }}
-                labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '8px', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}
-                cursor={{ stroke: '#EAB308', strokeWidth: 1, strokeDasharray: '4 4', opacity: 0.5 }}
+                 cursor={{ stroke: 'rgba(255,255,255,0.05)', strokeWidth: 30 }}
+                 content={({ active, payload }) => {
+                   if (active && payload && payload.length) {
+                     return (
+                       <div className="bg-[#0a0a0c]/95 border border-white/5 backdrop-blur-xl p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
+                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                           {payload[0].payload.displayDate}
+                         </p>
+                         <div className="flex items-center justify-between gap-4">
+                           <div className="flex items-center gap-1.5">
+                             <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.8)]" />
+                             <span className="text-xs font-semibold text-white">XP</span>
+                           </div>
+                           <span className="text-xs font-bold text-yellow-500">{payload[0]?.value}</span>
+                         </div>
+                       </div>
+                     );
+                   }
+                   return null;
+                 }}
               />
               <Area 
                 type="monotone" 
                 dataKey="xp" 
-                stroke="#EAB308" 
+                stroke="none" 
                 fillOpacity={1} 
                 fill="url(#colorXP)" 
-                strokeWidth={3}
-                activeDot={{ r: 6, fill: "#EAB308", stroke: "hsl(var(--background))", strokeWidth: 3 }}
-                animationDuration={1500}
-                animationEasing="ease-out"
+                isAnimationActive={true}
               />
-            </AreaChart>
+              <Line 
+                 type="monotone" 
+                 dataKey="xp" 
+                 stroke="#EAB308" 
+                 strokeWidth={2.5} 
+                 dot={{ r: 3, fill: '#0f172a', strokeWidth: 1.5, stroke: '#EAB308' }} 
+                 activeDot={{ r: 5, fill: '#fff', stroke: '#EAB308', strokeWidth: 2, style: { filter: 'url(#neonGlowYellow)' } }} 
+                 style={{ filter: 'url(#neonGlowYellow)' }} 
+                 isAnimationActive={true}
+                 animationDuration={1500}
+                 animationEasing="ease-out"
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         )}
       </div>

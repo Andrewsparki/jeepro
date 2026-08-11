@@ -87,9 +87,13 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
             <defs>
+              <filter id="neonGlowBar" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
               <linearGradient id="colorSessions" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="var(--accent)" stopOpacity={0.3} />
+                <stop offset="0%" stopColor="var(--accent)" stopOpacity={1} />
+                <stop offset="100%" stopColor="var(--accent)" stopOpacity={0.2} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} opacity={0.3} />
@@ -112,18 +116,26 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
               dx={-5}
             />
             <Tooltip 
-              cursor={{ fill: 'var(--accent)', opacity: 0.1 }}
-              contentStyle={{ 
-                backgroundColor: 'rgba(10, 10, 10, 0.85)', 
-                borderColor: 'rgba(255,255,255,0.1)',
-                borderRadius: '16px',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
-                padding: '16px 20px',
-              }}
-              itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 700, fontSize: '16px' }}
-              labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '8px', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}
+               cursor={{ fill: 'var(--accent)', opacity: 0.1 }}
+               content={({ active, payload }) => {
+                 if (active && payload && payload.length) {
+                   return (
+                     <div className="bg-[#0a0a0c]/95 border border-white/5 backdrop-blur-xl p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
+                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                         {payload[0].payload.displayDate}
+                       </p>
+                       <div className="flex items-center justify-between gap-4">
+                         <div className="flex items-center gap-1.5">
+                           <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
+                           <span className="text-xs font-semibold text-white">Sessions</span>
+                         </div>
+                         <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{payload[0]?.value}</span>
+                       </div>
+                     </div>
+                   );
+                 }
+                 return null;
+               }}
             />
             <Bar 
               dataKey="count" 
@@ -132,6 +144,7 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
               barSize={timeRange === "7D" ? 40 : 12}
               animationDuration={1500}
               animationEasing="ease-out"
+              style={{ filter: 'url(#neonGlowBar)' }}
             />
           </BarChart>
         </ResponsiveContainer>

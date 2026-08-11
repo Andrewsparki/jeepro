@@ -62,7 +62,7 @@ $$;
 -- RPC for safely updating topic progress and preventing duplicate completion awards
 -- Returns true if AT LEAST ONE topic was newly transitioned to the target status
 CREATE OR REPLACE FUNCTION public.upsert_topic_progress_transactional(
-  p_topic_ids text[],
+  p_topic_ids uuid[],
   p_status text
 )
 RETURNS boolean
@@ -71,7 +71,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 DECLARE
-  v_topic_id text;
+  v_topic_id uuid;
   v_changed boolean := false;
   v_old_status text;
 BEGIN

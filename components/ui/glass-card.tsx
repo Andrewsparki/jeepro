@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { useLighting } from "./lighting-provider";
 import { usePerformance } from "@/lib/performance-context";
 
-export type HoverTint = "blue" | "emerald" | "amber" | "orange" | "purple" | "yellow" | "none";
+export type HoverTint = "blue" | "emerald" | "amber" | "orange" | "purple" | "yellow" | "rose" | "none";
 
 interface GlassCardProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;
@@ -21,6 +21,7 @@ const tintClassMap: Record<string, string> = {
   orange: "hover:shadow-[0_8px_30px_rgba(249,115,22,0.12)] hover:border-orange-500/20",
   purple: "hover:shadow-[0_8px_30px_rgba(168,85,247,0.12)] hover:border-purple-500/20",
   yellow: "hover:shadow-[0_8px_30px_rgba(234,179,8,0.12)] hover:border-yellow-500/20",
+  rose: "hover:shadow-[0_8px_30px_rgba(244,63,94,0.12)] hover:border-rose-500/20",
   none: "hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]",
 };
 
@@ -31,6 +32,7 @@ const tintGradientMap: Record<string, string> = {
   orange: "from-orange-500/10",
   purple: "from-purple-500/10",
   yellow: "from-yellow-500/10",
+  rose: "from-rose-500/10",
   none: "",
 };
 

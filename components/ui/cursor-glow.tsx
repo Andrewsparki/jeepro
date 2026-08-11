@@ -84,7 +84,7 @@ function detectAccentColor(el: HTMLElement | null): RGBColor {
   return NEUTRAL_WHITE;
 }
 
-const MAX_TRAIL_POINTS = 20;
+const MAX_TRAIL_POINTS = 8;
 
 export function CursorGlow() {
   const mainRef = useRef<HTMLDivElement>(null);

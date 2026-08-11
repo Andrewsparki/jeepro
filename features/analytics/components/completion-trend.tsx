@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { UserTopicProgress } from "@/features/study/services/progress";
 import { 
-  LineChart, 
+  ComposedChart, 
+  Area,
   Line, 
   XAxis, 
   YAxis, 
@@ -99,7 +100,21 @@ export function CompletionTrend({ progress }: CompletionTrendProps) {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
+            <ComposedChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
+              <defs>
+                <filter id="neonGlowGreen" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <linearGradient id="colorCompletion" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#22C55E" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#22C55E" stopOpacity={0} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} opacity={0.3} />
               <XAxis 
                 dataKey="displayDate" 
@@ -121,31 +136,48 @@ export function CompletionTrend({ progress }: CompletionTrendProps) {
                 dx={-5}
               />
               <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'rgba(10, 10, 10, 0.85)', 
-                  borderColor: 'rgba(255,255,255,0.1)',
-                  borderRadius: '16px',
-                  backdropFilter: 'blur(16px)',
-                  WebkitBackdropFilter: 'blur(16px)',
-                  boxShadow: '0 20px 40px -10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
-                  padding: '16px 20px',
-                }}
-                itemStyle={{ color: 'hsl(var(--foreground))', fontWeight: 700, fontSize: '16px' }}
-                labelStyle={{ color: 'hsl(var(--muted-foreground))', marginBottom: '8px', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}
-                cursor={{ stroke: '#22C55E', strokeWidth: 1, strokeDasharray: '4 4', opacity: 0.5 }}
+                 cursor={{ stroke: 'rgba(255,255,255,0.05)', strokeWidth: 30 }}
+                 content={({ active, payload }) => {
+                   if (active && payload && payload.length) {
+                     return (
+                       <div className="bg-[#0a0a0c]/95 border border-white/5 backdrop-blur-xl p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
+                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                           {payload[0].payload.displayDate}
+                         </p>
+                         <div className="flex items-center justify-between gap-4">
+                           <div className="flex items-center gap-1.5">
+                             <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+                             <span className="text-xs font-semibold text-white">Topics</span>
+                           </div>
+                           <span className="text-xs font-bold text-green-500">{payload[0]?.value}</span>
+                         </div>
+                       </div>
+                     );
+                   }
+                   return null;
+                 }}
               />
-              <Line 
+              <Area 
                 type="monotone" 
                 dataKey="count" 
-                name="Topics Mastered"
-                stroke="#22C55E" 
-                strokeWidth={3}
-                dot={false}
-                activeDot={{ r: 6, fill: "#22C55E", stroke: "hsl(var(--background))", strokeWidth: 3 }}
-                animationDuration={1500}
-                animationEasing="ease-out"
+                stroke="none" 
+                fillOpacity={1} 
+                fill="url(#colorCompletion)" 
+                isAnimationActive={true}
               />
-            </LineChart>
+              <Line 
+                 type="monotone" 
+                 dataKey="count" 
+                 stroke="#22C55E" 
+                 strokeWidth={2.5} 
+                 dot={{ r: 3, fill: '#0f172a', strokeWidth: 1.5, stroke: '#22C55E' }} 
+                 activeDot={{ r: 5, fill: '#fff', stroke: '#22C55E', strokeWidth: 2, style: { filter: 'url(#neonGlowGreen)' } }} 
+                 style={{ filter: 'url(#neonGlowGreen)' }} 
+                 isAnimationActive={true}
+                 animationDuration={1500}
+                 animationEasing="ease-out"
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         )}
       </div>

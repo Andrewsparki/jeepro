@@ -354,7 +354,38 @@
       "estimatedHours": 10,
       "weightage": "Medium",
       "status": "not_started",
-      "topics": [],
+      "topics": [
+        {
+          "id": "physics-properties-of-solids-liquids-elasticity",
+          "name": "Elasticity",
+          "order": 1,
+          "completed": false
+        },
+        {
+          "id": "physics-properties-of-solids-liquids-fluid-mechanics",
+          "name": "Fluid Mechanics",
+          "order": 2,
+          "completed": false
+        },
+        {
+          "id": "physics-properties-of-solids-liquids-surface-tension",
+          "name": "Surface Tension",
+          "order": 3,
+          "completed": false
+        },
+        {
+          "id": "physics-properties-of-solids-liquids-viscosity",
+          "name": "Viscosity",
+          "order": 4,
+          "completed": false
+        },
+        {
+          "id": "physics-properties-of-solids-liquids-thermal-expansion",
+          "name": "Thermal Expansion",
+          "order": 5,
+          "completed": false
+        }
+      ],
       "resources": {
         "notes": [],
         "formulas": [],
@@ -433,7 +464,32 @@
       "estimatedHours": 10,
       "weightage": "Medium",
       "status": "not_started",
-      "topics": [],
+      "topics": [
+        {
+          "id": "physics-kinetic-theory-equation-of-state",
+          "name": "Equation of State",
+          "order": 1,
+          "completed": false
+        },
+        {
+          "id": "physics-kinetic-theory-kinetic-theory-of-gases",
+          "name": "Kinetic Theory of Gases",
+          "order": 2,
+          "completed": false
+        },
+        {
+          "id": "physics-kinetic-theory-degrees-of-freedom-and-law-of-equipartition-of-energy",
+          "name": "Degrees of Freedom and Law of Equipartition of Energy",
+          "order": 3,
+          "completed": false
+        },
+        {
+          "id": "physics-kinetic-theory-specific-heat-capacity-of-gases",
+          "name": "Specific Heat Capacity of Gases",
+          "order": 4,
+          "completed": false
+        }
+      ],
       "resources": {
         "notes": [],
         "formulas": [],
@@ -455,7 +511,38 @@
       "estimatedHours": 10,
       "weightage": "Medium",
       "status": "not_started",
-      "topics": [],
+      "topics": [
+        {
+          "id": "physics-oscillations-waves-simple-harmonic-motion",
+          "name": "Simple Harmonic Motion",
+          "order": 1,
+          "completed": false
+        },
+        {
+          "id": "physics-oscillations-waves-energy-in-shm",
+          "name": "Energy in SHM",
+          "order": 2,
+          "completed": false
+        },
+        {
+          "id": "physics-oscillations-waves-wave-motion",
+          "name": "Wave Motion",
+          "order": 3,
+          "completed": false
+        },
+        {
+          "id": "physics-oscillations-waves-superposition-of-waves",
+          "name": "Superposition of Waves",
+          "order": 4,
+          "completed": false
+        },
+        {
+          "id": "physics-oscillations-waves-doppler-effect",
+          "name": "Doppler Effect",
+          "order": 5,
+          "completed": false
+        }
+      ],
       "resources": {
         "notes": [],
         "formulas": [],
@@ -591,7 +678,38 @@
       "estimatedHours": 10,
       "weightage": "Medium",
       "status": "not_started",
-      "topics": [],
+      "topics": [
+        {
+          "id": "physics-magnetic-effects-of-current-magnetism-biot-savart-law",
+          "name": "Biot-Savart Law",
+          "order": 1,
+          "completed": false
+        },
+        {
+          "id": "physics-magnetic-effects-of-current-magnetism-ampere-law",
+          "name": "Ampere Law",
+          "order": 2,
+          "completed": false
+        },
+        {
+          "id": "physics-magnetic-effects-of-current-magnetism-force-on-moving-charge",
+          "name": "Force on Moving Charge",
+          "order": 3,
+          "completed": false
+        },
+        {
+          "id": "physics-magnetic-effects-of-current-magnetism-magnetic-dipole",
+          "name": "Magnetic Dipole",
+          "order": 4,
+          "completed": false
+        },
+        {
+          "id": "physics-magnetic-effects-of-current-magnetism-earth-magnetism",
+          "name": "Earth Magnetism",
+          "order": 5,
+          "completed": false
+        }
+      ],
       "resources": {
         "notes": [],
         "formulas": [],
@@ -613,7 +731,38 @@
       "estimatedHours": 10,
       "weightage": "Medium",
       "status": "not_started",
-      "topics": [],
+      "topics": [
+        {
+          "id": "physics-emi-ac-faraday-law-of-induction",
+          "name": "Faraday Law of Induction",
+          "order": 1,
+          "completed": false
+        },
+        {
+          "id": "physics-emi-ac-lenz-law",
+          "name": "Lenz Law",
+          "order": 2,
+          "completed": false
+        },
+        {
+          "id": "physics-emi-ac-self-and-mutual-inductance",
+          "name": "Self and Mutual Inductance",
+          "order": 3,
+          "completed": false
+        },
+        {
+          "id": "physics-emi-ac-alternating-current",
+          "name": "Alternating Current",
+          "order": 4,
+          "completed": false
+        },
+        {
+          "id": "physics-emi-ac-lcr-circuits",
+          "name": "LCR Circuits",
+          "order": 5,
+          "completed": false
+        }
+      ],
       "resources": {
         "notes": [],
         "formulas": [],
@@ -748,7 +897,26 @@
       "estimatedHours": 10,
       "weightage": "Medium",
       "status": "not_started",
-      "topics": [],
+      "topics": [
+        {
+          "id": "physics-dual-nature-photoelectric-effect",
+          "name": "Photoelectric Effect",
+          "order": 1,
+          "completed": false
+        },
+        {
+          "id": "physics-dual-nature-matter-waves",
+          "name": "Matter Waves",
+          "order": 2,
+          "completed": false
+        },
+        {
+          "id": "physics-dual-nature-davisson-germer-experiment",
+          "name": "Davisson-Germer Experiment",
+          "order": 3,
+          "completed": false
+        }
+      ],
       "resources": {
         "notes": [],
         "formulas": [],
@@ -770,7 +938,32 @@
       "estimatedHours": 10,
       "weightage": "Medium",
       "status": "not_started",
-      "topics": [],
+      "topics": [
+        {
+          "id": "physics-atoms-rutherford-model",
+          "name": "Rutherford Model",
+          "order": 1,
+          "completed": false
+        },
+        {
+          "id": "physics-atoms-bohr-model",
+          "name": "Bohr Model",
+          "order": 2,
+          "completed": false
+        },
+        {
+          "id": "physics-atoms-hydrogen-spectrum",
+          "name": "Hydrogen Spectrum",
+          "order": 3,
+          "completed": false
+        },
+        {
+          "id": "physics-atoms-x-rays",
+          "name": "X-rays",
+          "order": 4,
+          "completed": false
+        }
+      ],
       "resources": {
         "notes": [],
         "formulas": [],
@@ -792,7 +985,32 @@
       "estimatedHours": 10,
       "weightage": "Medium",
       "status": "not_started",
-      "topics": [],
+      "topics": [
+        {
+          "id": "physics-nuclei-nuclear-structure",
+          "name": "Nuclear Structure",
+          "order": 1,
+          "completed": false
+        },
+        {
+          "id": "physics-nuclei-radioactivity",
+          "name": "Radioactivity",
+          "order": 2,
+          "completed": false
+        },
+        {
+          "id": "physics-nuclei-mass-defect-and-binding-energy",
+          "name": "Mass Defect and Binding Energy",
+          "order": 3,
+          "completed": false
+        },
+        {
+          "id": "physics-nuclei-nuclear-fission-and-fusion",
+          "name": "Nuclear Fission and Fusion",
+          "order": 4,
+          "completed": false
+        }
+      ],
       "resources": {
         "notes": [],
         "formulas": [],
