@@ -2,7 +2,6 @@
 
 import { ShieldAlert, Download, Trash2, RotateCcw, Cloud, LogOut } from "lucide-react";
 import { GlassSection, SettingRow } from "../ui/glass-section";
-import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -14,16 +13,14 @@ export function PrivacySection() {
   const { confirm } = useDialog();
 
   return (
-    <GlassSection id="privacy" title="Privacy & Data" icon={ShieldAlert} description="Manage your data and account access.">
+    <GlassSection id="privacy" title="Privacy & Security" icon={ShieldAlert} description="Manage your data, offline caches, and account access.">
       
       <SettingRow 
         title="Export Data" 
         description="Download a JSON archive of all your study sessions and progress."
       >
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-8 gap-2 bg-surface hover:bg-surface-hover border-glass-border"
+        <button 
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/10 text-white text-xs font-semibold transition-all active:scale-95 shadow-sm"
           onClick={async () => {
             try {
               toast("Exporting data...");
@@ -44,35 +41,31 @@ export function PrivacySection() {
           }}
         >
           <Download className="w-3.5 h-3.5" />
-          Export
-        </Button>
+          <span>Export</span>
+        </button>
       </SettingRow>
 
       <SettingRow 
         title="Cloud Backup" 
         description="Force sync your offline progress queue to the database."
       >
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-8 gap-2 bg-surface hover:bg-surface-hover border-glass-border"
+        <button 
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/10 text-white text-xs font-semibold transition-all active:scale-95 shadow-sm"
           onClick={() => {
             toast.success("Progress synced with cloud!");
           }}
         >
           <Cloud className="w-3.5 h-3.5" />
-          Sync Now
-        </Button>
+          <span>Sync Now</span>
+        </button>
       </SettingRow>
 
       <SettingRow 
         title="Reset Progress" 
         description="Permanently reset all your XP, levels, and completed topics."
       >
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-8 gap-2 border-red-500/20 text-red-500 hover:bg-red-500/10 hover:text-red-500 bg-red-500/5"
+        <button 
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/10 bg-red-500/5 text-xs font-semibold transition-all active:scale-95"
           onClick={async () => {
             const isConfirmed = await confirm({
               title: "Reset Progress?",
@@ -95,18 +88,16 @@ export function PrivacySection() {
           }}
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          Reset
-        </Button>
+          <span>Reset</span>
+        </button>
       </SettingRow>
 
       <SettingRow 
         title="Delete Sessions" 
         description="Clear all recorded study sessions and timeline history."
       >
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-8 gap-2 border-red-500/20 text-red-500 hover:bg-red-500/10 hover:text-red-500 bg-red-500/5"
+        <button 
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/10 bg-red-500/5 text-xs font-semibold transition-all active:scale-95"
           onClick={async () => {
             const isConfirmed = await confirm({
               title: "Delete Sessions?",
@@ -129,8 +120,8 @@ export function PrivacySection() {
           }}
         >
           <Trash2 className="w-3.5 h-3.5" />
-          Clear
-        </Button>
+          <span>Clear</span>
+        </button>
       </SettingRow>
 
       <SettingRow 
@@ -138,10 +129,8 @@ export function PrivacySection() {
         description="Log out of your account on this device."
         isLast
       >
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-8 gap-2 border-glass-border bg-surface hover:bg-surface-hover"
+        <button 
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/15 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-all active:scale-95 shadow-sm"
           onClick={async () => {
             const isConfirmed = await confirm({
               title: "Sign Out?",
@@ -152,13 +141,13 @@ export function PrivacySection() {
             if (isConfirmed) {
               toast("Signing out...");
               await supabase.auth.signOut();
-              router.push("/auth/login");
+              router.push("/login");
             }
           }}
         >
           <LogOut className="w-3.5 h-3.5" />
-          Sign Out
-        </Button>
+          <span>Sign Out</span>
+        </button>
       </SettingRow>
 
     </GlassSection>

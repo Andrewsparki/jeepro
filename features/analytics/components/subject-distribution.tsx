@@ -79,7 +79,6 @@ export function SubjectDistribution({ sessions, syllabus }: SubjectDistributionP
                   <feGaussianBlur stdDeviation="3" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
-                    <feMergeNode in="blur" />
                     <feMergeNode in="SourceGraphic" />
                   </feMerge>
                 </filter>

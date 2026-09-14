@@ -1,88 +1,109 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1,
-    },
-  },
-};
+import { Sparkles, ShieldCheck, Flame, Compass } from "lucide-react";
+import { DopamineCTAButton } from "@/components/ui/dopamine-cta-button";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden pt-32 pb-20 md:pt-48 md:pb-32">
-      {/* Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -z-10 -translate-x-1/2 -translate-y-1/2">
-        <div className="h-[40rem] w-[40rem] rounded-full bg-blue-500/20 blur-[120px]" />
-      </div>
+    <section className="relative pt-32 sm:pt-40 lg:pt-44 pb-16 sm:pb-24 overflow-visible flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8">
+      {/* Ambient Focal Glow behind Headline with breathing motion */}
+      <motion.div 
+        animate={{ 
+          scale: [1, 1.15, 1],
+          opacity: [0.35, 0.55, 0.35]
+        }}
+        transition={{ 
+          duration: 6, 
+          repeat: Infinity, 
+          ease: "easeInOut" 
+        }}
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-r from-cyan-500/25 via-indigo-500/30 to-purple-500/25 rounded-full blur-[100px] pointer-events-none -z-10" 
+      />
 
-      <div className="mx-auto max-w-7xl px-6">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col items-center text-center"
+      <div className="mx-auto max-w-5xl flex flex-col items-center">
+        
+        {/* Eyebrow / System Pill Badge with Luminous Border */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-8"
         >
-          {/* Badge */}
-          <motion.div variants={fadeUp} className="mb-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1 text-sm text-slate-300 backdrop-blur-md">
-              <Sparkles className="h-4 w-4 text-accent" />
-              <span>Redefining JEE Preparation</span>
-            </div>
-          </motion.div>
-
-          {/* Headline */}
-          <motion.h1
-            variants={fadeUp}
-            className="mb-8 max-w-4xl text-5xl font-semibold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl drop-shadow-sm"
-          >
-            Study with <span className="text-muted-foreground">focus.</span>
-            <br />
-            Conquer the <span className="bg-gradient-to-r from-accent to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(37,99,235,0.4)]">exam.</span>
-          </motion.h1>
-
-          {/* Description */}
-          <motion.p
-            variants={fadeUp}
-            className="mb-10 max-w-2xl text-lg text-slate-300 md:text-xl leading-relaxed"
-          >
-            The most premium, distraction-free platform designed to help you master Physics, Chemistry, and Mathematics. Say goodbye to clutter.
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div variants={fadeUp} className="flex flex-col gap-4 sm:flex-row">
-            <Link
-              href="/signup"
-              className={cn(
-                "inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-foreground px-8 text-sm font-medium text-background transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-              )}
-            >
-              Start for free
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/about"
-              className={cn(
-                "inline-flex h-12 items-center justify-center rounded-xl border border-border bg-card/50 px-8 text-sm font-medium text-foreground backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:bg-muted/10 hover:shadow-lg focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-              )}
-            >
-              View features
-            </Link>
-          </motion.div>
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-cyan-500/30 bg-cyan-950/40 px-4 py-1.5 text-xs font-semibold text-cyan-300 backdrop-blur-2xl shadow-[0_0_25px_rgba(6,182,212,0.25)] hover:border-cyan-400/50 transition-colors">
+            <span className="flex h-2 w-2 rounded-full bg-[#22c55e] animate-pulse shadow-[0_0_10px_#22c55e]" />
+            <span className="tracking-wider uppercase text-[11px] font-bold text-slate-100">Engineered for JEE Advanced 2026</span>
+          </div>
         </motion.div>
+
+        {/* Large Cinematic Headline with Staggered Entrance */}
+        <motion.h1 
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+          className="mb-6 max-w-4xl text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.05]"
+        >
+          Conquer the{" "}
+          <span className="bg-gradient-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(56,189,248,0.55)]">
+            exam.
+          </span>
+        </motion.h1>
+
+        {/* Supporting Description */}
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+          className="mb-10 max-w-2xl text-base sm:text-xl text-slate-300 font-normal leading-relaxed"
+        >
+          The most premium, distraction-free platform designed to help you master <span className="text-white font-semibold">Physics</span>, <span className="text-white font-semibold">Chemistry</span>, and <span className="text-white font-semibold">Mathematics</span>.
+        </motion.p>
+
+        {/* High-Dopamine Action Buttons */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+          className="flex flex-col sm:flex-row items-center gap-5 w-full sm:w-auto"
+        >
+          <DopamineCTAButton
+            href="/signup"
+            variant="aurora"
+            size="md"
+          >
+            Start studying
+          </DopamineCTAButton>
+
+          <DopamineCTAButton
+            href="/#features"
+            variant="neon-glass"
+            size="md"
+          >
+            Explore features
+          </DopamineCTAButton>
+        </motion.div>
+
+        {/* Low-profile Social Proof Pill Strip */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.45, ease: "easeOut" }}
+          className="mt-14 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs font-semibold"
+        >
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.15)] hover:scale-105 transition-transform">
+            <ShieldCheck className="h-4 w-4 text-cyan-400" />
+            <span>100% Free & Open Syllabus</span>
+          </div>
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.15)] hover:scale-105 transition-transform">
+            <Flame className="h-4 w-4 text-purple-400" />
+            <span>Adaptive PYQ Practice</span>
+          </div>
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:scale-105 transition-transform">
+            <Sparkles className="h-4 w-4 text-emerald-400" />
+            <span>Zero Distractions</span>
+          </div>
+        </motion.div>
+
       </div>
     </section>
   );

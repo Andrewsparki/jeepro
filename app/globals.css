@@ -235,6 +235,7 @@
 
 html {
   zoom: 77%;
+  scroll-behavior: auto;
 }
 
 body {

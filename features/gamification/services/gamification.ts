@@ -38,7 +38,7 @@ export function generateXPEvents(
   sessions: StudySession[],
   progress: UserTopicProgress[],
   syllabus: Subject[],
-  completedMissions: { reward_xp?: number; bonus_xp_awarded?: boolean; date?: string; completed_at?: string }[] = []
+  completedMissions: { reward_xp?: number; bonus_xp_awarded?: boolean; date?: string; completed_at?: string | null }[] = []
 ): XPEvent[] {
   const events: XPEvent[] = [];
 

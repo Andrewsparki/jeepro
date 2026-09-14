@@ -4,7 +4,6 @@ import React, { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Target, Clock, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FloatingParticles } from "@/components/ui/floating-particles";
 import { useStudySession } from "@/features/study/context/study-session-context";
 
 interface DashboardHeroProps {
@@ -44,18 +43,13 @@ export const DashboardHero = React.memo(function DashboardHero({
       {/* Refined Animated Mesh Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent pointer-events-none opacity-50" />
       <div 
-        className="absolute top-0 right-0 w-[800px] h-[800px] bg-accent/10 rounded-full blur-[120px] -mr-60 -mt-60 pointer-events-none mix-blend-screen transition-opacity duration-1000 group-hover:opacity-70" 
-        style={{ animation: "bg-drift 20s ease-in-out infinite alternate" }}
+        className="absolute top-0 right-0 w-[800px] h-[800px] bg-accent/10 rounded-full blur-[120px] -mr-60 -mt-60 pointer-events-none transition-opacity duration-1000 group-hover:opacity-70" 
       />
       <div 
-        className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-white/5 rounded-full blur-[100px] -ml-20 -mb-20 pointer-events-none mix-blend-screen" 
-        style={{ animation: "bg-drift 25s ease-in-out infinite alternate-reverse" }}
+        className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-white/5 rounded-full blur-[100px] -ml-20 -mb-20 pointer-events-none" 
       />
       
-      {/* Floating Particles - Sparkles for daily mission */}
-      <div className="absolute inset-0 pointer-events-none opacity-60 mix-blend-screen">
-        <FloatingParticles />
-      </div>
+
       
       <div className="relative z-10 flex flex-col md:flex-row gap-10 items-start md:items-center justify-between w-full">
         

@@ -290,10 +290,10 @@ export function PlannerWorkspace() {
                                     <span className="sr-only">Open menu</span>
                                   </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-44 bg-background border-glass-border">
+                                <DropdownMenuContent align="end" className="w-56 bg-background border-glass-border p-1.5 shadow-2xl rounded-xl">
                                   <DropdownMenuItem 
                                     onClick={() => handleToggleStatus(event)}
-                                    className="cursor-pointer gap-2"
+                                    className="cursor-pointer"
                                   >
                                     {isCompleted ? (
                                       <>
@@ -312,14 +312,14 @@ export function PlannerWorkspace() {
                                       setEditingEvent(event);
                                       setIsCreateOpen(true);
                                     }}
-                                    className="cursor-pointer gap-2"
+                                    className="cursor-pointer"
                                   >
                                     <Pencil className="w-4 h-4 text-muted-foreground" />
                                     <span>Edit Event</span>
                                   </DropdownMenuItem>
                                   <DropdownMenuItem 
                                     onClick={() => setDeletingEvent(event)}
-                                    className="cursor-pointer gap-2 text-red-500 focus:text-red-500 focus:bg-red-500/10"
+                                    className="cursor-pointer text-red-500 focus:text-red-500 focus:bg-red-500/10"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                     <span>Delete Event</span>

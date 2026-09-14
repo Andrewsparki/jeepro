@@ -35,7 +35,8 @@ export function LightingProvider({ children }: { children: React.ReactNode }) {
       return () => clearTimeout(t);
     }
 
-    const onMouseMove = (e: MouseEvent) => {
+    let cachedZoom = 1;
+    const updateZoom = () => {
       const zoomStr = typeof window !== "undefined" ? window.getComputedStyle(document.documentElement).zoom : "";
       let zoom = 1;
       if (zoomStr) {
@@ -44,7 +45,14 @@ export function LightingProvider({ children }: { children: React.ReactNode }) {
           zoom = zoomStr.includes("%") ? val / 100 : (val > 2 ? val / 100 : val);
         }
       }
-      mouse.current = { x: e.clientX / zoom, y: e.clientY / zoom };
+      cachedZoom = zoom;
+    };
+
+    updateZoom();
+    window.addEventListener("resize", updateZoom, { passive: true });
+
+    const onMouseMove = (e: MouseEvent) => {
+      mouse.current = { x: e.clientX / cachedZoom, y: e.clientY / cachedZoom };
       dirty.current = true;
 
       // Restart RAF loop if it was stopped due to idle
@@ -76,6 +84,7 @@ export function LightingProvider({ children }: { children: React.ReactNode }) {
     requestRef.current = requestAnimationFrame(updateLighting);
 
     return () => {
+      window.removeEventListener("resize", updateZoom);
       window.removeEventListener("mousemove", onMouseMove);
       if (requestRef.current) {
         cancelAnimationFrame(requestRef.current);

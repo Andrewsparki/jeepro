@@ -11,32 +11,17 @@ import { CreatorSupport } from "@/features/settings/components/sections/creator-
 
 export default function SettingsPage() {
   return (
-    <div className="pt-12 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto animate-stagger-container">
-      
-      {/* Premium Header */}
-      <div className="mb-16 max-w-2xl">
-        <h1 className="text-4xl sm:text-5xl font-light tracking-tight text-foreground/90 mb-4">
-          Settings
-        </h1>
-        <p className="text-base text-muted-foreground/80 leading-relaxed">
-          Manage your account preferences, tailor your study environment, and customize the visual experience.
-        </p>
-      </div>
-
+    <div className="pt-24 sm:pt-28 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      {/* Settings Layout with Horizontal Sub-Nav */}
       <SettingsLayout>
         <ProfileSection />
         <AppearanceSection />
-        
-        {/* Artistic Typography Break */}
-        <TypographyArt />
-        
         <StudyExperienceSection />
         <PrivacySection />
         <AboutSection />
-        
+        <TypographyArt />
         <CreatorSupport />
       </SettingsLayout>
-      
     </div>
   );
 }

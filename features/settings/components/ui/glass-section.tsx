@@ -1,6 +1,7 @@
+"use client";
+
 import React from "react";
 import { cn } from "@/lib/utils";
-import { GlassCard } from "@/components/ui/glass-card";
 
 interface GlassSectionProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -10,29 +11,35 @@ interface GlassSectionProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function GlassSection({ title, description, icon: Icon, children, className, ...props }: GlassSectionProps) {
   return (
-    <section className={cn("flex flex-col gap-4", className)} {...props}>
-      <div className="flex items-center gap-3 px-1">
-        {Icon && (
-          <div className="p-2 rounded-lg bg-primary/10 text-primary">
-            <Icon className="w-5 h-5" />
-          </div>
+    <section 
+      className={cn(
+        "rounded-3xl p-6 sm:p-8 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.12)] space-y-6 overflow-hidden",
+        className
+      )} 
+      {...props}
+    >
+      {/* Header Info */}
+      <div className="space-y-1">
+        <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight flex items-center gap-2.5">
+          {Icon && <Icon className="w-5 h-5 text-white/80" />}
+          <span>{title}</span>
+        </h3>
+        {description && (
+          <p className="text-xs sm:text-sm text-white/60 font-normal leading-relaxed">
+            {description}
+          </p>
         )}
-        <div>
-          <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-          {description && <p className="text-sm text-muted-foreground mt-0.5">{description}</p>}
-        </div>
       </div>
       
-      <GlassCard className="p-1 overflow-hidden" interactive={false}>
-        <div className="bg-surface/30 rounded-[14px]">
-          {children}
-        </div>
-      </GlassCard>
+      {/* Settings Rows */}
+      <div className="space-y-4 pt-2">
+        {children}
+      </div>
     </section>
   );
 }
 
-// Helper component for individual settings rows
+// Helper component for individual settings rows matching the screenshot
 export function SettingRow({
   title,
   description,
@@ -48,13 +55,13 @@ export function SettingRow({
 }) {
   return (
     <div className={cn(
-      "flex items-center justify-between p-4 transition-colors hover:bg-surface/50",
-      !isLast && "border-b border-border/50",
+      "flex items-center justify-between py-3.5 gap-4",
+      !isLast && "border-b border-white/[0.06]",
       className
     )}>
-      <div className="flex flex-col gap-1 pr-6">
-        <span className="text-sm font-medium leading-none">{title}</span>
-        {description && <span className="text-xs text-muted-foreground leading-snug">{description}</span>}
+      <div className="flex flex-col gap-0.5 pr-4">
+        <span className="text-sm font-semibold text-white tracking-tight">{title}</span>
+        {description && <span className="text-xs text-white/60 leading-snug">{description}</span>}
       </div>
       <div className="shrink-0 flex items-center justify-end">
         {children}

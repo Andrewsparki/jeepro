@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { UserCircle, Palette, BookOpen, ShieldAlert, Info } from "lucide-react";
+import { User, Palette, Play, ShieldAlert, Info, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSmoothScroll } from "@/components/ui/smooth-scroll-provider";
 
@@ -10,11 +10,12 @@ interface SettingsLayoutProps {
 }
 
 const NAV_ITEMS = [
-  { id: "profile", label: "Profile", icon: UserCircle },
+  { id: "profile", label: "Account", icon: User },
   { id: "appearance", label: "Appearance", icon: Palette },
-  { id: "study", label: "Study Experience", icon: BookOpen },
-  { id: "privacy", label: "Privacy & Data", icon: ShieldAlert },
+  { id: "study", label: "Practice & Study", icon: Play },
+  { id: "privacy", label: "Privacy & Security", icon: ShieldAlert },
   { id: "about", label: "About", icon: Info },
+  { id: "support", label: "Support & Creator", icon: Heart },
 ];
 
 export function SettingsLayout({ children }: SettingsLayoutProps) {
@@ -25,16 +26,14 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find the topmost visible section
         const visibleEntries = entries.filter(e => e.isIntersecting);
         if (visibleEntries.length > 0) {
-          // Sort by top position to find the highest visible one
           visibleEntries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
           setActiveSection(visibleEntries[0].target.id);
         }
       },
       {
-        rootMargin: "-100px 0px -40% 0px", // Detect when it hits the top 100px mark
+        rootMargin: "-120px 0px -40% 0px",
         threshold: 0
       }
     );
@@ -48,42 +47,46 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
   }, []);
 
   const handleNavClick = (id: string) => {
+    setActiveSection(id);
     const el = document.getElementById(id);
     if (el) {
-      // Get the container with custom scrollbar, fallback to window
-      const scrollContainer = document.querySelector('[data-scroll-container]') || window;
-      const yOffset = -100; // Account for any fixed headers
-      const y = el.getBoundingClientRect().top + (scrollContainer === window ? window.pageYOffset : (scrollContainer as HTMLElement).scrollTop) + yOffset;
-      
+      const yOffset = -140;
+      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
       scrollTo(y);
     }
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-12 max-w-6xl mx-auto w-full pb-24">
-      {/* Sidebar Navigation */}
-      <aside className="md:w-64 shrink-0">
-        <div className="sticky top-8 flex flex-col gap-1">
-          {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => handleNavClick(id)}
-              className={cn(
-                "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300",
-                activeSection === id
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-surface hover:text-foreground"
-              )}
-            >
-              <Icon className={cn("w-4 h-4", activeSection === id ? "text-primary" : "opacity-70")} />
-              {label}
-            </button>
-          ))}
+    <div className="flex flex-col gap-10 max-w-4xl mx-auto w-full pb-32">
+      {/* Top Horizontal Sub-Navigation Header with White Underline Active Indicator */}
+      <div className="sticky top-20 z-30 pt-2 pb-4 bg-[#03060E]/80 backdrop-blur-xl border-b border-white/[0.08]">
+        <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar">
+          {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
+            const isActive = activeSection === id;
+            return (
+              <button
+                key={id}
+                onClick={() => handleNavClick(id)}
+                className={cn(
+                  "relative flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold tracking-tight transition-all whitespace-nowrap",
+                  isActive
+                    ? "text-white"
+                    : "text-white/60 hover:text-white"
+                )}
+              >
+                <Icon className={cn("w-4 h-4", isActive ? "text-white" : "text-white/60")} />
+                <span>{label}</span>
+                {isActive && (
+                  <div className="absolute bottom-0 left-2 right-2 h-[2px] bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
+                )}
+              </button>
+            );
+          })}
         </div>
-      </aside>
+      </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 min-w-0 flex flex-col gap-24 pt-2">
+      {/* Main Settings Smoked Glass Content Cards */}
+      <div className="flex flex-col gap-10">
         {children}
       </div>
     </div>

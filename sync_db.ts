@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 async function sync() {
-  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
   const topicsToAdd = {
     'properties-of-solids-liquids': ['Elasticity', 'Fluid Mechanics', 'Surface Tension', 'Viscosity', 'Thermal Expansion'],
