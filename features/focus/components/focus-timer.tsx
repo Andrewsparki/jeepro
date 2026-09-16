@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useAnimationFrame, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { TimerMode } from "../store/focus-store";
+import { useSettings } from "@/providers/settings-provider";
 
 interface FocusTimerProps {
   mode: TimerMode;
@@ -51,6 +52,7 @@ export const FocusTimer = React.memo(function FocusTimer({
   isActive, 
   phase 
 }: FocusTimerProps) {
+  const { playSound } = useSettings();
   
   // High-performance motion value for exact elapsed time (in seconds)
   const elapsedMotion = useMotionValue(accumulatedTime);
@@ -106,6 +108,26 @@ export const FocusTimer = React.memo(function FocusTimer({
 
     return () => unsubscribe();
   }, [displayTimeValue, mode, totalTime, getFormattedTimeString]);
+
+  // Tick sound effect logic
+  const lastTickSecondRef = React.useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!isActive) {
+      lastTickSecondRef.current = null;
+      return;
+    }
+
+    const unsubscribe = displayTimeValue.on("change", (latest) => {
+      const currentSecond = Math.floor(latest);
+      if (lastTickSecondRef.current !== currentSecond && lastTickSecondRef.current !== null) {
+        playSound("tick");
+      }
+      lastTickSecondRef.current = currentSecond;
+    });
+
+    return () => unsubscribe();
+  }, [isActive, displayTimeValue, playSound]);
 
   // Format Stopwatch milliseconds (00-99)
   const msStringMotion = useTransform(displayTimeValue, (totalSeconds) => {

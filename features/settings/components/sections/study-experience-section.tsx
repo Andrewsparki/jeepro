@@ -1,16 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { BookOpen, Target, Sparkles, CloudCheck, Volume2, Coffee } from "lucide-react";
+import { BookOpen, Target, Sparkles, CloudCheck, Volume2, Coffee, Bell } from "lucide-react";
 import { GlassSection, SettingRow } from "../ui/glass-section";
 import { PremiumSwitch } from "../ui/premium-switch";
+import { useSettings } from "@/providers/settings-provider";
 
 export function StudyExperienceSection() {
-  const [focusMode, setFocusMode] = useState(true);
-  const [ambientEffects, setAmbientEffects] = useState(false);
-  const [autoSave, setAutoSave] = useState(true);
-  const [sounds, setSounds] = useState(true);
-  const [breakReminder, setBreakReminder] = useState(true);
+  const { settings, updateSetting } = useSettings();
 
   return (
     <GlassSection
@@ -28,8 +24,8 @@ export function StudyExperienceSection() {
         iconGradient="from-indigo-500 to-blue-600"
       >
         <PremiumSwitch
-          checked={focusMode}
-          onChange={setFocusMode}
+          checked={settings.focusMode}
+          onChange={(checked) => updateSetting("focusMode", checked)}
           ariaLabel="Toggle deep focus mode"
         />
       </SettingRow>
@@ -42,8 +38,8 @@ export function StudyExperienceSection() {
         iconGradient="from-cyan-500 to-teal-500"
       >
         <PremiumSwitch
-          checked={ambientEffects}
-          onChange={setAmbientEffects}
+          checked={settings.ambientEffects}
+          onChange={(checked) => updateSetting("ambientEffects", checked)}
           ariaLabel="Toggle spatial ambient glow"
         />
       </SettingRow>
@@ -56,8 +52,8 @@ export function StudyExperienceSection() {
         iconGradient="from-emerald-500 to-green-600"
       >
         <PremiumSwitch
-          checked={autoSave}
-          onChange={setAutoSave}
+          checked={settings.autoSave}
+          onChange={(checked) => updateSetting("autoSave", checked)}
           ariaLabel="Toggle session auto-save"
         />
       </SettingRow>
@@ -70,9 +66,23 @@ export function StudyExperienceSection() {
         iconGradient="from-amber-500 to-yellow-600"
       >
         <PremiumSwitch
-          checked={sounds}
-          onChange={setSounds}
+          checked={settings.sounds}
+          onChange={(checked) => updateSetting("sounds", checked)}
           ariaLabel="Toggle acoustic sounds"
+        />
+      </SettingRow>
+
+      {/* System Notifications */}
+      <SettingRow
+        title="System Notifications"
+        description="Show non-intrusive toast alerts when changing system settings."
+        icon={Bell}
+        iconGradient="from-violet-500 to-fuchsia-600"
+      >
+        <PremiumSwitch
+          checked={settings.showNotifications}
+          onChange={(checked) => updateSetting("showNotifications", checked)}
+          ariaLabel="Toggle system notifications"
         />
       </SettingRow>
 
@@ -85,8 +95,8 @@ export function StudyExperienceSection() {
         isLast
       >
         <PremiumSwitch
-          checked={breakReminder}
-          onChange={setBreakReminder}
+          checked={settings.breakReminder}
+          onChange={(checked) => updateSetting("breakReminder", checked)}
           ariaLabel="Toggle break reminder"
         />
       </SettingRow>

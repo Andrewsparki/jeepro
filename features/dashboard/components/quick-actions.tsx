@@ -6,6 +6,7 @@ import { Play, Calendar, Target, Layers, Sparkles } from "lucide-react";
 import { useStudySession } from "@/features/study/context/study-session-context";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useSettings } from "@/providers/settings-provider";
 
 const actions = [
   {
@@ -43,8 +44,10 @@ const actions = [
 export const QuickActions = React.memo(function QuickActions() {
   const router = useRouter();
   const { startSession } = useStudySession();
+  const { playSound } = useSettings();
 
   const handleAction = (href: string) => {
+    playSound("soft-tap");
     if (href === "start") {
       startSession();
     } else if (href === "/dashboard/practice" || href === "/dashboard/tutor") {

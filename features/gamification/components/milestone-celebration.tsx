@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
+import { useSettings } from "@/providers/settings-provider";
 
 interface MilestoneCelebrationProps {
   streakDays: number;
@@ -9,6 +10,7 @@ interface MilestoneCelebrationProps {
 
 export function MilestoneCelebration({ streakDays }: MilestoneCelebrationProps) {
   const prevStreakRef = useRef(streakDays);
+  const { playSound } = useSettings();
 
   useEffect(() => {
     // Check if streak just increased to a milestone
@@ -16,6 +18,7 @@ export function MilestoneCelebration({ streakDays }: MilestoneCelebrationProps) 
       const isMilestone = streakDays === 7 || streakDays === 30 || streakDays === 100;
       
       if (isMilestone) {
+        playSound("celebration");
         triggerMilestoneConfetti(streakDays);
       }
     }

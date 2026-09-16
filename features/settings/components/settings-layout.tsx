@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useSmoothScroll } from "@/components/ui/smooth-scroll-provider";
 
+import { useSettings } from "@/providers/settings-provider";
+
 interface SettingsLayoutProps {
   children: React.ReactNode;
 }
@@ -22,6 +24,7 @@ const NAV_ITEMS = [
 export function SettingsLayout({ children }: SettingsLayoutProps) {
   const [activeSection, setActiveSection] = useState("profile");
   const { scrollTo } = useSmoothScroll();
+  const { playSound } = useSettings();
 
   // Scroll spy to highlight active section in pill nav
   useEffect(() => {
@@ -50,6 +53,7 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
   }, []);
 
   const handleNavClick = (id: string) => {
+    playSound("nav-drop");
     setActiveSection(id);
     const el = document.getElementById(id);
     if (el) {

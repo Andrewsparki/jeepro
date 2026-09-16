@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { DopamineCTAButton } from "@/components/ui/dopamine-cta-button";
 import { FixedPortal } from "@/components/ui/fixed-portal";
+import { useSettings } from "@/providers/settings-provider";
 
 const navItems = [
   { id: "home", title: "Home", href: "/", icon: Home },
@@ -31,6 +32,7 @@ export function Navbar() {
   const [activeSection, setActiveSection] = useState("home");
   const isClickNavigating = useRef(false);
   const clickTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { playSound } = useSettings();
 
   // Sync active section on initial mount or route change
   useEffect(() => {
@@ -97,6 +99,7 @@ export function Navbar() {
   }, [pathname, scrollTo]);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, item: typeof navItems[0]) => {
+    playSound("swish");
     if (pathname === "/" && item.href.startsWith("/#")) {
       e.preventDefault();
       const targetId = item.href.replace("/#", "");
@@ -201,6 +204,7 @@ export function Navbar() {
             {/* Sign In */}
             <Link
               href="/login"
+              onClick={() => playSound("swish")}
               className="hidden sm:inline-flex text-xs sm:text-sm font-semibold text-white/80 hover:text-white px-2.5 sm:px-3 py-1.5 transition-colors"
             >
               Sign in
@@ -209,6 +213,7 @@ export function Navbar() {
             {/* Start Free CTA Pill */}
             <DopamineCTAButton
               href="/signup"
+              onClick={() => playSound("click")}
               variant="aurora"
               size="sm"
               className="px-3.5 sm:px-4 py-1.5 font-semibold text-xs"

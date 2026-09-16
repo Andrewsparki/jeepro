@@ -22,6 +22,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { FixedPortal } from "@/components/ui/fixed-portal";
+import { useSettings } from "@/providers/settings-provider";
 
 const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-5 w-5" /> },
@@ -37,6 +38,7 @@ export function Sidebar() {
   const { profile, user } = useAuth();
   const pathname = usePathname();
   const { isImmersive } = useFocusStore();
+  const { playSound } = useSettings();
   
   const displayName = profile?.full_name || user?.email?.split('@')[0] || "Student";
   const initials = displayName.substring(0, 1).toUpperCase();
@@ -76,7 +78,10 @@ export function Sidebar() {
               <SidebarItem href="/dashboard/settings" label="Settings" icon={<Settings className="h-5 w-5" />} />
               
               <form action={logout} className="w-full mt-2">
-                <button type="submit" className={cn(
+                <button 
+                  type="submit" 
+                  onClick={() => playSound("swish")}
+                  className={cn(
                   "w-full relative flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted/30 text-muted-foreground hover:text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 )}>
                   <div className="flex items-center gap-3">

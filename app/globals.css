@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "locomotive-scroll/locomotive-scroll.css";
 
 :root {
   /* Base Variables - Structure, Animation, Motion */
@@ -114,6 +115,44 @@
   --card-highlight-end: rgba(255, 255, 255, 0);
 
   --muted: rgba(255, 255, 255, 0.04);
+}
+
+/* Titanium Theme */
+.titanium {
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-elevated: #334155;
+
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --surface-active: rgba(255, 255, 255, 0.12);
+
+  --glass: rgba(15, 23, 42, 0.7);
+  --glass-strong: rgba(15, 23, 42, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.1);
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+
+  --accent: #38BDF8;
+  --accent-soft: rgba(56, 189, 248, 0.15);
+  --accent-glow: rgba(56, 189, 248, 0.4);
+
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+
+  --shadow-soft: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 12px 32px rgba(0, 0, 0, 0.45);
+  --shadow-medium: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 8px 24px rgba(0, 0, 0, 0.55);
+  --shadow-strong: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 16px 48px rgba(0, 0, 0, 0.75);
+  --shadow-glow: 0 0 24px rgba(56, 189, 248, 0.3);
+
+  --card-highlight-start: rgba(255, 255, 255, 0.04);
+  --card-highlight-end: rgba(255, 255, 255, 0);
+
+  --muted: rgba(255, 255, 255, 0.06);
 }
 
 /* Light Theme */
@@ -235,6 +274,8 @@
 html {
   font-size: 14.5px;
   scroll-behavior: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
 @media (min-width: 1440px) {
@@ -257,23 +298,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Delete all native browser scrollbars globally so Locomotive Scroll controls all scrolling */
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Selection */

@@ -8,10 +8,13 @@ import { useRouter } from "next/navigation";
 import { useDialog } from "@/providers/dialog-provider";
 import { cn } from "@/lib/utils";
 
+import { useSettings } from "@/providers/settings-provider";
+
 export function PrivacySection() {
   const router = useRouter();
   const supabase = createClient();
   const { confirm } = useDialog();
+  const { playSound } = useSettings();
 
   return (
     <div id="privacy" className="flex flex-col gap-6">
@@ -50,6 +53,7 @@ export function PrivacySection() {
                 a.download = `jee_pro_backup_${new Date().toISOString().split("T")[0]}.json`;
                 a.click();
                 URL.revokeObjectURL(url);
+                playSound("success");
                 toast.success("Archive exported successfully!");
               } catch {
                 toast.error("Failed to export data archive.");
@@ -73,6 +77,7 @@ export function PrivacySection() {
             type="button"
             className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 text-white text-xs font-semibold transition-all active:scale-95 shadow-sm cursor-pointer select-none"
             onClick={() => {
+              playSound("success");
               toast.success("Cloud database synchronized!");
             }}
           >
@@ -128,6 +133,7 @@ export function PrivacySection() {
               type="button"
               className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-rose-500/30 text-rose-300 hover:bg-rose-500/15 bg-rose-500/10 text-xs font-semibold transition-all active:scale-95 shadow-sm cursor-pointer select-none"
               onClick={async () => {
+                playSound("danger");
                 const isConfirmed = await confirm({
                   title: "Reset Progress?",
                   message: "Are you sure you want to reset all topic progress? This action cannot be undone.",
@@ -164,6 +170,7 @@ export function PrivacySection() {
               type="button"
               className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-rose-500/30 text-rose-300 hover:bg-rose-500/15 bg-rose-500/10 text-xs font-semibold transition-all active:scale-95 shadow-sm cursor-pointer select-none"
               onClick={async () => {
+                playSound("danger");
                 const isConfirmed = await confirm({
                   title: "Delete All Sessions?",
                   message: "Are you sure you want to delete all recorded study sessions? This action cannot be undone.",
@@ -201,6 +208,7 @@ export function PrivacySection() {
               type="button"
               className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/15 bg-white/[0.08] hover:bg-white/[0.14] text-white text-xs font-semibold transition-all active:scale-95 shadow-sm cursor-pointer select-none"
               onClick={async () => {
+                playSound("click");
                 const isConfirmed = await confirm({
                   title: "Sign Out?",
                   message: "Are you sure you want to log out of your JEE PRO account on this device?",

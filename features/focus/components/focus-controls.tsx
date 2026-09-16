@@ -9,6 +9,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
+import { useSettings } from "@/providers/settings-provider";
+
 interface FocusControlsProps {
   isActive: boolean;
   onTogglePlayPause: () => void;
@@ -18,6 +20,7 @@ interface FocusControlsProps {
 
 export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }: FocusControlsProps) {
   const { isImmersive, toggleImmersive, defaultStudyTime, setDefaultStudyTime, timerMode, setTimerMode } = useFocusStore();
+  const { playSound } = useSettings();
 
   const premiumTransition: import("framer-motion").Transition = { duration: 0.25, ease: [0.22, 1, 0.36, 1] };
 
@@ -29,7 +32,10 @@ export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }:
           whileHover={{ y: -4 }}
           whileTap={{ y: 0 }}
           transition={premiumTransition}
-          onClick={onRestart}
+          onClick={() => {
+            playSound("pop-down");
+            onRestart();
+          }}
           className="h-14 w-14 flex items-center justify-center rounded-full border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/15 hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)] text-muted-foreground hover:text-foreground transition-colors shadow-lg"
           title="Restart (R)"
           aria-label="Restart Timer"
@@ -76,7 +82,10 @@ export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }:
           whileHover={{ y: -4 }}
           whileTap={{ y: 0 }}
           transition={premiumTransition}
-          onClick={onEnd}
+          onClick={() => {
+            playSound("danger");
+            onEnd();
+          }}
           className="h-14 w-14 flex items-center justify-center rounded-full border border-white/5 bg-white/5 hover:bg-destructive/20 hover:border-destructive/30 hover:shadow-[0_8px_30px_rgba(239,68,68,0.15)] text-muted-foreground hover:text-destructive transition-colors shadow-lg group"
           title="End Session"
           aria-label="End Session"
@@ -91,7 +100,10 @@ export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }:
           <Button
             variant="ghost"
             size="sm"
-            onClick={toggleImmersive}
+            onClick={() => {
+              playSound("swish");
+              toggleImmersive();
+            }}
             className={cn(
               "rounded-full px-5 h-10 border transition-all shadow-sm",
               isImmersive 
@@ -112,6 +124,7 @@ export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }:
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={() => playSound("pop-up")}
                 className="rounded-full px-5 h-10 border border-white/5 text-muted-foreground bg-white/5 hover:bg-white/10 hover:border-white/10 hover:text-foreground shadow-sm hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]"
                 style={{ transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)", transitionDuration: "250ms" }}
               >
@@ -135,7 +148,10 @@ export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }:
                         key={m}
                         variant="outline"
                         size="sm"
-                        onClick={() => setTimerMode(m)}
+                        onClick={() => {
+                          playSound("click");
+                          setTimerMode(m);
+                        }}
                         className={cn(
                           "capitalize text-xs h-9 transition-colors",
                           timerMode === m 

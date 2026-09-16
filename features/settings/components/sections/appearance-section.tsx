@@ -1,24 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import { Palette, LayoutGrid, Maximize2, Sparkles, Film } from "lucide-react";
 import { GlassSection, SettingRow } from "../ui/glass-section";
 import { PremiumSwitch } from "../ui/premium-switch";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/providers/settings-provider";
 
 const THEMES = [
   { id: "midnight", label: "Midnight", color: "#4F46E5" },
   { id: "amoled", label: "AMOLED", color: "#000000" },
   { id: "titanium", label: "Titanium", color: "#64748B" },
-];
+] as const;
 
 export function AppearanceSection() {
-  const [activeTheme, setActiveTheme] = useState("midnight");
-  const [viewStyle, setViewStyle] = useState<"carousel" | "grid">("carousel");
-  const [detailType, setDetailType] = useState<"page" | "modal">("page");
-  const [useFormulas, setUseFormulas] = useState(true);
-  const [autoAudio, setAutoAudio] = useState(true);
+  const { settings, updateSetting } = useSettings();
 
   return (
     <GlassSection
@@ -37,12 +33,15 @@ export function AppearanceSection() {
       >
         <div className="flex items-center p-1 rounded-full bg-white/[0.06] border border-white/10 shadow-inner">
           {THEMES.map(({ id, label, color }) => {
-            const isSelected = activeTheme === id;
+            const isSelected = settings.activeTheme === id;
             return (
               <button
                 key={id}
                 type="button"
-                onClick={() => setActiveTheme(id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updateSetting("activeTheme", id);
+                }}
                 className={cn(
                   "relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-colors z-10 cursor-pointer select-none",
                   isSelected ? "text-white font-semibold" : "text-zinc-400 hover:text-zinc-200"
@@ -52,7 +51,7 @@ export function AppearanceSection() {
                   <motion.div
                     layoutId="activeThemePill"
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                    className="absolute inset-0 rounded-full bg-white/15 border border-white/20 shadow-sm -z-10"
+                    className="absolute inset-0 rounded-full bg-white/15 border border-white/20 shadow-sm -z-10 pointer-events-none"
                   />
                 )}
                 <span
@@ -78,12 +77,15 @@ export function AppearanceSection() {
             { id: "carousel", label: "Carousel" },
             { id: "grid", label: "Grid" },
           ].map(({ id, label }) => {
-            const isSelected = viewStyle === id;
+            const isSelected = settings.viewStyle === id;
             return (
               <button
                 key={id}
                 type="button"
-                onClick={() => setViewStyle(id as "carousel" | "grid")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updateSetting("viewStyle", id as "carousel" | "grid");
+                }}
                 className={cn(
                   "relative px-3.5 py-1.5 text-xs font-medium rounded-full transition-colors z-10 cursor-pointer select-none",
                   isSelected ? "text-white font-semibold" : "text-zinc-400 hover:text-zinc-200"
@@ -93,7 +95,7 @@ export function AppearanceSection() {
                   <motion.div
                     layoutId="activeViewStylePill"
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                    className="absolute inset-0 rounded-full bg-white/15 border border-white/20 shadow-sm -z-10"
+                    className="absolute inset-0 rounded-full bg-white/15 border border-white/20 shadow-sm -z-10 pointer-events-none"
                   />
                 )}
                 <span>{label}</span>
@@ -115,12 +117,15 @@ export function AppearanceSection() {
             { id: "page", label: "Full Page" },
             { id: "modal", label: "Modal Sheet" },
           ].map(({ id, label }) => {
-            const isSelected = detailType === id;
+            const isSelected = settings.detailType === id;
             return (
               <button
                 key={id}
                 type="button"
-                onClick={() => setDetailType(id as "page" | "modal")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updateSetting("detailType", id as "page" | "modal");
+                }}
                 className={cn(
                   "relative px-3.5 py-1.5 text-xs font-medium rounded-full transition-colors z-10 cursor-pointer select-none",
                   isSelected ? "text-white font-semibold" : "text-zinc-400 hover:text-zinc-200"
@@ -130,7 +135,7 @@ export function AppearanceSection() {
                   <motion.div
                     layoutId="activeDetailTypePill"
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                    className="absolute inset-0 rounded-full bg-white/15 border border-white/20 shadow-sm -z-10"
+                    className="absolute inset-0 rounded-full bg-white/15 border border-white/20 shadow-sm -z-10 pointer-events-none"
                   />
                 )}
                 <span>{label}</span>
@@ -148,8 +153,8 @@ export function AppearanceSection() {
         iconGradient="from-amber-500 to-orange-500"
       >
         <PremiumSwitch
-          checked={useFormulas}
-          onChange={setUseFormulas}
+          checked={settings.useFormulas}
+          onChange={(checked) => updateSetting("useFormulas", checked)}
           ariaLabel="Toggle formula anchors"
         />
       </SettingRow>
@@ -163,8 +168,8 @@ export function AppearanceSection() {
         isLast
       >
         <PremiumSwitch
-          checked={autoAudio}
-          onChange={setAutoAudio}
+          checked={settings.autoAudio}
+          onChange={(checked) => updateSetting("autoAudio", checked)}
           ariaLabel="Toggle video solutions preview"
         />
       </SettingRow>

@@ -129,7 +129,7 @@ export function SettingRow({
         </div>
       </div>
 
-      <div className="shrink-0 flex items-center justify-end">
+      <div className="shrink-0 flex items-center justify-end relative z-10">
         {children}
       </div>
 

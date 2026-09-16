@@ -13,15 +13,27 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/providers/settings-provider";
 
 export function CreatorSupport() {
   const [copied, setCopied] = useState(false);
+  const { playSound } = useSettings();
 
   const handleCopy = () => {
+    playSound("success");
     navigator.clipboard.writeText("joshh@fam");
     setCopied(true);
     toast.success("UPI ID copied to clipboard: joshh@fam");
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleHover = () => {
+    // Sequence of pops matching the floating hearts
+    playSound("pop");
+    setTimeout(() => playSound("pop"), 150);
+    setTimeout(() => playSound("pop"), 350);
+    setTimeout(() => playSound("pop"), 500);
+    setTimeout(() => playSound("pop"), 700);
   };
 
   return (
@@ -31,6 +43,7 @@ export function CreatorSupport() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7 }}
+        onMouseEnter={handleHover}
         className={cn(
           "relative rounded-3xl sm:rounded-[2.5rem] p-8 sm:p-12",
           "bg-[#0d121c]/45 backdrop-blur-3xl border border-white/[0.12]",
@@ -100,6 +113,7 @@ export function CreatorSupport() {
               href="https://patreon.com/devAndrew"
               target="_blank"
               rel="noreferrer"
+              onClick={() => playSound("click")}
               className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full border border-white/15 bg-white/[0.06] hover:bg-white/[0.12] hover:border-rose-500/40 transition-all text-xs sm:text-sm font-semibold text-white hover:shadow-[0_0_24px_rgba(244,63,94,0.25)] active:scale-95 cursor-pointer select-none"
             >
               <Heart className="w-4 h-4 text-rose-400 fill-rose-400/30" />
@@ -110,6 +124,7 @@ export function CreatorSupport() {
               href="https://buymeacoffee.com/devandrew"
               target="_blank"
               rel="noreferrer"
+              onClick={() => playSound("click")}
               className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full border border-white/15 bg-white/[0.06] hover:bg-white/[0.12] hover:border-amber-500/40 transition-all text-xs sm:text-sm font-semibold text-white hover:shadow-[0_0_24px_rgba(245,158,11,0.25)] active:scale-95 cursor-pointer select-none"
             >
               <Coffee className="w-4 h-4 text-amber-400" />
@@ -120,6 +135,7 @@ export function CreatorSupport() {
               <DialogTrigger asChild>
                 <button
                   type="button"
+                  onClick={() => playSound("click")}
                   className="inline-flex items-center justify-center gap-2.5 h-11 px-6 rounded-full border border-white/15 bg-white/[0.06] hover:bg-white/[0.12] hover:border-orange-500/40 transition-all text-xs sm:text-sm font-semibold text-white hover:shadow-[0_0_24px_rgba(249,115,22,0.25)] active:scale-95 cursor-pointer select-none group/fampay"
                 >
                   <div className="w-5 h-5 rounded-md bg-gradient-to-br from-[#FFAD00] to-[#FF4500] flex items-center justify-center shadow-[0_0_8px_rgba(249,115,22,0.4)] group-hover/fampay:scale-105 transition-transform">

@@ -4,6 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Play, ArrowRight, Target, Clock, BookOpen, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/providers/settings-provider";
 
 interface ContinueLearningProps {
   lastActiveChapter: {
@@ -16,6 +17,7 @@ interface ContinueLearningProps {
 
 export const ContinueLearning = React.memo(function ContinueLearning({ lastActiveChapter }: ContinueLearningProps) {
   const router = useRouter();
+  const { playSound } = useSettings();
 
   if (!lastActiveChapter) {
     return (
@@ -38,7 +40,10 @@ export const ContinueLearning = React.memo(function ContinueLearning({ lastActiv
         </p>
         
         <Button 
-          onClick={() => router.push("/dashboard/syllabus")}
+          onClick={() => {
+            playSound("swish");
+            router.push("/dashboard/syllabus");
+          }}
           className="bg-foreground text-background hover:bg-foreground/90 rounded-full transition-all group/btn relative z-10 px-8 py-5 h-auto font-bold tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
         >
           Explore Syllabus
@@ -51,7 +56,10 @@ export const ContinueLearning = React.memo(function ContinueLearning({ lastActiv
   return (
     <div 
       className="group relative flex flex-col h-full rounded-2xl border border-border/50 bg-surface p-6 hover:border-accent/40 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-pointer overflow-hidden shadow-sm hover:shadow-md"
-      onClick={() => router.push(`/dashboard/study/${lastActiveChapter.subjectSlug}/${lastActiveChapter.chapterSlug}`)}
+      onClick={() => {
+        playSound("swish");
+        router.push(`/dashboard/study/${lastActiveChapter.subjectSlug}/${lastActiveChapter.chapterSlug}`);
+      }}
     >
       <div className="absolute top-0 right-0 w-48 h-48 bg-accent/5 rounded-full blur-[40px] -mr-16 -mt-16 pointer-events-none group-hover:bg-accent/15 transition-all duration-700" />
       

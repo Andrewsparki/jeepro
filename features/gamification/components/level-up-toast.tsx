@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, ChevronUp } from "lucide-react";
 import confetti from "canvas-confetti";
+import { useSettings } from "@/providers/settings-provider";
 
 interface LevelUpToastProps {
   currentLevel: number;
@@ -13,12 +14,14 @@ export function LevelUpToast({ currentLevel }: LevelUpToastProps) {
   const prevLevelRef = useRef(currentLevel);
   const [showToast, setShowToast] = useState(false);
   const [levelToDisplay, setLevelToDisplay] = useState(currentLevel);
+  const { playSound } = useSettings();
 
   useEffect(() => {
     // Only trigger if level increased and it's not the initial mount level 1
     if (currentLevel > prevLevelRef.current && prevLevelRef.current > 0) {
       setLevelToDisplay(currentLevel);
       setShowToast(true);
+      playSound("celebration");
       
       // Minor confetti for level up
       confetti({

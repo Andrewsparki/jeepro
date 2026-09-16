@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { HoverGlow } from "@/components/ui/hover-glow";
+import { useSettings } from "@/providers/settings-provider";
 
 interface SidebarItemProps {
   href: string;
@@ -14,6 +15,7 @@ interface SidebarItemProps {
 
 export function SidebarItem({ href, icon, label }: SidebarItemProps) {
   const pathname = usePathname();
+  const { playSound } = useSettings();
   const isRoot = href === "/dashboard";
   const isActive = isRoot 
     ? pathname === href 
@@ -23,6 +25,7 @@ export function SidebarItem({ href, icon, label }: SidebarItemProps) {
     <HoverGlow className="w-full block">
       <Link
         href={href}
+        onClick={() => playSound("swish")}
         className={cn(
           "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ease-out hover:shadow-[0_0_12px_rgba(37,99,235,0.3)] group outline-none focus-visible:ring-2 focus-visible:ring-ring w-full",
           isActive ? "text-white font-semibold shadow-glow" : "text-muted-foreground hover:text-foreground"

@@ -12,7 +12,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     <NextThemesProvider
       attribute="class"
       defaultTheme="midnight"
-      themes={["midnight", "amoled", "light"]}
+      themes={["midnight", "amoled", "titanium", "light"]}
       enableSystem={false}
       disableTransitionOnChange
     >

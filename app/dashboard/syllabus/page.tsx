@@ -14,9 +14,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, RotateCcw } from "lucide-react";
 import confetti from "canvas-confetti";
+import { useSettings } from "@/providers/settings-provider";
 
 export default function SyllabusPage() {
   const { triggerRefresh } = useStudySession();
+  const { playSound } = useSettings();
   const [activeSubject, setActiveSubject] = useState("physics");
   const [syllabus, setSyllabus] = useState<Record<string, Subject>>({});
   const [loading, setLoading] = useState(true);
@@ -53,6 +55,7 @@ export default function SyllabusPage() {
         throw new Error("Failed to update subject progress");
       }
       if (action === 'complete') {
+        playSound("celebration");
         confetti({
           particleCount: 150,
           spread: 100,
@@ -60,6 +63,8 @@ export default function SyllabusPage() {
           colors: ['#22c55e', '#16a34a', '#86efac', '#3b82f6', '#8b5cf6'],
           disableForReducedMotion: true
         });
+      } else {
+        playSound("pop-down");
       }
       triggerRefresh();
       refreshSyllabus();
@@ -105,7 +110,10 @@ export default function SyllabusPage() {
               {subjects.map((subject) => (
                 <button
                   key={subject.id}
-                  onClick={() => setActiveSubject(subject.id)}
+                  onClick={() => {
+                    playSound("swish");
+                    setActiveSubject(subject.id);
+                  }}
                   className={cn(
                     "relative px-4 py-2.5 text-sm font-medium transition-colors outline-none",
                     activeSubject === subject.id ? "text-foreground" : "text-muted-foreground hover:text-foreground"

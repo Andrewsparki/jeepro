@@ -9,6 +9,8 @@ import { Volume2, VolumeX, Music, Check, CloudRain, Library, Trees, Waves, Audio
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn } from "@/lib/utils";
 
+import { useSettings } from "@/providers/settings-provider";
+
 const SOUNDS: { id: AmbientSound; label: string; icon: React.ElementType }[] = [
   { id: 'none', label: 'None', icon: Music },
   { id: 'rain', label: 'Rain', icon: CloudRain },
@@ -21,6 +23,7 @@ const SOUNDS: { id: AmbientSound; label: string; icon: React.ElementType }[] = [
 
 export const AmbientAudio = React.memo(function AmbientAudio() {
   const { ambientSound, setAmbientSound, soundVolume, setSoundVolume } = useFocusStore();
+  const { playSound } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
@@ -29,11 +32,15 @@ export const AmbientAudio = React.memo(function AmbientAudio() {
   const displayVolume = isMuted ? 0 : Math.round(soundVolume * 100);
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={(open) => {
+      if (open) playSound("pop-up");
+      setIsOpen(open);
+    }}>
       <PopoverTrigger asChild>
         <Button 
           variant="ghost" 
           size="sm" 
+          onClick={() => playSound("pop-up")}
           className={cn(
             "rounded-full px-5 h-11 border border-white/5 bg-white/5 backdrop-blur-md shadow-lg transition-all duration-300",
             ambientSound !== 'none' 
@@ -91,7 +98,10 @@ export const AmbientAudio = React.memo(function AmbientAudio() {
             
             <div className="flex items-center gap-4">
               <button
-                onClick={() => setIsMuted(!isMuted)}
+                onClick={() => {
+                  playSound(isMuted ? "toggleOn" : "toggleOff");
+                  setIsMuted(!isMuted);
+                }}
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 {isMuted || displayVolume === 0 ? (
@@ -132,7 +142,10 @@ export const AmbientAudio = React.memo(function AmbientAudio() {
             return (
               <button
                 key={sound.id}
-                onClick={() => setAmbientSound(sound.id)}
+                onClick={() => {
+                  playSound("click");
+                  setAmbientSound(sound.id);
+                }}
                 className={cn(
                   "w-full flex items-center justify-between px-4 py-3 text-sm rounded-xl transition-all duration-200 group relative overflow-hidden",
                   isActive 

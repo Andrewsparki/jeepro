@@ -13,6 +13,7 @@ import { SessionService } from "@/features/study-engine/services/session.service
 import { calculateSessionXP } from "@/features/progress/config/xp-config";
 import { toast } from "sonner";
 import { ChevronRight } from "lucide-react";
+import { useSettings } from "@/providers/settings-provider";
 
 export default function FocusPage() {
   const { 
@@ -24,6 +25,7 @@ export default function FocusPage() {
   } = useFocusStore();
 
   const { triggerRefresh } = useStudySession();
+  const { playSound } = useSettings();
 
   // Local state for timer (absolute time)
   const [isActive, setIsActive] = useState(false);
@@ -50,7 +52,8 @@ export default function FocusPage() {
     return defaultBreakTime * 4;
   };
 
-  const handleRestart = () => {
+  const handleRestart = (silent?: boolean) => {
+    if (!silent) playSound("pop-down");
     setIsActive(false);
     setSessionAccumulated(0);
     setPhaseAccumulated(0);
@@ -71,9 +74,11 @@ export default function FocusPage() {
       // Silently discard spam/accidental starts
       handleRestart();
     } else if (finalElapsed < 60) {
+      playSound("muted-error");
       toast("Session too short to record.");
-      handleRestart();
+      handleRestart(true);
     } else {
+      playSound("chime");
       const endedAt = new Date();
       const startedAt = initialStartTime || new Date(endedAt.getTime() - finalElapsed * 1000);
       const exactDuration = Math.floor(finalElapsed);
@@ -97,6 +102,7 @@ export default function FocusPage() {
   };
 
   function handleTimerComplete() {
+    playSound("chime");
     const finalSession = getSessionElapsed();
     
     setIsActive(false);
@@ -142,12 +148,14 @@ export default function FocusPage() {
 
   const togglePlayPause = () => {
     if (!isActive) {
+      playSound("pop-up");
       if (sessionAccumulated === 0) {
         setInitialStartTime(new Date());
       }
       setLastResumeTime(Date.now());
       setIsActive(true);
     } else {
+      playSound("pop-down");
       setSessionAccumulated(getSessionElapsed());
       setPhaseAccumulated(getPhaseElapsed());
       setLastResumeTime(null);
@@ -156,6 +164,7 @@ export default function FocusPage() {
   };
 
   const handleStartBreak = () => {
+    playSound("pop-up");
     setIsActive(false);
     setSessionAccumulated(getSessionElapsed());
     setPhaseAccumulated(0);

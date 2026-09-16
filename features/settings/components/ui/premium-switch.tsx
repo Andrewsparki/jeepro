@@ -24,7 +24,12 @@ export function PremiumSwitch({
       aria-label={ariaLabel}
       disabled={disabled}
       whileTap={{ scale: disabled ? 1 : 0.94 }}
-      onClick={() => !disabled && onChange(!checked)}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!disabled) {
+          onChange(!checked);
+        }
+      }}
       className={cn(
         "relative flex items-center h-7 w-12 shrink-0 cursor-pointer rounded-full p-[2px]",
         "transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
