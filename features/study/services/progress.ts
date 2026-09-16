@@ -252,16 +252,22 @@ export async function updateSubjectProgress(subjectSlug: string, status: Progres
   return (data || []) as UserTopicProgress[];
 }
 
-export async function getStudySessions(): Promise<StudySession[]> {
+export async function getStudySessions(limit?: number): Promise<StudySession[]> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("study_sessions")
     .select("*")
     .eq("user_id", user.id)
     .order("started_at", { ascending: false });
+
+  if (typeof limit === "number" && limit > 0) {
+    query = query.limit(limit);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Error fetching study sessions:", error.message, error.details, error.hint);
@@ -337,14 +343,16 @@ import { getPlannerEvents } from "@/features/planner/services/planner.service";
 import { getTodayMissions, getAllCompletedMissions } from "@/features/daily-missions/services/missions.service";
 
 export async function getDashboardMetrics() {
-  const [progress, sessions, syllabus, allEvents, dailyMissions, allCompletedMissions] = await Promise.all([
+  const [progress, sessions, syllabus, allEvents, allCompletedMissions] = await Promise.all([
     getUserProgress(),
     getStudySessions(),
     getSyllabus(),
     getPlannerEvents(),
-    getTodayMissions(),
     getAllCompletedMissions()
   ]);
+
+  // Reuse already-fetched sessions to avoid duplicate database query when daily missions are generated
+  const dailyMissions = await getTodayMissions(sessions);
 
   const masteredCount = progress.filter(p => p.status === "Mastered").length;
   const inProgressCount = progress.filter(p => p.status === "In Progress").length;

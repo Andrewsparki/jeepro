@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
+import { FixedPortal } from "@/components/ui/fixed-portal";
 
 export function StudyTimer() {
   const { isActive, endSession } = useStudySession();
@@ -25,46 +26,49 @@ export function StudyTimer() {
   const isHidden = pathname === "/dashboard/focus";
 
   return (
-    <AnimatePresence>
-      {isActive && !isHidden && (
-        <motion.div
-          initial={{ opacity: 0, y: 50, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 50, scale: 0.9 }}
-          transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          className="fixed bottom-6 right-6 z-50"
-        >
-          {/* CSS-animated pulse glow — no JS-driven boxShadow */}
-          <div className="relative">
-            <div className="absolute -inset-1 rounded-full animate-timer-pulse opacity-60" 
-              style={{ background: "radial-gradient(circle, rgba(59,130,246,0.4) 0%, transparent 70%)" }}
-            />
-            <div className="relative flex items-center gap-4 bg-background/80 backdrop-blur-xl border border-glass-border rounded-full pl-5 pr-2 py-2">
-              
-              <div className="flex items-center gap-3">
-                {/* CSS-animated recording dot — no Framer Motion */}
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-recording-dot" />
-                <div className="font-mono text-lg font-medium tracking-wider w-[70px] text-center">
-                  {formatTime(elapsedSeconds)}
+    <FixedPortal>
+      <AnimatePresence>
+        {isActive && !isHidden && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            className="fixed bottom-6 right-6 z-50"
+          >
+            {/* CSS-animated pulse glow — no JS-driven boxShadow */}
+            <div className="relative">
+              <div className="absolute -inset-1 rounded-full animate-timer-pulse opacity-60" 
+                style={{ background: "radial-gradient(circle, rgba(59,130,246,0.4) 0%, transparent 70%)" }}
+              />
+              <div className="relative flex items-center gap-4 bg-background/80 backdrop-blur-xl border border-glass-border rounded-full pl-5 pr-2 py-2">
+                
+                <div className="flex items-center gap-3">
+                  {/* CSS-animated recording dot — no Framer Motion */}
+                  <div className="h-2 w-2 rounded-full bg-rose-500 animate-recording-dot" />
+                  
+                  <span className="font-mono text-sm font-semibold tracking-wider text-foreground">
+                    {formatTime(elapsedSeconds)}
+                  </span>
                 </div>
+
+                <div className="w-px h-6 bg-border/50" />
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => endSession()}
+                  className="rounded-full hover:bg-destructive/10 hover:text-destructive text-muted-foreground group"
+                >
+                  <Square className="w-4 h-4 mr-2 fill-current opacity-70 group-hover:opacity-100" />
+                  End
+                </Button>
+                
               </div>
-
-              <div className="w-px h-6 bg-border/50" />
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => endSession()}
-                className="rounded-full hover:bg-destructive/10 hover:text-destructive text-muted-foreground group"
-              >
-                <Square className="w-4 h-4 mr-2 fill-current opacity-70 group-hover:opacity-100" />
-                End
-              </Button>
-              
             </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </FixedPortal>
   );
 }

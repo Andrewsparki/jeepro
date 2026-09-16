@@ -84,10 +84,15 @@ export function PricingWhy() {
               <MagneticCard
                 glowColor={item.glowColor}
                 tiltAmount={7}
-                className="p-8 sm:p-9 bg-[#070E1E]/65 backdrop-blur-2xl border border-white/[0.12] hover:border-white/[0.22] shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-col justify-between h-full"
+                className="p-8 sm:p-9 bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.12] hover:border-white/[0.22] shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-col justify-between h-full"
               >
                 {/* Background ambient corner flare */}
-                <div className={`absolute top-0 right-0 w-56 h-56 bg-gradient-to-bl ${item.accentColor} rounded-full blur-3xl opacity-60 pointer-events-none`} />
+                <div 
+                  className="absolute top-0 right-0 w-56 h-56 rounded-full pointer-events-none transform-gpu" 
+                  style={{
+                    background: `radial-gradient(circle at 100% 0%, ${item.glowColor}, transparent 70%)`,
+                  }}
+                />
 
                 <div className="relative z-10 flex flex-col justify-between h-full">
                   <div>

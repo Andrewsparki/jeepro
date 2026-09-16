@@ -87,10 +87,6 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
             <defs>
-              <filter id="neonGlowBar" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
               <linearGradient id="colorSessions" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="var(--accent)" stopOpacity={1} />
                 <stop offset="100%" stopColor="var(--accent)" stopOpacity={0.2} />
@@ -120,7 +116,7 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
                content={({ active, payload }) => {
                  if (active && payload && payload.length) {
                    return (
-                     <div className="bg-[#0a0a0c]/95 border border-white/5 backdrop-blur-xl p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
+                     <div className="bg-[#0a0a0c]/95 border border-white/5 p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
                          {payload[0].payload.displayDate}
                        </p>

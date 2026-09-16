@@ -12,7 +12,7 @@ export function DashboardMainContent({ children }: { children: React.ReactNode }
   return (
     <div 
       data-smooth-content
-      className={cn("flex flex-1 flex-col min-w-0 transition-all duration-300", !isHidden && "md:pl-[260px]")}
+      className={cn("flex flex-1 flex-col min-w-0 transition-[padding-left] duration-300", !isHidden && "md:pl-[260px]")}
     >
       {children}
     </div>

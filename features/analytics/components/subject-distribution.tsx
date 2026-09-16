@@ -75,13 +75,6 @@ export function SubjectDistribution({ sessions, syllabus }: SubjectDistributionP
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart cx="50%" cy="50%" outerRadius="65%" data={data}>
               <defs>
-                <filter id="neonGlowPurple" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
                 <radialGradient id="colorRadar" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
                   <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.4} />
                   <stop offset="100%" stopColor="var(--accent)" stopOpacity={0.05} />
@@ -103,7 +96,7 @@ export function SubjectDistribution({ sessions, syllabus }: SubjectDistributionP
                  content={({ active, payload }) => {
                    if (active && payload && payload.length) {
                      return (
-                       <div className="bg-[#0a0a0c]/95 border border-white/5 backdrop-blur-xl p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
+                       <div className="bg-[#0a0a0c]/95 border border-white/5 p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
                            {payload[0].payload.subject}
                          </p>
@@ -127,8 +120,7 @@ export function SubjectDistribution({ sessions, syllabus }: SubjectDistributionP
                 fill="url(#colorRadar)" 
                 fillOpacity={1} 
                 strokeWidth={2.5}
-                style={{ filter: 'url(#neonGlowPurple)' }}
-                animationDuration={1500}
+                animationDuration={800}
                 animationEasing="ease-out"
               />
             </RadarChart>

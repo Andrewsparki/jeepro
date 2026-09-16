@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Target, Sparkles, CloudCheck, Volume2, Coffee } from "lucide-react";
 import { GlassSection, SettingRow } from "../ui/glass-section";
 import { PremiumSwitch } from "../ui/premium-switch";
 
@@ -13,44 +13,83 @@ export function StudyExperienceSection() {
   const [breakReminder, setBreakReminder] = useState(true);
 
   return (
-    <GlassSection id="study" title="Study Experience" icon={BookOpen} description="Configure your workspace and focus tools.">
-      
-      <SettingRow 
-        title="Focus Mode" 
-        description="Hide all distractions and full-screen the workspace automatically."
+    <GlassSection
+      id="study"
+      title="Study & Focus Experience"
+      icon={BookOpen}
+      badge="Productivity"
+      description="Configure deep focus parameters, telemetry auto-saving, and ambient audio cues."
+    >
+      {/* Deep Focus Mode */}
+      <SettingRow
+        title="Deep Focus Mode"
+        description="Automatically suppress sidebars and enter a zero-distraction workspace."
+        icon={Target}
+        iconGradient="from-indigo-500 to-blue-600"
       >
-        <PremiumSwitch checked={focusMode} onChange={setFocusMode} />
+        <PremiumSwitch
+          checked={focusMode}
+          onChange={setFocusMode}
+          ariaLabel="Toggle deep focus mode"
+        />
       </SettingRow>
 
-      <SettingRow 
-        title="Ambient Effects" 
-        description="Subtle background animations during active study sessions."
+      {/* Ambient Visual Effects */}
+      <SettingRow
+        title="Spatial Ambient Glow"
+        description="Render subtle background lighting reactive to problem difficulty."
+        icon={Sparkles}
+        iconGradient="from-cyan-500 to-teal-500"
       >
-        <PremiumSwitch checked={ambientEffects} onChange={setAmbientEffects} />
+        <PremiumSwitch
+          checked={ambientEffects}
+          onChange={setAmbientEffects}
+          ariaLabel="Toggle spatial ambient glow"
+        />
       </SettingRow>
 
-      <SettingRow 
-        title="Session Auto-Save" 
-        description="Automatically save progress to the offline queue every 5 minutes."
+      {/* Telemetry Auto-Save */}
+      <SettingRow
+        title="Live Session Auto-Sync"
+        description="Persist progress to local IndexedDB and cloud sync queue every 5 minutes."
+        icon={CloudCheck}
+        iconGradient="from-emerald-500 to-green-600"
       >
-        <PremiumSwitch checked={autoSave} onChange={setAutoSave} />
+        <PremiumSwitch
+          checked={autoSave}
+          onChange={setAutoSave}
+          ariaLabel="Toggle session auto-save"
+        />
       </SettingRow>
 
-      <SettingRow 
-        title="Notification Sounds" 
-        description="Play a subtle premium chime on session completion."
+      {/* Acoustic Feedback */}
+      <SettingRow
+        title="Acoustic Haptic Feedback"
+        description="Play crisp Apple-style chimes upon solution milestone completions."
+        icon={Volume2}
+        iconGradient="from-amber-500 to-yellow-600"
       >
-        <PremiumSwitch checked={sounds} onChange={setSounds} />
+        <PremiumSwitch
+          checked={sounds}
+          onChange={setSounds}
+          ariaLabel="Toggle acoustic sounds"
+        />
       </SettingRow>
 
-      <SettingRow 
-        title="Break Reminder" 
-        description="Suggest a 5-minute break every 50 minutes of continuous focus."
+      {/* Interval Break Reminders */}
+      <SettingRow
+        title="Pomodoro Reset Reminders"
+        description="Prompt a 5-minute visual reset after every 50 minutes of continuous focus."
+        icon={Coffee}
+        iconGradient="from-rose-500 to-pink-600"
         isLast
       >
-        <PremiumSwitch checked={breakReminder} onChange={setBreakReminder} />
+        <PremiumSwitch
+          checked={breakReminder}
+          onChange={setBreakReminder}
+          ariaLabel="Toggle break reminder"
+        />
       </SettingRow>
-
     </GlassSection>
   );
 }

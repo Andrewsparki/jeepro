@@ -7,26 +7,48 @@ interface PremiumSwitchProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   disabled?: boolean;
+  ariaLabel?: string;
 }
 
-export function PremiumSwitch({ checked, onChange, disabled = false }: PremiumSwitchProps) {
+export function PremiumSwitch({
+  checked,
+  onChange,
+  disabled = false,
+  ariaLabel,
+}: PremiumSwitchProps) {
   return (
-    <button
+    <motion.button
       type="button"
       role="switch"
       aria-checked={checked}
+      aria-label={ariaLabel}
       disabled={disabled}
+      whileTap={{ scale: disabled ? 1 : 0.94 }}
       onClick={() => !disabled && onChange(!checked)}
       className={cn(
-        "relative flex items-center h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
-        checked ? "bg-[#22c55e]" : "bg-white/15 border border-white/10"
+        "relative flex items-center h-7 w-12 shrink-0 cursor-pointer rounded-full p-[2px]",
+        "transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+        "disabled:cursor-not-allowed disabled:opacity-40 select-none",
+        checked
+          ? "bg-[#34C759] shadow-[0_0_16px_rgba(52,199,89,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)]"
+          : "bg-white/[0.12] border border-white/10 hover:bg-white/[0.16] shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)]"
       )}
     >
       <motion.div
-        animate={{ x: checked ? 22 : 2 }}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-        className="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-md ring-0"
+        animate={{
+          x: checked ? 20 : 0,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 600,
+          damping: 35,
+        }}
+        className={cn(
+          "pointer-events-none inline-block h-6 w-6 rounded-full bg-white",
+          "shadow-[0_2px_6px_rgba(0,0,0,0.35),0_1px_1px_rgba(0,0,0,0.15)]",
+          "border border-black/[0.04]"
+        )}
       />
-    </button>
+    </motion.button>
   );
 }

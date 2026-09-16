@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, HelpCircle, Sparkles } from "lucide-react";
+import { ChevronDown, HelpCircle } from "lucide-react";
 
 const faqs = [
   {
@@ -67,7 +67,7 @@ export function PricingFAQ() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.06 }}
-                className="relative rounded-2xl bg-[#070E1E]/65 backdrop-blur-2xl border border-white/[0.1] hover:border-white/[0.2] shadow-[0_10px_30px_rgba(0,0,0,0.4)] transition-all overflow-hidden"
+                className="relative rounded-2xl bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.1] hover:border-white/[0.2] shadow-[0_10px_30px_rgba(0,0,0,0.4)] transition-all overflow-hidden"
               >
                 <button
                   type="button"

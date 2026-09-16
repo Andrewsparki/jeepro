@@ -38,7 +38,12 @@ export function StreakCalendar({ sessions }: StreakCalendarProps) {
 
   return (
     <GlassCard hoverTint="orange" className="p-6 flex flex-col h-full group relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-[80px] pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+      <div 
+        className="absolute top-0 right-0 w-44 h-44 rounded-full pointer-events-none opacity-40 group-hover:opacity-75 transition-opacity duration-700 transform-gpu" 
+        style={{
+          background: "radial-gradient(circle at 100% 0%, rgba(249,115,22,0.18) 0%, transparent 70%)"
+        }}
+      />
       
       <div className="flex items-center justify-between mb-6 relative z-10">
         <div className="flex items-center gap-3">

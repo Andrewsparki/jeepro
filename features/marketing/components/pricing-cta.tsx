@@ -8,7 +8,12 @@ export function PricingCTA() {
   return (
     <section className="relative py-28 sm:py-36 px-4 sm:px-6 lg:px-8 text-center overflow-visible">
       {/* Giant Ambient Glow Flare */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[850px] h-[400px] bg-gradient-to-r from-cyan-500/20 via-purple-600/25 to-blue-500/20 rounded-full blur-[140px] pointer-events-none" />
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[850px] h-[400px] rounded-full pointer-events-none transform-gpu -z-10" 
+        style={{
+          background: "radial-gradient(ellipse at 50% 50%, rgba(6,182,212,0.18) 0%, rgba(168,85,247,0.14) 45%, transparent 70%)",
+        }}
+      />
 
       <div className="relative mx-auto max-w-4xl flex flex-col items-center">
         

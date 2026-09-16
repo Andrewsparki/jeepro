@@ -6,6 +6,22 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
+  const { pathname } = request.nextUrl
+
+  const isProtectedRoute = pathname.startsWith('/dashboard')
+  const isAuthRoute =
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/signup') ||
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/reset-password')
+  const isAuthCallback = pathname.startsWith('/api/auth')
+
+  // Fast-path: completely bypass expensive Supabase network round-trips for public marketing routes.
+  // Server-side security is strictly enforced on all protected and authentication routes.
+  if (!isProtectedRoute && !isAuthRoute && !isAuthCallback) {
+    return supabaseResponse
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -27,25 +43,30 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // This will refresh the session if expired - required for Server Components
+  // Validate user server-side for protected and auth routes
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup')
-  const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard')
-
   if (isProtectedRoute && !user) {
-    // redirect unauthenticated users to login page
+    // Redirect unauthenticated users to login page with preserved target
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    url.searchParams.set('next', request.nextUrl.pathname + request.nextUrl.search)
     return NextResponse.redirect(url)
   }
 
   if (isAuthRoute && user) {
-    // redirect authenticated users away from auth pages
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    // Redirect authenticated users away from auth pages to dashboard
+    const rawNext = request.nextUrl.searchParams.get('next')
+    const safeNext =
+      rawNext &&
+      rawNext.startsWith('/') &&
+      !rawNext.startsWith('//') &&
+      !rawNext.startsWith('/\\')
+        ? rawNext
+        : '/dashboard'
+    const url = new URL(safeNext, request.nextUrl.origin)
     return NextResponse.redirect(url)
   }
 

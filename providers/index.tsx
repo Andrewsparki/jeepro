@@ -3,8 +3,6 @@
 import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { SupabaseProvider } from "@/providers/supabase-provider";
-import { AuthProvider } from "@/features/auth/components/auth-provider";
 import { LightingProvider } from "@/components/ui/lighting-provider";
 import { SmoothScrollProvider } from "@/components/ui/smooth-scroll-provider";
 import { PerformanceProvider } from "@/lib/performance-context";
@@ -17,11 +15,6 @@ const BackgroundSystem = dynamic(
   { ssr: false }
 );
 
-const FloatingParticles = dynamic(
-  () => import("@/components/ui/floating-particles").then(mod => ({ default: mod.FloatingParticles })),
-  { ssr: false }
-);
-
 interface ProvidersProps {
   children: ReactNode;
 }
@@ -30,20 +23,15 @@ export function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider>
       <PerformanceProvider>
-        <SmoothScrollProvider>
-          <SupabaseProvider>
-            <AuthProvider>
-              <LightingProvider>
-                <DialogProvider>
-                  <BackgroundSystem />
-                  <FloatingParticles />
-                  {children}
-                  <Toaster position="bottom-right" />
-                </DialogProvider>
-              </LightingProvider>
-            </AuthProvider>
-          </SupabaseProvider>
-        </SmoothScrollProvider>
+        <LightingProvider>
+          <DialogProvider>
+            <BackgroundSystem />
+            <SmoothScrollProvider>
+              {children}
+            </SmoothScrollProvider>
+            <Toaster position="bottom-right" />
+          </DialogProvider>
+        </LightingProvider>
       </PerformanceProvider>
     </ThemeProvider>
   );

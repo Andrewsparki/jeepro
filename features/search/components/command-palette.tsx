@@ -9,10 +9,11 @@ import { toast } from "sonner";
 import { useCommandPalette } from "../context/command-palette-context";
 import { useSearchData, SearchItem } from "../hooks/use-search-data";
 import { useStudySession } from "@/features/study/context/study-session-context";
+import { FixedPortal } from "@/components/ui/fixed-portal";
 
 export function CommandPalette() {
   const { isOpen, setIsOpen } = useCommandPalette();
-  const { items } = useSearchData();
+  const { items } = useSearchData(isOpen);
   const router = useRouter();
   const { startSession } = useStudySession();
   
@@ -59,7 +60,8 @@ export function CommandPalette() {
   };
 
   return (
-    <AnimatePresence>
+    <FixedPortal>
+      <AnimatePresence>
       {isOpen && (
         <>
           {/* Backdrop */}
@@ -160,5 +162,6 @@ export function CommandPalette() {
         </>
       )}
     </AnimatePresence>
+    </FixedPortal>
   );
 }

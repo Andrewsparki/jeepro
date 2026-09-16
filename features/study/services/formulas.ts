@@ -119,14 +119,10 @@ const MOCK_FORMULAS: Formula[] = [
 ];
 
 export async function getFormulasByChapter(chapterId: string): Promise<Formula[]> {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 300));
   return MOCK_FORMULAS.filter(f => f.chapterId === chapterId);
 }
 
 export async function searchFormulas(query: string, chapterId?: string): Promise<Formula[]> {
-  await new Promise(resolve => setTimeout(resolve, 200));
-  
   const q = query.toLowerCase().trim();
   if (!q) return chapterId ? await getFormulasByChapter(chapterId) : [];
   

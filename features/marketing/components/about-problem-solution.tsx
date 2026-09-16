@@ -9,12 +9,9 @@ import {
   HelpCircle, 
   BellOff, 
   Sparkles, 
-  CheckCircle2, 
   TrendingUp, 
   FileText, 
   RotateCcw, 
-  Compass, 
-  ArrowRight,
   Target
 } from "lucide-react";
 
@@ -36,9 +33,14 @@ export function AboutProblemSolution() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.7 }}
-              className="lg:col-span-6 relative rounded-[32px] p-8 sm:p-10 bg-[#070E1E]/65 backdrop-blur-2xl border border-red-500/20 shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden space-y-6"
+              className="lg:col-span-6 relative rounded-[32px] p-8 sm:p-10 bg-[#070E1E]/80 backdrop-blur-xl border border-red-500/20 shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden space-y-6 transform-gpu"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl pointer-events-none" />
+              <div 
+                className="absolute top-0 right-0 w-64 h-64 rounded-full pointer-events-none transform-gpu" 
+                style={{
+                  background: "radial-gradient(circle at 100% 0%, rgba(239, 68, 68, 0.14) 0%, transparent 70%)",
+                }}
+              />
 
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400">
@@ -132,13 +134,18 @@ export function AboutProblemSolution() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8 }}
-            className="relative rounded-[36px] p-8 sm:p-12 lg:p-16 bg-[#070E1E]/70 backdrop-blur-3xl border border-white/[0.14] shadow-[0_30px_100px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] overflow-hidden"
+            className="relative rounded-[36px] p-8 sm:p-12 lg:p-16 bg-[#070E1E]/80 backdrop-blur-xl border border-white/[0.14] shadow-[0_30px_100px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2)] overflow-hidden transform-gpu"
           >
             {/* Top Specular Glare */}
             <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
 
             {/* Ambient Backlight Flare */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div 
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full pointer-events-none transform-gpu" 
+              style={{
+                background: "radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.15) 0%, transparent 70%)",
+              }}
+            />
 
             {/* 5 Connected Glass Nodes */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 sm:gap-6 relative z-10">
@@ -148,7 +155,7 @@ export function AboutProblemSolution() {
                 { name: "PRACTICE", desc: "PYQ & Problem Engine", icon: Target, color: "text-purple-400", border: "border-purple-500/30" },
                 { name: "REVISION", desc: "Spaced Repetition", icon: RotateCcw, color: "text-pink-400", border: "border-pink-500/30" },
                 { name: "TESTS", desc: "3-Hour NTA Mocks", icon: FileText, color: "text-emerald-400", border: "border-emerald-500/30" },
-              ].map((node, i) => (
+              ].map((node) => (
                 <div
                   key={node.name}
                   className={`p-5 sm:p-6 rounded-2xl bg-white/[0.03] backdrop-blur-xl border ${node.border} shadow-sm flex flex-col items-center text-center space-y-3 hover:bg-white/[0.06] transition-all hover:scale-105 duration-300`}

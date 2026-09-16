@@ -103,11 +103,16 @@ export function AboutPrinciplesLoop() {
               >
                 <MagneticCard
                   glowColor={p.glowColor}
-                  tiltAmount={6}
-                  className={`p-8 sm:p-10 bg-[#070E1E]/65 backdrop-blur-2xl border ${p.border} hover:border-white/30 shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)]`}
+                  tiltAmount={5}
+                  className={`p-8 sm:p-10 bg-[#070E1E]/80 backdrop-blur-xl border ${p.border} hover:border-white/30 shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)]`}
                 >
                   {/* Background ambient flare */}
-                  <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl ${p.bgAccent} rounded-full blur-3xl opacity-60 pointer-events-none`} />
+                  <div 
+                    className="absolute top-0 right-0 w-64 h-64 rounded-full pointer-events-none transform-gpu" 
+                    style={{
+                      background: `radial-gradient(circle at 100% 0%, ${p.glowColor}, transparent 70%)`,
+                    }}
+                  />
 
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div>

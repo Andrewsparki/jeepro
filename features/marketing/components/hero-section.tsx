@@ -1,24 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles, ShieldCheck, Flame, Compass } from "lucide-react";
+import { Sparkles, ShieldCheck, Flame } from "lucide-react";
 import { DopamineCTAButton } from "@/components/ui/dopamine-cta-button";
 
 export function HeroSection() {
   return (
     <section className="relative pt-32 sm:pt-40 lg:pt-44 pb-16 sm:pb-24 overflow-visible flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8">
-      {/* Ambient Focal Glow behind Headline with breathing motion */}
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.15, 1],
-          opacity: [0.35, 0.55, 0.35]
+      {/* Ambient Focal Glow behind Headline */}
+      <div 
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full pointer-events-none -z-10 transform-gpu"
+        style={{
+          background: "radial-gradient(ellipse at 50% 50%, rgba(56,189,248,0.22) 0%, rgba(99,102,241,0.14) 40%, transparent 70%)",
         }}
-        transition={{ 
-          duration: 6, 
-          repeat: Infinity, 
-          ease: "easeInOut" 
-        }}
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-r from-cyan-500/25 via-indigo-500/30 to-purple-500/25 rounded-full blur-[100px] pointer-events-none -z-10" 
       />
 
       <div className="mx-auto max-w-5xl flex flex-col items-center">
@@ -36,28 +30,21 @@ export function HeroSection() {
           </div>
         </motion.div>
 
-        {/* Large Cinematic Headline with Staggered Entrance */}
-        <motion.h1 
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-          className="mb-6 max-w-4xl text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.05]"
-        >
+        {/* Large Cinematic Headline - Immediately visible for optimal LCP */}
+        <h1 className="mb-6 max-w-4xl text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white leading-[1.05]">
           Conquer the{" "}
           <span className="bg-gradient-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(56,189,248,0.55)]">
             exam.
           </span>
-        </motion.h1>
+        </h1>
 
         {/* Supporting Description */}
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-          className="mb-10 max-w-2xl text-base sm:text-xl text-slate-300 font-normal leading-relaxed"
-        >
-          The most premium, distraction-free platform designed to help you master <span className="text-white font-semibold">Physics</span>, <span className="text-white font-semibold">Chemistry</span>, and <span className="text-white font-semibold">Mathematics</span>.
-        </motion.p>
+        <p className="mb-10 max-w-2xl text-base sm:text-xl text-slate-300 font-normal leading-relaxed">
+          The most premium, distraction-free platform designed to help you master{" "}
+          <span className="text-white font-semibold">Physics</span>,{" "}
+          <span className="text-white font-semibold">Chemistry</span>, and{" "}
+          <span className="text-white font-semibold">Mathematics</span>.
+        </p>
 
         {/* High-Dopamine Action Buttons */}
         <motion.div 

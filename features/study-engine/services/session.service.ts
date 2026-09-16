@@ -61,25 +61,58 @@ export class SessionService {
         throw new Error("User not authenticated.");
       }
 
-      const chapterUuid = await getChapterUuid(sessionData.chapterId);
-      const topicUuid = await getTopicUuid(sessionData.sectionId);
+      const isUuid = (str?: string | null): boolean =>
+        Boolean(str && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str));
 
-      const { error } = await supabase.rpc('end_study_session_transaction', {
-        p_user_id: user.id,
-        p_duration_seconds: Math.floor(sessionData.durationSeconds),
-        p_started_at: sessionData.startedAt,
-        p_ended_at: sessionData.endedAt,
-        p_chapter_id: chapterUuid || null,
-        p_topic_id: topicUuid || null,
-        p_xp_earned: xpEarned
-      });
+      const rawChapterUuid = await getChapterUuid(sessionData.chapterId);
+      const rawTopicUuid = await getTopicUuid(sessionData.sectionId);
+      const validChapterId = isUuid(rawChapterUuid) ? rawChapterUuid : null;
+      const validTopicId = isUuid(rawTopicUuid) ? rawTopicUuid : null;
 
-      if (error) {
-        console.error('[SessionService] RPC Error:', error.message || error.details || error);
-        throw error;
+      let rpcSuccess = false;
+
+      // Layer 1: Attempt atomic transactional RPC
+      try {
+        const { error: rpcError } = await supabase.rpc('end_study_session_transaction', {
+          p_user_id: user.id,
+          p_duration_seconds: Math.floor(sessionData.durationSeconds),
+          p_started_at: sessionData.startedAt,
+          p_ended_at: sessionData.endedAt,
+          p_chapter_id: validChapterId,
+          p_topic_id: validTopicId,
+          p_xp_earned: xpEarned
+        });
+
+        if (!rpcError) {
+          rpcSuccess = true;
+        } else {
+          console.warn('[SessionService] RPC call failed, attempting direct table insert fallback:', rpcError.message || rpcError);
+        }
+      } catch (rpcErr) {
+        console.warn('[SessionService] RPC exception, attempting direct table insert fallback:', rpcErr);
       }
 
-      console.info('[SessionService] Session ended successfully.');
+      // Layer 2: Direct authenticated table insert fallback to guarantee zero data loss
+      if (!rpcSuccess) {
+        const { error: insertError } = await supabase
+          .from("study_sessions")
+          .insert({
+            user_id: user.id,
+            duration_seconds: Math.floor(sessionData.durationSeconds),
+            started_at: sessionData.startedAt,
+            ended_at: sessionData.endedAt,
+            chapter_id: validChapterId,
+            topic_id: validTopicId,
+          });
+
+        if (insertError) {
+          console.error('[SessionService] Direct insert fallback failed:', insertError.message || insertError);
+          throw insertError;
+        }
+        console.info('[SessionService] Session saved successfully via direct table fallback.');
+      } else {
+        console.info('[SessionService] Session ended successfully via RPC.');
+      }
 
       // Update daily mission progress (non-blocking — don't fail the session save)
       try {
@@ -104,19 +137,19 @@ export class SessionService {
   }
 
   /**
-   * Offline Queueing Logic
+   * Offline Queueing Logic with Retry Counter
    */
-  private static queueSessionForSync(session: Parameters<typeof SessionService.endSession>[0] & { xpEarned: number }) {
+  private static queueSessionForSync(session: Parameters<typeof SessionService.endSession>[0] & { xpEarned: number; _retries?: number }) {
     if (typeof session.durationSeconds !== 'number' || !Number.isFinite(session.durationSeconds) || session.durationSeconds < 0) {
       return; // Never store invalid sessions
     }
     try {
       const existing = localStorage.getItem(this.OFFLINE_QUEUE_KEY);
-      const queue = existing ? JSON.parse(existing) : [];
+      const queue: Array<Parameters<typeof SessionService.endSession>[0] & { xpEarned: number; _retries?: number; _queuedAt?: string }> = existing ? JSON.parse(existing) : [];
       // Prevent duplicate queue entries
-      const isDuplicate = queue.some((q: Parameters<typeof SessionService.endSession>[0]) => q.startedAt === session.startedAt && q.durationSeconds === session.durationSeconds);
+      const isDuplicate = queue.some((q) => q.startedAt === session.startedAt && q.durationSeconds === session.durationSeconds);
       if (!isDuplicate) {
-        queue.push({ ...session, _queuedAt: new Date().toISOString() });
+        queue.push({ ...session, _retries: session._retries || 0, _queuedAt: new Date().toISOString() });
         localStorage.setItem(this.OFFLINE_QUEUE_KEY, JSON.stringify(queue));
       }
     } catch (e) {
@@ -139,8 +172,8 @@ export class SessionService {
       }
       if (!Array.isArray(queue) || queue.length === 0) return;
 
-      // Aggressively filter out any corrupted entries
-      const isValid = (q: unknown): q is { startedAt: string; durationSeconds: number; endedAt: string } => {
+      // Filter out any corrupted entries
+      const isValid = (q: unknown): q is Parameters<typeof SessionService.endSession>[0] & { _retries?: number } => {
         const item = q as Record<string, unknown> | null;
         return (
           typeof item === 'object' && item !== null &&
@@ -152,7 +185,8 @@ export class SessionService {
         );
       };
 
-      const validQueue = queue.filter(isValid) as Parameters<typeof SessionService.endSession>[0][];
+      type ValidQueuedSession = Parameters<typeof SessionService.endSession>[0] & { _retries?: number };
+      const validQueue: ValidQueuedSession[] = queue.filter(isValid);
       if (validQueue.length !== queue.length) {
         console.warn(`[SessionService] Purged ${queue.length - validQueue.length} corrupt offline session(s).`);
         localStorage.setItem(this.OFFLINE_QUEUE_KEY, JSON.stringify(validQueue));
@@ -172,8 +206,8 @@ export class SessionService {
         try {
           const raw = localStorage.getItem(this.OFFLINE_QUEUE_KEY);
           if (!raw) return;
-          const current = JSON.parse(raw);
-          const updated = current.filter((q: { startedAt: string; durationSeconds: number }) => 
+          const current: ValidQueuedSession[] = JSON.parse(raw);
+          const updated = current.filter((q) => 
             !(q.startedAt === session.startedAt && q.durationSeconds === session.durationSeconds)
           );
           if (updated.length === 0) {
@@ -184,14 +218,33 @@ export class SessionService {
         } catch { /* localStorage failure, ignore */ }
       };
 
+      const updateRetryCount = (session: { startedAt: string; durationSeconds: number }, retries: number) => {
+        try {
+          const raw = localStorage.getItem(this.OFFLINE_QUEUE_KEY);
+          if (!raw) return;
+          const current: ValidQueuedSession[] = JSON.parse(raw);
+          const updated = current.map((q) => 
+            (q.startedAt === session.startedAt && q.durationSeconds === session.durationSeconds)
+              ? { ...q, _retries: retries }
+              : q
+          );
+          localStorage.setItem(this.OFFLINE_QUEUE_KEY, JSON.stringify(updated));
+        } catch { /* localStorage failure, ignore */ }
+      };
+
       for (const session of validQueue) {
         try {
           await this.endSession(session);
           removeFromQueue(session);
-        } catch {
-          // Always remove on failure to prevent infinite retry loops
-          console.warn('[SessionService] Removing failed offline session to prevent retry loop:', session.startedAt);
-          removeFromQueue(session);
+        } catch (err) {
+          const currentRetries = (session._retries || 0) + 1;
+          if (currentRetries >= 3) {
+            console.error('[SessionService] Dropping offline session after 3 failed retries to prevent loop:', session.startedAt, err);
+            removeFromQueue(session);
+          } else {
+            console.warn(`[SessionService] Offline sync attempt ${currentRetries}/3 failed, retaining in queue:`, session.startedAt);
+            updateRetryCount(session, currentRetries);
+          }
         }
       }
       

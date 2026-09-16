@@ -15,7 +15,12 @@ export function ProgressShowcase() {
   return (
     <section id="progress" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8">
       {/* Background Ambient Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] bg-gradient-to-r from-purple-500/15 via-cyan-500/15 to-indigo-500/15 rounded-full blur-[140px] pointer-events-none -z-10" />
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] rounded-full pointer-events-none -z-10 transform-gpu" 
+        style={{
+          background: "radial-gradient(ellipse at 50% 50%, rgba(168,85,247,0.16) 0%, rgba(6,182,212,0.12) 40%, transparent 70%)",
+        }}
+      />
 
       <div className="mx-auto max-w-7xl">
         
@@ -48,7 +53,7 @@ export function ProgressShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="relative rounded-3xl sm:rounded-[36px] p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-white/[0.08] via-white/[0.02] to-black/75 backdrop-blur-3xl border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.25)] overflow-hidden"
+          className="relative rounded-3xl sm:rounded-[36px] p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-white/[0.08] via-white/[0.02] to-black/75 backdrop-blur-xl border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.25)] overflow-hidden"
         >
           {/* Specular Top Glare Line */}
           <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent pointer-events-none" />

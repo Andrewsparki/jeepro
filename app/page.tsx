@@ -1,4 +1,4 @@
-import { LandingBackground } from "@/components/layout/landing-background";
+import { AmbientBackground } from "@/components/layout/ambient-background";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { HeroSection } from "@/features/marketing/components/hero-section";
@@ -10,14 +10,14 @@ import { CTASection } from "@/features/marketing/components/cta-section";
 
 export default function HomePage() {
   return (
-    <div className="relative min-h-screen w-full bg-[#03060E] text-[#F5F7FF] flex flex-col justify-between overflow-x-hidden selection:bg-cyan-500 selection:text-white">
-      {/* 1. Continuous Global Atmospheric Canvas (Runs smoothly from top to footer) */}
-      <LandingBackground />
+    <div className="relative min-h-screen w-full bg-transparent text-[#F5F7FF] flex flex-col justify-between overflow-x-hidden selection:bg-cyan-500 selection:text-white">
+      {/* 1. Continuous Global Atmospheric Canvas */}
+      <AmbientBackground />
 
       {/* 2. Floating Translucent Glass Pill Navbar */}
       <Navbar />
 
-      {/* 3. Main Content Flow (Normal document flow, zero clipping or artificial height traps) */}
+      {/* 3. Main Content Flow */}
       <main className="flex-1 w-full flex flex-col">
         {/* Section 1: Cinematic Hero */}
         <HeroSection />

@@ -1,8 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useRef, useEffect, useCallback, ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-
 import { Modal } from "@/components/ui/modal";
 
 export type DialogVariant = "default" | "destructive";

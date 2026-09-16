@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { cn } from "@/lib/utils";
 import { CheckCircle2 } from "lucide-react";
 import { StudySession } from "@/features/study/services/progress";
 import { AnimatedNumber } from "@/components/ui/animated-number";

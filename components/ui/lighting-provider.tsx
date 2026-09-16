@@ -18,11 +18,7 @@ export function useLighting() {
 }
 
 export function LightingProvider({ children }: { children: React.ReactNode }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const requestRef = useRef<number>(0);
   const mouse = useRef({ x: 0, y: 0 });
-  const dirty = useRef(false);
-  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isTouch, setIsTouch] = useState(false);
   const { enableMouseLighting } = usePerformance();
 
@@ -53,43 +49,13 @@ export function LightingProvider({ children }: { children: React.ReactNode }) {
 
     const onMouseMove = (e: MouseEvent) => {
       mouse.current = { x: e.clientX / cachedZoom, y: e.clientY / cachedZoom };
-      dirty.current = true;
-
-      // Restart RAF loop if it was stopped due to idle
-      if (!requestRef.current) {
-        requestRef.current = requestAnimationFrame(updateLighting);
-      }
-
-      // Reset idle timer
-      if (idleTimer.current) clearTimeout(idleTimer.current);
-      idleTimer.current = setTimeout(() => {
-        // Stop the RAF loop after 100ms of no mouse movement
-        if (requestRef.current) {
-          cancelAnimationFrame(requestRef.current);
-          requestRef.current = 0;
-        }
-      }, 100);
-    };
-
-    const updateLighting = () => {
-      if (dirty.current && containerRef.current) {
-        containerRef.current.style.setProperty("--mouse-x", `${mouse.current.x}px`);
-        containerRef.current.style.setProperty("--mouse-y", `${mouse.current.y}px`);
-        dirty.current = false;
-      }
-      requestRef.current = requestAnimationFrame(updateLighting);
     };
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
-    requestRef.current = requestAnimationFrame(updateLighting);
 
     return () => {
       window.removeEventListener("resize", updateZoom);
       window.removeEventListener("mousemove", onMouseMove);
-      if (requestRef.current) {
-        cancelAnimationFrame(requestRef.current);
-      }
-      if (idleTimer.current) clearTimeout(idleTimer.current);
     };
   }, [enableMouseLighting]);
 
@@ -97,11 +63,7 @@ export function LightingProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <LightingContext.Provider value={contextValue}>
-      <div 
-        ref={containerRef} 
-        className="min-h-screen w-full"
-        style={{ "--mouse-x": "-1000px", "--mouse-y": "-1000px" } as React.CSSProperties}
-      >
+      <div className="min-h-screen w-full">
         {children}
       </div>
     </LightingContext.Provider>

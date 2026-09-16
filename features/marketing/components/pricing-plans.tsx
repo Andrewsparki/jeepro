@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Check, Sparkles, ArrowRight, Zap, Shield, Crown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const plans = [
   {
@@ -24,7 +25,7 @@ const plans = [
     isPrimary: false,
     icon: Shield,
     accentColor: "from-slate-500/10 via-slate-500/5 to-transparent",
-    glowColor: "rgba(255,255,255,0.05)",
+    glowColor: "rgba(255,255,255,0.08)",
   },
   {
     id: "pro",
@@ -47,7 +48,7 @@ const plans = [
     isPrimary: true,
     icon: Zap,
     accentColor: "from-cyan-500/25 via-indigo-500/15 to-transparent",
-    glowColor: "rgba(30,167,255,0.25)",
+    glowColor: "rgba(30,167,255,0.28)",
   },
   {
     id: "pro-max",
@@ -69,7 +70,7 @@ const plans = [
     isPrimary: false,
     icon: Crown,
     accentColor: "from-purple-500/20 via-pink-500/10 to-transparent",
-    glowColor: "rgba(168,85,247,0.2)",
+    glowColor: "rgba(168,85,247,0.22)",
   },
 ];
 
@@ -117,40 +118,46 @@ export function PricingPlans() {
         </div>
 
         {/* ========================================================================= */}
-        {/* 3 PRICING CARDS GRID                                                      */}
+        {/* 3 PRICING CARDS GRID - Smooth, unified entrance with stable CSS hover     */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto">
-          {plans.map((plan, idx) => {
-            const initialY = plan.isPrimary ? -8 : 0;
-            const hoverY = plan.isPrimary ? -14 : -6;
-
+        <motion.div 
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto"
+        >
+          {plans.map((plan) => {
             return (
-              <motion.div
+              <div
                 key={plan.id}
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: initialY }}
-                transition={{ duration: 0.6, delay: 0.15 + idx * 0.1, ease: "easeOut" }}
-                whileHover={{ y: hoverY, transition: { duration: 0.22, ease: "easeOut" } }}
-                className={`relative rounded-[32px] p-8 sm:p-9 flex flex-col justify-between overflow-hidden ${
+                className={cn(
+                  "group relative rounded-[32px] p-8 sm:p-9 flex flex-col justify-between overflow-hidden transform-gpu",
+                  "transition-all duration-300 ease-out cursor-pointer",
                   plan.isPrimary
-                    ? "bg-[#081226]/90 backdrop-blur-3xl border-2 border-cyan-400/50 shadow-[0_30px_100px_rgba(30,167,255,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)]"
-                    : "bg-[#070E1E]/65 backdrop-blur-2xl border border-white/[0.12] hover:border-white/30 shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)]"
-                }`}
+                    ? "bg-[#081226]/90 backdrop-blur-xl border-2 border-cyan-400/50 shadow-[0_30px_100px_rgba(30,167,255,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] lg:-translate-y-2 hover:lg:-translate-y-3.5 hover:shadow-[0_35px_110px_rgba(30,167,255,0.45)]"
+                    : "bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.12] hover:border-white/30 shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] hover:-translate-y-1.5 hover:shadow-[0_25px_80px_rgba(0,0,0,0.85)]"
+                )}
               >
                 {/* Top specular glare line */}
-                <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
+                <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:via-white/60 transition-colors duration-300 pointer-events-none" />
 
                 {/* Background ambient corner glow */}
-                <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl ${plan.accentColor} rounded-full blur-3xl pointer-events-none`} />
+                <div 
+                  className="absolute top-0 right-0 w-64 h-64 rounded-full pointer-events-none opacity-40 group-hover:opacity-75 transition-opacity duration-500 transform-gpu" 
+                  style={{
+                    background: `radial-gradient(circle at 100% 0%, ${plan.glowColor}, transparent 70%)`,
+                  }}
+                />
 
-                <div>
+                <div className="relative z-10">
                   {/* Header Row */}
                   <div className="flex items-center justify-between mb-6">
-                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border ${
+                    <div className={cn(
+                      "w-11 h-11 rounded-2xl flex items-center justify-center border transition-transform duration-300 group-hover:scale-105",
                       plan.isPrimary
                         ? "bg-cyan-500/15 border-cyan-400/30 text-cyan-400"
                         : "bg-white/[0.05] border-white/[0.1] text-slate-300"
-                    }`}>
+                    )}>
                       <plan.icon className="w-5 h-5" />
                     </div>
 
@@ -162,7 +169,7 @@ export function PricingPlans() {
                   </div>
 
                   {/* Plan Name */}
-                  <h3 className="text-xl font-bold tracking-tight text-white mb-1">
+                  <h3 className="text-xl font-bold tracking-tight text-white mb-1 group-hover:text-cyan-200 transition-colors duration-200">
                     {plan.name}
                   </h3>
 
@@ -172,15 +179,15 @@ export function PricingPlans() {
                   </p>
 
                   {/* Price Display */}
-                  <div className="flex items-baseline gap-2 pb-6 border-b border-white/[0.08] mb-6">
-                    <span className={`tracking-tight font-black ${
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 pb-6 border-b border-white/[0.08] mb-6">
+                    <span className={`tracking-tight font-black whitespace-nowrap ${
                       plan.price.startsWith("₹") 
                         ? "text-4xl sm:text-5xl text-white" 
                         : "text-2xl sm:text-3xl bg-gradient-to-r from-cyan-300 via-indigo-200 to-white bg-clip-text text-transparent"
                     }`}>
                       {plan.price}
                     </span>
-                    <span className="text-xs text-[#98A0B3] font-medium">/ {plan.period}</span>
+                    <span className="text-xs text-[#98A0B3] font-medium whitespace-nowrap">/ {plan.period}</span>
                   </div>
 
                   {/* Features List */}
@@ -202,7 +209,7 @@ export function PricingPlans() {
                 </div>
 
                 {/* Plan CTA Action */}
-                <div className="pt-2">
+                <div className="relative z-10 pt-2">
                   {plan.isPrimary ? (
                     <button
                       disabled
@@ -228,10 +235,10 @@ export function PricingPlans() {
                     </button>
                   )}
                 </div>
-              </motion.div>
+              </div>
             );
           })}
-        </div>
+        </motion.div>
 
       </div>
     </section>

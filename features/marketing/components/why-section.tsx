@@ -49,8 +49,14 @@ export function WhySection() {
             className="relative aspect-square lg:aspect-auto lg:h-[600px] w-full rounded-3xl overflow-hidden bg-gradient-to-tr from-accent/20 to-transparent border border-border/50"
           >
             {/* Abstract elements to simulate a beautiful graphic without needing an external image */}
-            <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-accent/30 rounded-full blur-3xl mix-blend-screen" />
-            <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl mix-blend-screen" />
+            <div 
+              className="absolute top-1/4 left-1/4 w-40 h-40 rounded-full pointer-events-none transform-gpu" 
+              style={{ background: "radial-gradient(circle, rgba(56,189,248,0.25) 0%, transparent 70%)" }}
+            />
+            <div 
+              className="absolute bottom-1/3 right-1/4 w-56 h-56 rounded-full pointer-events-none transform-gpu" 
+              style={{ background: "radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)" }}
+            />
             
             <div className="absolute inset-0 flex items-center justify-center p-8">
               <div className="w-full max-w-sm aspect-[4/3] rounded-2xl border border-border/50 bg-background/50 backdrop-blur-sm shadow-2xl p-6 flex flex-col gap-4 transform rotate-[-2deg] transition-transform hover:rotate-0 duration-500">

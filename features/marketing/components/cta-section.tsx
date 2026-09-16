@@ -8,25 +8,19 @@ export function CTASection() {
   return (
     <section className="relative py-24 sm:py-32 px-4 sm:px-6 lg:px-8 text-center overflow-visible">
       {/* Radiant Glowing Ambient Halo Behind CTA */}
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.35, 0.6, 0.35]
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] sm:w-[850px] h-[400px] rounded-full pointer-events-none transform-gpu -z-10" 
+        style={{
+          background: "radial-gradient(ellipse at 50% 50%, rgba(6,182,212,0.20) 0%, rgba(168,85,247,0.15) 45%, transparent 70%)",
         }}
-        transition={{ 
-          duration: 5, 
-          repeat: Infinity, 
-          ease: "easeInOut" 
-        }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] sm:w-[850px] h-[400px] bg-gradient-to-r from-cyan-500/25 via-purple-600/30 to-blue-500/25 rounded-full blur-[120px] pointer-events-none transform-gpu" 
       />
 
       <div className="relative mx-auto max-w-4xl flex flex-col items-center">
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
           className="space-y-6"
         >
           {/* Eyebrow */}
@@ -36,9 +30,9 @@ export function CTASection() {
           </div>
 
           {/* Heading */}
-          <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.08]">
+          <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.12]">
             Ready to conquer <br className="hidden sm:inline" />
-            the <span className="bg-gradient-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(56,189,248,0.5)]">exam?</span>
+            the <span className="bg-gradient-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] bg-clip-text text-transparent">exam?</span>
           </h2>
 
           {/* Description */}

@@ -3,8 +3,6 @@
 import React from "react";
 import { motion, HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useLighting } from "./lighting-provider";
-import { usePerformance } from "@/lib/performance-context";
 
 export type HoverTint = "blue" | "emerald" | "amber" | "orange" | "purple" | "yellow" | "rose" | "none";
 
@@ -54,7 +52,7 @@ export const GlassCard = React.memo(function GlassCard({
       whileHover={interactive ? { y: -4 } : {}}
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "relative premium-card overflow-hidden transition-all duration-250 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "relative premium-card overflow-hidden transition-[box-shadow,border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] transform-gpu",
         hasHoverEffect && "group",
         hasHoverEffect && tintClass,
         className

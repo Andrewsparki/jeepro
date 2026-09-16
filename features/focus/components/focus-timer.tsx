@@ -60,7 +60,7 @@ export const FocusTimer = React.memo(function FocusTimer({
     elapsedMotion.set(accumulatedTime);
   }, [accumulatedTime, elapsedMotion]);
 
-  // Run the 60fps loop via framer-motion (automatically pauses when tab is hidden!)
+  // Uncapped native refresh rate loop (supports 60Hz, 120Hz, 144Hz, 240Hz+) via framer-motion (automatically pauses when tab is hidden!)
   useAnimationFrame(() => {
     if (isActive && lastResumeTime) {
       const now = Date.now();
@@ -105,7 +105,7 @@ export const FocusTimer = React.memo(function FocusTimer({
     });
 
     return () => unsubscribe();
-  }, [displayTimeValue, mode, totalTime]);
+  }, [displayTimeValue, mode, totalTime, getFormattedTimeString]);
 
   // Format Stopwatch milliseconds (00-99)
   const msStringMotion = useTransform(displayTimeValue, (totalSeconds) => {

@@ -33,7 +33,7 @@ export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
           animate={{ height: 64, opacity: 1, y: 0 }}
           exit={{ height: 0, opacity: 0, y: -20, overflow: 'hidden' }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-white/5 bg-background/40 px-6 backdrop-blur-2xl shadow-soft"
+          className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-white/5 bg-background/80 px-6 backdrop-blur-md shadow-soft"
         >
           <div className="flex items-center gap-4">
             <MobileNav />

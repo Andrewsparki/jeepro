@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Loader2, Trash2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { PlannerEvent } from "@/features/planner/services/planner.service";
 
 import { Modal } from "@/components/ui/modal";

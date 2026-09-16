@@ -19,13 +19,18 @@ export function AboutMissionCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8 }}
-            className="relative rounded-[36px] sm:rounded-[48px] p-8 sm:p-14 lg:p-16 bg-[#070E1E]/60 backdrop-blur-3xl border border-white/[0.14] shadow-[0_30px_100px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.2)] text-center overflow-hidden"
+            className="relative rounded-[36px] sm:rounded-[48px] p-8 sm:p-14 lg:p-16 bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.14] shadow-[0_30px_100px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.2)] text-center overflow-hidden transform-gpu"
           >
             {/* Top Specular Line */}
             <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
 
             {/* Ambient Radial Flare */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-gradient-to-tr from-cyan-500/10 via-purple-500/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+            <div 
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full pointer-events-none transform-gpu" 
+              style={{
+                background: "radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.12) 0%, rgba(168, 85, 247, 0.08) 45%, transparent 70%)",
+              }}
+            />
 
             <div className="relative z-10 max-w-2xl mx-auto space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.1] bg-white/[0.03] text-xs font-semibold text-cyan-400 backdrop-blur-xl">
@@ -75,7 +80,7 @@ export function AboutMissionCTA() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="p-8 rounded-[28px] bg-[#070E1E]/60 backdrop-blur-2xl border border-white/[0.1] shadow-lg space-y-4"
+              className="p-8 rounded-[28px] bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.1] shadow-lg space-y-4"
             >
               <div className="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
                 <Wrench className="w-5 h-5" />
@@ -91,7 +96,7 @@ export function AboutMissionCTA() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="p-8 rounded-[28px] bg-[#070E1E]/60 backdrop-blur-2xl border border-white/[0.1] shadow-lg space-y-4"
+              className="p-8 rounded-[28px] bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.1] shadow-lg space-y-4"
             >
               <div className="w-11 h-11 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
                 <BarChart2 className="w-5 h-5" />
@@ -107,7 +112,7 @@ export function AboutMissionCTA() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="p-8 rounded-[28px] bg-[#070E1E]/60 backdrop-blur-2xl border border-white/[0.1] shadow-lg space-y-4"
+              className="p-8 rounded-[28px] bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.1] shadow-lg space-y-4"
             >
               <div className="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
                 <Moon className="w-5 h-5" />
@@ -127,7 +132,12 @@ export function AboutMissionCTA() {
       {/* ========================================================================= */}
       <section className="relative py-28 sm:py-36 px-4 sm:px-6 lg:px-8 text-center overflow-visible">
         {/* Giant Ambient Glow Flare */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[850px] h-[400px] bg-gradient-to-r from-cyan-500/20 via-purple-600/25 to-blue-500/20 rounded-full blur-[140px] pointer-events-none" />
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[850px] h-[400px] rounded-full pointer-events-none transform-gpu -z-10" 
+          style={{
+            background: "radial-gradient(ellipse at 50% 50%, rgba(6,182,212,0.18) 0%, rgba(168,85,247,0.14) 45%, transparent 70%)",
+          }}
+        />
 
         <div className="relative mx-auto max-w-4xl flex flex-col items-center">
           <motion.div

@@ -57,7 +57,12 @@ export function SubjectsSection() {
   return (
     <section id="subjects" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8">
       {/* Background Ambient Radial Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-r from-cyan-500/10 via-purple-500/15 to-indigo-500/10 rounded-full blur-[130px] pointer-events-none -z-10" />
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] rounded-full pointer-events-none -z-10 transform-gpu" 
+        style={{
+          background: "radial-gradient(ellipse at 50% 50%, rgba(6,182,212,0.14) 0%, rgba(168,85,247,0.10) 40%, transparent 70%)",
+        }}
+      />
 
       <div className="mx-auto max-w-7xl">
         
@@ -96,8 +101,8 @@ export function SubjectsSection() {
             >
               <MagneticCard
                 glowColor={subj.glowColor}
-                tiltAmount={7}
-                className={`p-7 sm:p-9 bg-gradient-to-b from-white/[0.08] via-white/[0.02] to-black/70 backdrop-blur-3xl border ${subj.border} shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25)] flex flex-col justify-between h-full`}
+                tiltAmount={5}
+                className={`p-7 sm:p-9 bg-gradient-to-b from-white/[0.08] via-white/[0.02] to-black/75 backdrop-blur-xl border ${subj.border} shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.25)] flex flex-col justify-between h-full`}
               >
                 {/* Internal Accent Glow */}
                 <div className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl ${subj.cardGlow} rounded-full blur-3xl opacity-50 pointer-events-none`} />

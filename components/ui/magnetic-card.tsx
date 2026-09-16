@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import React, { useRef, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
 interface MagneticCardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -14,118 +13,74 @@ interface MagneticCardProps extends React.HTMLAttributes<HTMLDivElement> {
 export function MagneticCard({
   children,
   className,
-  glowColor = "rgba(14, 165, 233, 0.18)",
-  tiltAmount = 6,
+  glowColor = "rgba(14, 165, 233, 0.22)",
+  tiltAmount = 5,
   ...props
 }: MagneticCardProps) {
-  // Static container ref for stable, non-deforming bounding box measurements
-  const containerRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [transform, setTransform] = useState("perspective(1000px) rotateX(0deg) rotateY(0deg)");
+  const rafRef = useRef<number | null>(null);
 
-  // Mouse position normalized (-0.5 to 0.5)
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-  // Pixel coordinates for radial spotlight (scaled to internal CSS pixels)
-  const spotX = useMotionValue(0);
-  const spotY = useMotionValue(0);
+    cardRef.current.style.setProperty("--spot-x", `${Math.round(x)}px`);
+    cardRef.current.style.setProperty("--spot-y", `${Math.round(y)}px`);
 
-  // Smooth spring physics for 120 FPS buttery tilt
-  const springConfig = { damping: 22, stiffness: 220, mass: 0.4 };
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [tiltAmount, -tiltAmount]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-tiltAmount, tiltAmount]), springConfig);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      const normX = (x / rect.width) - 0.5;
+      const normY = (y / rect.height) - 0.5;
+      const rotX = -normY * tiltAmount;
+      const rotY = normX * tiltAmount;
+      setTransform(`perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`);
+    });
+  }, [tiltAmount]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    
-    // Account for CSS zoom (e.g. html { zoom: 77% }) or browser scaling
-    const offsetW = containerRef.current.offsetWidth || rect.width || 1;
-    const offsetH = containerRef.current.offsetHeight || rect.height || 1;
-    const scaleX = rect.width / offsetW;
-    const scaleY = rect.height / offsetH;
-
-    // Calculate unscaled internal CSS pixel coordinates for spotlight
-    const x = (e.clientX - rect.left) / (scaleX || 1);
-    const y = (e.clientY - rect.top) / (scaleY || 1);
-
-    spotX.set(x);
-    spotY.set(y);
-
-    // Calculate normalized coordinate (-0.5 to 0.5) for 3D tilt
-    const normX = (e.clientX - rect.left) / (rect.width || 1) - 0.5;
-    const normY = (e.clientY - rect.top) / (rect.height || 1) - 0.5;
-    
-    mouseX.set(normX);
-    mouseY.set(normY);
-  };
-
-  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseEnter = () => {
     setIsHovered(true);
-    handleMouseMove(e);
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    mouseX.set(0);
-    mouseY.set(0);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg)");
   };
 
   return (
     <div
-      ref={containerRef}
+      ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full h-full [perspective:1000px]"
+      style={{
+        transform,
+        transition: isHovered ? "transform 0.08s ease-out" : "transform 0.4s ease-out",
+        willChange: isHovered ? "transform" : "auto",
+      }}
+      className={cn(
+        "relative w-full h-full rounded-[32px] overflow-hidden transform-gpu",
+        className
+      )}
+      {...props}
     >
-      <motion.div
+      {/* Dynamic Cursor Spotlight via native GPU radial shader */}
+      <div
+        className="pointer-events-none absolute -inset-px rounded-[inherit] transition-opacity duration-300 z-20"
         style={{
-          rotateX,
-          rotateY,
-          transformStyle: "preserve-3d",
+          opacity: isHovered ? 1 : 0,
+          background: `radial-gradient(420px circle at var(--spot-x, -500px) var(--spot-y, -500px), ${glowColor}, transparent 70%)`,
         }}
-        className={cn(
-          "relative w-full h-full rounded-[32px] overflow-hidden transition-shadow duration-300 transform-gpu",
-          className
-        )}
-        {...(props as any)}
-      >
-        {/* 1. Dynamic Magnetic Cursor Spotlight (Zoom-Corrected) */}
-        <motion.div
-          className="pointer-events-none absolute -inset-px rounded-[32px] transition-opacity duration-200 z-30"
-          style={{
-            opacity: isHovered ? 1 : 0,
-            background: useTransform(
-              [spotX, spotY],
-              ([x, y]) =>
-                `radial-gradient(450px circle at ${x}px ${y}px, ${glowColor}, transparent 75%)`
-            ),
-          }}
-        />
+      />
 
-        {/* 2. Magnetic Specular Border Glare (Zoom-Corrected) */}
-        <motion.div
-          className="pointer-events-none absolute -inset-px rounded-[32px] transition-opacity duration-200 z-30"
-          style={{
-            opacity: isHovered ? 1 : 0,
-            background: useTransform(
-              [spotX, spotY],
-              ([x, y]) =>
-                `radial-gradient(320px circle at ${x}px ${y}px, rgba(255,255,255,0.3), transparent 60%)`
-            ),
-            mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-            maskComposite: "exclude",
-            WebkitMaskComposite: "xor",
-            padding: "1px",
-          }}
-        />
-
-        {/* 3. Card Inner Content */}
-        <div className="relative z-10 w-full h-full">
-          {children}
-        </div>
-      </motion.div>
+      {/* Card Inner Content */}
+      <div className="relative z-10 w-full h-full">
+        {children}
+      </div>
     </div>
   );
 }

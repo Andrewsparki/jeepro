@@ -1,12 +1,12 @@
 import { ReactNode } from "react";
 import Link from "next/link";
-import { AuthBackground } from "@/components/auth/auth-background";
+import { AmbientBackground } from "@/components/layout/ambient-background";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="relative min-h-screen w-full bg-[#05070D] text-[#F5F7FF] flex flex-col justify-between overflow-x-hidden selection:bg-cyan-500/30 selection:text-cyan-200">
-      {/* 3D Glass Environment Background */}
-      <AuthBackground />
+    <div className="relative min-h-screen w-full bg-transparent text-[#F5F7FF] flex flex-col justify-between overflow-x-hidden selection:bg-cyan-500/30 selection:text-cyan-200">
+      {/* Cinematic Ambient Background Environment */}
+      <AmbientBackground />
 
       {/* Top Navigation Header */}
       <header className="relative z-20 w-full max-w-7xl mx-auto h-20 flex items-center justify-between px-6 sm:px-10">

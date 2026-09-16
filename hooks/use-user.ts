@@ -1,11 +1,11 @@
-import { useSupabase } from "@/providers/supabase-provider";
+import { useAuth } from "@/features/auth/components/auth-provider";
 
 export function useUser() {
-  const { user, session, isLoading } = useSupabase();
+  const { user, profile, isLoading } = useAuth();
 
   return {
     user,
-    session,
+    profile,
     isLoading,
     isAuthenticated: !!user,
   };

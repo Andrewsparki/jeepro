@@ -84,13 +84,6 @@ export function XPGrowthChart({ events }: XPGrowthChartProps) {
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
               <defs>
-                <filter id="neonGlowYellow" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
                 <linearGradient id="colorXP" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#EAB308" stopOpacity={0.25} />
                   <stop offset="100%" stopColor="#EAB308" stopOpacity={0} />
@@ -120,7 +113,7 @@ export function XPGrowthChart({ events }: XPGrowthChartProps) {
                  content={({ active, payload }) => {
                    if (active && payload && payload.length) {
                      return (
-                       <div className="bg-[#0a0a0c]/95 border border-white/5 backdrop-blur-xl p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
+                       <div className="bg-[#0a0a0c]/95 border border-white/5 p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
                            {payload[0].payload.displayDate}
                          </p>
@@ -151,10 +144,9 @@ export function XPGrowthChart({ events }: XPGrowthChartProps) {
                  stroke="#EAB308" 
                  strokeWidth={2.5} 
                  dot={{ r: 3, fill: '#0f172a', strokeWidth: 1.5, stroke: '#EAB308' }} 
-                 activeDot={{ r: 5, fill: '#fff', stroke: '#EAB308', strokeWidth: 2, style: { filter: 'url(#neonGlowYellow)' } }} 
-                 style={{ filter: 'url(#neonGlowYellow)' }} 
+                 activeDot={{ r: 5, fill: '#fff', stroke: '#EAB308', strokeWidth: 2 }} 
                  isAnimationActive={true}
-                 animationDuration={1500}
+                 animationDuration={800}
                  animationEasing="ease-out"
               />
             </ComposedChart>

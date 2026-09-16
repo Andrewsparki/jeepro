@@ -142,8 +142,8 @@ export default function AnalyticsPage() {
     progress,
     xpEvents,
   } = metrics;
-  const totalHours = Math.floor(metrics.totalDurationSeconds / 3600);
-  const totalMinutes = Math.floor((metrics.totalDurationSeconds % 3600) / 60);
+  const totalHours = Math.floor(totalDurationSeconds / 3600);
+  const totalMinutes = Math.floor((totalDurationSeconds % 3600) / 60);
   const studyTimeSuffix = totalHours > 0 ? `h ${totalMinutes}m` : "m";
   const studyTimeValue = totalHours > 0 ? totalHours : totalMinutes;
 
@@ -166,21 +166,21 @@ export default function AnalyticsPage() {
           />
           <AnimatedStatCard
             title="Sessions"
-            value={metrics.sessionsCount}
+            value={sessionsCount}
             icon={<Target className="w-6 h-6 text-emerald-400" />}
             iconColorClass="text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
             hoverTint="emerald"
           />
           <AnimatedStatCard
             title="Total XP"
-            value={metrics.xpDetails.totalXP}
+            value={xpDetails.totalXP}
             icon={<Trophy className="w-6 h-6 text-amber-400" />}
             iconColorClass="text-amber-400 bg-amber-500/10 border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
             hoverTint="amber"
           />
           <AnimatedStatCard
             title="Current Streak"
-            value={metrics.currentStreak}
+            value={currentStreak}
             suffix=" Days"
             icon={<Flame className="w-6 h-6 text-orange-400" />}
             iconColorClass="text-orange-400 bg-orange-500/10 border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
@@ -193,7 +193,7 @@ export default function AnalyticsPage() {
           <div className="lg:col-span-2">
             <TrendChart sessions={study_sessions} />
           </div>
-          <LevelProgressChart xpDetails={metrics.xpDetails} />
+          <LevelProgressChart xpDetails={xpDetails} />
         </div>
 
         {/* Row 2: XP Growth + Streak Calendar */}

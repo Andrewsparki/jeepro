@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Chapter } from "@/features/syllabus/services/syllabus";
 import { XP_CONFIG } from "@/features/progress/config/xp-config";

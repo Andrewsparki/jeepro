@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePerformance } from "@/lib/performance-context";
 
 export function BackgroundSystem() {
   const [mounted, setMounted] = useState(false);

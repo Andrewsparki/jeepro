@@ -170,7 +170,7 @@ export function StudyHeatmap({ sessions, weeksCount = 22 }: StudyHeatmapProps) {
                 <div
                   key={i}
                   className={cn(
-                    "w-[14px] h-[14px] rounded-[3px] border transition-all duration-200 cursor-pointer relative group/cell",
+                    "w-[14px] h-[14px] rounded-[3px] border transition-colors duration-150 cursor-pointer relative group/cell",
                     getColorClass(day.level)
                   )}
                 >

@@ -1,56 +1,79 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
+function subscribeReducedMotion(callback: () => void) {
+  const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  mediaQuery.addEventListener("change", callback);
+  return () => mediaQuery.removeEventListener("change", callback);
+}
+
+function getReducedMotionSnapshot() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function getReducedMotionServerSnapshot() {
+  return false;
+}
+
 export function AuthBackground() {
-  const [isReducedMotion, setIsReducedMotion] = useState(false);
+  const isReducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot
+  );
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // High-precision mouse parallax motion values
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  const springConfig = { damping: 35, stiffness: 85, mass: 0.5 };
+  const springConfig = { damping: 40, stiffness: 90, mass: 0.4 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setIsReducedMotion(mediaQuery.matches);
+    if (isReducedMotion) return;
 
-    const handleMediaChange = (e: MediaQueryListEvent) => setIsReducedMotion(e.matches);
-    mediaQuery.addEventListener("change", handleMediaChange);
+    let rafMouseId: number | null = null;
+    let pendingX = 0;
+    let pendingY = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (mediaQuery.matches) return;
       const { innerWidth, innerHeight } = window;
-      const normalizedX = (e.clientX / innerWidth - 0.5) * 2; // -1 to 1
-      const normalizedY = (e.clientY / innerHeight - 0.5) * 2; // -1 to 1
-      mouseX.set(normalizedX * 8);
-      mouseY.set(normalizedY * 6);
+      pendingX = ((e.clientX / innerWidth) - 0.5) * 16;
+      pendingY = ((e.clientY / innerHeight) - 0.5) * 12;
+
+      if (!rafMouseId) {
+        rafMouseId = requestAnimationFrame(() => {
+          mouseX.set(pendingX);
+          mouseY.set(pendingY);
+          rafMouseId = null;
+        });
+      }
     };
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
     return () => {
-      mediaQuery.removeEventListener("change", handleMediaChange);
       window.removeEventListener("mousemove", handleMouseMove);
+      if (rafMouseId) cancelAnimationFrame(rafMouseId);
     };
-  }, [mouseX, mouseY]);
+  }, [mouseX, mouseY, isReducedMotion]);
 
-  // High-DPI Microscopic floating particle canvas
+  // High-Performance Microscopic floating particle canvas (Zero software blur)
   useEffect(() => {
     if (isReducedMotion) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     let animationFrameId: number;
-    const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
+    const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, 2);
 
     let displayWidth = window.innerWidth;
     let displayHeight = window.innerHeight;
@@ -59,49 +82,62 @@ export function AuthBackground() {
       if (!canvas || !ctx) return;
       displayWidth = window.innerWidth;
       displayHeight = window.innerHeight;
-      canvas.width = displayWidth * dpr;
-      canvas.height = displayHeight * dpr;
-      ctx.scale(dpr, dpr);
+      canvas.width = Math.floor(displayWidth * dpr);
+      canvas.height = Math.floor(displayHeight * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     setupCanvas();
 
-    window.addEventListener("resize", setupCanvas);
+    window.addEventListener("resize", setupCanvas, { passive: true });
 
-    const particleCount = 30;
+    const particleCount = 28;
     const particles = Array.from({ length: particleCount }, () => ({
       x: Math.random() * displayWidth,
       y: Math.random() * displayHeight,
-      size: Math.random() * 1.4 + 0.6,
-      speedX: (Math.random() - 0.5) * 0.12,
-      speedY: (Math.random() - 0.5) * 0.12,
-      opacity: Math.random() * 0.4 + 0.15,
-      color: Math.random() > 0.5 ? "rgba(56, 189, 248," : "rgba(192, 132, 252,",
+      size: Math.random() * 1.5 + 0.8,
+      speedX: (Math.random() - 0.5) * 0.15,
+      speedY: (Math.random() - 0.5) * 0.15,
+      opacity: Math.random() * 0.4 + 0.2,
+      isCyan: Math.random() > 0.5,
     }));
 
-    const render = () => {
+    let lastTime = performance.now();
+
+    const render = (currentTime: number) => {
+      const dt = Math.min((currentTime - lastTime) / 16.6667, 3);
+      lastTime = currentTime;
+
       ctx.clearRect(0, 0, displayWidth, displayHeight);
 
-      particles.forEach((p) => {
-        p.x += p.speedX;
-        p.y += p.speedY;
+      for (let i = 0; i < particleCount; i++) {
+        const p = particles[i];
+        p.x += p.speedX * dt;
+        p.y += p.speedY * dt;
 
         if (p.x < 0) p.x = displayWidth;
         if (p.x > displayWidth) p.x = 0;
         if (p.y < 0) p.y = displayHeight;
         if (p.y > displayHeight) p.y = 0;
 
+        const baseColor = p.isCyan ? "56, 189, 248" : "192, 132, 252";
+
+        // Outer ambient glow (fast dual-pass circle instead of slow CPU shadowBlur)
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${baseColor}, ${p.opacity * 0.25})`;
+        ctx.fill();
+
+        // Core bright pin-point
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `${p.color} ${p.opacity})`;
-        ctx.shadowBlur = 4;
-        ctx.shadowColor = p.color.includes("56, 189, 248") ? "#38bdf8" : "#c084fc";
+        ctx.fillStyle = `rgba(${baseColor}, ${p.opacity})`;
         ctx.fill();
-      });
+      }
 
       animationFrameId = requestAnimationFrame(render);
     };
 
-    render();
+    animationFrameId = requestAnimationFrame(render);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
@@ -111,41 +147,41 @@ export function AuthBackground() {
 
   return (
     <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none transform-gpu will-change-transform">
-      {/* 1. Main Raw-Resolution 3D Glass Artwork (Uncompressed & Pixel-Sharp) */}
+      {/* 1. Main Raw-Resolution 3D Glass Artwork with Silk Parallax */}
       <motion.div
         style={{
           x: smoothX,
           y: smoothY,
         }}
-        className="absolute inset-[-1.5%] w-[103%] h-[103%] transform-gpu"
+        className="absolute inset-[-2%] w-[104%] h-[104%] transform-gpu will-change-transform"
       >
         <Image
           src="/images/auth/auth-bg-ultra-v3.jpg"
           alt="JEE Pro 3D Glass Environment"
           fill
           priority
-          unoptimized
-          quality={100}
           sizes="100vw"
-          className="object-cover object-center scale-[1.01] brightness-[1.03] contrast-[1.04] transition-transform duration-700 ease-out"
+          className="object-cover object-center scale-[1.01] brightness-[1.03] contrast-[1.04]"
         />
       </motion.div>
 
-      {/* 2. Microscopic High-DPI Floating Particles Canvas */}
+      {/* 2. Microscopic Floating Particles Canvas (Zero Blending Penalty) */}
       <canvas
         ref={canvasRef}
         style={{ width: "100%", height: "100%" }}
-        className="absolute inset-0 w-full h-full opacity-60 mix-blend-screen pointer-events-none"
+        className="absolute inset-0 w-full h-full opacity-70 pointer-events-none"
       />
 
-      {/* 3. Anti-Banding Optical Film Grain */}
-      <svg className="fixed inset-0 w-full h-full opacity-[0.022] pointer-events-none z-20 mix-blend-overlay">
-        <filter id="crispGrain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch" />
-          <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#crispGrain)" />
-      </svg>
+      {/* 3. Anti-Banding Optical Film Grain (Zero-Cost GPU Cached Texture Tile) */}
+      <div 
+        aria-hidden="true"
+        className="fixed inset-0 w-full h-full opacity-[0.035] pointer-events-none z-20"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 128 128' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "128px 128px",
+        }}
+      />
     </div>
   );
 }

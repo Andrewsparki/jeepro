@@ -30,8 +30,10 @@ interface JsonSubject {
   chapters: JsonChapter[];
 }
 
-export function useSearchData() {
+export function useSearchData(enabled = true) {
   const items = useMemo(() => {
+    if (!enabled) return [];
+
     const data: SearchItem[] = [];
 
     // 1. Navigation
@@ -76,7 +78,7 @@ export function useSearchData() {
     });
 
     return data;
-  }, []);
+  }, [enabled]);
 
   return { items };
 }

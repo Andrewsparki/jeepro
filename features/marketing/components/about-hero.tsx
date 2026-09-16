@@ -52,12 +52,7 @@ export function AboutHero() {
           className="flex flex-col items-center gap-2 text-xs text-slate-400/80 font-medium"
         >
           <span className="tracking-widest uppercase text-[10px]">The Story</span>
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <ChevronDown className="w-4 h-4 text-[#38bdf8]" />
-          </motion.div>
+          <ChevronDown className="w-4 h-4 text-[#38bdf8] animate-bounce" />
         </motion.div>
 
       </div>

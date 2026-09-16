@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { login, signup, loginWithGoogle } from "../actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,8 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ initialMode = "login" }: LoginFormProps) {
+  const searchParams = useSearchParams();
+  const nextTarget = searchParams?.get("next") || "";
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -35,7 +38,8 @@ export function LoginForm({ initialMode = "login" }: LoginFormProps) {
   const handleModeChange = (newMode: "login" | "signup") => {
     setMode(newMode);
     setError(null);
-    window.history.replaceState(null, "", newMode === "login" ? "/login" : "/signup");
+    const search = nextTarget ? `?next=${encodeURIComponent(nextTarget)}` : "";
+    window.history.replaceState(null, "", (newMode === "login" ? "/login" : "/signup") + search);
   };
 
   async function handleSubmit(formData: FormData) {
@@ -136,10 +140,8 @@ export function LoginForm({ initialMode = "login" }: LoginFormProps) {
         {/* RIGHT SIDE: FLUID MORPHING FROSTED GLASS AUTH CARD                        */}
         {/* ========================================================================= */}
         <div className="lg:col-span-6 flex justify-center lg:justify-end">
-          <motion.div 
-            layout
-            transition={{ type: "spring", stiffness: 350, damping: 32 }}
-            className="relative w-full max-w-[430px] rounded-[32px] p-7 sm:p-9 bg-[#070E1E]/90 backdrop-blur-2xl border border-white/[0.12] shadow-[0_25px_80px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] overflow-hidden space-y-5"
+          <div 
+            className="relative w-full max-w-[430px] rounded-[32px] p-7 sm:p-9 bg-[#070E1E]/90 backdrop-blur-2xl border border-white/[0.12] shadow-[0_25px_80px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] overflow-hidden space-y-5 transition-all duration-300"
           >
             
             {/* Minimalist Top Specular Line */}
@@ -198,7 +200,7 @@ export function LoginForm({ initialMode = "login" }: LoginFormProps) {
             <div className="space-y-2.5">
               {/* Google Button */}
               <form action={async () => {
-                const result = await loginWithGoogle();
+                const result = await loginWithGoogle(nextTarget);
                 if (result?.error) {
                   setError(result.error);
                 }
@@ -229,6 +231,7 @@ export function LoginForm({ initialMode = "login" }: LoginFormProps) {
 
             {/* Email / Password Form */}
             <form action={handleSubmit} className="space-y-3.5">
+              <input type="hidden" name="next" value={nextTarget} />
               {/* Full Name Field (Smoothly Expands on Signup Mode) */}
               <AnimatePresence initial={false}>
                 {mode === "signup" && (
@@ -376,7 +379,7 @@ export function LoginForm({ initialMode = "login" }: LoginFormProps) {
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
               <span>Secure. Private. Built for aspirants.</span>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>

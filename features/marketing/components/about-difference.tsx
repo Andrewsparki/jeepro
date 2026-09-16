@@ -9,8 +9,7 @@ import {
   Atom, 
   FlaskConical, 
   Binary, 
-  ArrowRight,
-  ChevronRight
+  ArrowRight
 } from "lucide-react";
 import Link from "next/link";
 
@@ -129,9 +128,14 @@ export function AboutDifference() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="relative rounded-[32px] p-8 sm:p-10 bg-[#081226]/85 backdrop-blur-3xl border-2 border-cyan-400/40 shadow-[0_30px_100px_rgba(30,167,255,0.25),inset_0_1px_2px_rgba(255,255,255,0.3)] flex flex-col justify-between overflow-hidden"
+              className="relative rounded-[32px] p-8 sm:p-10 bg-[#081226]/85 backdrop-blur-xl border-2 border-cyan-400/40 shadow-[0_30px_100px_rgba(30,167,255,0.25),inset_0_1px_2px_rgba(255,255,255,0.3)] flex flex-col justify-between overflow-hidden transform-gpu"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
+              <div 
+                className="absolute top-0 right-0 w-64 h-64 rounded-full pointer-events-none transform-gpu" 
+                style={{
+                  background: "radial-gradient(circle at 100% 0%, rgba(6, 182, 212, 0.18) 0%, transparent 70%)",
+                }}
+              />
 
               <div>
                 <div className="flex items-center justify-between mb-6 pb-6 border-b border-white/[0.08]">
@@ -194,9 +198,18 @@ export function AboutDifference() {
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.6, delay: idx * 0.12 }}
                 whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                className="group relative rounded-[32px] p-8 sm:p-9 bg-[#070E1E]/65 backdrop-blur-2xl border border-white/[0.12] hover:border-white/[0.22] shadow-[0_20px_60px_rgba(0,0,0,0.6)] transition-all duration-300 flex flex-col justify-between overflow-hidden"
+                className="group relative rounded-[32px] p-8 sm:p-9 bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.12] hover:border-white/[0.22] shadow-[0_20px_60px_rgba(0,0,0,0.6)] transition-all duration-300 flex flex-col justify-between overflow-hidden"
               >
-                <div className={`absolute top-0 right-0 w-56 h-56 bg-gradient-to-bl ${subj.accent} rounded-full blur-3xl pointer-events-none`} />
+                <div 
+                  className="absolute top-0 right-0 w-56 h-56 rounded-full pointer-events-none transform-gpu" 
+                  style={{
+                    background: subj.title === "PHYSICS" 
+                      ? "radial-gradient(circle at 100% 0%, rgba(6,182,212,0.18) 0%, transparent 70%)"
+                      : subj.title === "CHEMISTRY"
+                      ? "radial-gradient(circle at 100% 0%, rgba(168,85,247,0.18) 0%, transparent 70%)"
+                      : "radial-gradient(circle at 100% 0%, rgba(99,102,241,0.18) 0%, transparent 70%)"
+                  }}
+                />
 
                 <div>
                   <div className="flex items-center justify-between mb-8">

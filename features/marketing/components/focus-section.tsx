@@ -7,7 +7,12 @@ export function FocusSection() {
   return (
     <section className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8">
       {/* Background Ambient Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] bg-gradient-to-r from-purple-500/15 via-cyan-500/15 to-indigo-500/15 rounded-full blur-[130px] pointer-events-none -z-10" />
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] rounded-full pointer-events-none -z-10 transform-gpu" 
+        style={{
+          background: "radial-gradient(ellipse at 50% 50%, rgba(168,85,247,0.15) 0%, rgba(6,182,212,0.12) 40%, transparent 70%)",
+        }}
+      />
 
       <div className="mx-auto max-w-5xl">
         
@@ -17,7 +22,7 @@ export function FocusSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative rounded-3xl sm:rounded-[40px] p-8 sm:p-14 lg:p-16 bg-gradient-to-b from-white/[0.08] via-white/[0.02] to-black/80 backdrop-blur-3xl border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.25)] text-center overflow-hidden"
+          className="relative rounded-3xl sm:rounded-[40px] p-8 sm:p-14 lg:p-16 bg-gradient-to-b from-white/[0.08] via-white/[0.02] to-black/80 backdrop-blur-xl border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.25)] text-center overflow-hidden"
         >
           {/* Top Specular Glare Line */}
           <div className="absolute top-0 left-1/3 right-1/3 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent pointer-events-none" />

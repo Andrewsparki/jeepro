@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Minus, Sparkles, HelpCircle } from "lucide-react";
+import { Check, Minus, Sparkles } from "lucide-react";
 
 const features = [
   {
@@ -101,7 +101,7 @@ export function PricingComparison() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.7 }}
-          className="relative rounded-[32px] bg-[#070E1E]/65 backdrop-blur-2xl border border-white/[0.12] shadow-[0_20px_80px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] overflow-hidden"
+          className="relative rounded-[32px] bg-[#070E1E]/80 backdrop-blur-xl border border-white/[0.12] shadow-[0_20px_80px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] overflow-hidden transform-gpu"
         >
           {/* Top Glare Line */}
           <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
@@ -133,7 +133,7 @@ export function PricingComparison() {
 
               {/* Table Body */}
               <tbody className="divide-y divide-white/[0.05]">
-                {features.map((item, idx) => (
+                {features.map((item) => (
                   <tr 
                     key={item.name} 
                     className="hover:bg-white/[0.02] transition-colors"

@@ -1,13 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo, useSyncExternalStore } from "react";
 
 export type PerformanceMode = "premium" | "balanced" | "battery-saver";
 
 interface PerformanceContextType {
   mode: PerformanceMode;
   setMode: (mode: PerformanceMode) => void;
-  // Convenience flags derived from mode
+  // Derived flags from mode
   enableBlur: boolean;
   enableParticles: boolean;
   particleCount: number;
@@ -23,6 +23,27 @@ interface PerformanceContextType {
 const PerformanceContext = createContext<PerformanceContextType | undefined>(undefined);
 
 const STORAGE_KEY = "jee-pro-performance-mode";
+
+function subscribeStorage(callback: () => void) {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+function getStoredModeSnapshot(): PerformanceMode {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY) as PerformanceMode | null;
+    if (stored && ["premium", "balanced", "battery-saver"].includes(stored)) {
+      return stored;
+    }
+  } catch {
+    // localStorage unavailable
+  }
+  return "premium";
+}
+
+function getStoredModeServerSnapshot(): PerformanceMode {
+  return "premium";
+}
 
 function getFlags(mode: PerformanceMode) {
   switch (mode) {
@@ -69,43 +90,36 @@ function getFlags(mode: PerformanceMode) {
 }
 
 export function PerformanceProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setModeState] = useState<PerformanceMode>("premium");
-  const [hydrated, setHydrated] = useState(false);
+  const storedMode = useSyncExternalStore(
+    subscribeStorage,
+    getStoredModeSnapshot,
+    getStoredModeServerSnapshot
+  );
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY) as PerformanceMode | null;
-      if (stored && ["premium", "balanced", "battery-saver"].includes(stored)) {
-        // eslint-disable-next-line
-        setModeState(stored);
-      }
-    } catch {
-      // localStorage not available
-    }
-    setHydrated(true);
-  }, []);
+  const [overriddenMode, setOverriddenMode] = useState<PerformanceMode | null>(null);
+
+  const mode = overriddenMode ?? storedMode;
 
   const setMode = useCallback((newMode: PerformanceMode) => {
-    setModeState(newMode);
+    setOverriddenMode(newMode);
     try {
       localStorage.setItem(STORAGE_KEY, newMode);
+      window.dispatchEvent(new Event("storage"));
     } catch {
-      // localStorage not available
+      // localStorage unavailable
     }
   }, []);
 
-  const flags = getFlags(mode);
+  const flags = useMemo(() => getFlags(mode), [mode]);
 
-  const contextValue = React.useMemo(() => ({
-    mode,
-    setMode,
-    ...flags
-  }), [mode, setMode, flags]);
-
-  // Don't render children until hydrated to avoid flash of wrong mode
-  if (!hydrated) {
-    return <>{children}</>;
-  }
+  const contextValue = useMemo(
+    () => ({
+      mode,
+      setMode,
+      ...flags,
+    }),
+    [mode, setMode, flags]
+  );
 
   return (
     <PerformanceContext.Provider value={contextValue}>
@@ -117,7 +131,6 @@ export function PerformanceProvider({ children }: { children: React.ReactNode })
 export function usePerformance() {
   const context = useContext(PerformanceContext);
   if (!context) {
-    // Return premium defaults if used outside provider (e.g., during SSR)
     return {
       mode: "premium" as PerformanceMode,
       setMode: () => {},

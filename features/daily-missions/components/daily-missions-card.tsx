@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DailyMission } from "../services/missions.service";
 import { DashboardCard } from "@/features/dashboard/components/dashboard-card";
-import { CheckCircle2, Circle, Target, Clock, Flag, LayoutList, Trophy } from "lucide-react";
+import { CheckCircle2, Circle, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DailyMissionsCardProps {
@@ -13,44 +13,29 @@ interface DailyMissionsCardProps {
 }
 
 export function DailyMissionsCard({ missions, delay = 0 }: DailyMissionsCardProps) {
-  const completedCount = useMemo(() => missions.filter(m => m.completed).length, [missions]);
-  const isAllComplete = missions.length > 0 && completedCount === missions.length;
+  const completedCount = missions.filter(m => m.completed).length;
+  const allCompleted = missions.length > 0 && completedCount === missions.length;
 
   return (
-    <DashboardCard 
-      delay={delay} 
-      className={cn(
-        "min-h-[240px] relative transition-colors duration-500",
-        isAllComplete && "bg-emerald-500/5 border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.1)]"
-      )}
-    >
-      <div className="flex items-center justify-between mb-6">
+    <DashboardCard delay={delay} className="flex flex-col h-full">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="font-semibold text-lg flex items-center gap-2">
+          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
             Daily Missions
-            {isAllComplete && (
-              <motion.span 
-                initial={{ scale: 0 }} 
-                animate={{ scale: 1 }}
-                className="text-emerald-500"
-              >
-                <Trophy className="w-4 h-4" />
-              </motion.span>
+            {allCompleted && (
+              <span className="flex items-center gap-1 text-xs font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                <Trophy className="w-3.5 h-3.5" />
+                All Done!
+              </span>
             )}
           </h3>
-          <p className="text-sm text-muted-foreground">
-            Complete all 3 for a bonus XP reward
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {completedCount} of {missions.length} completed
           </p>
-        </div>
-        <div className="flex items-baseline gap-1 text-2xl font-light tabular-nums">
-          <span className={cn("transition-colors", isAllComplete ? "text-emerald-500 font-medium" : "text-foreground")}>
-            {completedCount}
-          </span>
-          <span className="text-sm text-muted-foreground">/{missions.length || 3}</span>
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="flex-1 flex flex-col justify-between gap-3">
         {missions.length === 0 ? (
           <div className="py-8 text-center text-sm text-muted-foreground animate-pulse">
             Generating your personalized missions...
@@ -66,15 +51,6 @@ export function DailyMissionsCard({ missions, delay = 0 }: DailyMissionsCardProp
 }
 
 function MissionItem({ mission, index }: { mission: DailyMission; index: number }) {
-  const Icon = useMemo(() => {
-    switch (mission.mission_type) {
-      case "study_duration": return Clock;
-      case "focus_sessions": return Target;
-      case "chapter_completion": return Flag;
-      case "planner_completion": return LayoutList;
-      default: return Target;
-    }
-  }, [mission.mission_type]);
 
   const progressPercentage = Math.min(100, Math.max(0, (mission.current_value / mission.target_value) * 100));
 

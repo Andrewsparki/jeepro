@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFocusStore } from "@/features/focus/store/focus-store";
 import { FocusTimer } from "@/features/focus/components/focus-timer";
@@ -13,7 +13,6 @@ import { SessionService } from "@/features/study-engine/services/session.service
 import { calculateSessionXP } from "@/features/progress/config/xp-config";
 import { toast } from "sonner";
 import { ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export default function FocusPage() {
   const { 

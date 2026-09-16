@@ -1,12 +1,9 @@
 "use client";
 
-
-import { usePathname } from "next/navigation";
 import { useLighting } from "./lighting-provider";
 import { usePerformance } from "@/lib/performance-context";
 
 export function MotionWrapper({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const { isTouch } = useLighting();
   const { enableEntryAnimations } = usePerformance();
 
@@ -14,11 +11,9 @@ export function MotionWrapper({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
+  // Stable container without key={pathname} to avoid tearing down and remounting the entire dashboard DOM
   return (
-    <div
-      key={pathname}
-      className="w-full h-full flex flex-col"
-    >
+    <div className="w-full h-full flex flex-col">
       {children}
     </div>
   );

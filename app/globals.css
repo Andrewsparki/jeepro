@@ -172,7 +172,6 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
   transition: border-color 200ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1), background-color 200ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: box-shadow;
 }
 
 .premium-card:hover {
@@ -234,8 +233,20 @@
 }
 
 html {
-  zoom: 77%;
+  font-size: 14.5px;
   scroll-behavior: auto;
+}
+
+@media (min-width: 1440px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 1920px) {
+  html {
+    font-size: 16px;
+  }
 }
 
 body {
@@ -320,13 +331,11 @@ body {
 @keyframes content-stagger-enter {
   0% {
     opacity: 0;
-    transform: translateY(16px);
-    filter: blur(8px);
+    transform: translateY(14px);
   }
   100% {
     opacity: 1;
     transform: none;
-    filter: none;
   }
 }
 
@@ -358,21 +367,32 @@ body {
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
   background: var(--border);
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
+/* Compositor-friendly GPU animations for CTA and micro-interactions */
+@keyframes sheen-sweep {
+  0% { transform: translateX(-250%) skewX(-20deg); }
+  40%, 100% { transform: translateX(350%) skewX(-20deg); }
 }
 
-/* Fix Radix UI Floating / Portal elements positioning offset under 77% CSS zoom */
-div[data-radix-portal],
-[data-radix-menu-content],
-[data-radix-popper-content-wrapper] {
-  zoom: 1.2987012987 !important; /* 1 / 0.77 */
+@keyframes cta-ambient-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.98); }
+  50% { opacity: 0.55; transform: scale(1.03); }
 }
 
-/* Scale the content back down to match the rest of the 77% layout scale */
-div[data-radix-portal] > *,
-[data-radix-menu-content] > *,
-[data-radix-popper-content-wrapper] > * {
-  zoom: 0.77 !important;
+.animate-sheen-sweep {
+  animation: sheen-sweep 4.5s ease-in-out infinite;
+  will-change: transform;
 }
+
+.animate-cta-pulse {
+  animation: cta-ambient-pulse 4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-sheen-sweep,
+  .animate-cta-pulse {
+    animation: none !important;
+  }
+}
+
 

@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
 import { XP_CONFIG } from "@/features/progress/config/xp-config";
-import { getStudySessions } from "@/features/study/services/progress";
 
 export type MissionType = 'study_duration' | 'focus_sessions' | 'chapter_completion' | 'pomodoro_sessions' | 'planner_completion';
 
@@ -28,7 +27,9 @@ const getLocalDateString = () => {
   return `${year}-${month}-${day}`;
 };
 
-export async function getTodayMissions(): Promise<DailyMission[]> {
+export async function getTodayMissions(
+  existingRecentSessions?: { duration_seconds: number; started_at: string }[]
+): Promise<DailyMission[]> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
@@ -52,7 +53,7 @@ export async function getTodayMissions(): Promise<DailyMission[]> {
   }
 
   // Generate if they don't exist
-  return await generateDailyMissions(user.id, todayStr);
+  return await generateDailyMissions(user.id, todayStr, existingRecentSessions);
 }
 
 export async function getAllCompletedMissions(): Promise<DailyMission[]> {
@@ -62,7 +63,7 @@ export async function getAllCompletedMissions(): Promise<DailyMission[]> {
 
   const { data, error } = await supabase
     .from("daily_missions")
-    .select("*")
+    .select("id, date, mission_type, title, target_value, current_value, completed, reward_xp, bonus_xp_awarded, created_at, updated_at, completed_at")
     .eq("user_id", user.id)
     .eq("completed", true);
 
@@ -74,15 +75,31 @@ export async function getAllCompletedMissions(): Promise<DailyMission[]> {
   return data as DailyMission[];
 }
 
-async function generateDailyMissions(userId: string, todayStr: string): Promise<DailyMission[]> {
+async function generateDailyMissions(
+  userId: string,
+  todayStr: string,
+  existingRecentSessions?: { duration_seconds: number; started_at: string }[]
+): Promise<DailyMission[]> {
   const supabase = createClient();
   
-  // Calculate simple averages from recent study sessions
-  const sessions = await getStudySessions();
-  const recentSessions = sessions.filter(s => {
-    const diff = new Date().getTime() - new Date(s.started_at).getTime();
-    return diff <= 7 * 24 * 60 * 60 * 1000; // Last 7 days
-  });
+  let recentSessions: { duration_seconds: number; started_at: string }[] = [];
+
+  if (existingRecentSessions) {
+    const sevenDaysAgoMs = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    recentSessions = existingRecentSessions.filter(
+      (s) => new Date(s.started_at).getTime() >= sevenDaysAgoMs
+    );
+  } else {
+    // Bounded query for past 7 days only
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: recentSessionsData } = await supabase
+      .from("study_sessions")
+      .select("duration_seconds, started_at")
+      .eq("user_id", userId)
+      .gte("started_at", sevenDaysAgo);
+
+    recentSessions = recentSessionsData || [];
+  }
 
   const totalDurationSeconds = recentSessions.reduce((acc, s) => acc + s.duration_seconds, 0);
   const avgDurationMinutes = recentSessions.length > 0 ? Math.round((totalDurationSeconds / 60) / 7) : 0;
