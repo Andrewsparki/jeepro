@@ -3,6 +3,7 @@ import { StudySession, ResumeState, ActivityType } from "../models/study-session
 import { calculateSessionXP } from "@/features/progress/config/xp-config";
 import { getChapterUuid, getTopicUuid, getSubjectUuid } from "@/features/syllabus/services/mapping.service";
 import { updateMissionProgress } from "@/features/daily-missions/services/missions.service";
+import { NotificationService } from "@/features/notifications/services/notification.service";
 
 export class SessionService {
   private static OFFLINE_QUEUE_KEY = "jee_pro_pending_sessions";
@@ -121,6 +122,17 @@ export class SessionService {
           await updateMissionProgress("study_duration", durationMins);
         }
         await updateMissionProgress("focus_sessions", 1);
+
+        // Notify user of completed study session if >= 5 minutes
+        if (durationMins >= 5) {
+          await NotificationService.createNotification({
+            userId: user.id,
+            type: "success",
+            title: "Study Session Completed",
+            message: `Completed a ${durationMins}-minute study session and earned ${xpEarned} XP!`,
+            metadata: { durationSeconds: sessionData.durationSeconds, xpEarned },
+          });
+        }
       } catch (missionErr) {
         console.error('[SessionService] Mission progress update failed (non-critical):', missionErr);
       }

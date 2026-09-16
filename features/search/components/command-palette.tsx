@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, FileText, Settings, Play, Bookmark, BookOpen, Target, Calendar, Calculator, Sparkles, BookType, Book, ChevronRight, Clock } from "lucide-react";
+import { Search, FileText, Settings, Play, Bookmark, BookOpen, Target, Calendar, Calculator, Sparkles, BookType, Book, ChevronRight, Clock, MessageSquare, Users, Award } from "lucide-react";
 import { toast } from "sonner";
 import { useCommandPalette } from "../context/command-palette-context";
 import { useSearchData, SearchItem } from "../hooks/use-search-data";
@@ -50,6 +50,9 @@ export function CommandPalette() {
     if (id === "tool-bookmarks") return <Bookmark className="w-4 h-4 text-rose-400" />;
     if (id === "nav-settings") return <Settings className="w-4 h-4 text-slate-400" />;
     if (id === "nav-dashboard") return <BookOpen className="w-4 h-4 text-indigo-400" />;
+    if (id === "nav-chat") return <MessageSquare className="w-4 h-4 text-emerald-400" />;
+    if (id === "nav-friends") return <Users className="w-4 h-4 text-purple-400" />;
+    if (id === "nav-achievements") return <Award className="w-4 h-4 text-amber-400" />;
     if (id === "nav-planner") return <Calendar className="w-4 h-4 text-cyan-400" />;
     if (id === "nav-analytics") return <Target className="w-4 h-4 text-pink-400" />;
     

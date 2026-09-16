@@ -81,16 +81,20 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   // Load from localStorage on mount
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setSettings((prev) => ({ ...prev, ...parsed }));
+    const timer = setTimeout(() => {
+      try {
+        const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setSettings((prev) => ({ ...prev, ...parsed }));
+        }
+      } catch {
+        // Use defaults if storage read fails
       }
-    } catch {
-      // Use defaults if storage read fails
-    }
-    setMounted(true);
+      setMounted(true);
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const playSound = useCallback((type: SoundType = "click") => {
@@ -117,10 +121,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Acoustic chime feedback
+    const effectiveSounds = key === "sounds" ? (value as boolean) : settings.sounds;
     if (typeof value === "boolean") {
-      playHapticSound(value ? "toggleOn" : "toggleOff", settings.sounds);
+      playHapticSound(value ? (key === "sounds" ? "notification" : "toggleOn") : "toggleOff", effectiveSounds);
     } else {
-      playHapticSound("click", settings.sounds);
+      playHapticSound("click", effectiveSounds);
     }
 
     // Friendly feedback toast

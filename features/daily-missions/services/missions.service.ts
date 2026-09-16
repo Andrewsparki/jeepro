@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import { NotificationService } from "@/features/notifications/services/notification.service";
 import { XP_CONFIG } from "@/features/progress/config/xp-config";
 
 export type MissionType = 'study_duration' | 'focus_sessions' | 'chapter_completion' | 'pomodoro_sessions' | 'planner_completion';
@@ -199,6 +200,18 @@ export async function updateMissionProgress(missionType: MissionType, valueToAdd
   // XP is calculated on the fly in gamification.ts by summing all completed missions
   // However, we should still handle the bonus xp awarded state if all are completed
   if (isCompleted) {
+    try {
+      await NotificationService.createNotification({
+        userId: user.id,
+        type: "milestone",
+        title: "Daily Mission Completed!",
+        message: `Great work finishing today's ${missionType.replace('_', ' ')} mission!`,
+        metadata: { missionId: mission.id, date: todayStr },
+      });
+    } catch {
+      // Non-critical notification failure
+    }
+
     const { data: allMissions } = await supabase
       .from("daily_missions")
       .select("*")
@@ -213,6 +226,18 @@ export async function updateMissionProgress(missionType: MissionType, valueToAdd
           .update({ bonus_xp_awarded: true })
           .eq("user_id", user.id)
           .eq("date", todayStr);
+
+        try {
+          await NotificationService.createNotification({
+            userId: user.id,
+            type: "achievement",
+            title: "All Daily Missions Finished!",
+            message: "Perfect consistency! You completed all daily missions for today and earned bonus XP.",
+            metadata: { date: todayStr, allCompleted: true },
+          });
+        } catch {
+          // Non-critical notification failure
+        }
       }
     }
   }

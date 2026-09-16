@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Achievement, XPDetails } from "@/features/gamification/services/gamification";
 import { Trophy, Star, CheckCircle2, Lock } from "lucide-react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
@@ -90,7 +91,15 @@ export const JourneyTracker = React.memo(function JourneyTracker({ xpDetails, ac
 
       {/* Recent Unlocks Mini List */}
       <div className="flex-1 flex flex-col gap-3 mt-1">
-        <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Recent Unlocks</h4>
+        <div className="flex items-center justify-between">
+          <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Achievements</h4>
+          <Link
+            href="/achievements"
+            className="text-[11px] font-bold text-accent hover:underline flex items-center gap-1"
+          >
+            View All ({sortedAchievements.filter(a => a.unlocked).length}/{achievements.length}) &rarr;
+          </Link>
+        </div>
         <div className="space-y-2.5">
           {sortedAchievements.filter(a => a.unlocked).slice(0, 3).map(achievement => (
             <div key={achievement.id} className="flex items-center gap-3.5 p-2 rounded-lg hover:bg-muted/30 transition-colors">

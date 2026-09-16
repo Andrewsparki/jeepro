@@ -1,6 +1,23 @@
 "use client";
 
-export type SoundType = "click" | "toggleOn" | "toggleOff" | "success" | "danger" | "pop" | "soft-tap" | "swish" | "pop-up" | "pop-down" | "chime" | "celebration" | "xp-up" | "muted-error" | "tick" | "nav-drop";
+export type SoundType =
+  | "click"
+  | "toggleOn"
+  | "toggleOff"
+  | "success"
+  | "danger"
+  | "pop"
+  | "soft-tap"
+  | "swish"
+  | "pop-up"
+  | "pop-down"
+  | "chime"
+  | "celebration"
+  | "xp-up"
+  | "muted-error"
+  | "tick"
+  | "nav-drop"
+  | "notification";
 
 export function playHapticSound(type: SoundType = "click", enabled: boolean = true) {
   if (!enabled || typeof window === "undefined") return;
@@ -12,6 +29,9 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
     if (!AudioCtx) return;
 
     const ctx = new AudioCtx();
+    if (ctx.state === "suspended") {
+      ctx.resume().catch(() => {});
+    }
     const now = ctx.currentTime;
 
     switch (type) {
@@ -310,6 +330,51 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.1);
+        break;
+      }
+
+      case "notification": {
+        // Pristine glass-bell chime (A5: 880Hz -> D6: 1174.66Hz -> A6: 1760Hz)
+        // With crystalline harmonic overtones and warm acoustic decay
+        const notes = [
+          { freq: 880.0, offset: 0, gain: 0.08, decay: 0.35 },
+          { freq: 1174.66, offset: 0.07, gain: 0.09, decay: 0.4 },
+          { freq: 1760.0, offset: 0.14, gain: 0.1, decay: 0.55 },
+        ];
+
+        notes.forEach(({ freq, offset, gain: noteGain, decay }) => {
+          const noteTime = now + offset;
+
+          // Pure sine fundamental
+          const osc = ctx.createOscillator();
+          const gainNode = ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, noteTime);
+
+          gainNode.gain.setValueAtTime(0.0001, noteTime);
+          gainNode.gain.linearRampToValueAtTime(noteGain, noteTime + 0.008);
+          gainNode.gain.exponentialRampToValueAtTime(0.0001, noteTime + decay);
+
+          osc.connect(gainNode);
+          gainNode.connect(ctx.destination);
+          osc.start(noteTime);
+          osc.stop(noteTime + decay);
+
+          // Subtle crystal overtone (bell shimmer at 2.01x freq)
+          const overtone = ctx.createOscillator();
+          const overtoneGain = ctx.createGain();
+          overtone.type = "sine";
+          overtone.frequency.setValueAtTime(freq * 2.01, noteTime);
+
+          overtoneGain.gain.setValueAtTime(0.0001, noteTime);
+          overtoneGain.gain.linearRampToValueAtTime(noteGain * 0.22, noteTime + 0.005);
+          overtoneGain.gain.exponentialRampToValueAtTime(0.0001, noteTime + decay * 0.45);
+
+          overtone.connect(overtoneGain);
+          overtoneGain.connect(ctx.destination);
+          overtone.start(noteTime);
+          overtone.stop(noteTime + decay * 0.45);
+        });
         break;
       }
     }

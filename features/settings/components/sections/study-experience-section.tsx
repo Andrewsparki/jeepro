@@ -61,7 +61,7 @@ export function StudyExperienceSection() {
       {/* Acoustic Feedback */}
       <SettingRow
         title="Acoustic Haptic Feedback"
-        description="Play crisp Apple-style chimes upon solution milestone completions."
+        description="Play crisp Apple-style crystal chimes for incoming notifications, milestones, and system interactions."
         icon={Volume2}
         iconGradient="from-amber-500 to-yellow-600"
       >

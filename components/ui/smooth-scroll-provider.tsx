@@ -24,29 +24,92 @@ interface SmoothScrollContextType {
     options?: ScrollToOptions
   ) => void;
   getLocomotive: () => LocomotiveScroll | null;
+  resize: () => void;
+  start: () => void;
+  stop: () => void;
   smoother: LocomotiveScroll | null;
 }
 
 const SmoothScrollContext = createContext<SmoothScrollContextType>({
   scrollTo: () => {},
   getLocomotive: () => null,
+  resize: () => {},
+  start: () => {},
+  stop: () => {},
   smoother: null,
 });
 
 /**
+ * Checks whether the page is intentionally scroll-locked by a modal, dialog, sheet, or overlay.
+ * Crucially, this inspects EXTERNAL lock signals only (e.g. Radix data-scroll-locked, overflow: hidden).
+ * It NEVER checks internal Locomotive/Lenis state classes (such as lenis-stopped), which would
+ * cause an unrecoverable deadlock.
+ */
+function checkIsScrollLocked(): boolean {
+  if (typeof document === "undefined") return false;
+
+  const body = document.body;
+  const html = document.documentElement;
+
+  // 1. Radix UI or custom scroll-lock attributes
+  if (
+    body.hasAttribute("data-scroll-locked") ||
+    html.hasAttribute("data-scroll-locked")
+  ) {
+    return true;
+  }
+
+  // 2. Inline overflow styles on body
+  const bodyOverflow = body.style.overflow;
+  const bodyOverflowY = body.style.overflowY;
+  if (
+    bodyOverflow === "hidden" ||
+    bodyOverflow === "clip" ||
+    bodyOverflowY === "hidden" ||
+    bodyOverflowY === "clip"
+  ) {
+    return true;
+  }
+
+  // 3. Inline overflow styles on html
+  const htmlOverflow = html.style.overflow;
+  const htmlOverflowY = html.style.overflowY;
+  if (
+    htmlOverflow === "hidden" ||
+    htmlOverflow === "clip" ||
+    htmlOverflowY === "hidden" ||
+    htmlOverflowY === "clip"
+  ) {
+    return true;
+  }
+
+  // 4. Utility classes indicating an explicit scroll lock
+  const lockedClasses = ["overflow-hidden", "no-scroll", "scroll-locked", "modal-open"];
+  if (lockedClasses.some((cls) => body.classList.contains(cls))) {
+    return true;
+  }
+  if (lockedClasses.some((cls) => html.classList.contains(cls))) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Production-Optimized Locomotive Scroll Provider for Next.js App Router
  *
- * Optimizations:
+ * Architecture & Features:
  * - Direct LocomotiveScroll v5 (powered by Lenis) hardware-accelerated momentum engine
- * - Exponential decay easing with zero input latency & crisp deceleration
- * - Route transition reset & dynamic content auto-resize
- * - Modal / Radix dialog scroll-lock observer (stops locomotive when modals open)
- * - Automatic [data-lenis-prevent] protection on nested scrollable containers (sidebars, dialogs)
+ * - Single persistent scroll owner for the authenticated application
+ * - Deadlock-free modal/dialog scroll-lock synchronizer
+ * - Real-time ResizeObserver for dynamic DOM content height shifts (e.g. Leaderboard tab changes)
+ * - Route navigation transition reset with automatic cleanup of orphaned modal locks
  * - Zero React re-renders during active scrolling (GPU direct DOM transforms)
  */
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const locomotiveRef = useRef<LocomotiveScroll | null>(null);
+  const isStoppedRef = useRef(false);
 
   const indicatorContainerRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
@@ -114,6 +177,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     });
 
     locomotiveRef.current = locomotive;
+    isStoppedRef.current = false;
 
     // Hook into Lenis scroll events for the floating scrollbar indicator
     const lenis = locomotive.lenisInstance;
@@ -123,38 +187,89 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       });
     }
 
-    // Modal scroll lock observer (pause locomotive when dialogs/drawers lock body scroll)
-    const observer = new MutationObserver(() => {
-      const isLocked =
-        document.body.style.overflow === "hidden" ||
-        document.body.hasAttribute("data-scroll-locked") ||
-        document.documentElement.classList.contains("lenis-stopped");
+    // Modal scroll lock synchronizer: pauses locomotive when dialogs/drawers lock body scroll,
+    // and reliably restarts locomotive when all locks are released.
+    const syncScrollLock = () => {
+      if (!locomotiveRef.current) return;
+      const locked = checkIsScrollLocked();
 
-      if (isLocked) {
-        locomotive.stop();
+      if (locked) {
+        if (!isStoppedRef.current) {
+          locomotiveRef.current.stop();
+          isStoppedRef.current = true;
+        }
       } else {
-        locomotive.start();
+        if (isStoppedRef.current) {
+          locomotiveRef.current.start();
+          isStoppedRef.current = false;
+        }
       }
+    };
+
+    const mutationObserver = new MutationObserver(() => {
+      syncScrollLock();
     });
 
-    observer.observe(document.body, {
+    mutationObserver.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["style", "class", "data-scroll-locked"],
+    });
+
+    mutationObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["style", "data-scroll-locked"],
     });
 
+    // Content resize observer: detects DOM height shifts (e.g. Leaderboard tab changes, data loading)
+    // and updates Locomotive dimensions immediately via requestAnimationFrame
+    let resizeRafId: number | null = null;
+    const resizeObserver = new ResizeObserver(() => {
+      if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
+      resizeRafId = requestAnimationFrame(() => {
+        resizeRafId = null;
+        if (locomotiveRef.current && !isStoppedRef.current) {
+          locomotiveRef.current.resize();
+        }
+      });
+    });
+
+    resizeObserver.observe(document.body);
+
     return () => {
-      observer.disconnect();
+      mutationObserver.disconnect();
+      resizeObserver.disconnect();
+      if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
       locomotive.destroy();
       locomotiveRef.current = null;
+      isStoppedRef.current = false;
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     };
   }, [updateThumbPosition]);
 
-  // Route change: immediately reset scroll and recalculate heights
+  // Route change: immediately reset scroll, clear any orphaned locks, and recalculate heights
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // Clear any orphaned lock left by unmounted modals from the previous route
+    const hasOpenDialog = Boolean(
+      document.querySelector(
+        '[role="dialog"][aria-modal="true"], [data-slot="dialog-content"], [data-slot="sheet-content"]'
+      )
+    );
+    if (!hasOpenDialog) {
+      if (document.body.hasAttribute("data-scroll-locked")) {
+        document.body.removeAttribute("data-scroll-locked");
+      }
+      if (document.body.style.overflow === "hidden" || document.body.style.overflow === "clip") {
+        document.body.style.overflow = "";
+      }
+    }
+
     if (locomotiveRef.current) {
+      if (!checkIsScrollLocked()) {
+        locomotiveRef.current.start();
+        isStoppedRef.current = false;
+      }
       locomotiveRef.current.scrollTo(0, { immediate: true });
       requestAnimationFrame(() => {
         locomotiveRef.current?.resize();
@@ -196,13 +311,38 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
 
   const getLocomotive = useCallback(() => locomotiveRef.current, []);
 
+  const resize = useCallback(() => {
+    if (locomotiveRef.current && !isStoppedRef.current) {
+      locomotiveRef.current.resize();
+    }
+  }, []);
+
+  const start = useCallback(() => {
+    if (locomotiveRef.current && !checkIsScrollLocked()) {
+      locomotiveRef.current.start();
+      isStoppedRef.current = false;
+    }
+  }, []);
+
+  const stop = useCallback(() => {
+    if (locomotiveRef.current) {
+      locomotiveRef.current.stop();
+      isStoppedRef.current = true;
+    }
+  }, []);
+
   const contextValue = useMemo(
     () => ({
       scrollTo,
       getLocomotive,
-      smoother: locomotiveRef.current,
+      resize,
+      start,
+      stop,
+      get smoother() {
+        return locomotiveRef.current;
+      },
     }),
-    [scrollTo, getLocomotive]
+    [scrollTo, getLocomotive, resize, start, stop]
   );
 
   // Floating indicator drag logic

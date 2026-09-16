@@ -4,6 +4,9 @@ import React, { createContext, useContext, useState, useEffect, useCallback, Rea
 import { ActivityType } from "@/features/progress/config/xp-config";
 import { SessionService } from "@/features/study-engine/services/session.service";
 import { toast } from "sonner";
+import { useSettings } from "@/providers/settings-provider";
+
+
 
 interface StudySessionContextType {
   isActive: boolean;
@@ -21,6 +24,8 @@ interface StudySessionContextType {
 const StudySessionContext = createContext<StudySessionContextType | undefined>(undefined);
 
 export function StudySessionProvider({ children }: { children: ReactNode }) {
+  const { playSound } = useSettings();
+
   const [isActive, setIsActive] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
   
@@ -39,6 +44,7 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
   const triggerRefresh = useCallback(() => setRefreshKey(prev => prev + 1), []);
 
   const startSession = useCallback((subId?: string, chId?: string, tId?: string, actType?: ActivityType) => {
+    playSound("pop-up");
     setSubjectId(subId);
     setChapterId(chId);
     setTopicId(tId);
@@ -54,13 +60,14 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
       activityType: actType,
       studyTimerSeconds: 0
     });
-  }, []);
+  }, [playSound]);
 
   const isSavingRef = useRef(false);
 
   const endSession = useCallback(async (completionPercentage: number = 0) => {
     if (!isActive || !startTime || isSavingRef.current) return;
 
+    playSound("pop-down");
     isSavingRef.current = true;
     setIsActive(false);
 
@@ -98,7 +105,7 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
     } finally {
       isSavingRef.current = false;
     }
-  }, [isActive, startTime, subjectId, chapterId, topicId, activityType, triggerRefresh]);
+  }, [isActive, startTime, subjectId, chapterId, topicId, activityType, triggerRefresh, playSound]);
 
   const contextValue = React.useMemo(() => ({
     isActive,

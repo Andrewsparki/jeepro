@@ -39,6 +39,10 @@ export function useSearchData(enabled = true) {
     // 1. Navigation
     data.push(
       { id: "nav-dashboard", title: "Dashboard", type: "navigation", href: "/dashboard" },
+      { id: "nav-chat", title: "Global Chat", type: "navigation", href: "/chat", keywords: ["community", "messages", "chat", "aspirants"] },
+      { id: "nav-friends", title: "Friends", type: "navigation", href: "/friends", keywords: ["community", "study partners", "requests", "people", "network"] },
+      { id: "nav-leaderboard", title: "Leaderboard", type: "navigation", href: "/leaderboard", keywords: ["ranks", "top", "competition", "xp", "podium", "standing"] },
+      { id: "nav-achievements", title: "Achievements", type: "navigation", href: "/achievements", keywords: ["badges", "trophies", "milestones", "medals", "xp"] },
       { id: "nav-planner", title: "Planner", type: "navigation", href: "/dashboard/planner" },
       { id: "nav-analytics", title: "Analytics", type: "navigation", href: "/dashboard/analytics" },
       { id: "nav-settings", title: "Settings", type: "navigation", href: "/dashboard/settings" }

@@ -35,7 +35,7 @@ export function DailyMissionsCard({ missions, delay = 0 }: DailyMissionsCardProp
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col justify-between gap-3">
+      <div className="flex-1 flex flex-col justify-start gap-3">
         {missions.length === 0 ? (
           <div className="py-8 text-center text-sm text-muted-foreground animate-pulse">
             Generating your personalized missions...

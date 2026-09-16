@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { getChapterUuid, getTopicUuid } from "@/features/syllabus/services/mapping.service";
+import { NotificationService } from "@/features/notifications/services/notification.service";
 
 const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
@@ -118,6 +119,12 @@ export async function updateTopicProgress(topicId: string, status: ProgressStatu
     return null;
   }
   
+  if (status === "Mastered") {
+    import("@/features/achievements/services/achievements.service")
+      .then(({ AchievementsService }) => AchievementsService.evaluateAchievements(user.id))
+      .catch((err) => console.error("Error evaluating achievements after topic update:", err));
+  }
+
   return data as UserTopicProgress;
 }
 
@@ -176,9 +183,22 @@ export async function updateChapterProgress(subjectSlug: string, chapterSlug: st
   if (isNewlyMastered) {
     try {
       await updateMissionProgress("chapter_completion", 1);
+      await NotificationService.createNotification({
+        userId: user.id,
+        type: "achievement",
+        title: "Chapter Mastered!",
+        message: `Outstanding! You have mastered all topics in "${chapter.title}".`,
+        metadata: { chapterId: chapter.id, chapterSlug: chapter.slug },
+      });
     } catch (err) {
       console.error("Error updating mission progress for chapter:", err);
     }
+  }
+
+  if (status === "Mastered") {
+    import("@/features/achievements/services/achievements.service")
+      .then(({ AchievementsService }) => AchievementsService.evaluateAchievements(user.id))
+      .catch((err) => console.error("Error evaluating achievements after chapter update:", err));
   }
 
   return (data || []) as UserTopicProgress[];
@@ -333,6 +353,11 @@ export async function saveStudySession({
   } catch (err) {
     console.error("Error updating mission progress for session:", err);
   }
+
+  // Hook into Achievements
+  import("@/features/achievements/services/achievements.service")
+    .then(({ AchievementsService }) => AchievementsService.evaluateAchievements(user.id))
+    .catch((err) => console.error("Error evaluating achievements after session:", err));
 
   return data as StudySession;
 }

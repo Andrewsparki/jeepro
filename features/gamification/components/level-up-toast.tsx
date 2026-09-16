@@ -5,12 +5,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, ChevronUp } from "lucide-react";
 import confetti from "canvas-confetti";
 import { useSettings } from "@/providers/settings-provider";
+import { useAuth } from "@/features/auth/components/auth-provider";
+import { NotificationService } from "@/features/notifications/services/notification.service";
 
 interface LevelUpToastProps {
   currentLevel: number;
 }
 
 export function LevelUpToast({ currentLevel }: LevelUpToastProps) {
+  const { user } = useAuth();
   const prevLevelRef = useRef(currentLevel);
   const [showToast, setShowToast] = useState(false);
   const [levelToDisplay, setLevelToDisplay] = useState(currentLevel);
@@ -23,6 +26,17 @@ export function LevelUpToast({ currentLevel }: LevelUpToastProps) {
       setShowToast(true);
       playSound("celebration");
       
+      // Notify user of level up
+      if (user?.id) {
+        NotificationService.createNotification({
+          userId: user.id,
+          type: "achievement",
+          title: "Level Up!",
+          message: `Congratulations! You reached Level ${currentLevel}. Keep pushing your limits!`,
+          metadata: { level: currentLevel },
+        });
+      }
+
       // Minor confetti for level up
       confetti({
         particleCount: 40,
@@ -39,7 +53,7 @@ export function LevelUpToast({ currentLevel }: LevelUpToastProps) {
     }
     
     prevLevelRef.current = currentLevel;
-  }, [currentLevel]);
+  }, [currentLevel, playSound, user?.id]);
 
   return (
     <AnimatePresence>

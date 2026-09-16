@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "locomotive-scroll/locomotive-scroll.css";
 
+html {
+  zoom: 0.85;
+}
+
 :root {
   /* Base Variables - Structure, Animation, Motion */
   /* Unified Radii */

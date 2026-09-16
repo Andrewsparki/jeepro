@@ -1,7 +1,8 @@
 "use client";
 
 import { MobileNav } from "./mobile-nav";
-import { Bell, Search } from "lucide-react";
+import { Search } from "lucide-react";
+import { NotificationCenter } from "@/features/notifications/components/notification-center";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import { useCommandPalette } from "@/features/search/context/command-palette-context";
@@ -70,11 +71,7 @@ export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
               <Search className="h-4 w-4" />
               <span className="sr-only">Search</span>
             </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground opacity-50 cursor-default hover:bg-transparent relative">
-              <Bell className="h-4 w-4" />
-              <span className="absolute top-2 right-2.5 h-1.5 w-1.5 rounded-full bg-accent" />
-              <span className="sr-only">Notifications</span>
-            </Button>
+            <NotificationCenter />
             <div className="md:hidden ml-2 h-8 w-8 rounded-full bg-accent/20 flex items-center justify-center border border-accent/30 text-accent font-semibold text-xs uppercase">
               {initials}
             </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { siteConfig } from "@/constants/site";
 import { SidebarItem } from "./sidebar-item";
@@ -12,7 +13,14 @@ import {
   Settings,
   LogOut,
   History,
-  Crosshair
+  Crosshair,
+  MessageSquare,
+  Users,
+  Trophy,
+  Award,
+  ChevronDown,
+  ChevronRight,
+  Mail
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/features/auth/components/auth-provider";
@@ -23,6 +31,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { FixedPortal } from "@/components/ui/fixed-portal";
 import { useSettings } from "@/providers/settings-provider";
+import { useDirectConversations } from "@/features/chat/hooks/use-direct-conversations";
+import { useFriends } from "@/features/friends/hooks/use-friends";
 
 const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-5 w-5" /> },
@@ -40,10 +50,21 @@ export function Sidebar() {
   const { isImmersive } = useFocusStore();
   const { playSound } = useSettings();
   
+  const [isSocialOpen, setIsSocialOpen] = useState(true);
+  const { totalUnreadCount } = useDirectConversations();
+  const { pendingReceived } = useFriends();
+  
   const displayName = profile?.full_name || user?.email?.split('@')[0] || "Student";
   const initials = displayName.substring(0, 1).toUpperCase();
 
   const isHidden = pathname === "/dashboard/focus" && isImmersive;
+
+  const socialNav = [
+    { href: "/chat", label: "Global Chat", icon: <MessageSquare className="h-5 w-5" />, badge: totalUnreadCount },
+    { href: "/friends", label: "Friends", icon: <Users className="h-5 w-5" />, badge: pendingReceived?.length || 0 },
+    { href: "/leaderboard", label: "Leaderboard", icon: <Trophy className="h-5 w-5" /> },
+    { href: "/achievements", label: "Achievements", icon: <Award className="h-5 w-5" /> },
+  ];
 
   return (
     <FixedPortal>
@@ -72,6 +93,32 @@ export function Sidebar() {
                   <SidebarItem key={item.href} {...item} />
                 ))}
               </nav>
+
+              <div className="mt-6 mb-2">
+                <button 
+                  onClick={() => setIsSocialOpen(!isSocialOpen)}
+                  className="flex w-full items-center justify-between px-3 py-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+                >
+                  SOCIAL
+                  {isSocialOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                </button>
+                
+                <AnimatePresence initial={false}>
+                  {isSocialOpen && (
+                    <motion.nav 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeInOut" }}
+                      className="flex flex-col gap-1 mt-2 overflow-hidden"
+                    >
+                      {socialNav.map((item) => (
+                        <SidebarItem key={item.href} {...item} />
+                      ))}
+                    </motion.nav>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
             <div className="p-4 border-t border-border/40 flex flex-col gap-1 shrink-0">
