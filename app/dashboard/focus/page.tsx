@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFocusStore } from "@/features/focus/store/focus-store";
 import { FocusTimer } from "@/features/focus/components/focus-timer";
@@ -8,6 +9,9 @@ import { FocusControls } from "@/features/focus/components/focus-controls";
 import { AmbientAudio } from "@/features/focus/components/ambient-audio";
 import { useKeyboardShortcuts } from "@/features/focus/hooks/use-keyboard-shortcuts";
 import { FocusCompletionModal } from "@/features/focus/components/focus-completion-modal";
+import { usePipTimer } from "@/features/focus/hooks/use-pip-timer";
+import { PipTimerContent } from "@/features/focus/components/pip-timer-content";
+import { FallbackFloatingTimer } from "@/features/focus/components/fallback-floating-timer";
 import { useStudySession } from "@/features/study/context/study-session-context";
 import { SessionService } from "@/features/study-engine/services/session.service";
 import { calculateSessionXP } from "@/features/progress/config/xp-config";
@@ -40,6 +44,10 @@ export default function FocusPage() {
   
   // Overall session start for saving
   const [initialStartTime, setInitialStartTime] = useState<Date | null>(null);
+
+  // ── Picture-in-Picture / Floating Timer ──
+  const { isPipSupported, isPipOpen, pipContainer, openPip, closePip } = usePipTimer();
+  const [showFallbackFloat, setShowFallbackFloat] = useState(false);
 
   // Helper functions for exact elapsed time
   const getSessionElapsed = () => sessionAccumulated + (isActive && lastResumeTime ? (Date.now() - lastResumeTime) / 1000 : 0);
@@ -179,6 +187,29 @@ export default function FocusPage() {
     onOpenNote: () => toast("Quick Note (Coming soon)")
   });
 
+  // ── Pop Out handler ──
+  const handlePopOut = async () => {
+    if (isPipSupported) {
+      if (isPipOpen) {
+        closePip();
+      } else {
+        await openPip();
+      }
+    } else {
+      if (!showFallbackFloat) {
+        toast.info("Your browser doesn't support Picture-in-Picture windows. Showing an in-page floating timer instead.");
+      }
+      setShowFallbackFloat(!showFallbackFloat);
+    }
+  };
+
+  // Determine the "float is open" state for the button
+  const isFloatOpen = isPipOpen || showFallbackFloat;
+
+  // Shared timer props for PiP / fallback content
+  const timerAccumulated = timerMode === 'stopwatch' ? sessionAccumulated : phaseAccumulated;
+  const currentTotalTime = getTotalTime();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] relative px-4 sm:px-8 overflow-hidden">
       {/* Premium Ambient Backlight */}
@@ -218,6 +249,8 @@ export default function FocusPage() {
             onTogglePlayPause={togglePlayPause}
             onEnd={handleEndSession}
             onRestart={handleRestart}
+            onPopOut={handlePopOut}
+            isPipOpen={isFloatOpen}
           />
         </motion.div>
       </AnimatePresence>
@@ -234,6 +267,39 @@ export default function FocusPage() {
         }}
         durationSeconds={sessionAccumulated}
         xpEarned={calculateSessionXP(sessionAccumulated)}
+      />
+
+      {/* PiP Portal — renders into the Document PiP window */}
+      {isPipOpen && pipContainer &&
+        createPortal(
+          <PipTimerContent
+            mode={timerMode}
+            accumulatedTime={timerAccumulated}
+            lastResumeTime={lastResumeTime}
+            totalTime={currentTotalTime}
+            isActive={isActive}
+            phase={timerMode === 'pomodoro' ? phase : undefined}
+            onTogglePlayPause={togglePlayPause}
+            onEnd={handleEndSession}
+            onRestart={handleRestart}
+          />,
+          pipContainer
+        )
+      }
+
+      {/* Fallback floating timer (when Document PiP is unavailable) */}
+      <FallbackFloatingTimer
+        mode={timerMode}
+        accumulatedTime={timerAccumulated}
+        lastResumeTime={lastResumeTime}
+        totalTime={currentTotalTime}
+        isActive={isActive}
+        phase={timerMode === 'pomodoro' ? phase : undefined}
+        onTogglePlayPause={togglePlayPause}
+        onEnd={handleEndSession}
+        onRestart={handleRestart}
+        onClose={() => setShowFallbackFloat(false)}
+        isVisible={showFallbackFloat}
       />
     </div>
   );

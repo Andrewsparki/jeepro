@@ -96,14 +96,14 @@ export function SubjectDistribution({ sessions, syllabus }: SubjectDistributionP
                  content={({ active, payload }) => {
                    if (active && payload && payload.length) {
                      return (
-                       <div className="bg-[#0a0a0c]/95 border border-white/5 p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
+                       <div className="bg-popover/95 border border-border/70 text-popover-foreground p-3 rounded-xl shadow-strong z-50 min-w-[120px]">
                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
                            {payload[0].payload.subject}
                          </p>
                          <div className="flex items-center justify-between gap-4">
                            <div className="flex items-center gap-1.5">
                              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
-                             <span className="text-xs font-semibold text-white">Time</span>
+                             <span className="text-xs font-semibold text-foreground">Time</span>
                            </div>
                            <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{payload[0]?.value}h</span>
                          </div>

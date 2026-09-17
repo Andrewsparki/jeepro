@@ -55,9 +55,9 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
       {/* Header section */}
       <div className="relative z-10 px-1 pt-1">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-[10px] font-bold text-sky-400 tracking-[0.2em] uppercase">Weekly Target</p>
+          <p className="text-[10px] font-bold text-accent dark:text-sky-400 tracking-[0.2em] uppercase">Weekly Target</p>
           {isGoalMet && (
-            <div className="flex items-center gap-1.5 text-sky-300 text-[10px] font-bold bg-sky-950/40 border border-sky-500/20 px-2.5 py-1 rounded-md shadow-[0_0_10px_rgba(56,189,248,0.15)]">
+            <div className="flex items-center gap-1.5 text-accent dark:text-sky-300 text-[10px] font-bold bg-accent/10 dark:bg-sky-950/40 border border-accent/20 dark:border-sky-500/20 px-2.5 py-1 rounded-md shadow-xs dark:shadow-[0_0_10px_rgba(56,189,248,0.15)]">
               <CheckCircle2 className="w-3.5 h-3.5" /> Goal Met
             </div>
           )}
@@ -65,16 +65,16 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
         
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div className="flex items-baseline gap-1.5">
-            <h2 className="text-4xl font-bold tracking-tighter text-foreground flex items-baseline drop-shadow-[0_0_15px_rgba(56,189,248,0.3)]">
+            <h2 className="text-4xl font-bold tracking-tighter text-foreground flex items-baseline dark:drop-shadow-[0_0_15px_rgba(56,189,248,0.3)]">
               <AnimatedNumber value={hoursCompleted} />
-              <span className="text-2xl ml-0.5 text-sky-400">h</span>
+              <span className="text-2xl ml-0.5 text-accent dark:text-sky-400">h</span>
             </h2>
             <p className="text-lg text-muted-foreground pb-0.5 font-medium">/ {weeklyGoalHours}h</p>
           </div>
           
           <div className="text-right">
              <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mb-0.5">Progress</p>
-             <p className="text-lg font-bold text-sky-400 drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]">
+             <p className="text-lg font-bold text-accent dark:text-sky-400 dark:drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]">
                <AnimatedNumber value={Math.round(progressPercentage)} />%
              </p>
           </div>
@@ -122,13 +122,13 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
                dy={10}
             />
             
-            {/* Custom Tooltip matching the premium dark aesthetic */}
+            {/* Custom Tooltip matching the design system */}
             <Tooltip 
-               cursor={{ stroke: 'rgba(255,255,255,0.05)', strokeWidth: 30 }}
+               cursor={{ stroke: 'rgba(100,116,139,0.1)', strokeWidth: 30 }}
                content={({ active, payload }) => {
                  if (active && payload && payload.length) {
                    return (
-                     <div className="bg-[#0a0a0c]/95 border border-white/5 backdrop-blur-xl p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
+                     <div className="bg-popover/95 border border-border/70 text-popover-foreground backdrop-blur-xl p-3 rounded-xl shadow-strong z-50 min-w-[120px]">
                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
                          {payload[0].payload.fullDate}
                        </p>
@@ -136,16 +136,16 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
                          <div className="flex items-center justify-between gap-4">
                            <div className="flex items-center gap-1.5">
                              <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
-                             <span className="text-xs font-semibold text-white">Actual</span>
+                             <span className="text-xs font-semibold text-foreground">Actual</span>
                            </div>
-                           <span className="text-xs font-bold text-sky-400">{payload[1]?.value}h</span>
+                           <span className="text-xs font-bold text-sky-500 dark:text-sky-400">{payload[1]?.value}h</span>
                          </div>
                          <div className="flex items-center justify-between gap-4">
                            <div className="flex items-center gap-1.5">
                              <div className="w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
-                             <span className="text-xs font-semibold text-white">Target</span>
+                             <span className="text-xs font-semibold text-foreground">Target</span>
                            </div>
-                           <span className="text-xs font-bold text-purple-400">{payload[0]?.value}h</span>
+                           <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{payload[0]?.value}h</span>
                          </div>
                        </div>
                      </div>
@@ -201,7 +201,7 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
       </div>
 
       {/* Footer legend */}
-      <div className="flex justify-center items-center gap-6 mt-1 border-t border-white/[0.03] pt-3 relative z-10">
+      <div className="flex justify-center items-center gap-6 mt-1 border-t border-border/50 pt-3 relative z-10">
          <div className="flex items-center gap-1.5">
            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
            <span className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground/70">Actual</span>

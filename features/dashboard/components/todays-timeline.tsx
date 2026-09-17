@@ -95,7 +95,7 @@ export const TodaysTimeline = React.memo(function TodaysTimeline({ events }: Tod
               
               <div className="flex items-center justify-between mt-2">
                 <span className={cn("text-xs px-2.5 py-0.5 rounded-md font-medium capitalize", 
-                  isMissed && !isCompleted ? "bg-red-500/10 text-red-400 border border-red-500/20" : "bg-white/10 text-slate-200 border border-white/10"
+                  isMissed && !isCompleted ? "bg-red-500/10 text-red-500 dark:text-red-400 border border-red-500/20" : "bg-muted text-muted-foreground border border-border/60"
                 )}>
                   {isMissed && !isCompleted ? "Missed" : (event.event_type || "Study Session")}
                 </span>

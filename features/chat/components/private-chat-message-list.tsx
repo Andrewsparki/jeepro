@@ -218,6 +218,7 @@ export function PrivateChatMessageList({
       <div
         ref={containerRef}
         onScroll={handleScroll}
+        data-lenis-prevent
         className="flex-1 overflow-y-auto px-2 sm:px-4 py-4 space-y-3 overscroll-contain"
         role="log"
         aria-live="polite"

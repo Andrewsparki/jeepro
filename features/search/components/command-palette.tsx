@@ -87,10 +87,10 @@ export function CommandPalette() {
               className="w-full max-w-2xl px-4 pointer-events-auto"
             >
               <Command
-                className="overflow-hidden rounded-2xl border border-white/10 bg-background/95 shadow-2xl backdrop-blur-xl"
+                className="overflow-hidden rounded-2xl border border-border/60 bg-popover/95 text-popover-foreground shadow-strong backdrop-blur-xl"
                 shouldFilter={true}
               >
-                <div className="flex items-center border-b border-white/5 px-4">
+                <div className="flex items-center border-b border-border/40 px-4">
                   <Search className="mr-2 h-5 w-5 shrink-0 opacity-50" />
                   <Command.Input
                     autoFocus
@@ -100,7 +100,7 @@ export function CommandPalette() {
                     className="flex h-14 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
                   />
                   <div className="flex items-center gap-1">
-                    <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                    <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-border/60 bg-muted/60 px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                       ESC
                     </kbd>
                   </div>
@@ -115,14 +115,14 @@ export function CommandPalette() {
                     <Command.Group heading="Suggestions" className="text-xs font-medium text-muted-foreground px-2 py-2">
                       <Command.Item 
                         onSelect={() => executeAction("start-session")}
-                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 text-sm aria-selected:bg-accent/20 aria-selected:text-accent transition-colors mt-1"
+                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 text-sm aria-selected:bg-accent/15 aria-selected:text-accent font-medium transition-colors mt-1"
                       >
                         <Play className="h-4 w-4" />
                         <span>Start Study Session</span>
                       </Command.Item>
                       <Command.Item 
                         onSelect={() => executeAction("resume")}
-                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 text-sm aria-selected:bg-white/10 transition-colors mt-1"
+                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 text-sm aria-selected:bg-accent/15 aria-selected:text-accent font-medium transition-colors mt-1"
                       >
                         <Clock className="h-4 w-4" />
                         <span>Resume Last Session</span>
@@ -136,7 +136,7 @@ export function CommandPalette() {
                         key={item.id}
                         value={`${item.title} ${item.keywords?.join(" ")}`}
                         onSelect={() => handleSelect(item)}
-                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm aria-selected:bg-white/10 transition-colors mt-1"
+                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm aria-selected:bg-accent/15 aria-selected:text-accent font-medium transition-colors mt-1"
                       >
                         {getIcon(item.type, item.id)}
                         <span>{item.title}</span>
@@ -150,7 +150,7 @@ export function CommandPalette() {
                         key={item.id}
                         value={`${item.title} ${item.keywords?.join(" ")}`}
                         onSelect={() => handleSelect(item)}
-                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm aria-selected:bg-white/10 transition-colors mt-1"
+                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm aria-selected:bg-accent/15 aria-selected:text-accent font-medium transition-colors mt-1"
                       >
                         {getIcon(item.type, item.id)}
                         <span>{item.title}</span>

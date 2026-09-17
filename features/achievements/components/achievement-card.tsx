@@ -49,33 +49,33 @@ const TIER_STYLES: Record<
   bronze: {
     border: "border-amber-600/30 group-hover:border-amber-500/60",
     bg: "bg-amber-500/10",
-    text: "text-amber-400",
+    text: "text-amber-600 dark:text-amber-400",
     glow: "shadow-[0_0_20px_rgba(217,119,6,0.15)]",
-    badge: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+    badge: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30",
     label: "Bronze",
   },
   silver: {
     border: "border-slate-400/30 group-hover:border-slate-300/60",
     bg: "bg-slate-400/10",
-    text: "text-slate-200",
+    text: "text-slate-700 dark:text-slate-200",
     glow: "shadow-[0_0_20px_rgba(203,213,225,0.15)]",
-    badge: "bg-slate-400/15 text-slate-200 border-slate-400/30",
+    badge: "bg-slate-400/15 text-slate-700 dark:text-slate-200 border-slate-400/30",
     label: "Silver",
   },
   gold: {
     border: "border-yellow-500/35 group-hover:border-yellow-400/70",
     bg: "bg-yellow-500/10",
-    text: "text-yellow-400",
+    text: "text-amber-600 dark:text-yellow-400",
     glow: "shadow-[0_0_25px_rgba(234,179,8,0.2)]",
-    badge: "bg-yellow-500/15 text-yellow-300 border-yellow-500/30",
+    badge: "bg-yellow-500/15 text-amber-700 dark:text-yellow-300 border-yellow-500/30",
     label: "Gold",
   },
   platinum: {
     border: "border-purple-500/35 group-hover:border-purple-400/70",
     bg: "bg-purple-500/10",
-    text: "text-purple-300",
+    text: "text-purple-600 dark:text-purple-300",
     glow: "shadow-[0_0_25px_rgba(168,85,247,0.25)]",
-    badge: "bg-purple-500/15 text-purple-300 border-purple-500/30",
+    badge: "bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30",
     label: "Platinum",
   },
 };
@@ -191,7 +191,7 @@ export function AchievementCard({ achievement, onClick }: AchievementCardProps) 
       <div className="mt-auto pt-2 border-t border-border/30">
         {achievement.unlocked ? (
           <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-            <span className="flex items-center gap-1 font-semibold text-emerald-400">
+            <span className="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="w-3.5 h-3.5" />
               Completed
             </span>

@@ -69,7 +69,7 @@ export const JourneyTracker = React.memo(function JourneyTracker({ xpDetails, ac
                     <span>Progress</span>
                     <span className="text-accent">{Math.round(xpDetails.progressPercentage)}%</span>
                   </div>
-                  <div className="h-2 w-full bg-surface border border-white/10 rounded-full overflow-hidden p-0.5 shadow-inner">
+                  <div className="h-2 w-full bg-surface border border-border/60 dark:border-white/10 rounded-full overflow-hidden p-0.5 shadow-inner">
                     <motion.div 
                       initial={{ width: 0 }}
                       animate={{ width: `${xpDetails.progressPercentage}%` }}

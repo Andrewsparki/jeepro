@@ -4,17 +4,43 @@ import React from "react";
 import { LeaderboardEntry } from "../types/leaderboard.types";
 import { cn } from "@/lib/utils";
 import { Award, Zap } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
 interface LeaderboardRowProps {
   entry: LeaderboardEntry;
   onUserClick: (userId: string) => void;
+  index?: number;
+  isCinematic?: boolean;
 }
 
-export function LeaderboardRow({ entry, onUserClick }: LeaderboardRowProps) {
+export function LeaderboardRow({
+  entry,
+  onUserClick,
+  index = 0,
+  isCinematic = true,
+}: LeaderboardRowProps) {
   const initial = (entry.fullName || "A").charAt(0).toUpperCase();
+  const shouldReduceMotion = useReducedMotion();
+
+  // Short staggered cascade: locks in right after podium
+  const rowDelay = isCinematic ? 1.05 + Math.min(index, 8) * 0.035 : Math.min(index, 5) * 0.02;
 
   return (
-    <div
+    <motion.div
+      initial={
+        shouldReduceMotion
+          ? false
+          : isCinematic
+          ? { opacity: 0, y: 12 }
+          : { opacity: 0, y: 4 }
+      }
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        delay: rowDelay,
+        duration: 0.28,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      whileHover={shouldReduceMotion ? undefined : { x: 3, transition: { duration: 0.15 } }}
       onClick={() => onUserClick(entry.userId)}
       role="button"
       tabIndex={0}
@@ -32,6 +58,15 @@ export function LeaderboardRow({ entry, onUserClick }: LeaderboardRowProps) {
           : "bg-surface/50 border-border/40 hover:bg-surface-hover hover:border-border/60"
       )}
     >
+      {/* Current user subtle accent pulse on initial reveal */}
+      {entry.isCurrentUser && isCinematic && !shouldReduceMotion && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 0.8, 0] }}
+          transition={{ delay: 1.2, duration: 0.7, ease: "easeOut" }}
+          className="absolute inset-0 rounded-xl ring-2 ring-accent/60 pointer-events-none"
+        />
+      )}
       {/* Left: Rank & Avatar & User Info */}
       <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
         {/* Rank Number */}
@@ -114,6 +149,6 @@ export function LeaderboardRow({ entry, onUserClick }: LeaderboardRowProps) {
           </span>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

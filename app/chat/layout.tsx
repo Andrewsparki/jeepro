@@ -5,7 +5,6 @@ import { StudySessionProvider } from "@/features/study/context/study-session-con
 import { StudyTimer } from "@/features/study/components/study-timer";
 import { CommandPaletteProvider } from "@/features/search/context/command-palette-context";
 import { DashboardMainContent } from "@/features/dashboard/components/dashboard-main-content";
-import { AuthProvider } from "@/features/auth/components/auth-provider";
 import { NotificationProvider } from "@/features/notifications/context/notification-context";
 
 const CommandPalette = dynamic(
@@ -21,24 +20,23 @@ export default function ChatLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthProvider>
-      <NotificationProvider>
-        <CommandPaletteProvider>
-          <StudySessionProvider>
-            <div className="flex min-h-screen w-full bg-transparent overflow-hidden">
-              <Sidebar />
-              <DashboardMainContent>
-                <Topbar title="Chat" />
-                <main className="flex-1 p-2 sm:p-4 md:p-6 relative overflow-hidden flex flex-col">
-                  {children}
-                </main>
-              </DashboardMainContent>
-            </div>
-            <StudyTimer />
-            <CommandPalette />
-          </StudySessionProvider>
-        </CommandPaletteProvider>
-      </NotificationProvider>
-    </AuthProvider>
+    <NotificationProvider>
+      <CommandPaletteProvider>
+        <StudySessionProvider>
+          <div className="flex min-h-screen w-full bg-transparent overflow-hidden">
+            <Sidebar />
+            <DashboardMainContent>
+              <Topbar title="Chat" />
+              <main className="flex-1 p-2 sm:p-4 md:p-6 relative overflow-hidden flex flex-col page-transition">
+                {children}
+              </main>
+            </DashboardMainContent>
+          </div>
+          <StudyTimer />
+          <CommandPalette />
+        </StudySessionProvider>
+      </CommandPaletteProvider>
+    </NotificationProvider>
   );
 }
+

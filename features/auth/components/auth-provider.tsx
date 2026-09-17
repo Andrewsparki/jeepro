@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useRef } from "react";
-import { UserProfile, getUserProfile } from "../services/profile";
+import type { UserProfile } from "../services/profile";
 import { createClient } from "@/lib/supabase/client";
 import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js";
 
@@ -18,6 +18,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const loadedUserIdRef = useRef<string | null>(null);
+  const fetchingUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -29,12 +30,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(null);
           setProfile(null);
           loadedUserIdRef.current = null;
+          fetchingUserIdRef.current = null;
           setIsLoading(false);
         }
         return;
       }
 
-      // If we already loaded this user's profile, update user object without re-fetching
+      // If we already loaded or are currently fetching this user's profile, skip duplicate request
       if (loadedUserIdRef.current === authUser.id) {
         if (isMounted) {
           setUser(authUser);
@@ -43,11 +45,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      if (fetchingUserIdRef.current === authUser.id) {
+        return;
+      }
+
+      fetchingUserIdRef.current = authUser.id;
+
       try {
-        const { user: serverUser, profile: authProfile } = await getUserProfile();
+        // Query profiles directly from the browser client — RLS-protected, 80ms roundtrip, no server action POST overhead
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", authUser.id)
+          .single();
+
         if (isMounted) {
-          setUser(serverUser || authUser);
-          setProfile(authProfile);
+          setUser(authUser);
+          setProfile(profileError ? null : profileData);
           loadedUserIdRef.current = authUser.id;
         }
       } catch (error) {
@@ -56,13 +70,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(authUser);
         }
       } finally {
+        fetchingUserIdRef.current = null;
         if (isMounted) {
           setIsLoading(false);
         }
       }
     }
 
-    // Subscribe to all Supabase Auth lifecycle events (SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED, USER_UPDATED)
+    // Subscribe to all Supabase Auth lifecycle events
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
@@ -72,6 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
         setProfile(null);
         loadedUserIdRef.current = null;
+        fetchingUserIdRef.current = null;
         setIsLoading(false);
       } else {
         await syncAuthUser(session.user);
@@ -115,3 +131,4 @@ export function useAuth() {
   }
   return context;
 }
+

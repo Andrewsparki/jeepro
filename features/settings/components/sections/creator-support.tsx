@@ -46,9 +46,9 @@ export function CreatorSupport() {
         onMouseEnter={handleHover}
         className={cn(
           "relative rounded-3xl sm:rounded-[2.5rem] p-8 sm:p-12",
-          "bg-[#0d121c]/45 backdrop-blur-3xl border border-white/[0.12]",
+          "bg-card text-card-foreground border border-border/70 shadow-soft",
+          "dark:bg-[#0d121c]/45 dark:border-white/[0.12] dark:shadow-[0_24px_60px_-15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.18)]",
           "hover:border-rose-500/30 transition-all duration-500",
-          "shadow-[0_24px_60px_-15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.18)]",
           "overflow-hidden group",
           "before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-rose-400/30 before:to-transparent before:pointer-events-none"
         )}
@@ -94,12 +94,12 @@ export function CreatorSupport() {
         </div>
 
         <div className="relative z-10 flex flex-col items-center text-center max-w-lg mx-auto">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-semibold uppercase tracking-wider mb-5">
-            <Sparkles className="w-3.5 h-3.5 text-rose-400" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-300 text-xs font-semibold uppercase tracking-wider mb-5">
+            <Sparkles className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
             <span>Support Development</span>
           </div>
 
-          <p className="text-xl sm:text-2xl font-light text-white/90 leading-relaxed mb-8">
+          <p className="text-xl sm:text-2xl font-light text-foreground/90 dark:text-white/90 leading-relaxed mb-8">
             Every feature.<br />
             Every animation.<br />
             Every update.<br /><br />
@@ -114,9 +114,9 @@ export function CreatorSupport() {
               target="_blank"
               rel="noreferrer"
               onClick={() => playSound("click")}
-              className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full border border-white/15 bg-white/[0.06] hover:bg-white/[0.12] hover:border-rose-500/40 transition-all text-xs sm:text-sm font-semibold text-white hover:shadow-[0_0_24px_rgba(244,63,94,0.25)] active:scale-95 cursor-pointer select-none"
+              className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full border border-border bg-secondary hover:bg-secondary/80 dark:border-white/15 dark:bg-white/[0.06] dark:hover:bg-white/[0.12] hover:border-rose-500/40 transition-all text-xs sm:text-sm font-semibold text-foreground dark:text-white hover:shadow-[0_0_24px_rgba(244,63,94,0.25)] active:scale-95 cursor-pointer select-none"
             >
-              <Heart className="w-4 h-4 text-rose-400 fill-rose-400/30" />
+              <Heart className="w-4 h-4 text-rose-500 dark:text-rose-400 fill-rose-500/30" />
               <span>Patreon</span>
             </a>
 
@@ -125,9 +125,9 @@ export function CreatorSupport() {
               target="_blank"
               rel="noreferrer"
               onClick={() => playSound("click")}
-              className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full border border-white/15 bg-white/[0.06] hover:bg-white/[0.12] hover:border-amber-500/40 transition-all text-xs sm:text-sm font-semibold text-white hover:shadow-[0_0_24px_rgba(245,158,11,0.25)] active:scale-95 cursor-pointer select-none"
+              className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full border border-border bg-secondary hover:bg-secondary/80 dark:border-white/15 dark:bg-white/[0.06] dark:hover:bg-white/[0.12] hover:border-amber-500/40 transition-all text-xs sm:text-sm font-semibold text-foreground dark:text-white hover:shadow-[0_0_24px_rgba(245,158,11,0.25)] active:scale-95 cursor-pointer select-none"
             >
-              <Coffee className="w-4 h-4 text-amber-400" />
+              <Coffee className="w-4 h-4 text-amber-500 dark:text-amber-400" />
               <span>Buy Me A Coffee</span>
             </a>
 
@@ -136,7 +136,7 @@ export function CreatorSupport() {
                 <button
                   type="button"
                   onClick={() => playSound("click")}
-                  className="inline-flex items-center justify-center gap-2.5 h-11 px-6 rounded-full border border-white/15 bg-white/[0.06] hover:bg-white/[0.12] hover:border-orange-500/40 transition-all text-xs sm:text-sm font-semibold text-white hover:shadow-[0_0_24px_rgba(249,115,22,0.25)] active:scale-95 cursor-pointer select-none group/fampay"
+                  className="inline-flex items-center justify-center gap-2.5 h-11 px-6 rounded-full border border-border bg-secondary hover:bg-secondary/80 dark:border-white/15 dark:bg-white/[0.06] dark:hover:bg-white/[0.12] hover:border-orange-500/40 transition-all text-xs sm:text-sm font-semibold text-foreground dark:text-white hover:shadow-[0_0_24px_rgba(249,115,22,0.25)] active:scale-95 cursor-pointer select-none group/fampay"
                 >
                   <div className="w-5 h-5 rounded-md bg-gradient-to-br from-[#FFAD00] to-[#FF4500] flex items-center justify-center shadow-[0_0_8px_rgba(249,115,22,0.4)] group-hover/fampay:scale-105 transition-transform">
                     <span className="text-[10px] font-black text-white font-sans tracking-tighter">
@@ -147,17 +147,17 @@ export function CreatorSupport() {
                 </button>
               </DialogTrigger>
 
-              <DialogContent className="sm:max-w-md border-white/20 bg-[#0a0e17]/90 backdrop-blur-3xl shadow-[0_30px_90px_rgba(0,0,0,0.85)] text-white rounded-[2.5rem] p-6 sm:p-8">
+              <DialogContent className="sm:max-w-md border-border bg-popover/95 text-popover-foreground dark:border-white/20 dark:bg-[#0a0e17]/90 backdrop-blur-3xl shadow-strong dark:text-white rounded-[2.5rem] p-6 sm:p-8">
                 <DialogHeader>
-                  <DialogTitle className="text-center font-bold text-xl tracking-tight text-white flex items-center justify-center gap-2">
-                    <QrCode className="w-5 h-5 text-orange-400" />
+                  <DialogTitle className="text-center font-bold text-xl tracking-tight text-foreground dark:text-white flex items-center justify-center gap-2">
+                    <QrCode className="w-5 h-5 text-orange-500 dark:text-orange-400" />
                     <span>FamPay UPI Transfer</span>
                   </DialogTitle>
                 </DialogHeader>
 
                 <div className="flex flex-col items-center gap-6 py-4">
                   {/* QR Image Frame with Scanner Brackets */}
-                  <div className="relative w-64 h-64 rounded-3xl overflow-hidden border border-white/20 shadow-[0_0_35px_rgba(255,69,0,0.25)] bg-black/60 group/qr">
+                  <div className="relative w-64 h-64 rounded-3xl overflow-hidden border border-border/80 dark:border-white/20 shadow-[0_0_35px_rgba(255,69,0,0.25)] bg-black/10 dark:bg-black/60 group/qr">
                     <div className="absolute inset-0 bg-gradient-to-tr from-[#FFAD00]/15 via-transparent to-[#FF4500]/15 opacity-60 z-10 pointer-events-none" />
                     <Image
                       src="/fampay-qr-v2.png"
@@ -169,21 +169,21 @@ export function CreatorSupport() {
 
                   {/* Copyable UPI Pill */}
                   <div className="flex flex-col items-center gap-2 w-full max-w-[280px]">
-                    <span className="text-[11px] uppercase tracking-widest text-zinc-400 font-semibold">
+                    <span className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
                       Instant UPI Handle
                     </span>
                     <button
                       type="button"
                       onClick={handleCopy}
-                      className="flex items-center justify-between w-full h-12 px-4 rounded-full border border-white/15 bg-white/[0.08] hover:bg-white/[0.14] transition-all cursor-pointer active:scale-95 group/copy shadow-sm"
+                      className="flex items-center justify-between w-full h-12 px-4 rounded-full border border-border bg-secondary hover:bg-secondary/80 dark:border-white/15 dark:bg-white/[0.08] dark:hover:bg-white/[0.14] transition-all cursor-pointer active:scale-95 group/copy shadow-sm"
                     >
-                      <span className="font-mono text-sm tracking-wider text-white font-semibold">
+                      <span className="font-mono text-sm tracking-wider text-foreground dark:text-white font-semibold">
                         joshh@fam
                       </span>
                       {copied ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                       ) : (
-                        <Copy className="w-4 h-4 text-zinc-400 group-hover/copy:text-white transition-colors" />
+                        <Copy className="w-4 h-4 text-muted-foreground group-hover/copy:text-foreground dark:group-hover/copy:text-white transition-colors" />
                       )}
                     </button>
                   </div>
@@ -192,7 +192,7 @@ export function CreatorSupport() {
             </Dialog>
           </div>
 
-          <div className="pt-6 border-t border-white/[0.08] w-full flex items-center justify-center gap-2 text-xs font-medium text-zinc-400 tracking-wider uppercase">
+          <div className="pt-6 border-t border-border/60 dark:border-white/[0.08] w-full flex items-center justify-center gap-2 text-xs font-medium text-muted-foreground dark:text-zinc-400 tracking-wider uppercase">
             <span>Engineered with passion</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 animate-pulse inline" />
             <span>by Andrew</span>

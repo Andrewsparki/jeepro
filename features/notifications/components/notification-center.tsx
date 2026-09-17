@@ -124,12 +124,12 @@ export function NotificationCenter() {
       <PopoverContent
         align="end"
         sideOffset={8}
-        className="w-[360px] max-w-[calc(100vw-24px)] p-0 rounded-2xl border border-white/10 bg-[#0e0e11]/95 backdrop-blur-2xl shadow-2xl overflow-hidden z-50"
+        className="w-[360px] max-w-[calc(100vw-24px)] p-0 rounded-2xl border border-border/60 bg-popover/95 backdrop-blur-2xl shadow-strong overflow-hidden z-50 text-popover-foreground"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-white/[0.02]">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 bg-surface/50">
           <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold text-white tracking-tight">
+            <h2 className="text-sm font-semibold text-foreground tracking-tight">
               Notifications
             </h2>
             {unreadCount > 0 && (
@@ -157,7 +157,7 @@ export function NotificationCenter() {
                 e.stopPropagation();
                 updateSetting("sounds", !settings.sounds);
               }}
-              className="p-1.5 rounded-lg text-muted-foreground hover:text-white transition-colors hover:bg-white/5"
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors hover:bg-muted/50"
               title={
                 settings.sounds
                   ? "Sound cues active (click to test chime, right-click to mute)"
@@ -182,7 +182,7 @@ export function NotificationCenter() {
                   playSound("success");
                   markAllAsRead();
                 }}
-                className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-white transition-colors py-1 px-1.5 rounded-md hover:bg-white/5"
+                className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors py-1 px-1.5 rounded-md hover:bg-muted/50"
               >
                 <CheckCheck className="h-3.5 w-3.5 text-accent" />
                 <span>Mark all as read</span>
@@ -192,7 +192,7 @@ export function NotificationCenter() {
         </div>
 
         {/* Notification History List */}
-        <div className="max-h-[380px] overflow-y-auto divide-y divide-white/[0.04] scrollbar-thin scrollbar-thumb-white/10">
+        <div className="max-h-[380px] overflow-y-auto divide-y divide-border/30 scrollbar-thin">
           {isLoading && notifications.length === 0 ? (
             <div className="p-8 text-center">
               <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-accent border-r-transparent" />
@@ -201,10 +201,10 @@ export function NotificationCenter() {
           ) : notifications.length === 0 ? (
             /* Empty State */
             <div className="py-12 px-6 flex flex-col items-center justify-center text-center">
-              <div className="h-12 w-12 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center mb-3 text-muted-foreground">
+              <div className="h-12 w-12 rounded-2xl bg-muted/50 border border-border/40 flex items-center justify-center mb-3 text-muted-foreground">
                 <Inbox className="h-6 w-6 opacity-40" />
               </div>
-              <p className="text-sm font-medium text-white">You&apos;re all caught up</p>
+              <p className="text-sm font-medium text-foreground">You&apos;re all caught up</p>
               <p className="text-xs text-muted-foreground mt-1 max-w-[220px]">
                 New study milestones, streak alerts, and announcements will appear here.
               </p>
@@ -225,12 +225,12 @@ export function NotificationCenter() {
                   className={cn(
                     "relative p-3.5 flex items-start gap-3 transition-colors cursor-pointer group",
                     isUnseen
-                      ? "bg-accent/[0.04] hover:bg-accent/[0.08]"
-                      : "hover:bg-white/[0.03]"
+                      ? "bg-accent/[0.06] hover:bg-accent/[0.1]"
+                      : "hover:bg-muted/30"
                   )}
                 >
                   {/* Icon */}
-                  <div className="mt-0.5 p-2 rounded-xl bg-white/[0.03] border border-white/5 group-hover:border-white/10 transition-colors">
+                  <div className="mt-0.5 p-2 rounded-xl bg-muted/40 border border-border/40 group-hover:border-border/60 transition-colors">
                     {getNotificationIcon(item.type)}
                   </div>
 
@@ -241,8 +241,8 @@ export function NotificationCenter() {
                         className={cn(
                           "text-xs leading-snug truncate",
                           isUnseen
-                            ? "font-semibold text-white"
-                            : "font-medium text-zinc-300"
+                            ? "font-semibold text-foreground"
+                            : "font-medium text-foreground/80"
                         )}
                       >
                         {item.title}

@@ -8,9 +8,9 @@ interface DifficultyBadgeProps {
 
 export function DifficultyBadge({ difficulty, className }: DifficultyBadgeProps) {
   const styles = {
-    Easy: "bg-green-500/10 text-green-500 border-green-500/20",
-    Medium: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
-    Hard: "bg-red-500/10 text-red-500 border-red-500/20",
+    Easy: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20",
+    Medium: "bg-amber-500/10 text-amber-700 dark:text-yellow-500 border-amber-500/20",
+    Hard: "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20",
   };
 
   return (

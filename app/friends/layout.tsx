@@ -5,9 +5,7 @@ import { StudySessionProvider } from "@/features/study/context/study-session-con
 import { StudyTimer } from "@/features/study/components/study-timer";
 import { CommandPaletteProvider } from "@/features/search/context/command-palette-context";
 import { DashboardMainContent } from "@/features/dashboard/components/dashboard-main-content";
-import { AuthProvider } from "@/features/auth/components/auth-provider";
 import { NotificationProvider } from "@/features/notifications/context/notification-context";
-import { MotionWrapper } from "@/components/ui/motion-wrapper";
 
 const CommandPalette = dynamic(
   () =>
@@ -22,24 +20,23 @@ export default function FriendsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthProvider>
-      <NotificationProvider>
-        <CommandPaletteProvider>
-          <StudySessionProvider>
-            <div className="flex min-h-screen w-full bg-transparent">
-              <Sidebar />
-              <DashboardMainContent>
-                <Topbar title="Friends" />
-                <main className="flex-1 p-4 md:p-6 lg:p-8 relative">
-                  <MotionWrapper>{children}</MotionWrapper>
-                </main>
-              </DashboardMainContent>
-            </div>
-            <StudyTimer />
-            <CommandPalette />
-          </StudySessionProvider>
-        </CommandPaletteProvider>
-      </NotificationProvider>
-    </AuthProvider>
+    <NotificationProvider>
+      <CommandPaletteProvider>
+        <StudySessionProvider>
+          <div className="flex min-h-screen w-full bg-transparent">
+            <Sidebar />
+            <DashboardMainContent>
+              <Topbar title="Friends" />
+              <main className="flex-1 p-4 md:p-6 lg:p-8 relative page-transition">
+                {children}
+              </main>
+            </DashboardMainContent>
+          </div>
+          <StudyTimer />
+          <CommandPalette />
+        </StudySessionProvider>
+      </CommandPaletteProvider>
+    </NotificationProvider>
   );
 }
+

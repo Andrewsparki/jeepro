@@ -148,32 +148,32 @@ export default function DashboardPage() {
                   <span className="text-xl font-normal text-muted-foreground/80 -ml-0.5">m</span>
                 </div>
               }
-              icon={<Clock className="h-4 w-4 text-blue-400" />}
-              iconContainerClassName="bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+              icon={<Clock className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
+              iconContainerClassName="bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400 dark:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
               delay={0.1}
               hoverTint="blue"
             />
             <StatCard
               title="Topics Mastered"
               value={<AnimatedNumber value={metrics.topicsCompletedToday} />}
-              icon={<Target className="h-4 w-4 text-emerald-400" />}
-              iconContainerClassName="bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+              icon={<Target className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
+              iconContainerClassName="bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 dark:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
               delay={0.2}
               hoverTint="emerald"
             />
             <StatCard
               title="Current Streak"
               value={<><AnimatedNumber value={metrics.currentStreak} /> <span className="text-xl">d</span></>}
-              icon={<Flame className="h-4 w-4 text-orange-400" />}
-              iconContainerClassName="bg-orange-500/10 border-orange-500/20 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
+              icon={<Flame className="h-4 w-4 text-orange-600 dark:text-orange-400" />}
+              iconContainerClassName="bg-orange-500/10 border-orange-500/20 text-orange-600 dark:text-orange-400 dark:shadow-[0_0_15px_rgba(249,115,22,0.2)]"
               delay={0.3}
               hoverTint="orange"
             />
             <StatCard
               title="Level"
               value={<AnimatedNumber value={metrics.xpDetails.currentLevel} />}
-              icon={<Trophy className="h-4 w-4 text-amber-400" />}
-              iconContainerClassName="bg-amber-500/10 border-amber-500/20 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+              icon={<Trophy className="h-4 w-4 text-amber-700 dark:text-amber-400" />}
+              iconContainerClassName="bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-400 dark:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
               delay={0.4}
               hoverTint="amber"
             />

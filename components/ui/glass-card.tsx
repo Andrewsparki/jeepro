@@ -20,7 +20,7 @@ const tintClassMap: Record<string, string> = {
   purple: "hover:shadow-[0_8px_30px_rgba(168,85,247,0.12)] hover:border-purple-500/20",
   yellow: "hover:shadow-[0_8px_30px_rgba(234,179,8,0.12)] hover:border-yellow-500/20",
   rose: "hover:shadow-[0_8px_30px_rgba(244,63,94,0.12)] hover:border-rose-500/20",
-  none: "hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]",
+  none: "hover:shadow-hover",
 };
 
 const tintGradientMap: Record<string, string> = {
@@ -42,7 +42,7 @@ export const GlassCard = React.memo(function GlassCard({
   style,
   ...props
 }: GlassCardProps) {
-  const tintClass = hoverTint && hoverTint !== "none" ? tintClassMap[hoverTint] : "hover:shadow-[0_8px_30px_rgba(var(--accent),0.1)] hover:border-white/10";
+  const tintClass = hoverTint && hoverTint !== "none" ? tintClassMap[hoverTint] : "hover:shadow-hover hover:border-border dark:hover:border-white/10";
   const gradientClass = hoverTint && hoverTint !== "none" ? tintGradientMap[hoverTint] : "from-accent/5";
 
   const hasHoverEffect = interactive || hoverTint !== "none";

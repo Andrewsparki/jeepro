@@ -76,7 +76,7 @@ export const DashboardHero = React.memo(function DashboardHero({
             <Button 
               onClick={handleStart}
               size="lg"
-              className="bg-foreground text-background hover:bg-white rounded-full px-8 h-12 text-sm font-semibold transition-all hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] group/btn"
+              className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-8 h-12 text-sm font-semibold transition-all hover:shadow-[0_0_20px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] group/btn"
             >
               {lastActiveChapter ? "Continue Studying" : "Start Today's Study"}
               <ArrowRight className="ml-2 h-4 w-4 opacity-70 group-hover/btn:opacity-100 group-hover/btn:translate-x-1 transition-all" />
@@ -86,7 +86,7 @@ export const DashboardHero = React.memo(function DashboardHero({
 
         {/* Right Side: Current Context */}
         {lastActiveChapter && (
-          <div className="w-full md:w-[360px] shrink-0 rounded-2xl bg-surface border border-border/50 backdrop-blur-xl p-7 shadow-soft transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-surface-hover hover:border-white/16 hover:shadow-medium">
+          <div className="w-full md:w-[360px] shrink-0 rounded-2xl bg-surface border border-border/50 backdrop-blur-xl p-7 shadow-soft transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-surface-hover hover:border-border hover:shadow-medium">
             <div className="flex items-center justify-between mb-5">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current Focus</span>
               <div className="px-2.5 py-1 rounded-md bg-accent/15 text-accent text-xs font-semibold">

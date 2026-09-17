@@ -138,7 +138,7 @@ export function SessionCard({
               </SheetHeader>
             </div>
 
-            <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+            <motion.div variants={containerVariants} initial="hidden" animate="show" data-lenis-prevent className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
               
               {/* Header Info */}
               <motion.div variants={itemVariants} className="flex items-start gap-4">

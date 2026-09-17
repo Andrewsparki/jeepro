@@ -1,6 +1,10 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// Short in-memory cache for maintenance mode setting (15 seconds TTL) to avoid DB roundtrips on every request
+let maintenanceModeCache: { enabled: boolean; timestamp: number } | null = null
+const CACHE_TTL_MS = 15000
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -12,6 +16,7 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/chat') ||
     pathname.startsWith('/friends') ||
+    pathname.startsWith('/groups') ||
     pathname.startsWith('/leaderboard') ||
     pathname.startsWith('/achievements')
   const isAdminRoute = pathname.startsWith('/admin')
@@ -23,9 +28,27 @@ export async function updateSession(request: NextRequest) {
   const isAuthCallback = pathname.startsWith('/api/auth')
   const isMaintenancePage = pathname === '/maintenance'
 
-  // Fast-path: completely bypass expensive Supabase network round-trips for public marketing routes.
-  // Server-side security is strictly enforced on all protected and authentication routes.
+  // Fast-path 1: completely bypass expensive Supabase network round-trips for public marketing routes.
   if (!isProtectedRoute && !isAuthRoute && !isAuthCallback && !isAdminRoute && !isMaintenancePage) {
+    return supabaseResponse
+  }
+
+  // Cookie pre-check: Check if request carries any Supabase session cookies
+  const allCookies = request.cookies.getAll()
+  const hasAuthCookie = allCookies.some(
+    (c) => c.name.startsWith('sb-') || c.name.includes('auth-token')
+  )
+
+  // Fast-path 2: Unauthenticated visit to protected route without auth cookies -> instant 0ms redirect to login
+  if (isProtectedRoute && !hasAuthCookie) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    url.searchParams.set('next', request.nextUrl.pathname + request.nextUrl.search)
+    return NextResponse.redirect(url)
+  }
+
+  // Fast-path 3: Unauthenticated visit to auth page (/login, /signup) without auth cookies -> instant 0ms render
+  if (isAuthRoute && !hasAuthCookie) {
     return supabaseResponse
   }
 
@@ -74,7 +97,6 @@ export async function updateSession(request: NextRequest) {
 
     if (!profile?.is_admin) {
       // Non-admin authenticated users get redirected to dashboard
-      // The admin layout will also call forbidden() as a second layer of defense
       const url = request.nextUrl.clone()
       url.pathname = '/dashboard'
       return NextResponse.redirect(url)
@@ -84,29 +106,40 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse
   }
 
+  // Helper to check maintenance mode status with short TTL memory cache
+  async function isMaintenanceActive(): Promise<boolean> {
+    const now = Date.now()
+    if (maintenanceModeCache && now - maintenanceModeCache.timestamp < CACHE_TTL_MS) {
+      return maintenanceModeCache.enabled
+    }
+
+    const { data: settings } = await supabase
+      .from('system_settings')
+      .select('value')
+      .eq('key', 'maintenance_mode')
+      .single()
+
+    const enabled = settings?.value?.enabled === true
+    maintenanceModeCache = { enabled, timestamp: now }
+    return enabled
+  }
+
   // ── Maintenance Mode Check ──────────────────────────────────────────
   // Check maintenance mode for protected routes (dashboard) only
   if (isProtectedRoute && user) {
-    // Check if user is admin — admins bypass maintenance mode
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', user.id)
-      .single()
+    const maintenanceEnabled = await isMaintenanceActive()
 
-    const userIsAdmin = profile?.is_admin === true
-
-    if (!userIsAdmin) {
-      // Check maintenance mode from system_settings
-      const { data: settings } = await supabase
-        .from('system_settings')
-        .select('value')
-        .eq('key', 'maintenance_mode')
+    // ONLY IF maintenance mode is enabled, check if user is admin to allow bypass
+    if (maintenanceEnabled) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
         .single()
 
-      const maintenanceEnabled = settings?.value?.enabled === true
+      const userIsAdmin = profile?.is_admin === true
 
-      if (maintenanceEnabled) {
+      if (!userIsAdmin) {
         // Redirect normal users to the maintenance page
         const url = request.nextUrl.clone()
         url.pathname = '/maintenance'
@@ -119,13 +152,7 @@ export async function updateSession(request: NextRequest) {
   // ── Maintenance Page Access Control ─────────────────────────────────
   // If maintenance is NOT active, redirect away from the maintenance page
   if (isMaintenancePage) {
-    const { data: settings } = await supabase
-      .from('system_settings')
-      .select('value')
-      .eq('key', 'maintenance_mode')
-      .single()
-
-    const maintenanceEnabled = settings?.value?.enabled === true
+    const maintenanceEnabled = await isMaintenanceActive()
 
     if (!maintenanceEnabled) {
       const url = request.nextUrl.clone()
@@ -162,3 +189,4 @@ export async function updateSession(request: NextRequest) {
 
   return supabaseResponse
 }
+

@@ -65,29 +65,29 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
     <div className="flex flex-col gap-10 max-w-4xl mx-auto w-full pb-32">
       {/* Hero Header Banner */}
       <div className="flex flex-col gap-2 pt-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 w-fit backdrop-blur-xl">
-          <SlidersHorizontal className="w-3.5 h-3.5 text-zinc-400" />
-          <span className="text-[11px] font-medium tracking-wider uppercase text-zinc-300">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted/60 border border-border/60 w-fit backdrop-blur-xl dark:bg-white/[0.05] dark:border-white/10">
+          <SlidersHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="text-[11px] font-medium tracking-wider uppercase text-foreground/80">
             System Preferences
           </span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mt-1">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
               Settings
             </h1>
-            <p className="text-sm text-zinc-400 font-normal mt-1 leading-relaxed max-w-xl">
+            <p className="text-sm text-muted-foreground font-normal mt-1 leading-relaxed max-w-xl">
               Personalize your workspace, privacy parameters, and study algorithms.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Apple Floating Frosted Glass Capsule Sub-Navigation */}
+      {/* Floating Frosted Capsule Sub-Navigation */}
       <div className="sticky top-20 z-30 py-2 -mx-4 px-4 sm:mx-0 sm:px-0">
         <div className="flex justify-start sm:justify-center overflow-x-auto no-scrollbar py-1">
-          <div className="inline-flex items-center gap-1 p-1.5 rounded-full bg-[#0a0d14]/75 backdrop-blur-2xl border border-white/[0.12] shadow-[0_16px_36px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.18)]">
+          <div className="inline-flex items-center gap-1 p-1.5 rounded-full bg-card/85 backdrop-blur-2xl border border-border/80 shadow-medium dark:bg-[#0a0d14]/75 dark:border-white/[0.12] dark:shadow-[0_16px_36px_rgba(0,0,0,0.65),inset_0_1px_1px_rgba(255,255,255,0.18)]">
             {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
               const isActive = activeSection === id;
               return (
@@ -97,22 +97,22 @@ export function SettingsLayout({ children }: SettingsLayoutProps) {
                   className={cn(
                     "relative flex items-center gap-2 px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-medium tracking-tight rounded-full transition-all whitespace-nowrap cursor-pointer z-10 select-none",
                     isActive
-                      ? "text-white font-semibold"
-                      : "text-zinc-400 hover:text-white"
+                      ? "text-foreground font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  {/* Sliding Apple Capsule Indicator */}
+                  {/* Sliding Capsule Indicator */}
                   {isActive && (
                     <motion.div
                       layoutId="activeSettingsTabPill"
                       transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                      className="absolute inset-0 rounded-full bg-white/[0.14] border border-white/20 shadow-[0_2px_12px_rgba(255,255,255,0.08),inset_0_1px_1px_rgba(255,255,255,0.25)] -z-10"
+                      className="absolute inset-0 rounded-full bg-accent/15 border border-accent/30 shadow-xs dark:bg-white/[0.14] dark:border-white/20 dark:shadow-[0_2px_12px_rgba(255,255,255,0.08),inset_0_1px_1px_rgba(255,255,255,0.25)] -z-10"
                     />
                   )}
                   <Icon
                     className={cn(
                       "w-3.5 h-3.5 transition-colors",
-                      isActive ? "text-white" : "text-zinc-400"
+                      isActive ? "text-accent dark:text-white" : "text-muted-foreground"
                     )}
                   />
                   <span>{label}</span>

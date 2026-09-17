@@ -1,5 +1,11 @@
-import { redirect } from "next/navigation";
+import { Metadata } from "next";
+import { FriendsView } from "@/features/friends/components/friends-view";
 
-export default function DashboardFriendsRedirect() {
-  redirect("/friends");
+export const metadata: Metadata = {
+  title: "Friends & Community | JEE Pro",
+  description: "Connect with fellow JEE aspirants, build study partnerships, and collaborate.",
+};
+
+export default function DashboardFriendsPage() {
+  return <FriendsView />;
 }

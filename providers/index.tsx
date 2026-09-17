@@ -7,6 +7,7 @@ import { SettingsProvider } from "@/providers/settings-provider";
 import { LightingProvider } from "@/components/ui/lighting-provider";
 import { SmoothScrollProvider } from "@/components/ui/smooth-scroll-provider";
 import { PerformanceProvider } from "@/lib/performance-context";
+import { AuthProvider } from "@/features/auth/components/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { DialogProvider } from "@/providers/dialog-provider";
 
@@ -25,17 +26,20 @@ export function Providers({ children }: ProvidersProps) {
     <ThemeProvider>
       <SettingsProvider>
         <PerformanceProvider>
-          <LightingProvider>
-            <DialogProvider>
-              <BackgroundSystem />
-              <SmoothScrollProvider>
-                {children}
-              </SmoothScrollProvider>
-              <Toaster position="bottom-right" />
-            </DialogProvider>
-          </LightingProvider>
+          <AuthProvider>
+            <LightingProvider>
+              <DialogProvider>
+                <BackgroundSystem />
+                <SmoothScrollProvider>
+                  {children}
+                </SmoothScrollProvider>
+                <Toaster position="bottom-right" />
+              </DialogProvider>
+            </LightingProvider>
+          </AuthProvider>
         </PerformanceProvider>
       </SettingsProvider>
     </ThemeProvider>
   );
 }
+

@@ -46,6 +46,7 @@ export function ActivityTimeline({ sessions }: ActivityTimelineProps) {
       </div>
 
       <div
+        data-lenis-prevent
         className="flex-1 overflow-y-auto pr-4 -mr-4 space-y-6 relative z-10 custom-scrollbar scroll-smooth"
       >
         {recentSessions.length === 0 ? (

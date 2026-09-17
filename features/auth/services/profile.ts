@@ -1,6 +1,5 @@
-"use server";
-
-import { createClient } from "@/lib/supabase/server";
+import { cache } from "react";
+import { createClient, getAuthUser } from "@/lib/supabase/server";
 import type { User } from "@supabase/supabase-js";
 
 export type UserProfile = {
@@ -15,25 +14,27 @@ export type UserProfile = {
   updated_at: string;
 };
 
-export async function getUserProfile(): Promise<{ user: User | null; profile: UserProfile | null }> {
-  const supabase = await createClient();
+export const getUserProfile = cache(async (): Promise<{ user: User | null; profile: UserProfile | null }> => {
+  const user = await getAuthUser();
   
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  
-  if (authError || !authData.user) {
+  if (!user) {
     return { user: null, profile: null };
   }
+
+  const supabase = await createClient();
 
   const { data: profileData, error: profileError } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", authData.user.id)
+    .eq("id", user.id)
     .single();
 
   if (profileError) {
     console.error("Error fetching profile:", profileError);
-    return { user: authData.user, profile: null };
+    return { user, profile: null };
   }
 
-  return { user: authData.user, profile: profileData };
-}
+  return { user, profile: profileData };
+});
+
+

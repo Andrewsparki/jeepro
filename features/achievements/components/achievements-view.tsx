@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Trophy,
   Award,
@@ -151,8 +152,8 @@ export function AchievementsView() {
 
       {/* ── 2. Filters & Search Toolbar ─────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5">
-        {/* Category Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+        {/* Category Pills with Animated Sliding Layout Indicator */}
+        <div className="flex items-center gap-1 p-1 rounded-2xl bg-surface/50 border border-border/40 overflow-x-auto scrollbar-none relative">
           {CATEGORY_TABS.map((tab) => {
             const Icon = tab.icon;
             const count = getCategoryCount(tab.id);
@@ -163,19 +164,26 @@ export function AchievementsView() {
                 key={tab.id}
                 onClick={() => setSelectedCategory(tab.id)}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                  "relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors duration-200 whitespace-nowrap cursor-pointer focus-visible:outline-none z-10 select-none",
                   isActive
-                    ? "bg-accent text-white border-accent shadow-md font-bold"
-                    : "bg-surface/50 border-border/40 text-muted-foreground hover:text-foreground hover:bg-surface/80"
+                    ? "text-white font-bold"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeAchievementCategory"
+                    className="absolute inset-0 bg-accent rounded-xl shadow-sm -z-10"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
                 <Icon className="w-3.5 h-3.5" />
                 <span>{tab.label}</span>
                 <span
                   className={cn(
-                    "text-[10px] px-1.5 py-0.2 rounded-full",
+                    "text-[10px] px-1.5 py-0.2 rounded-full font-bold",
                     isActive
-                      ? "bg-white/20 text-white"
+                      ? "bg-black/20 text-white"
                       : "bg-muted text-muted-foreground"
                   )}
                 >
@@ -207,44 +215,72 @@ export function AchievementsView() {
         </div>
       </div>
 
-      {/* ── 3. Achievements Grid ────────────────────────────────────────── */}
-      {isLoading ? (
-        <AchievementsSkeleton />
-      ) : error ? (
-        <div className="py-12 px-6 rounded-2xl border border-destructive/30 bg-destructive/5 text-center space-y-3">
-          <Award className="w-8 h-8 text-destructive mx-auto" />
-          <h3 className="text-base font-bold text-foreground">Could not load achievements</h3>
-          <p className="text-xs text-muted-foreground max-w-sm mx-auto">{error}</p>
-          <Button size="sm" variant="outline" onClick={() => refresh()}>
-            Try Again
-          </Button>
-        </div>
-      ) : filteredAchievements.length === 0 ? (
-        <div className="py-16 px-6 rounded-2xl border border-dashed border-border/60 bg-surface/20 text-center space-y-3">
-          <Lock className="w-10 h-10 text-muted-foreground/40 mx-auto" />
-          <h3 className="text-sm font-bold text-foreground">No achievements found</h3>
-          <p className="text-xs text-muted-foreground max-w-xs mx-auto">
-            {searchQuery
-              ? `No milestones match "${searchQuery}". Try a different keyword.`
-              : "No milestones in this category."}
-          </p>
-          {searchQuery && (
-            <Button size="sm" variant="outline" onClick={() => setSearchQuery("")}>
-              Clear Search
+      {/* ── 3. Achievements Grid with View Transition ───────────────────── */}
+      <AnimatePresence mode="wait">
+        {isLoading ? (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <AchievementsSkeleton />
+          </motion.div>
+        ) : error ? (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="py-12 px-6 rounded-2xl border border-destructive/30 bg-destructive/5 text-center space-y-3"
+          >
+            <Award className="w-8 h-8 text-destructive mx-auto" />
+            <h3 className="text-base font-bold text-foreground">Could not load achievements</h3>
+            <p className="text-xs text-muted-foreground max-w-sm mx-auto">{error}</p>
+            <Button size="sm" variant="outline" onClick={() => refresh()}>
+              Try Again
             </Button>
-          )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredAchievements.map((achievement) => (
-            <AchievementCard
-              key={achievement.id}
-              achievement={achievement}
-              onClick={(ach) => setSelectedAchievement(ach)}
-            />
-          ))}
-        </div>
-      )}
+          </motion.div>
+        ) : filteredAchievements.length === 0 ? (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            className="py-16 px-6 rounded-2xl border border-dashed border-border/60 bg-surface/20 text-center space-y-3"
+          >
+            <Lock className="w-10 h-10 text-muted-foreground/40 mx-auto" />
+            <h3 className="text-sm font-bold text-foreground">No achievements found</h3>
+            <p className="text-xs text-muted-foreground max-w-xs mx-auto">
+              {searchQuery
+                ? `No milestones match "${searchQuery}". Try a different keyword.`
+                : "No milestones in this category."}
+            </p>
+            {searchQuery && (
+              <Button size="sm" variant="outline" onClick={() => setSearchQuery("")}>
+                Clear Search
+              </Button>
+            )}
+          </motion.div>
+        ) : (
+          <motion.div
+            key={selectedCategory}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {filteredAchievements.map((achievement) => (
+              <AchievementCard
+                key={achievement.id}
+                achievement={achievement}
+                onClick={(ach) => setSelectedAchievement(ach)}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── 4. Reusable Achievement Detail Modal ───────────────────────── */}
       <AchievementDetailModal

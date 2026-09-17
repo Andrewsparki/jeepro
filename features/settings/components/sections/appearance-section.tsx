@@ -11,6 +11,7 @@ const THEMES = [
   { id: "midnight", label: "Midnight", color: "#4F46E5" },
   { id: "amoled", label: "AMOLED", color: "#000000" },
   { id: "titanium", label: "Titanium", color: "#64748B" },
+  { id: "light", label: "Daylight", color: "#4338CA" },
 ] as const;
 
 export function AppearanceSection() {
@@ -27,11 +28,11 @@ export function AppearanceSection() {
       {/* Theme Selection Row */}
       <SettingRow
         title="Interface Theme"
-        description="Choose a tuned dark aesthetic for contrast and OLED efficiency."
+        description="Choose a tuned aesthetic for contrast, daylight readability, and OLED efficiency."
         icon={Palette}
         iconGradient="from-fuchsia-500 to-pink-600"
       >
-        <div className="flex items-center p-1 rounded-full bg-white/[0.06] border border-white/10 shadow-inner">
+        <div className="flex items-center p-1 rounded-full bg-muted/60 border border-border/60 shadow-inner dark:bg-white/[0.06] dark:border-white/10">
           {THEMES.map(({ id, label, color }) => {
             const isSelected = settings.activeTheme === id;
             return (
@@ -44,18 +45,18 @@ export function AppearanceSection() {
                 }}
                 className={cn(
                   "relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full transition-colors z-10 cursor-pointer select-none",
-                  isSelected ? "text-white font-semibold" : "text-zinc-400 hover:text-zinc-200"
+                  isSelected ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {isSelected && (
                   <motion.div
                     layoutId="activeThemePill"
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                    className="absolute inset-0 rounded-full bg-white/15 border border-white/20 shadow-sm -z-10 pointer-events-none"
+                    className="absolute inset-0 rounded-full bg-card border border-border/80 shadow-xs dark:bg-white/15 dark:border-white/20 -z-10 pointer-events-none"
                   />
                 )}
                 <span
-                  className="w-2 h-2 rounded-full border border-white/30"
+                  className="w-2 h-2 rounded-full border border-border/60 dark:border-white/30"
                   style={{ backgroundColor: color }}
                 />
                 <span>{label}</span>
@@ -72,7 +73,7 @@ export function AppearanceSection() {
         icon={LayoutGrid}
         iconGradient="from-blue-500 to-cyan-600"
       >
-        <div className="flex items-center p-1 rounded-full bg-white/[0.06] border border-white/10 shadow-inner">
+        <div className="flex items-center p-1 rounded-full bg-muted/60 border border-border/60 shadow-inner dark:bg-white/[0.06] dark:border-white/10">
           {[
             { id: "carousel", label: "Carousel" },
             { id: "grid", label: "Grid" },
@@ -88,14 +89,14 @@ export function AppearanceSection() {
                 }}
                 className={cn(
                   "relative px-3.5 py-1.5 text-xs font-medium rounded-full transition-colors z-10 cursor-pointer select-none",
-                  isSelected ? "text-white font-semibold" : "text-zinc-400 hover:text-zinc-200"
+                  isSelected ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {isSelected && (
                   <motion.div
                     layoutId="activeViewStylePill"
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                    className="absolute inset-0 rounded-full bg-white/15 border border-white/20 shadow-sm -z-10 pointer-events-none"
+                    className="absolute inset-0 rounded-full bg-card border border-border/80 shadow-xs dark:bg-white/15 dark:border-white/20 -z-10 pointer-events-none"
                   />
                 )}
                 <span>{label}</span>
@@ -112,7 +113,7 @@ export function AppearanceSection() {
         icon={Maximize2}
         iconGradient="from-violet-500 to-purple-600"
       >
-        <div className="flex items-center p-1 rounded-full bg-white/[0.06] border border-white/10 shadow-inner">
+        <div className="flex items-center p-1 rounded-full bg-muted/60 border border-border/60 shadow-inner dark:bg-white/[0.06] dark:border-white/10">
           {[
             { id: "page", label: "Full Page" },
             { id: "modal", label: "Modal Sheet" },
@@ -128,14 +129,14 @@ export function AppearanceSection() {
                 }}
                 className={cn(
                   "relative px-3.5 py-1.5 text-xs font-medium rounded-full transition-colors z-10 cursor-pointer select-none",
-                  isSelected ? "text-white font-semibold" : "text-zinc-400 hover:text-zinc-200"
+                  isSelected ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {isSelected && (
                   <motion.div
                     layoutId="activeDetailTypePill"
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                    className="absolute inset-0 rounded-full bg-white/15 border border-white/20 shadow-sm -z-10 pointer-events-none"
+                    className="absolute inset-0 rounded-full bg-card border border-border/80 shadow-xs dark:bg-white/15 dark:border-white/20 -z-10 pointer-events-none"
                   />
                 )}
                 <span>{label}</span>

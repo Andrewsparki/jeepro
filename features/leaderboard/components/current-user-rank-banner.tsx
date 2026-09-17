@@ -4,23 +4,45 @@ import React from "react";
 import { CurrentUserRank } from "../types/leaderboard.types";
 import { Award, Zap, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion, useReducedMotion } from "framer-motion";
 
 interface CurrentUserRankBannerProps {
   userRank: CurrentUserRank | null;
   onUserClick: (userId: string) => void;
+  isCinematic?: boolean;
 }
 
 export function CurrentUserRankBanner({
   userRank,
   onUserClick,
+  isCinematic = true,
 }: CurrentUserRankBannerProps) {
+  const shouldReduceMotion = useReducedMotion();
+  const cinematic = isCinematic && !shouldReduceMotion;
+
   if (!userRank) return null;
 
   const initial = (userRank.fullName || "Y").charAt(0).toUpperCase();
 
   return (
-    <div className="sticky bottom-4 z-20 w-full max-w-3xl mx-auto px-2 sm:px-4">
-      <div
+    <motion.div
+      initial={
+        shouldReduceMotion
+          ? false
+          : cinematic
+          ? { opacity: 0, y: 24 }
+          : { opacity: 0, y: 8 }
+      }
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        delay: cinematic ? 1.15 : 0.08,
+        duration: 0.38,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className="sticky bottom-4 z-20 w-full max-w-3xl mx-auto px-2 sm:px-4"
+    >
+      <motion.div
+        whileHover={shouldReduceMotion ? undefined : { scale: 1.01 }}
         onClick={() => onUserClick(userRank.userId)}
         role="button"
         tabIndex={0}
@@ -32,9 +54,19 @@ export function CurrentUserRankBanner({
         }}
         aria-label={`Your current rank is #${userRank.rank} with ${userRank.totalXp.toLocaleString()} XP`}
         className={cn(
-          "relative flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl border border-accent/40 bg-background/95 backdrop-blur-xl shadow-2xl transition-all hover:scale-[1.01] hover:border-accent/60 cursor-pointer select-none ring-1 ring-accent/20"
+          "relative flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl border border-accent/40 bg-background/95 backdrop-blur-xl shadow-2xl transition-all hover:border-accent/60 cursor-pointer select-none ring-1 ring-accent/20"
         )}
       >
+        {/* Subtle accent ring pulse on entrance that settles into normal UI */}
+        {cinematic && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.8, 0] }}
+            transition={{ delay: 1.25, duration: 0.65, ease: "easeOut" }}
+            className="absolute inset-0 rounded-2xl ring-2 ring-accent/60 pointer-events-none"
+          />
+        )}
+
         {/* Left: Rank & Avatar */}
         <div className="flex items-center gap-3 min-w-0 flex-1">
           {/* Rank highlight */}
@@ -101,7 +133,7 @@ export function CurrentUserRankBanner({
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

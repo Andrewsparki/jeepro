@@ -34,7 +34,7 @@ export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
           animate={{ height: 64, opacity: 1, y: 0 }}
           exit={{ height: 0, opacity: 0, y: -20, overflow: 'hidden' }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-white/5 bg-background/80 px-6 backdrop-blur-md shadow-soft"
+          className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-border/40 bg-background/80 px-6 backdrop-blur-md shadow-xs"
         >
           <div className="flex items-center gap-4">
             <MobileNav />
@@ -53,12 +53,12 @@ export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
           <div className="flex items-center gap-2">
             <Button 
               variant="ghost" 
-              className="text-muted-foreground hover:bg-white/5 hover:text-foreground hidden sm:flex items-center gap-2 rounded-full px-4"
+              className="text-muted-foreground hover:bg-muted/50 hover:text-foreground hidden sm:flex items-center gap-2 rounded-full px-4"
               onClick={() => setIsOpen(true)}
             >
               <Search className="h-4 w-4" />
               <span className="text-sm">Search</span>
-              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 ml-2">
+              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-border/60 bg-muted/60 px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 ml-2">
                 <span className="text-xs">⌘</span>K
               </kbd>
             </Button>

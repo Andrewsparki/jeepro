@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Square, RotateCcw, Maximize, Minimize, Settings2, Settings } from "lucide-react";
+import { Play, Pause, Square, RotateCcw, Maximize, Minimize, Settings2, Settings, PictureInPicture2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFocusStore } from "../store/focus-store";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -16,9 +16,11 @@ interface FocusControlsProps {
   onTogglePlayPause: () => void;
   onEnd: () => void;
   onRestart: () => void;
+  onPopOut: () => void;
+  isPipOpen: boolean;
 }
 
-export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }: FocusControlsProps) {
+export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart, onPopOut, isPipOpen }: FocusControlsProps) {
   const { isImmersive, toggleImmersive, defaultStudyTime, setDefaultStudyTime, timerMode, setTimerMode } = useFocusStore();
   const { playSound } = useSettings();
 
@@ -94,8 +96,30 @@ export function FocusControls({ isActive, onTogglePlayPause, onEnd, onRestart }:
         </motion.button>
       </div>
 
-      {/* Secondary Controls (Immersive & Settings) */}
+      {/* Secondary Controls (Pop Out, Immersive & Settings) */}
       <div className="flex items-center gap-4">
+        <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }} transition={premiumTransition}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              playSound("swish");
+              onPopOut();
+            }}
+            className={cn(
+              "rounded-full px-5 h-10 border transition-all shadow-sm",
+              isPipOpen
+                ? "bg-accent/15 text-accent hover:bg-accent/25 border-accent/30 hover:shadow-[0_8px_30px_rgba(var(--accent),0.15)]"
+                : "border-white/5 text-muted-foreground bg-white/5 hover:bg-white/10 hover:text-foreground hover:border-white/10 hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]"
+            )}
+            title="Pop Out Timer (P)"
+            style={{ transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)", transitionDuration: "250ms" }}
+          >
+            {isPipOpen ? <X className="w-4 h-4 mr-2" /> : <PictureInPicture2 className="w-4 h-4 mr-2" />}
+            {isPipOpen ? "Close Float" : "Pop Out"}
+          </Button>
+        </motion.div>
+
         <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }} transition={premiumTransition}>
           <Button
             variant="ghost"

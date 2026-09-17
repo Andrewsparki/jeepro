@@ -171,6 +171,7 @@ export function ChatMessageList({
       <div
         ref={containerRef}
         onScroll={handleScroll}
+        data-lenis-prevent
         className="flex-1 overflow-y-auto px-1 sm:px-2 py-4 space-y-1 overscroll-contain"
         role="log"
         aria-live="polite"

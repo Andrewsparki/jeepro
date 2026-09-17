@@ -14,7 +14,7 @@ export interface UserSettings {
   breakReminder: boolean;
 
   // Appearance & Viewports
-  activeTheme: "midnight" | "amoled" | "titanium";
+  activeTheme: "midnight" | "amoled" | "titanium" | "light";
   viewStyle: "carousel" | "grid";
   detailType: "page" | "modal";
   useFormulas: boolean;

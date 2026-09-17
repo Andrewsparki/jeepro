@@ -27,9 +27,9 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
           disabled={disabled}
           type={showPassword ? "text" : "password"}
           className={cn(
-            "h-12 w-full min-w-0 rounded-md border border-white/10 bg-white/5 px-3 py-1 pr-11 text-base shadow-sm transition-all duration-200 ease-out outline-none selection:bg-accent selection:text-white placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-            "hover:border-white/20 hover:bg-white/10",
-            "focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            "h-12 w-full min-w-0 rounded-md border border-border bg-input/40 px-3 py-1 pr-11 text-base text-foreground shadow-xs transition-all duration-200 ease-out outline-none selection:bg-accent selection:text-white placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-white/10 dark:bg-white/5",
+            "hover:border-border/80 hover:bg-input/60 dark:hover:border-white/20 dark:hover:bg-white/10",
+            "focus-visible:border-accent focus-visible:ring-1 focus-visible:ring-accent",
             "aria-invalid:border-destructive aria-invalid:ring-destructive/20",
             className
           )}
@@ -40,7 +40,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
           aria-label={showPassword ? "Hide password" : "Show password"}
           onClick={() => setShowPassword((prev) => !prev)}
           whileTap={{ scale: 0.95 }}
-          className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground/60 hover:text-foreground hover:bg-white/5 transition-colors duration-200 outline-none focus-visible:ring-1 focus-visible:ring-accent/50 cursor-pointer select-none"
+          className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-200 outline-none focus-visible:ring-1 focus-visible:ring-accent/50 cursor-pointer select-none"
         >
           <motion.svg
             xmlns="http://www.w3.org/2000/svg"

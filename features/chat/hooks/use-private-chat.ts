@@ -407,6 +407,15 @@ export function usePrivateChat(otherUserId: string) {
       globalPresenceChannelRef.current = null;
     }
 
+    // Clean up any existing active/joined channels for jee_global_chat before adding presence listeners
+    const stalePresence = supabase
+      .getChannels()
+      .filter((c: RealtimeChannel) => c.topic === "realtime:jee_global_chat");
+    stalePresence.forEach((c: RealtimeChannel) => {
+      c.unsubscribe();
+      supabase.removeChannel(c);
+    });
+
     // Shared global presence channel where active students broadcast presence
     const presenceChannel = supabase.channel("jee_global_chat");
     globalPresenceChannelRef.current = presenceChannel;
@@ -430,6 +439,7 @@ export function usePrivateChat(otherUserId: string) {
 
     return () => {
       presenceChannel.unsubscribe();
+      supabase.removeChannel(presenceChannel);
       globalPresenceChannelRef.current = null;
     };
   }, [user?.id, otherUserId]);

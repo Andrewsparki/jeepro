@@ -2,32 +2,32 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { siteConfig } from "@/constants/site";
 import { SidebarItem } from "./sidebar-item";
+import { BrandLogo } from "./brand-logo";
 import { 
   LayoutDashboard, 
   BookOpen, 
   Target, 
   LineChart, 
   Calendar, 
-  Settings,
-  LogOut,
-  History,
-  Crosshair,
-  MessageSquare,
-  Users,
-  Trophy,
-  Award,
-  ChevronDown,
-  ChevronRight,
-  Mail
+  Settings, 
+  LogOut, 
+  History, 
+  Crosshair, 
+  MessageSquare, 
+  Users, 
+  Trophy, 
+  Award, 
+  ChevronDown, 
+  ChevronRight, 
+  GraduationCap 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import { logout } from "@/features/auth/actions/auth";
 import { useFocusStore } from "@/features/focus/store/focus-store";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { FixedPortal } from "@/components/ui/fixed-portal";
 import { useSettings } from "@/providers/settings-provider";
@@ -60,10 +60,11 @@ export function Sidebar() {
   const isHidden = pathname === "/dashboard/focus" && isImmersive;
 
   const socialNav = [
-    { href: "/chat", label: "Global Chat", icon: <MessageSquare className="h-5 w-5" />, badge: totalUnreadCount },
-    { href: "/friends", label: "Friends", icon: <Users className="h-5 w-5" />, badge: pendingReceived?.length || 0 },
-    { href: "/leaderboard", label: "Leaderboard", icon: <Trophy className="h-5 w-5" /> },
-    { href: "/achievements", label: "Achievements", icon: <Award className="h-5 w-5" /> },
+    { href: "/dashboard/chat", label: "Global Chat", icon: <MessageSquare className="h-5 w-5" />, badge: totalUnreadCount },
+    { href: "/dashboard/friends", label: "Friends", icon: <Users className="h-5 w-5" />, badge: pendingReceived?.length || 0 },
+    { href: "/dashboard/groups", label: "Study Groups", icon: <GraduationCap className="h-5 w-5" /> },
+    { href: "/dashboard/leaderboard", label: "Leaderboard", icon: <Trophy className="h-5 w-5" /> },
+    { href: "/dashboard/achievements", label: "Achievements", icon: <Award className="h-5 w-5" /> },
   ];
 
   return (
@@ -75,50 +76,49 @@ export function Sidebar() {
             animate={{ width: 260, opacity: 1, x: 0 }}
             exit={{ width: 0, opacity: 0, x: -50 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="hidden flex-col border-r border-border/40 bg-background/95 md:flex fixed top-0 bottom-0 left-0 z-30 overflow-hidden whitespace-nowrap"
+            className="hidden flex-col border-r border-border/60 bg-secondary/95 dark:bg-background/95 md:flex fixed top-0 bottom-0 left-0 z-30 overflow-hidden whitespace-nowrap"
           >
-            <div className="flex h-[64px] items-center justify-between px-6 border-b border-border/40 shrink-0">
-              <Link href="/dashboard" className="flex items-center gap-2 font-bold tracking-tight text-lg">
-                <div className="h-6 w-6 rounded-md bg-foreground flex items-center justify-center shrink-0">
-                  <span className="text-background text-xs font-black">J</span>
-                </div>
-                <span className="truncate">{siteConfig.name}</span>
+            <div className="flex h-[60px] items-center justify-between px-4 border-b border-border/25 shrink-0">
+              <Link href="/dashboard" className="outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-md">
+                <BrandLogo size="md" />
               </Link>
               <ThemeSwitcher className="shrink-0" />
             </div>
 
             <div className="flex-1 overflow-y-auto py-6 px-4">
-              <nav className="flex flex-col gap-1">
-                {mainNav.map((item) => (
-                  <SidebarItem key={item.href} {...item} />
-                ))}
-              </nav>
+              <LayoutGroup id="sidebar-nav">
+                <nav className="flex flex-col gap-1">
+                  {mainNav.map((item) => (
+                    <SidebarItem key={item.href} {...item} />
+                  ))}
+                </nav>
 
-              <div className="mt-6 mb-2">
-                <button 
-                  onClick={() => setIsSocialOpen(!isSocialOpen)}
-                  className="flex w-full items-center justify-between px-3 py-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
-                >
-                  SOCIAL
-                  {isSocialOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-                </button>
-                
-                <AnimatePresence initial={false}>
-                  {isSocialOpen && (
-                    <motion.nav 
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2, ease: "easeInOut" }}
-                      className="flex flex-col gap-1 mt-2 overflow-hidden"
-                    >
-                      {socialNav.map((item) => (
-                        <SidebarItem key={item.href} {...item} />
-                      ))}
-                    </motion.nav>
-                  )}
-                </AnimatePresence>
-              </div>
+                <div className="mt-6 mb-2">
+                  <button 
+                    onClick={() => setIsSocialOpen(!isSocialOpen)}
+                    className="flex w-full items-center justify-between px-3 py-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+                  >
+                    SOCIAL
+                    {isSocialOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                  </button>
+                  
+                  <AnimatePresence initial={false}>
+                    {isSocialOpen && (
+                      <motion.nav 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2, ease: "easeInOut" }}
+                        className="flex flex-col gap-1 mt-2 overflow-hidden"
+                      >
+                        {socialNav.map((item) => (
+                          <SidebarItem key={item.href} {...item} />
+                        ))}
+                      </motion.nav>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </LayoutGroup>
             </div>
 
             <div className="p-4 border-t border-border/40 flex flex-col gap-1 shrink-0">

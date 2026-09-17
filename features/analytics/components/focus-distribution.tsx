@@ -161,18 +161,18 @@ export function FocusDistribution({ sessions }: FocusDistributionProps) {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       return (
-                        <div className="bg-[#0a0a0c]/95 border border-blue-500/10 backdrop-blur-xl p-3 rounded-xl shadow-2xl z-50 min-w-[140px]">
+                        <div className="bg-popover/95 border border-border/70 text-popover-foreground backdrop-blur-xl p-3 rounded-xl shadow-strong z-50 min-w-[140px]">
                           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
                             {data.name}
                           </p>
                           <div className="flex items-center justify-between gap-4">
                             <div className="flex items-center gap-1.5">
                               <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: data.legendColor, boxShadow: `0 0 8px ${data.legendColor}` }} />
-                              <span className="text-xs font-semibold text-white">Sessions</span>
+                              <span className="text-xs font-semibold text-foreground">Sessions</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-bold text-white">{data.value}</span>
-                              <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md border border-blue-500/20">{data.percentage}%</span>
+                              <span className="text-xs font-bold text-foreground">{data.value}</span>
+                              <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md border border-blue-500/20">{data.percentage}%</span>
                             </div>
                           </div>
                         </div>

@@ -109,20 +109,20 @@ export function XPGrowthChart({ events }: XPGrowthChartProps) {
                 dx={-5}
               />
               <Tooltip 
-                 cursor={{ stroke: 'rgba(255,255,255,0.05)', strokeWidth: 30 }}
+                 cursor={{ stroke: 'rgba(100,116,139,0.1)', strokeWidth: 30 }}
                  content={({ active, payload }) => {
                    if (active && payload && payload.length) {
                      return (
-                       <div className="bg-[#0a0a0c]/95 border border-white/5 p-3 rounded-xl shadow-2xl z-50 min-w-[120px]">
+                       <div className="bg-popover/95 border border-border/70 text-popover-foreground p-3 rounded-xl shadow-strong z-50 min-w-[120px]">
                          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
                            {payload[0].payload.displayDate}
                          </p>
                          <div className="flex items-center justify-between gap-4">
                            <div className="flex items-center gap-1.5">
                              <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.8)]" />
-                             <span className="text-xs font-semibold text-white">XP</span>
+                             <span className="text-xs font-semibold text-foreground">XP</span>
                            </div>
-                           <span className="text-xs font-bold text-yellow-500">{payload[0]?.value}</span>
+                           <span className="text-xs font-bold text-yellow-600 dark:text-yellow-500">{payload[0]?.value}</span>
                          </div>
                        </div>
                      );

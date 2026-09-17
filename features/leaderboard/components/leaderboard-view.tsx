@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useLeaderboard } from "../hooks/use-leaderboard";
 import { LeaderboardPodium } from "./leaderboard-podium";
@@ -36,13 +37,30 @@ export function LeaderboardView() {
   } = useLeaderboard();
 
   const { resize } = useSmoothScroll();
+  const shouldReduceMotion = useReducedMotion();
+
+  // Cinematic entrance is triggered on initial page mount when data arrives.
+  // Filter/tab switches (scope/period) use lightweight transitions instead of replaying the entire assembly.
+  const [isInitialEntrance, setIsInitialEntrance] = useState(true);
+  const isCinematic = isInitialEntrance && !shouldReduceMotion;
+
+  useEffect(() => {
+    if (!isLoading && entries.length > 0 && isInitialEntrance) {
+      // Allow entrance sequence to finish (~1.4s), then set initial entrance to false for snappy filter changes
+      const timer = setTimeout(() => {
+        setIsInitialEntrance(false);
+        resize();
+      }, 1450);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, entries.length, isInitialEntrance, resize]);
 
   // Public profile modal state
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // Synchronize Locomotive Scroll dimensions when content height shifts (tabs, filters, loaded data)
-  React.useEffect(() => {
+  useEffect(() => {
     resize();
   }, [scope, period, entries.length, isLoading, resize]);
 
@@ -62,8 +80,13 @@ export function LeaderboardView() {
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 pb-24">
-      {/* ── 1. Header & Controls ───────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-5">
+      {/* ── 1. Header & Controls (Phase 1: Atmosphere 0–250ms) ──────── */}
+      <motion.div
+        initial={isCinematic && !shouldReduceMotion ? { opacity: 0, y: 8 } : false}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/40 pb-5"
+      >
         <div>
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-accent/15 border border-accent/30 text-accent flex items-center justify-center shrink-0 shadow-sm">
@@ -84,67 +107,81 @@ export function LeaderboardView() {
         </div>
 
         {/* Scope Tabs: Global vs Friends */}
-        <div className="flex items-center gap-1 p-1 bg-muted/60 backdrop-blur-md rounded-xl border border-border/40 self-start sm:self-auto">
-          <button
-            onClick={() => setScope("global")}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-              scope === "global"
-                ? "bg-background text-foreground shadow-sm font-bold"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-            aria-selected={scope === "global"}
-            role="tab"
-          >
-            <Globe className="w-3.5 h-3.5" />
-            Global
-          </button>
-          <button
-            onClick={() => setScope("friends")}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-              scope === "friends"
-                ? "bg-background text-foreground shadow-sm font-bold"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-            aria-selected={scope === "friends"}
-            role="tab"
-          >
-            <Users className="w-3.5 h-3.5" />
-            Friends
-          </button>
+        <div className="flex items-center gap-1 p-1 bg-muted/60 backdrop-blur-md rounded-xl border border-border/40 self-start sm:self-auto relative">
+          {(["global", "friends"] as const).map((s) => {
+            const isActive = scope === s;
+            const Icon = s === "global" ? Globe : Users;
+            const label = s === "global" ? "Global" : "Friends";
+
+            return (
+              <button
+                key={s}
+                onClick={() => setScope(s)}
+                className={cn(
+                  "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-200 z-10 select-none",
+                  isActive
+                    ? "text-foreground font-bold"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+                aria-selected={isActive}
+                role="tab"
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeLeaderboardScope"
+                    className="absolute inset-0 bg-background rounded-lg shadow-sm -z-10"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <Icon className="w-3.5 h-3.5" />
+                {label}
+              </button>
+            );
+          })}
         </div>
-      </div>
+      </motion.div>
 
       {/* ── 2. Time Filter Bar ─────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-surface/50 border border-border/40 relative">
           {(
             [
               { id: "weekly", label: "Weekly" },
               { id: "monthly", label: "Monthly" },
               { id: "all_time", label: "All Time" },
             ] as { id: LeaderboardPeriod; label: string }[]
-          ).map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setPeriod(t.id)}
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent border",
-                period === t.id
-                  ? "bg-accent/15 border-accent/40 text-accent font-bold shadow-sm"
-                  : "bg-surface/40 border-transparent text-muted-foreground hover:text-foreground hover:bg-surface/80"
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
+          ).map((t) => {
+            const isActive = period === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setPeriod(t.id)}
+                className={cn(
+                  "relative px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 z-10 select-none",
+                  isActive
+                    ? "text-accent font-bold"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeLeaderboardPeriod"
+                    className="absolute inset-0 bg-accent/15 border border-accent/40 rounded-lg shadow-xs -z-10"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+                {t.label}
+              </button>
+            );
+          })}
         </div>
 
-        <button
+        <motion.button
+          whileHover={shouldReduceMotion ? undefined : { scale: 1.04 }}
+          whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
           onClick={() => refresh()}
           disabled={isLoading || isRefreshing}
-          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2.5 py-1 rounded-md hover:bg-muted/40"
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2.5 py-1 rounded-md hover:bg-muted/40 cursor-pointer disabled:opacity-50"
           aria-label="Refresh leaderboard data"
         >
           <RefreshCw
@@ -154,7 +191,7 @@ export function LeaderboardView() {
             )}
           />
           <span className="hidden sm:inline">Refresh</span>
-        </button>
+        </motion.button>
       </div>
 
       {/* ── 3. Main Content: Loading, Error, Empty, or Podium + Rows ── */}
@@ -181,7 +218,7 @@ export function LeaderboardView() {
               together.
             </p>
           </div>
-          <Link href="/friends">
+          <Link href="/dashboard/friends">
             <Button size="sm" className="gap-2">
               <UserPlus className="w-4 h-4" />
               Find Friends
@@ -198,26 +235,34 @@ export function LeaderboardView() {
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Top 3 Podium */}
+          {/* Top 3 Podium with Cinematic Reveal Sequence */}
           {podiumEntries.length > 0 && (
             <LeaderboardPodium
               entries={podiumEntries}
+              isCinematic={isCinematic}
               onUserClick={handleUserClick}
             />
           )}
 
-          {/* Ranks 4+ List */}
+          {/* Ranks 4+ List with Staggered Locking Cascade */}
           {listEntries.length > 0 && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between px-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+              <motion.div
+                initial={isCinematic && !shouldReduceMotion ? { opacity: 0, y: 6 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: isCinematic ? 1.02 : 0, duration: 0.25 }}
+                className="flex items-center justify-between px-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider"
+              >
                 <span>Rank & Aspirant</span>
                 <span>Score</span>
-              </div>
+              </motion.div>
               <div className="space-y-1.5">
-                {listEntries.map((entry) => (
+                {listEntries.map((entry, index) => (
                   <LeaderboardRow
                     key={entry.userId}
                     entry={entry}
+                    index={index}
+                    isCinematic={isCinematic}
                     onUserClick={handleUserClick}
                   />
                 ))}
@@ -231,6 +276,7 @@ export function LeaderboardView() {
       {!isLoading && userRank && (
         <CurrentUserRankBanner
           userRank={userRank}
+          isCinematic={isCinematic}
           onUserClick={handleUserClick}
         />
       )}

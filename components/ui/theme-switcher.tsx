@@ -2,11 +2,13 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Moon, Sun, Contrast } from "lucide-react";
+import { Moon, Contrast, Layers, SunMedium } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSettings } from "@/providers/settings-provider";
 
 export function ThemeSwitcher({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme();
+  const { updateSetting } = useSettings();
   const [mounted, setMounted] = useState(false);
 
   // Avoid hydration mismatch by waiting for mount
@@ -16,30 +18,46 @@ export function ThemeSwitcher({ className }: { className?: string }) {
   }, []);
 
   if (!mounted) {
-    return <div className={cn("w-9 h-9 rounded-full bg-surface animate-pulse", className)} />;
+    return <div className={cn("w-7 h-7 rounded-md bg-muted/30 animate-pulse", className)} />;
   }
 
   const cycleTheme = () => {
-    if (theme === "midnight") setTheme("amoled");
-    else if (theme === "amoled") setTheme("light");
-    else setTheme("midnight");
+    let nextTheme = "midnight";
+    if (theme === "midnight") nextTheme = "amoled";
+    else if (theme === "amoled") nextTheme = "titanium";
+    else if (theme === "titanium") nextTheme = "light";
+    else nextTheme = "midnight";
+
+    setTheme(nextTheme);
+    updateSetting("activeTheme", nextTheme as "midnight" | "amoled" | "titanium" | "light");
   };
+
+  const themeLabel = 
+    theme === "light" 
+      ? "Daylight" 
+      : theme === "titanium" 
+      ? "Titanium" 
+      : theme === "amoled" 
+      ? "AMOLED" 
+      : "Midnight";
 
   return (
     <button
       onClick={cycleTheme}
       className={cn(
-        "flex items-center justify-center w-9 h-9 rounded-full transition-all duration-normal ease-fluid",
-        "bg-surface hover:bg-surface-hover text-muted-foreground hover:text-foreground border border-transparent hover:border-glass-border",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+        "flex items-center justify-center w-7 h-7 rounded-md transition-all duration-150",
+        "bg-transparent hover:bg-muted/40 text-muted-foreground/80 hover:text-foreground border border-border/30 hover:border-border/60",
+        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring select-none",
         className
       )}
       aria-label="Toggle Theme"
-      title={`Current Theme: ${theme?.charAt(0).toUpperCase()}${theme?.slice(1)}`}
+      title={`Theme: ${themeLabel}`}
     >
-      {theme === "midnight" && <Moon size={18} />}
-      {theme === "amoled" && <Contrast size={18} />}
-      {theme === "light" && <Sun size={18} />}
+      {theme === "midnight" && <Moon size={13} className="stroke-[1.75]" />}
+      {theme === "amoled" && <Contrast size={13} className="stroke-[1.75]" />}
+      {theme === "titanium" && <Layers size={13} className="stroke-[1.75]" />}
+      {theme === "light" && <SunMedium size={13} className="stroke-[1.75]" />}
     </button>
   );
 }
+

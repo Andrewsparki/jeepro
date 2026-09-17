@@ -111,7 +111,7 @@ export function MotivationalQuotes() {
     >
       
       {/* Decorative Quote Icon */}
-      <Quote className="absolute top-4 left-4 w-6 h-6 text-white/5 opacity-50 rotate-180 pointer-events-none" />
+      <Quote className="absolute top-4 left-4 w-6 h-6 text-foreground/10 opacity-50 rotate-180 pointer-events-none" />
       
       {/* Tiny Progress Indicator */}
       <div className="absolute top-4 right-5 text-[9px] font-semibold tracking-[0.2em] uppercase text-muted-foreground/40 pointer-events-none">
@@ -127,7 +127,7 @@ export function MotivationalQuotes() {
           className={cn(
             "p-2 rounded-full transition-all duration-300 outline-none shrink-0",
             canGoBack 
-              ? "text-muted-foreground hover:text-foreground hover:bg-white/5 active:scale-95" 
+              ? "text-muted-foreground hover:text-foreground hover:bg-muted/50 active:scale-95" 
               : "text-muted-foreground/20 cursor-not-allowed opacity-50"
           )}
           aria-label="Previous quote"
@@ -140,13 +140,13 @@ export function MotivationalQuotes() {
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
-              initial={{ opacity: 0, filter: "blur(4px)", y: 2 }}
-              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-              exit={{ opacity: 0, filter: "blur(4px)", y: -2 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col items-center"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="px-4"
             >
-              <h4 className="text-lg sm:text-xl md:text-2xl font-serif tracking-tight text-foreground/90 leading-relaxed max-w-[90%]">
+              <h4 className="text-sm sm:text-base md:text-lg font-medium text-foreground tracking-tight leading-relaxed italic max-w-2xl mx-auto">
                 &quot;{currentQuote.text}&quot;
               </h4>
               <p className="mt-4 text-[11px] uppercase tracking-widest font-semibold text-muted-foreground/70">
@@ -159,7 +159,7 @@ export function MotivationalQuotes() {
         {/* Next Button */}
         <button 
           onClick={handleNext}
-          className="p-2 shrink-0 rounded-full text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all duration-300 outline-none active:scale-95"
+          className="p-2 shrink-0 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300 outline-none active:scale-95"
           aria-label="Next quote"
         >
           <ChevronRight className="w-5 h-5" />

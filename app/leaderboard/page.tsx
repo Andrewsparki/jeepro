@@ -1,11 +1,5 @@
-import { Metadata } from "next";
-import { LeaderboardView } from "@/features/leaderboard/components/leaderboard-view";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Leaderboard | JEE Pro",
-  description: "Track your JEE preparation rank, XP milestones, and compare progress with peers.",
-};
-
-export default function LeaderboardPage() {
-  return <LeaderboardView />;
+export default function LeaderboardRedirect() {
+  redirect("/dashboard/leaderboard");
 }

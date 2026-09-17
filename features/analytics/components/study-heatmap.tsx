@@ -82,12 +82,12 @@ export function StudyHeatmap({ sessions, weeksCount = 22 }: StudyHeatmapProps) {
 
   const getColorClass = (level: number) => {
     switch (level) {
-      case 0: return "bg-white/[0.03] border-white/[0.04] hover:border-white/30";
+      case 0: return "bg-slate-100 border-slate-200/80 hover:border-slate-300 dark:bg-white/[0.03] dark:border-white/[0.04] dark:hover:border-white/30";
       case 1: return "bg-blue-950/80 border-blue-500/30 text-blue-400 hover:border-blue-400 hover:brightness-125";
       case 2: return "bg-blue-600/70 border-blue-400/40 text-white shadow-[0_0_8px_rgba(59,130,246,0.3)] hover:border-blue-300 hover:brightness-125";
       case 3: return "bg-blue-500 border-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:border-white hover:brightness-125";
       case 4: return "bg-sky-400 border-white shadow-[0_0_16px_rgba(56,189,248,0.8)] hover:border-white hover:brightness-125";
-      default: return "bg-white/[0.03] border-white/[0.04]";
+      default: return "bg-slate-100 border-slate-200/80 dark:bg-white/[0.03] dark:border-white/[0.04]";
     }
   };
 
@@ -175,7 +175,7 @@ export function StudyHeatmap({ sessions, weeksCount = 22 }: StudyHeatmapProps) {
                   )}
                 >
                   {/* Crisp Tooltip without backdrop filter blur artifacts */}
-                  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover/cell:opacity-100 transition-opacity duration-200 pointer-events-none z-50 w-max shadow-2xl rounded-xl px-3 py-1.5 text-xs font-semibold text-foreground bg-[#0a0a0c] border border-white/10">
+                  <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover/cell:opacity-100 transition-opacity duration-200 pointer-events-none z-50 w-max shadow-strong rounded-xl px-3 py-1.5 text-xs font-semibold text-popover-foreground bg-popover border border-border/70">
                     {getTooltipText(day.date, day.duration)}
                   </div>
                 </div>
@@ -188,13 +188,13 @@ export function StudyHeatmap({ sessions, weeksCount = 22 }: StudyHeatmapProps) {
       </div>
 
       {/* Legend Footer */}
-      <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest text-muted-foreground/70 px-6 pb-6 pt-2 border-t border-white/[0.03] relative z-10">
+      <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest text-muted-foreground/70 px-6 pb-6 pt-2 border-t border-border/50 relative z-10">
         <span className="text-muted-foreground/50">Past {weeksCount} Weeks Activity</span>
 
         <div className="flex items-center gap-2">
           <span>Less</span>
           <div className="flex gap-1.5 items-center">
-            <div className="w-3 h-3 rounded-[3px] bg-white/[0.03] border border-white/[0.04]" />
+            <div className="w-3 h-3 rounded-[3px] bg-slate-100 border border-slate-200/80 dark:bg-white/[0.03] dark:border-white/[0.04]" />
             <div className="w-3 h-3 rounded-[3px] bg-blue-950/80 border border-blue-500/30" />
             <div className="w-3 h-3 rounded-[3px] bg-blue-600/70 border border-blue-400/40 shadow-[0_0_6px_rgba(59,130,246,0.3)]" />
             <div className="w-3 h-3 rounded-[3px] bg-blue-500 border border-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
