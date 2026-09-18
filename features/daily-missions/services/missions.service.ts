@@ -240,5 +240,10 @@ export async function updateMissionProgress(missionType: MissionType, valueToAdd
         }
       }
     }
+
+    // Trigger achievement evaluation on mission progress / XP change
+    import("@/features/achievements/services/achievements.service")
+      .then(({ AchievementsService }) => AchievementsService.evaluateAchievements(user.id))
+      .catch((achErr) => console.error("[DailyMissions] Error evaluating achievements:", achErr));
   }
 }

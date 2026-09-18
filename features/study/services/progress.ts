@@ -66,23 +66,61 @@ export async function clearAllStudySessions(): Promise<boolean> {
   return true;
 }
 
+export async function resetAccountProgress(): Promise<boolean> {
+  try {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    // Execute atomic server-side RPC first
+    const { error: rpcError } = await supabase.rpc("reset_user_account_progress", { p_user_id: user.id });
+
+    if (rpcError) {
+      console.warn("RPC reset_user_account_progress error/fallback:", rpcError.message);
+      
+      // Fallback: Delete across all progression tables directly
+      await Promise.allSettled([
+        supabase.from("user_topic_progress").delete().eq("user_id", user.id),
+        supabase.from("study_sessions").delete().eq("user_id", user.id),
+        supabase.from("user_achievements").delete().eq("user_id", user.id),
+        supabase.from("daily_missions").delete().eq("user_id", user.id),
+        supabase.from("progress").delete().eq("user_id", user.id),
+        supabase.from("daily_progress").delete().eq("user_id", user.id),
+        supabase.from("xp_history").delete().eq("user_id", user.id),
+        supabase.from("user_resume_state").delete().eq("user_id", user.id),
+        supabase.from("planner_events").update({ status: "pending" }).eq("user_id", user.id).eq("status", "completed"),
+      ]);
+    }
+
+    return true;
+  } catch (err) {
+    console.error("resetAccountProgress error:", err);
+    return false;
+  }
+}
+
 export async function getUserProgress(): Promise<UserTopicProgress[]> {
-  const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
-  
-  const { data: progress, error } = await supabase
-    .from("user_topic_progress")
-    .select("*")
-    .eq("user_id", user.id);
+  try {
+    const supabase = createClient();
     
-  if (error) {
-    console.error("Error fetching user progress:", error.message, error.details, error.hint);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    
+    const { data: progress, error } = await supabase
+      .from("user_topic_progress")
+      .select("*")
+      .eq("user_id", user.id);
+      
+    if (error) {
+      console.error("Error fetching user progress:", error.message, error.details, error.hint);
+      return [];
+    }
+    
+    return (progress || []) as UserTopicProgress[];
+  } catch (err) {
+    console.error("getUserProgress error:", err);
     return [];
   }
-  
-  return progress as UserTopicProgress[];
 }
 
 export async function updateTopicProgress(topicId: string, status: ProgressStatus): Promise<UserTopicProgress | null> {
@@ -269,6 +307,12 @@ export async function updateSubjectProgress(subjectSlug: string, status: Progres
     }
   }
 
+  if (status === "Mastered") {
+    import("@/features/achievements/services/achievements.service")
+      .then(({ AchievementsService }) => AchievementsService.evaluateAchievements(user.id))
+      .catch((err) => console.error("Error evaluating achievements after subject update:", err));
+  }
+
   return (data || []) as UserTopicProgress[];
 }
 
@@ -364,16 +408,18 @@ export async function saveStudySession({
 
 import { getSyllabus, getChapterBySlug, getSubjectBySlug } from "@/features/syllabus/services/syllabus";
 import { calculateXPAndLevel, getAchievements, generateXPEvents } from "@/features/gamification/services/gamification";
+import { AchievementsService } from "@/features/achievements/services/achievements.service";
 import { getPlannerEvents } from "@/features/planner/services/planner.service";
 import { getTodayMissions, getAllCompletedMissions } from "@/features/daily-missions/services/missions.service";
 
 export async function getDashboardMetrics() {
-  const [progress, sessions, syllabus, allEvents, allCompletedMissions] = await Promise.all([
+  const [progress, sessions, syllabus, allEvents, allCompletedMissions, realAchievements] = await Promise.all([
     getUserProgress(),
     getStudySessions(),
     getSyllabus(),
     getPlannerEvents(),
-    getAllCompletedMissions()
+    getAllCompletedMissions(),
+    AchievementsService.getUserAchievements().catch(() => [])
   ]);
 
   // Reuse already-fetched sessions to avoid duplicate database query when daily missions are generated
@@ -428,9 +474,21 @@ export async function getDashboardMetrics() {
   }
 
   // Gamification
-  const xpDetails = calculateXPAndLevel(sessions, progress, syllabus, allCompletedMissions);
-  const achievements = getAchievements(sessions, progress, syllabus, currentStreak);
-  const xpEvents = generateXPEvents(sessions, progress, syllabus, allCompletedMissions);
+  const unlockedAchievementsList = realAchievements.filter(a => a.unlocked);
+  const achievementXP = unlockedAchievementsList.reduce((sum, a) => sum + (a.xp_reward || 0), 0);
+
+  const xpDetails = calculateXPAndLevel(sessions, progress, syllabus, allCompletedMissions, achievementXP);
+  const achievements = realAchievements.length > 0
+    ? realAchievements.map(a => ({
+        id: a.id,
+        title: a.title,
+        description: a.description,
+        icon: a.icon,
+        unlocked: a.unlocked,
+        unlockedAt: a.unlocked_at || undefined,
+      }))
+    : getAchievements(sessions, progress, syllabus, currentStreak);
+  const xpEvents = generateXPEvents(sessions, progress, syllabus, allCompletedMissions, unlockedAchievementsList);
 
   // Last active chapter for Continue Learning
   let lastActiveChapter = null;

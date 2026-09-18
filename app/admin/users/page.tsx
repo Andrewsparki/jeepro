@@ -71,17 +71,17 @@ export default function AdminUsersPage() {
   const columns = [
     {
       key: "user",
-      label: "User",
+      label: "Student Profile",
       render: (item: UserItem) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-white/[0.06] border border-white/[0.06] flex items-center justify-center shrink-0">
-            <span className="text-xs font-medium text-zinc-400">
+          <div className="w-8 h-8 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center shrink-0">
+            <span className="text-xs font-semibold text-zinc-300">
               {(item.full_name || item.email)?.[0]?.toUpperCase() || "?"}
             </span>
           </div>
           <div className="min-w-0">
-            <p className="text-sm text-zinc-200 truncate">
-              {item.full_name || "—"}
+            <p className="text-sm font-medium text-white truncate">
+              {item.full_name || "Anonymous Student"}
             </p>
             <p className="text-xs text-zinc-500 truncate">{item.email}</p>
           </div>
@@ -92,7 +92,7 @@ export default function AdminUsersPage() {
       key: "target_exam",
       label: "Target",
       render: (item: UserItem) => (
-        <span className="text-xs text-zinc-400">
+        <span className="text-xs text-zinc-400 font-medium">
           {item.target_exam || "—"}
         </span>
       ),
@@ -101,7 +101,7 @@ export default function AdminUsersPage() {
       key: "study_sessions_count",
       label: "Sessions",
       render: (item: UserItem) => (
-        <span className="text-sm text-zinc-300 tabular-nums">
+        <span className="text-sm text-zinc-200 tabular-nums font-mono">
           {item.study_sessions_count}
         </span>
       ),
@@ -110,25 +110,31 @@ export default function AdminUsersPage() {
       key: "topics_mastered_count",
       label: "Mastered",
       render: (item: UserItem) => (
-        <span className="text-sm text-zinc-300 tabular-nums">
+        <span className="text-sm text-zinc-200 tabular-nums font-mono">
           {item.topics_mastered_count}
         </span>
       ),
     },
     {
       key: "is_admin",
-      label: "Role",
+      label: "Permissions",
       render: (item: UserItem) => (
-        <span className={item.is_admin ? "text-xs font-medium text-amber-400" : "text-xs text-zinc-500"}>
-          {item.is_admin ? "Admin" : "Student"}
+        <span
+          className={
+            item.is_admin
+              ? "px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono"
+              : "px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/[0.04] text-zinc-400 border border-white/[0.06]"
+          }
+        >
+          {item.is_admin ? "Administrator" : "Student"}
         </span>
       ),
     },
     {
       key: "created_at",
-      label: "Joined",
+      label: "Enrolled",
       render: (item: UserItem) => (
-        <span className="text-xs text-zinc-500 tabular-nums">
+        <span className="text-xs text-zinc-500 tabular-nums font-mono">
           {new Date(item.created_at).toLocaleDateString()}
         </span>
       ),
@@ -137,11 +143,20 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-6 max-w-7xl">
-      <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Users</h1>
-        <p className="text-sm text-zinc-500 mt-1">
-          Manage and inspect registered users
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-white tracking-tight">Student Accounts</h1>
+            {data && (
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/[0.04] border border-white/[0.08] text-zinc-300 font-mono">
+                {data.total} Registered
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-zinc-400 mt-1">
+            Search, inspect analytics, and audit individual student learning progress
+          </p>
+        </div>
       </div>
 
       <AdminDataTable<UserItem>
@@ -153,11 +168,11 @@ export default function AdminUsersPage() {
         totalPages={data?.totalPages || 0}
         onPageChange={handlePageChange}
         onSearch={handleSearch}
-        searchPlaceholder="Search by name or email..."
+        searchPlaceholder="Filter by student name or email..."
         isLoading={isLoading}
         onRowClick={(item) => router.push(`/admin/users/${item.id}`)}
         keyExtractor={(item) => item.id}
-        emptyMessage="No users found."
+        emptyMessage="No matching student accounts found."
       />
     </div>
   );

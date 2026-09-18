@@ -1,20 +1,57 @@
 "use client";
 
-import { ShieldCheck, Download, Trash2, RotateCcw, Cloud, LogOut, AlertTriangle } from "lucide-react";
+import { useState } from "react";
+import { ShieldCheck, Download, Trash2, RotateCcw, Cloud, LogOut, AlertTriangle, Loader2 } from "lucide-react";
 import { GlassSection, SettingRow } from "../ui/glass-section";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useDialog } from "@/providers/dialog-provider";
 import { cn } from "@/lib/utils";
-
 import { useSettings } from "@/providers/settings-provider";
+import { resetAccountProgress } from "@/features/study/services/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export function PrivacySection() {
   const router = useRouter();
   const supabase = createClient();
   const { confirm } = useDialog();
   const { playSound } = useSettings();
+
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [confirmInput, setConfirmInput] = useState("");
+  const [isResetting, setIsResetting] = useState(false);
+
+  const handleResetProgress = async () => {
+    if (confirmInput.trim() !== "RESET" || isResetting) return;
+
+    setIsResetting(true);
+    try {
+      const success = await resetAccountProgress();
+      if (success) {
+        playSound("danger");
+        toast.success("Account progress reset successfully! All metrics restored to baseline.");
+        setIsResetModalOpen(false);
+        setConfirmInput("");
+        router.refresh();
+      } else {
+        toast.error("Failed to reset account progress. Please try again.");
+      }
+    } catch (err) {
+      console.error("Failed to reset account progress:", err);
+      toast.error("An unexpected error occurred during reset.");
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   return (
     <div id="privacy" className="flex flex-col gap-6">
@@ -122,40 +159,24 @@ export function PrivacySection() {
         </div>
 
         <div className="relative z-10 pt-2 flex flex-col">
-          {/* Reset Progress */}
+          {/* Reset Account Progress */}
           <SettingRow
-            title="Reset Topic Mastery"
-            description="Permanently delete all chapter XP, mastery ratings, and completed question checks."
+            title="Reset Account Progress"
+            description="Permanently reset all learning progress, achievements, levels, XP, mastery, streaks, and completed activity."
             icon={RotateCcw}
             iconGradient="from-amber-600 to-red-600"
           >
             <button
               type="button"
               className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-rose-500/30 text-rose-700 dark:text-rose-300 hover:bg-rose-500/15 bg-rose-500/10 text-xs font-semibold transition-all active:scale-95 shadow-sm cursor-pointer select-none"
-              onClick={async () => {
+              onClick={() => {
                 playSound("danger");
-                const isConfirmed = await confirm({
-                  title: "Reset Progress?",
-                  message: "Are you sure you want to reset all topic progress? This action cannot be undone.",
-                  variant: "destructive",
-                  confirmLabel: "Reset Progress",
-                });
-                if (isConfirmed) {
-                  const { data: { user } } = await supabase.auth.getUser();
-                  if (user) {
-                    const { error } = await supabase.from("user_topic_progress").delete().eq("user_id", user.id);
-                    if (error) {
-                      toast.error("Failed to reset progress.");
-                    } else {
-                      toast.success("All progress reset successfully.");
-                      router.refresh();
-                    }
-                  }
-                }
+                setConfirmInput("");
+                setIsResetModalOpen(true);
               }}
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset</span>
+              <span>Reset Account</span>
             </button>
           </SettingRow>
 
@@ -228,6 +249,102 @@ export function PrivacySection() {
           </SettingRow>
         </div>
       </section>
+
+      {/* Multi-Step Destructive Confirmation Modal */}
+      <Dialog open={isResetModalOpen} onOpenChange={setIsResetModalOpen}>
+        <DialogContent className="sm:max-w-md bg-background/95 border-rose-500/30 backdrop-blur-2xl p-6 shadow-2xl">
+          <DialogHeader>
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-500 mb-2">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <DialogTitle className="text-xl font-bold text-foreground">
+              Reset Account Progress
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground leading-relaxed pt-1">
+              This will permanently delete all your learning activity and restore your account to a brand-new baseline.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            {/* Impact Details Box */}
+            <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 dark:text-rose-200 space-y-2">
+              <p className="font-semibold text-rose-400">The following will be permanently erased:</p>
+              <ul className="list-disc list-inside space-y-1 text-[11px] opacity-90">
+                <li>Total XP & Level progress (restored to 0 XP / Level 1)</li>
+                <li>All unlocked achievements & badge rewards</li>
+                <li>Topic, chapter, and subject mastery ratings</li>
+                <li>Focus study session history & duration logs</li>
+                <li>Study streak count & daily mission history</li>
+              </ul>
+              <p className="font-medium text-[11px] text-muted-foreground pt-1 border-t border-rose-500/20">
+                <span className="text-emerald-400 font-semibold">Preserved:</span> Account profile, friends list, study groups, support requests, and messages will remain safe.
+              </p>
+            </div>
+
+            {/* Irreversible Warning */}
+            <p className="text-xs font-bold text-rose-500 uppercase tracking-wide flex items-center gap-1.5">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              This action is permanent and cannot be undone.
+            </p>
+
+            {/* Confirmation Input */}
+            <div className="space-y-1.5 pt-1">
+              <label htmlFor="reset-confirm-input" className="text-xs font-semibold text-foreground block">
+                Type <span className="font-mono text-rose-400 font-bold">RESET</span> to confirm:
+              </label>
+              <input
+                id="reset-confirm-input"
+                type="text"
+                value={confirmInput}
+                onChange={(e) => setConfirmInput(e.target.value)}
+                placeholder="RESET"
+                disabled={isResetting}
+                className="w-full px-3.5 py-2 rounded-xl bg-surface border border-rose-500/30 text-foreground placeholder:text-muted-foreground/40 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/50 transition-all"
+                autoComplete="off"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsResetModalOpen(false);
+                setConfirmInput("");
+              }}
+              disabled={isResetting}
+              className="rounded-xl border-border/50 text-xs"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleResetProgress}
+              disabled={confirmInput.trim() !== "RESET" || isResetting}
+              className={cn(
+                "rounded-xl text-xs font-bold transition-all gap-2",
+                confirmInput.trim() === "RESET"
+                  ? "bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/30 cursor-pointer"
+                  : "bg-muted text-muted-foreground opacity-50 cursor-not-allowed"
+              )}
+            >
+              {isResetting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Resetting Account...</span>
+                </>
+              ) : (
+                <>
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Permanently Reset Account</span>
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+

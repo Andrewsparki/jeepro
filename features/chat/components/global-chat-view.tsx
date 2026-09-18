@@ -8,8 +8,10 @@ import { ChatHeader } from "./chat-header";
 import { ChatMessageList } from "./chat-message-list";
 import { ChatComposer } from "./chat-composer";
 import { ChatReportModal } from "./chat-report-modal";
+import { AdminUserModerationModal } from "./admin-user-moderation-modal";
+import { AdminChatControlsModal } from "./admin-chat-controls-modal";
 import { DirectConversationsList } from "./direct-conversations-list";
-import { ChatMessage } from "../types/chat.types";
+import { ChatMessage, ChatSender } from "../types/chat.types";
 import { Globe, MessageSquare } from "lucide-react";
 
 export function GlobalChatView() {
@@ -38,11 +40,16 @@ export function GlobalChatView() {
     refreshMessages,
     setNearBottom,
     currentUserId,
+    isAdmin,
+    isMuted,
+    isBanned,
+    muteReason,
+    banReason,
   } = useGlobalChat();
 
-  const [reportingMessage, setReportingMessage] = useState<ChatMessage | null>(
-    null
-  );
+  const [reportingMessage, setReportingMessage] = useState<ChatMessage | null>(null);
+  const [moderatingUser, setModeratingUser] = useState<ChatSender | null>(null);
+  const [isAdminControlsOpen, setIsAdminControlsOpen] = useState(false);
 
   return (
     <div className="flex flex-col h-[calc(100dvh-5rem)] md:h-[calc(100dvh-6rem)] w-full max-w-5xl mx-auto rounded-2xl border border-border/40 bg-card/40 backdrop-blur-xl shadow-soft overflow-hidden relative">
@@ -97,7 +104,9 @@ export function GlobalChatView() {
               onlineUsers={onlineUsers}
               onlineCount={onlineCount}
               chatStatus={chatStatus}
+              isAdmin={isAdmin}
               onRefresh={refreshMessages}
+              onOpenAdminControls={() => setIsAdminControlsOpen(true)}
               isLoading={isLoading}
             />
 
@@ -109,20 +118,39 @@ export function GlobalChatView() {
               hasMore={hasMore}
               error={error}
               currentUserId={currentUserId}
+              isAdmin={isAdmin}
               unreadCountBelow={unreadCountBelow}
               onLoadOlder={loadOlderMessages}
               onDeleteMessage={deleteMessage}
               onReportMessage={(msg) => setReportingMessage(msg)}
+              onAdminModerateUser={(sender) => setModeratingUser(sender)}
               onRefresh={refreshMessages}
               setNearBottom={setNearBottom}
             />
 
-            {/* 3. Composer */}
-            <ChatComposer
-              onSendMessage={sendMessage}
-              disabled={!chatStatus.enabled}
-              disabledReason={chatStatus.disabled_reason}
-            />
+            {/* 3. Banned Access Restriction Banner or Composer */}
+            {isBanned ? (
+              <div className="border-t border-destructive/30 bg-destructive/10 p-4 text-center shrink-0 z-20">
+                <p className="text-xs font-semibold text-destructive">
+                  Your access to Global Chat has been restricted by an administrator.
+                </p>
+                {banReason && (
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    Reason: {banReason}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <ChatComposer
+                onSendMessage={sendMessage}
+                disabled={!chatStatus.enabled || isMuted}
+                disabledReason={
+                  isMuted
+                    ? `You are currently muted. ${muteReason ? `Reason: ${muteReason}` : ""}`
+                    : chatStatus.disabled_reason
+                }
+              />
+            )}
           </motion.div>
         ) : (
           <motion.div
@@ -142,13 +170,33 @@ export function GlobalChatView() {
         )}
       </AnimatePresence>
 
-      {/* 4. Moderation Report Dialog */}
+      {/* 4. Moderation Report Dialog for Normal Users */}
       <ChatReportModal
         isOpen={!!reportingMessage}
         onClose={() => setReportingMessage(null)}
         message={reportingMessage}
         onReportSubmit={reportMessage}
       />
+
+      {/* 5. Admin User Moderation Dialog */}
+      {isAdmin && (
+        <AdminUserModerationModal
+          isOpen={!!moderatingUser}
+          onClose={() => setModeratingUser(null)}
+          targetUser={moderatingUser}
+          onUserStatusChanged={refreshMessages}
+        />
+      )}
+
+      {/* 6. Admin System Chat Controls Dialog */}
+      {isAdmin && (
+        <AdminChatControlsModal
+          isOpen={isAdminControlsOpen}
+          onClose={() => setIsAdminControlsOpen(false)}
+          chatStatus={chatStatus}
+          onChatStatusChanged={refreshMessages}
+        />
+      )}
     </div>
   );
 }

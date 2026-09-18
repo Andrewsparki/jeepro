@@ -7,7 +7,8 @@ import { Activity, BookOpen, PenTool, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/components/ui/glass-card";
-
+import { useSubSmoothScroll } from "@/components/ui/sub-smooth-scroll";
+import { useEffect } from "react";
 
 interface ActivityTimelineProps {
   sessions: StudySession[];
@@ -19,6 +20,12 @@ export function ActivityTimeline({ sessions }: ActivityTimelineProps) {
       .sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime())
       .slice(0, 10);
   }, [sessions]);
+
+  const { containerRef, contentRef, resize } = useSubSmoothScroll<HTMLDivElement>();
+
+  useEffect(() => {
+    resize();
+  }, [recentSessions.length, resize]);
 
   const getSubjectIcon = (subject: string) => {
     const s = subject.toLowerCase();
@@ -46,54 +53,57 @@ export function ActivityTimeline({ sessions }: ActivityTimelineProps) {
       </div>
 
       <div
-        data-lenis-prevent
-        className="flex-1 overflow-y-auto pr-4 -mr-4 space-y-6 relative z-10 custom-scrollbar scroll-smooth"
+        ref={containerRef}
+        data-lenis-prevent="true"
+        className="flex-1 overflow-y-auto pr-4 -mr-4 relative z-10 custom-scrollbar overscroll-contain"
       >
-        {recentSessions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full opacity-50">
-            <Activity className="w-12 h-12 mb-2 text-muted-foreground" />
-            <p className="text-sm font-medium">No recent activity</p>
-          </div>
-        ) : (
-          <div className="relative border-l border-border/50 ml-4 space-y-8 pb-4">
-            {recentSessions.map((session, i) => (
-              <motion.div 
-                key={session.id} 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: i * 0.05, ease: "easeOut" }}
-                className="relative pl-6 group cursor-default"
-              >
-                {/* Node */}
-                <div className={cn(
-                  "absolute -left-[17px] top-1 w-[34px] h-[34px] rounded-full border-4 border-background flex items-center justify-center transition-transform duration-300",
-                  getSubjectColorClass(session.subject_id || "")
-                )}>
-                  {getSubjectIcon(session.subject_id || "")}
-                </div>
-                
-                <div className="bg-muted/30 border border-border/50 rounded-xl p-4 transition-all duration-300 group-hover:bg-muted/50 group-hover:border-border group-hover:shadow-md">
-                  <div className="flex items-start justify-between mb-1">
-                    <h4 className="font-semibold text-sm text-foreground">{session.topic_id || "Session"}</h4>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-background px-2 py-0.5 rounded-full border border-border/50 shadow-sm whitespace-nowrap">
-                      {Math.ceil(session.duration_seconds / 60)} min
-                    </span>
+        <div ref={contentRef} className="space-y-6">
+          {recentSessions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full opacity-50">
+              <Activity className="w-12 h-12 mb-2 text-muted-foreground" />
+              <p className="text-sm font-medium">No recent activity</p>
+            </div>
+          ) : (
+            <div className="relative border-l border-border/50 ml-4 space-y-8 pb-4">
+              {recentSessions.map((session, i) => (
+                <motion.div 
+                  key={session.id} 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.4, delay: i * 0.05, ease: "easeOut" }}
+                  className="relative pl-6 group cursor-default"
+                >
+                  {/* Node */}
+                  <div className={cn(
+                    "absolute -left-[17px] top-1 w-[34px] h-[34px] rounded-full border-4 border-background flex items-center justify-center transition-transform duration-300",
+                    getSubjectColorClass(session.subject_id || "")
+                  )}>
+                    {getSubjectIcon(session.subject_id || "")}
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
-                    <span className={cn(
-                      "px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase border",
-                      getSubjectColorClass(session.subject_id || "").replace("w-[34px]", "")
-                    )}>
-                      {session.subject_id}
-                    </span>
-                    <span>•</span>
-                    <span>{formatDistanceToNow(new Date(session.started_at))} ago</span>
+                  
+                  <div className="bg-muted/30 border border-border/50 rounded-xl p-4 transition-all duration-300 group-hover:bg-muted/50 group-hover:border-border group-hover:shadow-md">
+                    <div className="flex items-start justify-between mb-1">
+                      <h4 className="font-semibold text-sm text-foreground">{session.topic_id || "Session"}</h4>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-background px-2 py-0.5 rounded-full border border-border/50 shadow-sm whitespace-nowrap">
+                        {Math.ceil(session.duration_seconds / 60)} min
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
+                      <span className={cn(
+                        "px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase border",
+                        getSubjectColorClass(session.subject_id || "").replace("w-[34px]", "")
+                      )}>
+                        {session.subject_id}
+                      </span>
+                      <span>•</span>
+                      <span>{formatDistanceToNow(new Date(session.started_at))} ago</span>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
       
       {/* Scroll Fade Overlay */}

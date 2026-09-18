@@ -274,7 +274,7 @@ BEGIN
       st.chapter_id,
       COUNT(st.id) AS total_topics,
       COUNT(utp.topic_id) FILTER (WHERE utp.status = 'Mastered') AS mastered_topics
-    FROM public.syllabus_topics st
+    FROM public.topics st
     LEFT JOIN public.user_topic_progress utp 
       ON utp.topic_id = st.id AND utp.user_id = v_target_user
     GROUP BY st.chapter_id
@@ -414,7 +414,7 @@ BEGIN
       st.chapter_id,
       COUNT(st.id) AS total_topics,
       COUNT(utp.topic_id) FILTER (WHERE utp.status = 'Mastered') AS mastered_topics
-    FROM public.syllabus_topics st
+    FROM public.topics st
     LEFT JOIN public.user_topic_progress utp 
       ON utp.topic_id = st.id AND utp.user_id = v_target_user
     GROUP BY st.chapter_id

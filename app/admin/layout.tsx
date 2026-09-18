@@ -2,6 +2,8 @@ import { verifyAdmin } from "@/features/admin/services/admin-auth.service";
 import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
 import { AdminTopbar } from "@/features/admin/components/admin-topbar";
 
+import { AdminPageTransition } from "@/features/admin/components/admin-motion-wrapper";
+
 export const metadata = {
   title: "Admin Panel | JEE Pro",
   description: "JEE Pro administrative control center",
@@ -24,7 +26,9 @@ export default async function AdminLayout({
           adminEmail={profile.email}
         />
         <main className="flex-1 p-4 md:p-6 lg:p-8">
-          {children}
+          <AdminPageTransition>
+            {children}
+          </AdminPageTransition>
         </main>
       </div>
     </div>

@@ -130,7 +130,7 @@ export function FocusDistribution({ sessions }: FocusDistributionProps) {
           <div className="relative w-full h-full">
             {/* Center Metric Display */}
             <div className="absolute inset-0 pb-10 flex flex-col items-center justify-center pointer-events-none z-0">
-              <span className="text-4xl font-bold tracking-tight text-foreground bg-clip-text text-transparent bg-gradient-to-b from-white to-white/70">
+              <span className="text-4xl font-bold tracking-tight text-foreground">
                 {totalSessions}
               </span>
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mt-1 opacity-80">
@@ -197,7 +197,8 @@ export function FocusDistribution({ sessions }: FocusDistributionProps) {
                   outerRadius={92}
                   dataKey="value"
                   stroke="transparent"
-                  fill="rgba(255, 255, 255, 0.04)"
+                  fill="currentColor"
+                  className="text-black/[0.04] dark:text-white/[0.04]"
                   isAnimationActive={false}
                   legendType="none"
                 />

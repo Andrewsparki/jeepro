@@ -72,6 +72,32 @@ export function StudyExperienceSection() {
         />
       </SettingRow>
 
+      {/* Sound Volume Slider */}
+      {settings.sounds && (
+        <SettingRow
+          title="Master Interaction Volume"
+          description="Adjust the global loudness of interaction acoustic cues."
+          icon={Volume2}
+          iconGradient="from-yellow-500 to-amber-600"
+        >
+          <div className="flex items-center gap-3 w-44 select-none">
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={settings.soundVolume ?? 0.8}
+              onChange={(e) => updateSetting("soundVolume", parseFloat(e.target.value))}
+              className="w-full accent-amber-500 cursor-pointer h-1.5 rounded-lg bg-muted border border-border/40"
+              aria-label="Master Interaction Volume"
+            />
+            <span className="text-xs font-mono font-bold text-muted-foreground w-9 text-right">
+              {Math.round((settings.soundVolume ?? 0.8) * 100)}%
+            </span>
+          </div>
+        </SettingRow>
+      )}
+
       {/* System Notifications */}
       <SettingRow
         title="System Notifications"

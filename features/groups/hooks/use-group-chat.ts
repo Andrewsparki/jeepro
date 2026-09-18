@@ -7,6 +7,7 @@ import { GroupMessage } from "../types/groups.types";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { dispatchInteractionSound } from "@/lib/sound-engine";
 
 export function useGroupChat(groupId: string) {
   const { user, profile } = useAuth();
@@ -111,6 +112,7 @@ export function useGroupChat(groupId: string) {
       setIsSending(true);
       try {
         const newMessage = await GroupsService.sendMessage(groupId, content);
+        dispatchInteractionSound("social.messageSent");
 
         // Immediate append if not received via realtime yet
         setMessages((prev) => {
@@ -228,6 +230,9 @@ export function useGroupChat(groupId: string) {
 
         setMessages((prev) => {
           if (prev.some((m) => m.id === rawNew.id)) return prev;
+          if (rawNew.sender_id !== user.id) {
+            dispatchInteractionSound("social.messageReceived");
+          }
           return [...prev, messageWithSender];
         });
       }

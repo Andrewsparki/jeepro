@@ -22,6 +22,8 @@ interface NotificationContextValue {
   setIsOpen: (open: boolean) => void;
   markAsRead: (id: string) => Promise<void>;
   markAllAsRead: () => Promise<void>;
+  deleteNotification: (id: string) => Promise<void>;
+  clearAll: () => Promise<void>;
   refresh: () => Promise<void>;
   playNotificationSound: () => void;
 }
@@ -243,6 +245,39 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     await NotificationService.markAllAsRead(userId);
   }, [userId]);
 
+  // Delete an individual notification (Optimistic UI)
+  const deleteNotification = useCallback(
+    async (id: string) => {
+      if (!userId) return;
+
+      let wasUnread = false;
+      setNotifications((prev) => {
+        const item = prev.find((n) => n.id === id);
+        if (item && !item.seen_at) {
+          wasUnread = true;
+        }
+        return prev.filter((n) => n.id !== id);
+      });
+
+      if (wasUnread) {
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      }
+
+      await NotificationService.deleteNotification(id, userId);
+    },
+    [userId]
+  );
+
+  // Clear all notifications for user (Optimistic UI)
+  const clearAll = useCallback(async () => {
+    if (!userId) return;
+
+    setNotifications([]);
+    setUnreadCount(0);
+
+    await NotificationService.clearAllNotifications(userId);
+  }, [userId]);
+
   return (
     <NotificationContext.Provider
       value={{
@@ -253,6 +288,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         setIsOpen,
         markAsRead,
         markAllAsRead,
+        deleteNotification,
+        clearAll,
         refresh: fetchNotifications,
         playNotificationSound,
       }}

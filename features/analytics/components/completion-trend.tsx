@@ -82,7 +82,7 @@ export function CompletionTrend({ progress }: CompletionTrendProps) {
               className={cn(
                 "px-4 py-1.5 text-xs font-bold rounded-lg transition-all duration-300 tracking-wider",
                 timeRange === range 
-                  ? "bg-foreground text-background shadow-md scale-100" 
+                  ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm scale-100" 
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >

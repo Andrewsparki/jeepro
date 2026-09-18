@@ -13,13 +13,19 @@ import { toast } from "sonner";
 import { InfoCard, SidebarCard } from "./components/workspace-cards";
 import { CreateEventDialog } from "@/features/planner/components/create-event-dialog";
 
+import { useStudySession } from "@/features/study/context/study-session-context";
+import { TopicsList } from "@/features/study/components/topics-list";
+
 interface OverviewTabProps {
   chapter: Chapter;
   subject: Subject;
+  onSelectTab?: (tabId: string) => void;
 }
 
-export function OverviewTab({ chapter, subject }: OverviewTabProps) {
+export function OverviewTab({ chapter, subject, onSelectTab }: OverviewTabProps) {
+  console.log("[OverviewTab] Rendering OverviewTab for chapter:", chapter?.title, "Topics count:", chapter?.topics?.length);
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
+  const { startSession, isActive } = useStudySession();
 
   const { nextChapter, previousChapter, topicsCompleted, xpEarned } = useMemo(() => {
     const currentIndex = subject.chapters.findIndex((c) => c.id === chapter.id);
@@ -29,7 +35,7 @@ export function OverviewTab({ chapter, subject }: OverviewTabProps) {
     const prev = currentIndex > 0 
       ? subject.chapters[currentIndex - 1] 
       : null;
-    const completed = Math.floor((chapter.completionPercentage / 100) * chapter.topics.length);
+    const completed = chapter.topics.filter(t => t.status === "Mastered").length;
     const topicXP = completed * XP_CONFIG.MILESTONES.TOPIC_COMPLETED;
     const chapterBonus = chapter.completionPercentage === 100 ? XP_CONFIG.MILESTONES.CHAPTER_COMPLETED : 0;
     const xp = topicXP + chapterBonus;
@@ -52,10 +58,31 @@ export function OverviewTab({ chapter, subject }: OverviewTabProps) {
       
       {/* Quick Actions Hero Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4 mb-6">
-        <ActionCard icon={Play} label="Continue Studying" sub="Resume your session" highlight />
-        <ActionCard icon={Calculator} label="Formula Sheet" sub="Quick reference" />
-        <ActionCard icon={Target} label="Start Practice" sub="Test your knowledge" />
-        <ActionCard icon={Calendar} label="Schedule Revision" sub="Spaced repetition" onClick={() => setIsEventDialogOpen(true)} />
+        <ActionCard 
+          icon={Play} 
+          label={isActive ? "Session Active" : "Continue Studying"} 
+          sub="Resume your session" 
+          highlight 
+          onClick={() => startSession(subject.id, chapter.id)}
+        />
+        <ActionCard 
+          icon={Calculator} 
+          label="Formula Sheet" 
+          sub="Quick reference" 
+          onClick={() => onSelectTab?.("formulas")}
+        />
+        <ActionCard 
+          icon={Target} 
+          label="Start Practice" 
+          sub="Test your knowledge" 
+          onClick={() => onSelectTab?.("practice")}
+        />
+        <ActionCard 
+          icon={Calendar} 
+          label="Schedule Revision" 
+          sub="Spaced repetition" 
+          onClick={() => setIsEventDialogOpen(true)} 
+        />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -89,7 +116,8 @@ export function OverviewTab({ chapter, subject }: OverviewTabProps) {
               ))}
             </div>
           </InfoCard>
-          
+
+          <TopicsList topics={chapter.topics} />
         </div>
 
         {/* Right Column (Sidebar Cards) */}

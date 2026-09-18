@@ -18,7 +18,8 @@ import {
   Award,
   ChevronDown,
   ChevronRight,
-  GraduationCap
+  GraduationCap,
+  LifeBuoy
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -120,7 +121,7 @@ export function MobileNav() {
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[300px] sm:w-[350px] p-0 border-r border-border/40 bg-background/95 backdrop-blur-xl flex flex-col justify-between">
+      <SheetContent side="left" className="w-[300px] sm:w-[350px] p-0 border-r border-border/40 bg-background/95 backdrop-blur-xl flex flex-col justify-between h-[100dvh] max-h-[100dvh] min-h-0">
         <div className="sr-only">
           <SheetTitle>Navigation Menu</SheetTitle>
           <SheetDescription>Main navigation for the application</SheetDescription>
@@ -132,7 +133,7 @@ export function MobileNav() {
           </Link>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-6 px-4">
+        <div data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto py-6 px-4 custom-scrollbar">
           <nav className="flex flex-col gap-1">
             {mainNav.map((item) => {
               const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname?.startsWith(`${item.href}/`));
@@ -190,12 +191,19 @@ export function MobileNav() {
           </div>
         </div>
         
-        <div className="p-4 border-t border-border/40">
+        <div className="p-4 border-t border-border/40 flex flex-col gap-1">
+           <MobileNavItem
+             href="/dashboard/support"
+             label="Support"
+             icon={<LifeBuoy className="h-5 w-5" />}
+             isActive={pathname === "/dashboard/support" || pathname?.startsWith("/dashboard/support/")}
+             onSelect={() => setOpen(false)}
+           />
            <MobileNavItem
              href="/dashboard/settings"
              label="Settings"
              icon={<Settings className="h-5 w-5" />}
-             isActive={pathname === "/dashboard/settings"}
+             isActive={pathname === "/dashboard/settings" || pathname?.startsWith("/dashboard/settings/")}
              onSelect={() => setOpen(false)}
            />
         </div>

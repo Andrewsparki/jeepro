@@ -27,15 +27,9 @@ export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
   const isHidden = pathname === "/dashboard/focus" && isImmersive;
 
   return (
-    <AnimatePresence initial={false}>
+    <>
       {!isHidden && (
-        <motion.header 
-          initial={{ height: 0, opacity: 0, y: -20 }}
-          animate={{ height: 64, opacity: 1, y: 0 }}
-          exit={{ height: 0, opacity: 0, y: -20, overflow: 'hidden' }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-border/40 bg-background/80 px-6 backdrop-blur-md shadow-xs"
-        >
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-border/40 bg-background/80 px-4 md:px-6 lg:px-8 backdrop-blur-md shadow-xs">
           <div className="flex items-center gap-4">
             <MobileNav />
             <div className="hidden md:block">
@@ -76,8 +70,8 @@ export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
               {initials}
             </div>
           </div>
-        </motion.header>
+        </header>
       )}
-    </AnimatePresence>
+    </>
   );
 }

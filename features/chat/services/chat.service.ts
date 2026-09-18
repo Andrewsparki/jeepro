@@ -121,6 +121,33 @@ export class GlobalChatService {
       throw new Error("You must be signed in to post in Global Chat.");
     }
 
+    // Fetch sender profile to check mute/ban status server-side
+    const { data: profile, error: profileFetchError } = await supabase
+      .from("profiles")
+      .select("id, full_name, avatar_url, is_muted, is_banned, mute_reason, ban_reason")
+      .eq("id", user.id)
+      .single();
+
+    if (profileFetchError) {
+      throw new Error("Failed to verify user profile.");
+    }
+
+    if (profile?.is_banned) {
+      throw new Error(
+        `Your account has been restricted from Global Chat. Reason: ${
+          profile.ban_reason || "Community guidelines violation"
+        }`
+      );
+    }
+
+    if (profile?.is_muted) {
+      throw new Error(
+        `You are currently muted from posting in Global Chat. Reason: ${
+          profile.mute_reason || "Community guidelines violation"
+        }`
+      );
+    }
+
     // Insert message into chat_messages
     const { data: inserted, error: insertError } = await supabase
       .from("chat_messages")
@@ -132,15 +159,15 @@ export class GlobalChatService {
       .single();
 
     if (insertError) {
+      // RLS policy violation when user is muted or banned
+      if (insertError.code === '42501' || insertError.message?.includes('row-level security')) {
+        throw new Error(
+          'You are currently restricted from posting in Global Chat. ' +
+          'Please contact support if you believe this is an error.'
+        );
+      }
       throw insertError;
     }
-
-    // Fetch sender profile for immediate optimistic presentation
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("id, full_name, avatar_url")
-      .eq("id", user.id)
-      .single();
 
     return {
       ...(inserted as ChatMessage),
@@ -176,14 +203,16 @@ export class GlobalChatService {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error("Authentication required to submit reports.");
 
-    const { error } = await supabase
+    const { data: inserted, error } = await supabase
       .from("chat_reports")
       .insert({
         message_id: input.message_id,
         reporter_id: user.id,
         reason: input.reason,
         details: input.details?.trim() || null,
-      });
+      })
+      .select("id")
+      .single();
 
     if (error) {
       // 23505 is PostgreSQL unique constraint violation
@@ -191,6 +220,24 @@ export class GlobalChatService {
         throw new Error("You have already reported this message.");
       }
       throw error;
+    }
+
+    // Best-effort admin notification for prompt moderation visibility
+    try {
+      await supabase.from("notifications").insert({
+        title: `Chat Report: ${input.reason}`,
+        message: `A message was reported for "${input.reason}".`,
+        type: "warning",
+        target_type: "all",
+        metadata: {
+          report_id: inserted?.id,
+          message_id: input.message_id,
+          reason: input.reason,
+        },
+        created_by: user.id,
+      });
+    } catch {
+      // Non-blocking
     }
   }
 

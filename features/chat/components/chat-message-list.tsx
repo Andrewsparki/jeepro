@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useRef, useEffect, UIEvent } from "react";
-import { ChatMessage } from "../types/chat.types";
+import { ChatMessage, ChatSender } from "../types/chat.types";
 import { ChatMessageItem } from "./chat-message-item";
 import { ArrowDown, MessageSquare, Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSubSmoothScroll } from "@/components/ui/sub-smooth-scroll";
 
 interface ChatMessageListProps {
   messages: ChatMessage[];
@@ -13,10 +14,12 @@ interface ChatMessageListProps {
   hasMore: boolean;
   error: string | null;
   currentUserId?: string;
+  isAdmin?: boolean;
   unreadCountBelow: number;
   onLoadOlder: () => void;
   onDeleteMessage: (id: string) => void;
   onReportMessage: (message: ChatMessage) => void;
+  onAdminModerateUser?: (sender: ChatSender) => void;
   onRefresh: () => void;
   setNearBottom: (isNear: boolean) => void;
 }
@@ -51,17 +54,25 @@ export function ChatMessageList({
   hasMore,
   error,
   currentUserId,
+  isAdmin = false,
   unreadCountBelow,
   onLoadOlder,
   onDeleteMessage,
   onReportMessage,
+  onAdminModerateUser,
   onRefresh,
   setNearBottom,
 }: ChatMessageListProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { containerRef, contentRef, resize: resizeScroll } = useSubSmoothScroll<HTMLDivElement>({
+    overscroll: true,
+  });
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
   const isInitialScrollDoneRef = useRef(false);
   const prevScrollHeightRef = useRef<number>(0);
+
+  useEffect(() => {
+    resizeScroll();
+  }, [messages.length, resizeScroll]);
 
   // Scroll to bottom helper
   const scrollToBottom = (smooth = true) => {
@@ -167,79 +178,83 @@ export function ChatMessageList({
 
   return (
     <div className="relative flex-1 min-h-0 flex flex-col">
-      {/* Scrollable Message Container */}
+      {/* Scrollable Message Container with Dedicated Locomotive Inertia */}
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        data-lenis-prevent
-        className="flex-1 overflow-y-auto px-1 sm:px-2 py-4 space-y-1 overscroll-contain"
+        data-lenis-prevent="true"
+        className="flex-1 overflow-y-auto px-1 sm:px-2 py-4 overscroll-contain"
         role="log"
         aria-live="polite"
       >
-        {/* Load Older History Button */}
-        {hasMore && (
-          <div className="flex justify-center py-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onLoadOlder}
-              disabled={isLoadingOlder}
-              className="text-xs text-muted-foreground hover:text-foreground h-8 px-4 rounded-full border border-border/40 hover:bg-muted/30"
-            >
-              {isLoadingOlder ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
-                  Loading history...
-                </>
-              ) : (
-                "Load older messages"
-              )}
-            </Button>
-          </div>
-        )}
+        <div ref={contentRef} className="space-y-1">
+          {/* Load Older History Button */}
+          {hasMore && (
+            <div className="flex justify-center py-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onLoadOlder}
+                disabled={isLoadingOlder}
+                className="text-xs text-muted-foreground hover:text-foreground h-8 px-4 rounded-full border border-border/40 hover:bg-muted/30"
+              >
+                {isLoadingOlder ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
+                    Loading history...
+                  </>
+                ) : (
+                  "Load older messages"
+                )}
+              </Button>
+            </div>
+          )}
 
-        {/* Message Stream with Day Dividers & Grouping */}
-        {messages.map((message, index) => {
-          const prevMessage = index > 0 ? messages[index - 1] : null;
+          {/* Message Stream with Day Dividers & Grouping */}
+          {messages.map((message, index) => {
+            const prevMessage = index > 0 ? messages[index - 1] : null;
 
-          const currentDay = getDayLabel(message.created_at);
-          const prevDay = prevMessage ? getDayLabel(prevMessage.created_at) : null;
-          const isNewDay = currentDay !== prevDay;
+            const currentDay = getDayLabel(message.created_at);
+            const prevDay = prevMessage ? getDayLabel(prevMessage.created_at) : null;
+            const isNewDay = currentDay !== prevDay;
 
-          // Group consecutive messages from same sender within 5 minutes
-          let isGrouped = false;
-          if (prevMessage && !isNewDay && prevMessage.sender_id === message.sender_id) {
-            const timeDiff =
-              new Date(message.created_at).getTime() - new Date(prevMessage.created_at).getTime();
-            if (timeDiff < 5 * 60 * 1000) {
-              isGrouped = true;
+            // Group consecutive messages from same sender within 5 minutes
+            let isGrouped = false;
+            if (prevMessage && !isNewDay && prevMessage.sender_id === message.sender_id) {
+              const timeDiff =
+                new Date(message.created_at).getTime() - new Date(prevMessage.created_at).getTime();
+              if (timeDiff < 5 * 60 * 1000) {
+                isGrouped = true;
+              }
             }
-          }
 
-          return (
-            <React.Fragment key={message.id}>
-              {/* Day Divider */}
-              {isNewDay && (
-                <div className="flex items-center justify-center my-4">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-muted/40 text-muted-foreground border border-border/30 backdrop-blur-sm">
-                    {currentDay}
-                  </span>
-                </div>
-              )}
+            return (
+              <React.Fragment key={message.id}>
+                {/* Day Divider */}
+                {isNewDay && (
+                  <div className="flex items-center justify-center my-4">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-muted/40 text-muted-foreground border border-border/30 backdrop-blur-sm">
+                      {currentDay}
+                    </span>
+                  </div>
+                )}
 
-              <ChatMessageItem
-                message={message}
-                isCurrentUser={message.sender_id === currentUserId}
-                isGrouped={isGrouped}
-                onDelete={onDeleteMessage}
-                onReport={onReportMessage}
-              />
-            </React.Fragment>
-          );
-        })}
+                <ChatMessageItem
+                  message={message}
+                  isCurrentUser={message.sender_id === currentUserId}
+                  isGrouped={isGrouped}
+                  isAdmin={isAdmin}
+                  onDelete={onDeleteMessage}
+                  onReport={onReportMessage}
+                  onAdminModerateUser={onAdminModerateUser}
+                />
+              </React.Fragment>
+            );
+          })}
 
-        {/* Bottom anchor for scrolling */}
-        <div ref={bottomAnchorRef} className="h-1" />
+          {/* Bottom anchor for scrolling */}
+          <div ref={bottomAnchorRef} className="h-1" />
+        </div>
       </div>
 
       {/* Floating "New Messages" Pill */}

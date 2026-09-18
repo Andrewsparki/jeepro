@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FriendsService } from "../services/friends.service";
@@ -22,6 +16,7 @@ import {
   Loader2,
   Calendar,
   MessageSquare,
+  X,
 } from "lucide-react";
 
 interface PublicProfileModalProps {
@@ -104,20 +99,20 @@ export function PublicProfileModal({
     }
   };
 
-  if (!isOpen) return null;
-
   const initial = (profile?.full_name || "A").charAt(0).toUpperCase();
   const memberYear = profile?.created_at
     ? new Date(profile.created_at).getFullYear()
     : new Date().getFullYear();
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-2xl border-border/50 shadow-2xl p-6">
-        <DialogHeader className="sr-only">
-          <DialogTitle>Student Public Profile</DialogTitle>
-          <DialogDescription>Public statistics and friendship options</DialogDescription>
-        </DialogHeader>
+    <Modal isOpen={isOpen} onClose={onClose} className="sm:max-w-md p-6 relative">
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute top-4 right-4 rounded-lg p-1 text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors z-10"
+      >
+        <X className="w-4 h-4" />
+      </button>
 
         {isLoading ? (
           <div className="py-12 flex flex-col items-center justify-center space-y-3">
@@ -245,7 +240,6 @@ export function PublicProfileModal({
             </div>
           </div>
         )}
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }

@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { playHapticSound, SoundType } from "@/lib/sound-effects";
+import { dispatchInteractionSound, SemanticSoundEvent } from "@/lib/sound-engine";
 
 export interface UserSettings {
   // Study & Focus Experience
@@ -11,6 +12,7 @@ export interface UserSettings {
   ambientEffects: boolean;
   autoSave: boolean;
   sounds: boolean;
+  soundVolume: number;
   breakReminder: boolean;
 
   // Appearance & Viewports
@@ -27,6 +29,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   ambientEffects: false,
   autoSave: true,
   sounds: true,
+  soundVolume: 0.8,
   breakReminder: true,
   activeTheme: "midnight",
   viewStyle: "carousel",
@@ -43,6 +46,7 @@ interface SettingsContextType {
   updateSetting: <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => void;
   resetSettings: () => void;
   playSound: (type?: SoundType) => void;
+  playInteractionSound: (event: SemanticSoundEvent) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType>({
@@ -50,6 +54,7 @@ const SettingsContext = createContext<SettingsContextType>({
   updateSetting: () => {},
   resetSettings: () => {},
   playSound: () => {},
+  playInteractionSound: () => {},
 });
 
 export function useSettings() {
@@ -65,6 +70,7 @@ const SETTING_LABELS: Record<keyof UserSettings, string> = {
   ambientEffects: "Spatial Ambient Glow",
   autoSave: "Live Session Auto-Sync",
   sounds: "Acoustic Haptic Feedback",
+  soundVolume: "Master Interaction Volume",
   breakReminder: "Pomodoro Reset Reminders",
   activeTheme: "Interface Theme",
   viewStyle: "Study View Layout",
@@ -99,6 +105,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   const playSound = useCallback((type: SoundType = "click") => {
     playHapticSound(type, settings.sounds);
+  }, [settings.sounds]);
+
+  const playInteractionSound = useCallback((event: SemanticSoundEvent) => {
+    dispatchInteractionSound(event, settings.sounds);
   }, [settings.sounds]);
 
   const updateSetting = <K extends keyof UserSettings>(
@@ -158,6 +168,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         updateSetting,
         resetSettings,
         playSound,
+        playInteractionSound,
       }}
     >
       {children}

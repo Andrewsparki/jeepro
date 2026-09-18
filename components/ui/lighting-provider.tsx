@@ -17,6 +17,8 @@ export function useLighting() {
   return useContext(LightingContext);
 }
 
+import { CustomCursor } from "@/components/ui/custom-cursor";
+
 export function LightingProvider({ children }: { children: React.ReactNode }) {
   const mouse = useRef({ x: 0, y: 0 });
   const [isTouch, setIsTouch] = useState(false);
@@ -64,6 +66,7 @@ export function LightingProvider({ children }: { children: React.ReactNode }) {
   return (
     <LightingContext.Provider value={contextValue}>
       <div className="min-h-screen w-full">
+        <CustomCursor />
         {children}
       </div>
     </LightingContext.Provider>

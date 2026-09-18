@@ -17,12 +17,19 @@ export default function StudyHomePage() {
   const { refreshKey } = useStudySession();
 
   useEffect(() => {
+    let isMounted = true;
     async function load() {
-      const data = await getSyllabus();
-      setSyllabus(data);
-      setLoading(false);
+      try {
+        const data = await getSyllabus();
+        if (isMounted) setSyllabus(data);
+      } catch (err) {
+        console.error("Error loading syllabus homepage:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     }
     load();
+    return () => { isMounted = false; };
   }, [refreshKey]);
 
   return (

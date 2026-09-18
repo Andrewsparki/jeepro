@@ -17,17 +17,7 @@ export function LevelProgressChart({ xpDetails }: LevelProgressChartProps) {
     setMounted(true);
   }, []);
 
-  const percentage = useMemo(() => {
-    // Current level XP threshold = level^2 * 100
-    const currentLevelXP = Math.pow(xpDetails.currentLevel, 2) * 100;
-    const nextLevelXP = Math.pow(xpDetails.currentLevel + 1, 2) * 100;
-    const xpInCurrentLevel = xpDetails.totalXP - currentLevelXP;
-    const xpNeededForNext = nextLevelXP - currentLevelXP;
-    
-    if (xpNeededForNext <= 0) return 0;
-    
-    return Math.min(100, Math.max(0, (xpInCurrentLevel / xpNeededForNext) * 100));
-  }, [xpDetails]);
+  const percentage = xpDetails.progressPercentage;
 
   // SVG Geometry
   const size = 230;
@@ -41,8 +31,8 @@ export function LevelProgressChart({ xpDetails }: LevelProgressChartProps) {
   return (
     <GlassCard hoverTint="amber" className="p-6 flex flex-col h-[400px]">
       <div className="flex items-center gap-3 mb-6 relative z-10">
-        <div className="w-10 h-10 rounded-xl bg-amber-500/10 shadow-[0_0_15px_rgba(245,158,11,0.2)] text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
-          <Star className="w-5 h-5 text-amber-400" />
+        <div className="w-10 h-10 rounded-xl bg-amber-500/10 shadow-[0_0_15px_rgba(245,158,11,0.2)] text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+          <Star className="w-5 h-5 text-amber-500 dark:text-amber-400" />
         </div>
         <div>
           <h3 className="text-xl font-bold text-foreground">Level Progress</h3>
@@ -67,17 +57,18 @@ export function LevelProgressChart({ xpDetails }: LevelProgressChartProps) {
               </filter>
             </defs>
 
-            {/* Dark Background Track */}
+            {/* Background Track */}
             <circle
               cx={center}
               cy={center}
               r={radius}
-              stroke="rgba(255, 255, 255, 0.05)"
+              stroke="currentColor"
+              className="text-black/5 dark:text-white/5"
               strokeWidth={strokeWidth}
               fill="transparent"
             />
 
-            {/* Actual Progress Arc (Only animates once on mount, then remains static) */}
+            {/* Actual Progress Arc */}
             {mounted && percentage > 0 && (
               <motion.circle
                 cx={center}
@@ -98,11 +89,11 @@ export function LevelProgressChart({ xpDetails }: LevelProgressChartProps) {
 
           {/* Center Content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-20 pointer-events-none">
-            <Trophy className="w-8 h-8 text-amber-400 mb-1 drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]" />
-            <h2 className="text-5xl font-bold tracking-tight text-foreground bg-clip-text text-transparent bg-gradient-to-b from-white to-white/70">
+            <Trophy className="w-8 h-8 text-amber-500 dark:text-amber-400 mb-1 drop-shadow-[0_0_12px_rgba(245,158,11,0.4)]" />
+            <h2 className="text-5xl font-extrabold tracking-tight text-foreground">
               {xpDetails.currentLevel}
             </h2>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-400/90 mt-1">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 mt-1">
               {percentage.toFixed(0)}% to Lvl {xpDetails.currentLevel + 1}
             </p>
           </div>

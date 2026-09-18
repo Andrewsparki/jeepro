@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { GlassCard, HoverTint } from "@/components/ui/glass-card";
+import { ContextMenuTarget } from "@/features/context-menu";
 
 interface AnimatedStatCardProps {
   title: string;
@@ -28,21 +29,31 @@ export function AnimatedStatCard({
   hoverTint
 }: AnimatedStatCardProps) {
   return (
-    <GlassCard hoverTint={hoverTint} className={cn("p-6 flex flex-col justify-between h-[150px] cursor-default", className)}>
-      <div className={cn("relative z-10 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border mb-4", iconColorClass)}>
-        {icon}
-      </div>
-      <div className="relative z-10">
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">{title}</p>
-        <div className="flex items-baseline text-foreground">
-          {prefix && <span className="text-xl font-bold mr-1">{prefix}</span>}
-          <h2 className="text-3xl font-bold tracking-tight">
-            <AnimatedNumber value={value} />
-          </h2>
-          {suffix && <span className="text-xl font-bold ml-1">{suffix}</span>}
+    <ContextMenuTarget
+      type="analytics-chart"
+      id={`stat-${title.toLowerCase().replace(/\s+/g, "-")}`}
+      title={title}
+      data={{
+        title,
+        value: `${prefix}${value}${suffix}`,
+      }}
+    >
+      <GlassCard hoverTint={hoverTint} className={cn("p-6 flex flex-col justify-between h-[150px] cursor-default", className)}>
+        <div className={cn("relative z-10 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border mb-4", iconColorClass)}>
+          {icon}
         </div>
-      </div>
-    </GlassCard>
+        <div className="relative z-10">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">{title}</p>
+          <div className="flex items-baseline text-foreground">
+            {prefix && <span className="text-xl font-bold mr-1">{prefix}</span>}
+            <h2 className="text-3xl font-bold tracking-tight">
+              <AnimatedNumber value={value} />
+            </h2>
+            {suffix && <span className="text-xl font-bold ml-1">{suffix}</span>}
+          </div>
+        </div>
+      </GlassCard>
+    </ContextMenuTarget>
   );
 }
 

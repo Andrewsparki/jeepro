@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Achievement, XPDetails } from "@/features/gamification/services/gamification";
 import { Trophy, Star, CheckCircle2, Lock } from "lucide-react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
+import { MilestoneProgressBar } from "@/features/achievements/components/milestone-progress-bar";
 import { motion } from "framer-motion";
 
 interface JourneyTrackerProps {
@@ -64,25 +65,11 @@ export const JourneyTracker = React.memo(function JourneyTracker({ xpDetails, ac
                 <p className="text-sm font-semibold text-foreground truncate">{nextUnlock.title}</p>
                 <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{nextUnlock.description}</p>
                 
-                <div className="mt-4 space-y-2">
-                  <div className="flex justify-between text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
-                    <span>Progress</span>
-                    <span className="text-accent">{Math.round(xpDetails.progressPercentage)}%</span>
-                  </div>
-                  <div className="h-2 w-full bg-surface border border-border/60 dark:border-white/10 rounded-full overflow-hidden p-0.5 shadow-inner">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${xpDetails.progressPercentage}%` }}
-                      transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}
-                      className="h-full bg-gradient-to-r from-blue-600 via-blue-500 to-accent rounded-full relative overflow-hidden shadow-[0_0_10px_rgba(59,130,246,0.4)]"
-                    >
-                      <div 
-                        className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent" 
-                        style={{ animation: "shimmer 2s linear infinite" }} 
-                      />
-                    </motion.div>
-                  </div>
-                </div>
+                <MilestoneProgressBar
+                  progressPercentage={xpDetails.progressPercentage}
+                  label="Progress"
+                  className="mt-4"
+                />
               </div>
             </div>
           </div>

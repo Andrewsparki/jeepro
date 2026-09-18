@@ -14,6 +14,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSubSmoothScroll } from "@/components/ui/sub-smooth-scroll";
 
 interface PrivateChatMessageListProps {
   messages: PrivateMessage[];
@@ -28,7 +29,7 @@ interface PrivateChatMessageListProps {
   onLoadOlder: () => void;
   onDeleteMessage: (id: string) => void;
   setNearBottom: (isNear: boolean) => void;
-  onRetry?: () => void;
+  onRetry: () => void;
 }
 
 function getDayLabel(isoString: string): string {
@@ -78,10 +79,16 @@ export function PrivateChatMessageList({
   setNearBottom,
   onRetry,
 }: PrivateChatMessageListProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { containerRef, contentRef, resize: resizeScroll } = useSubSmoothScroll<HTMLDivElement>({
+    overscroll: true,
+  });
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
   const isInitialScrollDoneRef = useRef(false);
   const prevScrollHeightRef = useRef<number>(0);
+
+  useEffect(() => {
+    resizeScroll();
+  }, [messages.length, resizeScroll]);
 
   const scrollToBottom = (smooth = true) => {
     if (bottomAnchorRef.current) {
@@ -214,17 +221,18 @@ export function PrivateChatMessageList({
         </div>
       )}
 
-      {/* Internal Scrollable Message Stream */}
+      {/* Internal Scrollable Message Stream with Locomotive Inertia */}
       <div
         ref={containerRef}
         onScroll={handleScroll}
-        data-lenis-prevent
-        className="flex-1 overflow-y-auto px-2 sm:px-4 py-4 space-y-3 overscroll-contain"
+        data-lenis-prevent="true"
+        className="flex-1 overflow-y-auto px-2 sm:px-4 py-4 overscroll-contain"
         role="log"
         aria-live="polite"
       >
-        {/* Load Older Messages */}
-        {hasMore && (
+        <div ref={contentRef} className="space-y-3">
+          {/* Load Older Messages */}
+          {hasMore && (
           <div className="flex justify-center py-2">
             <Button
               variant="ghost"
@@ -343,6 +351,7 @@ export function PrivateChatMessageList({
         })}
 
         <div ref={bottomAnchorRef} className="h-1" />
+        </div>
       </div>
 
       {/* Floating Unread Scroll-to-Bottom Button */}

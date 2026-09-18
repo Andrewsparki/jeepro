@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FriendUser } from "../types/friends.types";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,8 +14,12 @@ import {
   UserMinus,
   ExternalLink,
   MessageSquare,
+  Copy,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ContextMenuTrigger } from "@/features/context-menu";
+import { toast } from "sonner";
 
 interface FriendCardProps {
   user: FriendUser;
@@ -37,10 +42,69 @@ export function FriendCard({
   onSendRequest,
   onViewProfile,
 }: FriendCardProps) {
+  const router = useRouter();
   const initial = (user.full_name || "A").charAt(0).toUpperCase();
 
+  const friendMenuItems = [
+    {
+      id: "view-profile",
+      label: "View Profile",
+      icon: User,
+      onClick: () => onViewProfile && onViewProfile(user.id),
+    },
+    {
+      id: "send-dm",
+      label: "Send Message",
+      icon: MessageSquare,
+      onClick: () => router.push(`/dashboard/chat/${user.id}`),
+    },
+    ...(type === "received_request" && user.friendshipId
+      ? [
+          {
+            id: "accept-request",
+            label: "Accept Friend Request",
+            icon: Check,
+            onClick: () => onAccept && onAccept(user.friendshipId!, user.id),
+          },
+        ]
+      : []),
+    ...(type === "sent_request" && user.friendshipId
+      ? [
+          {
+            id: "cancel-request",
+            label: "Cancel Friend Request",
+            icon: X,
+            danger: true,
+            onClick: () => onCancel && onCancel(user.friendshipId!, user.id),
+          },
+        ]
+      : []),
+    ...(type === "friend" && user.friendshipId
+      ? [
+          {
+            id: "remove-friend",
+            label: "Remove Friend",
+            icon: UserMinus,
+            danger: true,
+            onClick: () => onRemove && onRemove(user.friendshipId!, user.id),
+          },
+        ]
+      : []),
+    { id: "sep-1", separator: true, label: "" },
+    {
+      id: "copy-name",
+      label: "Copy Name",
+      icon: Copy,
+      onClick: () => {
+        navigator.clipboard.writeText(user.full_name);
+        toast.success("Name copied");
+      },
+    },
+  ];
+
   return (
-    <div className="group relative flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl border border-border/40 bg-surface/60 hover:bg-surface-hover hover:border-border/60 transition-all shadow-sm">
+    <ContextMenuTrigger items={friendMenuItems} title={user.full_name}>
+      <div className="group relative flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl border border-border/40 bg-surface/60 hover:bg-surface-hover hover:border-border/60 transition-all shadow-sm">
       {/* Avatar & User Info */}
       <div
         className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
@@ -199,5 +263,6 @@ export function FriendCard({
         )}
       </div>
     </div>
-  );
+  </ContextMenuTrigger>
+);
 }

@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Chapter } from "@/features/syllabus/services/syllabus";
 import { XP_CONFIG } from "@/features/progress/config/xp-config";
 import { DifficultyBadge } from "./difficulty-badge";
-import { ChevronRight, BookOpen, Clock, CalendarSync, Play, CheckCircle2, Circle, Clock3 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronRight, BookOpen, Clock, CalendarSync, Play, CheckCircle2, Circle, Clock3, Copy, Bookmark, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { updateChapterProgress } from "@/features/study/services/progress";
@@ -13,6 +14,7 @@ import { useStudySession } from "@/features/study/context/study-session-context"
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
+import { ContextMenuTrigger } from "@/features/context-menu";
 
 interface ChapterRowProps {
   chapter: Chapter;
@@ -21,10 +23,12 @@ interface ChapterRowProps {
 }
 
 export function ChapterRow({ chapter, subjectSlug, onUpdate }: ChapterRowProps) {
-  const { triggerRefresh } = useStudySession();
+  const router = useRouter();
+  const { startSession, triggerRefresh } = useStudySession();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [showXP, setShowXP] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   // Local optimistic state
   const [optimisticStatus, setOptimisticStatus] = useState(chapter.status);
@@ -44,8 +48,8 @@ export function ChapterRow({ chapter, subjectSlug, onUpdate }: ChapterRowProps) 
     setOptimisticCompletion(chapter.completionPercentage);
   }
 
-  const handleToggleStatus = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleToggleStatus = async (e?: React.MouseEvent) => {
+    if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
     if (isUpdating) return;
     setIsUpdating(true);
 
@@ -57,7 +61,7 @@ export function ChapterRow({ chapter, subjectSlug, onUpdate }: ChapterRowProps) 
     setOptimisticStatus(newStatus);
     setOptimisticCompletion(newCompletion);
 
-    if (newStatus === "Mastered") {
+    if (newStatus === "Mastered" && e && e.target) {
       // Confetti effect from the element position
       const rect = (e.target as HTMLElement).getBoundingClientRect();
       const x = (rect.left + rect.width / 2) / window.innerWidth;
@@ -81,12 +85,12 @@ export function ChapterRow({ chapter, subjectSlug, onUpdate }: ChapterRowProps) 
       }
       triggerRefresh();
       if (onUpdate) onUpdate();
-    } catch (error) {
-      console.error("Failed to update status", error);
+    } catch (err) {
+      console.error("Error updating chapter progress:", err);
       // Revert optimistic update
       setOptimisticStatus(chapter.status);
       setOptimisticCompletion(chapter.completionPercentage);
-      toast.error("Failed to update chapter progress. Reverting changes.");
+      toast.error("Failed to update chapter progress. Please try again.");
     } finally {
       setIsUpdating(false);
     }
@@ -95,13 +99,71 @@ export function ChapterRow({ chapter, subjectSlug, onUpdate }: ChapterRowProps) 
   const isMastered = optimisticStatus === "Mastered";
   const isInProgress = optimisticStatus === "In Progress";
 
+  const chapterMenuItems = [
+    {
+      id: "open-workspace",
+      label: "Open Chapter Workspace",
+      icon: BookOpen,
+      onClick: () => router.push(`/dashboard/study/${subjectSlug}/${chapter.slug}`),
+    },
+    {
+      id: "start-session",
+      label: "Start Focus Session",
+      icon: Play,
+      onClick: () => {
+        startSession(undefined, chapter.id);
+        toast.success(`Started session for ${chapter.title}`);
+      },
+    },
+    {
+      id: "toggle-status",
+      label: isMastered ? "Mark as Not Started" : "Mark as Mastered",
+      icon: CheckCircle2,
+      onClick: () => handleToggleStatus(),
+    },
+    {
+      id: "bookmark-chapter",
+      label: isBookmarked ? "Remove Bookmark" : "Bookmark Chapter",
+      icon: Bookmark,
+      onClick: () => {
+        setIsBookmarked((prev) => {
+          const next = !prev;
+          toast.success(next ? `Bookmarked ${chapter.title}` : `Removed bookmark for ${chapter.title}`);
+          return next;
+        });
+      },
+    },
+    { id: "sep-1", separator: true, label: "" },
+    {
+      id: "copy-chapter-link",
+      label: "Copy Chapter Link",
+      icon: LinkIcon,
+      onClick: () => {
+        if (typeof window !== "undefined") {
+          const url = `${window.location.origin}/dashboard/study/${subjectSlug}/${chapter.slug}`;
+          navigator.clipboard.writeText(url);
+          toast.success("Chapter link copied to clipboard");
+        }
+      },
+    },
+    {
+      id: "copy-title",
+      label: "Copy Title",
+      icon: Copy,
+      onClick: () => {
+        navigator.clipboard.writeText(chapter.title);
+        toast.success("Title copied to clipboard");
+      },
+    },
+  ];
+
   return (
-    <div className={cn(
-      "border rounded-xl overflow-hidden transition-all duration-300 relative group",
-      isMastered ? "border-green-500/30 bg-green-500/5 hover:border-green-500/50" : "border-border/40 bg-card/20 hover:border-border/60"
-    )}>
-      {/* Floating XP Animation */}
-      <AnimatePresence>
+    <ContextMenuTrigger items={chapterMenuItems} title={chapter.title}>
+      <div className={cn(
+        "border rounded-xl overflow-hidden transition-all duration-300 relative group",
+        isMastered ? "border-green-500/30 bg-green-500/5 hover:border-green-500/50" : "border-border/40 bg-card/20 hover:border-border/60"
+      )}>
+        <AnimatePresence>
         {showXP && (
           <motion.div
             initial={{ opacity: 0, y: 0, scale: 0.8 }}
@@ -283,5 +345,6 @@ export function ChapterRow({ chapter, subjectSlug, onUpdate }: ChapterRowProps) 
         )}
       </AnimatePresence>
     </div>
+    </ContextMenuTrigger>
   );
 }

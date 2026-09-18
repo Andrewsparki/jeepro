@@ -10,6 +10,7 @@ interface TopicsListProps {
 }
 
 export function TopicsList({ topics }: TopicsListProps) {
+  console.log("[TopicsList] Rendering TopicsList with topics count:", topics?.length);
   return (
     <WorkspaceCard delay={0.3}>
       <div className="flex items-center gap-3 mb-8">

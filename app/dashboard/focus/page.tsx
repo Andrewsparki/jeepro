@@ -18,6 +18,7 @@ import { calculateSessionXP } from "@/features/progress/config/xp-config";
 import { toast } from "sonner";
 import { ChevronRight } from "lucide-react";
 import { useSettings } from "@/providers/settings-provider";
+import { ContextMenuTarget } from "@/features/context-menu";
 
 export default function FocusPage() {
   const { 
@@ -235,23 +236,35 @@ export default function FocusPage() {
             <span className="text-foreground">{timerMode.charAt(0).toUpperCase() + timerMode.slice(1)}</span>
           </motion.div>
 
-          <FocusTimer
-            mode={timerMode}
-            accumulatedTime={timerMode === 'stopwatch' ? sessionAccumulated : phaseAccumulated}
-            lastResumeTime={lastResumeTime}
-            totalTime={getTotalTime()}
-            isActive={isActive}
-            phase={timerMode === 'pomodoro' ? phase : undefined}
-          />
+          <ContextMenuTarget
+            type="focus-session"
+            id="active-focus-timer"
+            title="Focus Session"
+            data={{
+              isActive,
+              onToggleActive: togglePlayPause,
+              onEndSession: () => handleEndSession(),
+              onRestart: handleRestart,
+            }}
+          >
+            <FocusTimer
+              mode={timerMode}
+              accumulatedTime={timerMode === 'stopwatch' ? sessionAccumulated : phaseAccumulated}
+              lastResumeTime={lastResumeTime}
+              totalTime={getTotalTime()}
+              isActive={isActive}
+              phase={timerMode === 'pomodoro' ? phase : undefined}
+            />
 
-          <FocusControls
-            isActive={isActive}
-            onTogglePlayPause={togglePlayPause}
-            onEnd={handleEndSession}
-            onRestart={handleRestart}
-            onPopOut={handlePopOut}
-            isPipOpen={isFloatOpen}
-          />
+            <FocusControls
+              isActive={isActive}
+              onTogglePlayPause={togglePlayPause}
+              onEnd={handleEndSession}
+              onRestart={handleRestart}
+              onPopOut={handlePopOut}
+              isPipOpen={isFloatOpen}
+            />
+          </ContextMenuTarget>
         </motion.div>
       </AnimatePresence>
 

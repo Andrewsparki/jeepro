@@ -41,66 +41,73 @@ export async function prefetchMapping(): Promise<void> {
 
   if (!prefetchPromise) {
     prefetchPromise = (async () => {
-      const supabase = createClient();
+      try {
+        const supabase = createClient();
 
-      const [subjectsRes, chaptersRes, topicsRes] = await Promise.all([
-        supabase.from("subjects").select("id, slug"),
-        supabase.from("chapters").select("id, slug, subject_id"),
-        supabase.from("topics").select("id, title, chapter_id"),
-      ]);
+        const [subjectsRes, chaptersRes, topicsRes] = await Promise.all([
+          supabase.from("subjects").select("id, slug"),
+          supabase.from("chapters").select("id, slug, subject_id"),
+          supabase.from("topics").select("id, title, chapter_id"),
+        ]);
 
-      cachedSubjectMap = {};
-      if (subjectsRes.data) {
-        subjectsRes.data.forEach((s: { id: string; slug: string }) => {
-          cachedSubjectMap![s.slug] = s.id;
-        });
-      }
+        cachedSubjectMap = {};
+        if (subjectsRes.data) {
+          subjectsRes.data.forEach((s: { id: string; slug: string }) => {
+            cachedSubjectMap![s.slug] = s.id;
+          });
+        }
 
-      cachedChapterMap = {};
-      if (chaptersRes.data) {
-        const chaptersBySlug = new Map<string, string>();
-        chaptersRes.data.forEach((c: { id: string; slug: string }) => {
-          cachedChapterMap![c.slug] = c.id;
-          chaptersBySlug.set(c.slug, c.id);
-        });
+        cachedChapterMap = {};
+        if (chaptersRes.data) {
+          const chaptersBySlug = new Map<string, string>();
+          chaptersRes.data.forEach((c: { id: string; slug: string }) => {
+            cachedChapterMap![c.slug] = c.id;
+            chaptersBySlug.set(c.slug, c.id);
+          });
 
-        // Map by JSON chapter ID in O(1) time
-        RAW_SUBJECTS.forEach((sub) =>
-          sub.chapters.forEach((ch) => {
-            const dbChapId = chaptersBySlug.get(ch.slug);
-            if (dbChapId) {
-              cachedChapterMap![ch.id] = dbChapId;
+          // Map by JSON chapter ID in O(1) time
+          RAW_SUBJECTS.forEach((sub) =>
+            sub.chapters.forEach((ch) => {
+              const dbChapId = chaptersBySlug.get(ch.slug);
+              if (dbChapId) {
+                cachedChapterMap![ch.id] = dbChapId;
+              }
+            })
+          );
+        }
+
+        cachedTopicMap = {};
+        if (topicsRes.data) {
+          // Construct composite index map: "chapterId::title" -> topicId for O(1) lookup
+          const topicsByChapterAndTitle = new Map<string, string>();
+          topicsRes.data.forEach(
+            (t: { id: string; chapter_id: string; title: string }) => {
+              topicsByChapterAndTitle.set(`${t.chapter_id}::${t.title}`, t.id);
             }
-          })
-        );
-      }
+          );
 
-      cachedTopicMap = {};
-      if (topicsRes.data) {
-        // Construct composite index map: "chapterId::title" -> topicId for O(1) lookup
-        const topicsByChapterAndTitle = new Map<string, string>();
-        topicsRes.data.forEach(
-          (t: { id: string; chapter_id: string; title: string }) => {
-            topicsByChapterAndTitle.set(`${t.chapter_id}::${t.title}`, t.id);
-          }
-        );
-
-        // Map all topics in O(1) without repeated nested array searches
-        RAW_SUBJECTS.forEach((sub) =>
-          sub.chapters.forEach((ch) => {
-            const dbChapId = cachedChapterMap![ch.slug];
-            if (dbChapId) {
-              ch.topics.forEach((t) => {
-                const dbTopicId = topicsByChapterAndTitle.get(
-                  `${dbChapId}::${t.name}`
-                );
-                if (dbTopicId) {
-                  cachedTopicMap![t.id] = dbTopicId;
-                }
-              });
-            }
-          })
-        );
+          // Map all topics in O(1) without repeated nested array searches
+          RAW_SUBJECTS.forEach((sub) =>
+            sub.chapters.forEach((ch) => {
+              const dbChapId = cachedChapterMap![ch.slug];
+              if (dbChapId) {
+                ch.topics.forEach((t) => {
+                  const dbTopicId = topicsByChapterAndTitle.get(
+                    `${dbChapId}::${t.name}`
+                  );
+                  if (dbTopicId) {
+                    cachedTopicMap![t.id] = dbTopicId;
+                  }
+                });
+              }
+            })
+          );
+        }
+      } catch (err) {
+        console.warn("prefetchMapping warning:", err);
+        cachedSubjectMap = cachedSubjectMap || {};
+        cachedChapterMap = cachedChapterMap || {};
+        cachedTopicMap = cachedTopicMap || {};
       }
     })().finally(() => {
       prefetchPromise = null;
@@ -108,6 +115,30 @@ export async function prefetchMapping(): Promise<void> {
   }
 
   return prefetchPromise;
+}
+
+export function getSubjectUuidSync(
+  slugOrId: string | null | undefined
+): string | null {
+  if (!slugOrId) return null;
+  if (isUuid(slugOrId)) return slugOrId;
+  return cachedSubjectMap?.[slugOrId] || null;
+}
+
+export function getChapterUuidSync(
+  slugOrId: string | null | undefined
+): string | null {
+  if (!slugOrId) return null;
+  if (isUuid(slugOrId)) return slugOrId;
+  return cachedChapterMap?.[slugOrId] || null;
+}
+
+export function getTopicUuidSync(
+  jsonId: string | null | undefined
+): string | null {
+  if (!jsonId) return null;
+  if (isUuid(jsonId)) return jsonId;
+  return cachedTopicMap?.[jsonId] || null;
 }
 
 /**
@@ -121,7 +152,7 @@ export async function getSubjectUuid(
     return slugOrId;
   }
   await prefetchMapping();
-  return cachedSubjectMap?.[slugOrId] || null;
+  return getSubjectUuidSync(slugOrId);
 }
 
 /**
@@ -135,7 +166,7 @@ export async function getChapterUuid(
     return slugOrId;
   }
   await prefetchMapping();
-  return cachedChapterMap?.[slugOrId] || null;
+  return getChapterUuidSync(slugOrId);
 }
 
 /**
@@ -149,5 +180,5 @@ export async function getTopicUuid(
     return jsonId;
   }
   await prefetchMapping();
-  return cachedTopicMap?.[jsonId] || null;
+  return getTopicUuidSync(jsonId);
 }

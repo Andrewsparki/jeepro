@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ContextMenuTarget } from "@/features/context-menu";
 
 export function PlannerWorkspace() {
   const [events, setEvents] = useState<PlannerEvent[]>([]);
@@ -230,105 +231,122 @@ export function PlannerWorkspace() {
                         const isCompleted = event.status === "completed";
 
                         return (
-                          <div 
+                          <ContextMenuTarget
                             key={event.id}
-                            className={`group relative flex items-center gap-4 p-4 rounded-2xl border transition-all ${
-                              isCompleted 
-                                ? "border-glass-border/40 bg-surface/40 opacity-75" 
-                                : "border-glass-border bg-surface hover:bg-surface-hover hover:border-border"
-                            }`}
+                            type="planner-event"
+                            id={event.id}
+                            title={event.title}
+                            data={{
+                              event,
+                              isCompleted,
+                              onToggleStatus: () => handleToggleStatus(event),
+                              onEdit: () => {
+                                setEditingEvent(event);
+                                setIsCreateOpen(true);
+                              },
+                              onDelete: () => setDeletingEvent(event),
+                            }}
+                            asChild
                           >
-                            {/* Complete Toggle Checkbox */}
-                            <button
-                              type="button"
-                              onClick={() => handleToggleStatus(event)}
-                              className={`shrink-0 w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
+                            <div 
+                              className={`group relative flex items-center gap-4 p-4 rounded-2xl border transition-all ${
                                 isCompleted 
-                                  ? "bg-emerald-500 border-emerald-500 text-white" 
-                                  : "border-muted-foreground/40 hover:border-primary text-transparent"
+                                  ? "border-glass-border/40 bg-surface/40 opacity-75" 
+                                  : "border-glass-border bg-surface hover:bg-surface-hover hover:border-border"
                               }`}
-                              title={isCompleted ? "Mark as pending" : "Mark as completed"}
                             >
-                              <Check className="w-3.5 h-3.5 stroke-[3]" />
-                            </button>
+                              {/* Complete Toggle Checkbox */}
+                              <button
+                                type="button"
+                                onClick={() => handleToggleStatus(event)}
+                                className={`shrink-0 w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
+                                  isCompleted 
+                                    ? "bg-emerald-500 border-emerald-500 text-white" 
+                                    : "border-muted-foreground/40 hover:border-primary text-transparent"
+                                }`}
+                                title={isCompleted ? "Mark as pending" : "Mark as completed"}
+                              >
+                                <Check className="w-3.5 h-3.5 stroke-[3]" />
+                              </button>
 
-                            {/* Time Slot */}
-                            <div className="flex flex-col items-center justify-center min-w-[75px] pr-4 border-r border-border/50">
-                              <span className="text-sm font-semibold">{format(parseISO(event.start_time), "HH:mm")}</span>
-                              <span className="text-xs text-muted-foreground">{format(parseISO(event.end_time), "HH:mm")}</span>
-                            </div>
-
-                            {/* Event Details */}
-                            <div className="flex-1 flex flex-col justify-center min-w-0">
-                              <h3 className={`font-semibold text-foreground transition-colors line-clamp-1 ${
-                                isCompleted ? "line-through text-muted-foreground" : "group-hover:text-primary"
-                              }`}>
-                                {event.title}
-                              </h3>
-                              <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground font-medium">
-                                <span className="px-2 py-0.5 rounded-full border border-border/50 bg-background uppercase tracking-wider text-[10px]">
-                                  {event.event_type}
-                                </span>
-                                {event.google_event_id && (
-                                  <span className="flex items-center gap-1 text-emerald-500/80 text-[11px]">
-                                    <CheckCircle2 className="w-3 h-3" /> Synced
-                                  </span>
-                                )}
+                              {/* Time Slot */}
+                              <div className="flex flex-col items-center justify-center min-w-[75px] pr-4 border-r border-border/50">
+                                <span className="text-sm font-semibold">{format(parseISO(event.start_time), "HH:mm")}</span>
+                                <span className="text-xs text-muted-foreground">{format(parseISO(event.end_time), "HH:mm")}</span>
                               </div>
-                            </div>
 
-                            {/* Action Menu Dropdown (⋮) */}
-                            <div className="shrink-0">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className="w-8 h-8 rounded-lg opacity-80 group-hover:opacity-100 hover:bg-surface-hover"
-                                  >
-                                    <MoreVertical className="w-4 h-4" />
-                                    <span className="sr-only">Open menu</span>
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-56 bg-background border-glass-border p-1.5 shadow-2xl rounded-xl">
-                                  <DropdownMenuItem 
-                                    onClick={() => handleToggleStatus(event)}
-                                    className="cursor-pointer"
-                                  >
-                                    {isCompleted ? (
-                                      <>
-                                        <Circle className="w-4 h-4 text-muted-foreground" />
-                                        <span>Mark as Pending</span>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                                        <span>Mark as Complete</span>
-                                      </>
-                                    )}
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem 
-                                    onClick={() => {
-                                      setEditingEvent(event);
-                                      setIsCreateOpen(true);
-                                    }}
-                                    className="cursor-pointer"
-                                  >
-                                    <Pencil className="w-4 h-4 text-muted-foreground" />
-                                    <span>Edit Event</span>
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem 
-                                    onClick={() => setDeletingEvent(event)}
-                                    className="cursor-pointer text-red-500 focus:text-red-500 focus:bg-red-500/10"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                    <span>Delete Event</span>
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
+                              {/* Event Details */}
+                              <div className="flex-1 flex flex-col justify-center min-w-0">
+                                <h3 className={`font-semibold text-foreground transition-colors line-clamp-1 ${
+                                  isCompleted ? "line-through text-muted-foreground" : "group-hover:text-primary"
+                                }`}>
+                                  {event.title}
+                                </h3>
+                                <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground font-medium">
+                                  <span className="px-2 py-0.5 rounded-full border border-border/50 bg-background uppercase tracking-wider text-[10px]">
+                                    {event.event_type}
+                                  </span>
+                                  {event.google_event_id && (
+                                    <span className="flex items-center gap-1 text-emerald-500/80 text-[11px]">
+                                      <CheckCircle2 className="w-3 h-3" /> Synced
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
 
-                          </div>
+                              {/* Action Menu Dropdown (⋮) */}
+                              <div className="shrink-0">
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon" 
+                                      className="w-8 h-8 rounded-lg opacity-80 group-hover:opacity-100 hover:bg-surface-hover"
+                                    >
+                                      <MoreVertical className="w-4 h-4" />
+                                      <span className="sr-only">Open menu</span>
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end" className="w-56 bg-background border-glass-border p-1.5 shadow-2xl rounded-xl">
+                                    <DropdownMenuItem 
+                                      onClick={() => handleToggleStatus(event)}
+                                      className="cursor-pointer"
+                                    >
+                                      {isCompleted ? (
+                                        <>
+                                          <Circle className="w-4 h-4 text-muted-foreground" />
+                                          <span>Mark as Pending</span>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                          <span>Mark as Complete</span>
+                                        </>
+                                      )}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem 
+                                      onClick={() => {
+                                        setEditingEvent(event);
+                                        setIsCreateOpen(true);
+                                      }}
+                                      className="cursor-pointer"
+                                    >
+                                      <Pencil className="w-4 h-4 text-muted-foreground" />
+                                      <span>Edit Event</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem 
+                                      onClick={() => setDeletingEvent(event)}
+                                      className="cursor-pointer text-red-500 focus:text-red-500 focus:bg-red-500/10"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                      <span>Delete Event</span>
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+
+                            </div>
+                          </ContextMenuTarget>
                         );
                       })}
                     </div>

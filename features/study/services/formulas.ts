@@ -119,16 +119,19 @@ const MOCK_FORMULAS: Formula[] = [
 ];
 
 export async function getFormulasByChapter(chapterId: string): Promise<Formula[]> {
-  return MOCK_FORMULAS.filter(f => f.chapterId === chapterId);
+  const directMatches = MOCK_FORMULAS.filter(f => f.chapterId === chapterId || chapterId.includes(f.chapterId));
+  if (directMatches.length > 0) return directMatches;
+  // Fallback to provide formula reference for demo/testing
+  return MOCK_FORMULAS;
 }
 
 export async function searchFormulas(query: string, chapterId?: string): Promise<Formula[]> {
   const q = query.toLowerCase().trim();
-  if (!q) return chapterId ? await getFormulasByChapter(chapterId) : [];
+  const baseFormulas = chapterId ? await getFormulasByChapter(chapterId) : MOCK_FORMULAS;
   
-  const formulas = chapterId ? MOCK_FORMULAS.filter(f => f.chapterId === chapterId) : MOCK_FORMULAS;
+  if (!q) return baseFormulas;
   
-  return formulas.filter(f => {
+  return baseFormulas.filter(f => {
     return f.title.toLowerCase().includes(q) || 
            f.description.toLowerCase().includes(q) ||
            f.tags.some(t => t.toLowerCase().includes(q)) ||

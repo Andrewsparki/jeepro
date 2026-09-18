@@ -260,4 +260,52 @@ export class NotificationService {
       return false;
     }
   }
+
+  /**
+   * Deletes a specific notification for a user.
+   */
+  static async deleteNotification(
+    notificationId: string,
+    userId: string
+  ): Promise<boolean> {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("notifications")
+        .delete()
+        .eq("id", notificationId)
+        .or(`user_id.eq.${userId},target_user_id.eq.${userId}`);
+
+      if (error) {
+        console.error("[NotificationService] deleteNotification error:", error.message);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error("[NotificationService] deleteNotification exception:", err);
+      return false;
+    }
+  }
+
+  /**
+   * Clears/deletes all notifications for a user.
+   */
+  static async clearAllNotifications(userId: string): Promise<boolean> {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("notifications")
+        .delete()
+        .or(`user_id.eq.${userId},target_user_id.eq.${userId}`);
+
+      if (error) {
+        console.error("[NotificationService] clearAllNotifications error:", error.message);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error("[NotificationService] clearAllNotifications exception:", err);
+      return false;
+    }
+  }
 }

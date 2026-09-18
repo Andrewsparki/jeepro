@@ -2,14 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +19,7 @@ import {
   Globe,
   Loader2,
   Check,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CreateGroupInput, GroupAvatarColor, GroupAvatarIcon, StudyGroup } from "../types/groups.types";
@@ -102,14 +96,22 @@ export function CreateGroupModal({ open, onOpenChange, onCreate }: CreateGroupMo
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] p-6 max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold tracking-tight">Create Study Group</DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground">
+    <Modal isOpen={open} onClose={() => onOpenChange(false)} className="sm:max-w-[480px] p-6 max-h-[90vh] overflow-y-auto">
+      <div className="flex items-center justify-between pb-2 border-b border-border/40">
+        <div>
+          <h2 className="text-xl font-bold tracking-tight text-foreground">Create Study Group</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
             Form a focused study circle with friends or public aspirants.
-          </DialogDescription>
-        </DialogHeader>
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => onOpenChange(false)}
+          className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
 
         <form onSubmit={handleSubmit} className="space-y-5 pt-2">
           {error && (
@@ -238,7 +240,7 @@ export function CreateGroupModal({ open, onOpenChange, onCreate }: CreateGroupMo
             </button>
           </div>
 
-          <DialogFooter className="pt-2 gap-2 sm:gap-0">
+          <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
             <Button
               type="button"
               variant="outline"
@@ -251,9 +253,8 @@ export function CreateGroupModal({ open, onOpenChange, onCreate }: CreateGroupMo
             <Button type="submit" size="sm" disabled={isSubmitting} className="gap-1.5 font-medium">
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Group"}
             </Button>
-          </DialogFooter>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }

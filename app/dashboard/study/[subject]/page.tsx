@@ -20,14 +20,21 @@ export default function SubjectChaptersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     async function load() {
-      if (subjectSlug) {
-        const data = await getSubjectBySlug(subjectSlug);
-        setSubject(data);
+      try {
+        if (subjectSlug) {
+          const data = await getSubjectBySlug(subjectSlug);
+          if (isMounted) setSubject(data);
+        }
+      } catch (err) {
+        console.error("Error loading subject chapters:", err);
+      } finally {
+        if (isMounted) setLoading(false);
       }
-      setLoading(false);
     }
     load();
+    return () => { isMounted = false; };
   }, [subjectSlug]);
 
   return (

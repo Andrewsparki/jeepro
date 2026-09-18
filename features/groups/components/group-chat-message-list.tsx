@@ -5,6 +5,7 @@ import { GroupMessage, GroupRole } from "../types/groups.types";
 import { Button } from "@/components/ui/button";
 import { Trash2, Loader2, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSubSmoothScroll } from "@/components/ui/sub-smooth-scroll";
 
 interface GroupChatMessageListProps {
   messages: GroupMessage[];
@@ -28,8 +29,14 @@ export function GroupChatMessageList({
   onDeleteMessage,
 }: GroupChatMessageListProps) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const { containerRef, contentRef, resize: resizeScroll } = useSubSmoothScroll<HTMLDivElement>({
+    overscroll: true,
+  });
   const prevCountRef = useRef(messages.length);
+
+  useEffect(() => {
+    resizeScroll();
+  }, [messages.length, resizeScroll]);
 
   // Auto scroll to bottom when new messages arrive (if near bottom)
   useEffect(() => {
@@ -74,11 +81,12 @@ export function GroupChatMessageList({
   return (
     <div
       ref={containerRef}
-      data-lenis-prevent
-      className="flex-1 overflow-y-auto p-4 space-y-4"
+      data-lenis-prevent="true"
+      className="flex-1 overflow-y-auto p-4 overscroll-contain"
     >
-      {/* Load Older Trigger */}
-      {hasMore && (
+      <div ref={contentRef} className="space-y-4">
+        {/* Load Older Trigger */}
+        {hasMore && (
         <div className="flex justify-center pb-2">
           <Button
             variant="ghost"
@@ -159,7 +167,8 @@ export function GroupChatMessageList({
         );
       })}
 
-      <div ref={bottomRef} />
+        <div ref={bottomRef} />
+      </div>
     </div>
   );
 }

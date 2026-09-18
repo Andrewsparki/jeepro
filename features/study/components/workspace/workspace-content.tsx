@@ -31,10 +31,20 @@ const TABS = [
 ];
 
 export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
+  console.log("[WorkspaceContent] Rendering WorkspaceContent for chapter:", chapter?.title);
   const [activeTab, setActiveTab] = useState("overview");
-  const { startSession, isActive } = useStudySession();
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const { startSession, endSession, isActive } = useStudySession();
 
   const activeTabConfig = TABS.find(t => t.id === activeTab);
+
+  const toggleBookmark = () => {
+    setIsBookmarked(prev => {
+      const next = !prev;
+      toast(next ? `Bookmarked ${chapter.title}` : `Removed bookmark for ${chapter.title}`);
+      return next;
+    });
+  };
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-background">
@@ -51,14 +61,24 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" className="hidden sm:flex rounded-full px-6" onClick={() => toast("Coming soon")}>
-                Bookmark
+              <Button 
+                variant={isBookmarked ? "secondary" : "outline"} 
+                className="hidden sm:flex rounded-full px-6 gap-2" 
+                onClick={toggleBookmark}
+              >
+                <BookMarked className={cn("w-4 h-4", isBookmarked && "fill-current")} />
+                {isBookmarked ? "Bookmarked" : "Bookmark"}
               </Button>
               <Button 
-                onClick={() => startSession(subject.id, chapter.id)} 
-                className="rounded-full px-6 gap-2 bg-foreground text-background hover:bg-foreground/90"
+                onClick={() => isActive ? endSession() : startSession(subject.id, chapter.id)} 
+                className={cn(
+                  "rounded-full px-6 gap-2",
+                  isActive 
+                    ? "bg-amber-500 hover:bg-amber-600 text-white" 
+                    : "bg-foreground text-background hover:bg-foreground/90"
+                )}
               >
-                {isActive ? "Continue Session" : "Start Session"}
+                {isActive ? "End Session" : "Start Session"}
                 <Play className="w-4 h-4 fill-current" />
               </Button>
             </div>
@@ -102,7 +122,7 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
       </header>
 
       {/* Main Content Area with Slide Animation */}
-      <div role="tabpanel" className="flex-1 overflow-y-auto custom-scrollbar p-8 relative">
+      <div role="tabpanel" className="flex-1 overflow-y-auto custom-scrollbar p-8 relative min-h-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -110,10 +130,10 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: -5 }}
             transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-            className="h-full"
+            className="min-h-full"
           >
             {activeTab === "overview" && (
-              <OverviewTab chapter={chapter} subject={subject} />
+              <OverviewTab chapter={chapter} subject={subject} onSelectTab={(tabId) => setActiveTab(tabId)} />
             )}
 
             {activeTab === "formulas" && (

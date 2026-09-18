@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, ChevronRight, Clock, PlayCircle } from "lucide-react";
+import { CheckCircle2, ChevronRight, Clock, PlayCircle, Copy, Bookmark, Link as LinkIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Topic } from "@/features/syllabus/services/syllabus";
 import { updateTopicProgress } from "@/features/study/services/progress";
 import { useStudySession } from "@/features/study/context/study-session-context";
+import { ContextMenuTrigger } from "@/features/context-menu";
+import { toast } from "sonner";
 
 interface TopicItemProps {
   topic: Topic;
@@ -18,6 +20,7 @@ export function TopicItem({ topic, index }: TopicItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [status, setStatus] = useState(topic.status || "Not Started");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const { startSession, topicId: activeTopicId, triggerRefresh } = useStudySession();
 
   const isCompleted = status === "Mastered";
@@ -33,8 +36,61 @@ export function TopicItem({ topic, index }: TopicItemProps) {
     setIsUpdating(false);
   };
 
+  const topicMenuItems = [
+    {
+      id: "start-topic-session",
+      label: activeTopicId === topic.id ? "Session Active" : "Start Focus Module",
+      icon: PlayCircle,
+      onClick: () => {
+        startSession(undefined, topic.chapter_id, topic.id);
+        toast.success(`Started module for ${topic.title}`);
+      },
+    },
+    {
+      id: "toggle-topic-complete",
+      label: isCompleted ? "Mark as Incomplete" : "Mark as Completed",
+      icon: CheckCircle2,
+      onClick: handleMarkComplete,
+    },
+    {
+      id: "bookmark-topic",
+      label: isBookmarked ? "Remove Bookmark" : "Bookmark Topic",
+      icon: Bookmark,
+      onClick: () => {
+        setIsBookmarked((prev) => {
+          const next = !prev;
+          toast.success(next ? `Bookmarked ${topic.title}` : `Removed bookmark for ${topic.title}`);
+          return next;
+        });
+      },
+    },
+    { id: "sep-1", separator: true, label: "" },
+    {
+      id: "copy-topic-link",
+      label: "Copy Topic Link",
+      icon: LinkIcon,
+      onClick: () => {
+        if (typeof window !== "undefined") {
+          const url = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(topic.title)}`;
+          navigator.clipboard.writeText(url);
+          toast.success("Topic link copied");
+        }
+      },
+    },
+    {
+      id: "copy-topic-title",
+      label: "Copy Title",
+      icon: Copy,
+      onClick: () => {
+        navigator.clipboard.writeText(topic.title);
+        toast.success("Topic title copied");
+      },
+    },
+  ];
+
   return (
-    <div className="border-b border-border/30 last:border-0">
+    <ContextMenuTrigger items={topicMenuItems} title={topic.title}>
+      <div className="border-b border-border/30 last:border-0">
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full flex items-center justify-between py-4 text-left group focus-visible:outline-none"
@@ -100,5 +156,6 @@ export function TopicItem({ topic, index }: TopicItemProps) {
         )}
       </AnimatePresence>
     </div>
+    </ContextMenuTrigger>
   );
 }

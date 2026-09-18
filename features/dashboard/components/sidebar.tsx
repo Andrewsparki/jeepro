@@ -20,7 +20,8 @@ import {
   Award, 
   ChevronDown, 
   ChevronRight, 
-  GraduationCap 
+  GraduationCap,
+  LifeBuoy 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/features/auth/components/auth-provider";
@@ -29,7 +30,6 @@ import { useFocusStore } from "@/features/focus/store/focus-store";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
-import { FixedPortal } from "@/components/ui/fixed-portal";
 import { useSettings } from "@/providers/settings-provider";
 import { useDirectConversations } from "@/features/chat/hooks/use-direct-conversations";
 import { useFriends } from "@/features/friends/hooks/use-friends";
@@ -68,24 +68,17 @@ export function Sidebar() {
   ];
 
   return (
-    <FixedPortal>
-      <AnimatePresence initial={false}>
-        {!isHidden && (
-          <motion.aside 
-            initial={{ width: 0, opacity: 0, x: -50 }}
-            animate={{ width: 260, opacity: 1, x: 0 }}
-            exit={{ width: 0, opacity: 0, x: -50 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="hidden flex-col border-r border-border/60 bg-secondary/95 dark:bg-background/95 md:flex fixed top-0 bottom-0 left-0 z-30 overflow-hidden whitespace-nowrap"
-          >
-            <div className="flex h-[60px] items-center justify-between px-4 border-b border-border/25 shrink-0">
+    <>
+      {!isHidden && (
+        <aside className="hidden flex-col border-r border-border/40 bg-secondary/95 dark:bg-background/95 md:flex sticky top-0 z-30 overflow-hidden whitespace-nowrap h-[100dvh] max-h-[100dvh] min-h-0 w-[260px] shrink-0">
+            <div className="flex h-16 items-center justify-between px-4 border-b border-border/40 shrink-0">
               <Link href="/dashboard" className="outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-md">
                 <BrandLogo size="md" />
               </Link>
               <ThemeSwitcher className="shrink-0" />
             </div>
 
-            <div className="flex-1 overflow-y-auto py-6 px-4">
+            <div data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto py-6 px-4 custom-scrollbar">
               <LayoutGroup id="sidebar-nav">
                 <nav className="flex flex-col gap-1">
                   {mainNav.map((item) => (
@@ -95,7 +88,10 @@ export function Sidebar() {
 
                 <div className="mt-6 mb-2">
                   <button 
-                    onClick={() => setIsSocialOpen(!isSocialOpen)}
+                    onClick={() => {
+                      setIsSocialOpen(!isSocialOpen);
+                      playSound("liquid-glass");
+                    }}
                     className="flex w-full items-center justify-between px-3 py-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
                   >
                     SOCIAL
@@ -121,13 +117,14 @@ export function Sidebar() {
               </LayoutGroup>
             </div>
 
-            <div className="p-4 border-t border-border/40 flex flex-col gap-1 shrink-0">
+            <div className="p-4 border-t border-border/40 flex flex-col gap-1 shrink-0 bg-secondary/95 dark:bg-background/95 relative z-10">
+              <SidebarItem href="/dashboard/support" label="Support" icon={<LifeBuoy className="h-5 w-5" />} />
               <SidebarItem href="/dashboard/settings" label="Settings" icon={<Settings className="h-5 w-5" />} />
               
               <form action={logout} className="w-full mt-2">
                 <button 
                   type="submit" 
-                  onClick={() => playSound("swish")}
+                  onClick={() => playSound("liquid-glass")}
                   className={cn(
                   "w-full relative flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted/30 text-muted-foreground hover:text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 )}>
@@ -148,9 +145,8 @@ export function Sidebar() {
                 Made with <span className="text-rose-500">❤️</span> by Andrew
               </div>
             </div>
-          </motion.aside>
+          </aside>
         )}
-      </AnimatePresence>
-    </FixedPortal>
+    </>
   );
 }

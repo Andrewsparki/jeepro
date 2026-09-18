@@ -13,6 +13,7 @@ interface StudyWorkspaceProps {
 }
 
 export function StudyWorkspace({ subject, chapter }: StudyWorkspaceProps) {
+  console.log("[StudyWorkspace] Rendering StudyWorkspace component:", { subject: subject?.slug, chapter: chapter?.slug, topicsCount: chapter?.topics?.length });
   return (
     <FixedPortal>
       <motion.div
@@ -33,7 +34,7 @@ export function StudyWorkspace({ subject, chapter }: StudyWorkspaceProps) {
       <WorkspaceContent chapter={chapter} subject={subject} />
 
       {/* Right Tools Column */}
-      <WorkspaceTools />
+      <WorkspaceTools chapter={chapter} subject={subject} />
       
     </motion.div>
     </FixedPortal>

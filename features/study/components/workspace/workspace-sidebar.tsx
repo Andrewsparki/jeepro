@@ -12,6 +12,7 @@ interface WorkspaceSidebarProps {
 }
 
 export function WorkspaceSidebar({ subject, activeChapterSlug }: WorkspaceSidebarProps) {
+  console.log("[WorkspaceSidebar] Rendering WorkspaceSidebar with chapters:", subject?.chapters?.length);
   const totalChapters = subject.chapters.length;
   const overallProgress = totalChapters > 0 
     ? Math.round(subject.chapters.reduce((acc, chap) => acc + chap.completionPercentage, 0) / totalChapters)

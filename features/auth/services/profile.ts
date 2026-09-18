@@ -10,6 +10,11 @@ export type UserProfile = {
   target_exam: string;
   target_year: number | null;
   theme: string;
+  is_admin?: boolean;
+  is_muted?: boolean;
+  is_banned?: boolean;
+  mute_reason?: string | null;
+  ban_reason?: string | null;
   created_at: string;
   updated_at: string;
 };

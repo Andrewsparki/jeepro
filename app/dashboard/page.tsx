@@ -155,7 +155,7 @@ export default function DashboardPage() {
             />
             <StatCard
               title="Topics Mastered"
-              value={<AnimatedNumber value={metrics.topicsCompletedToday} />}
+              value={<AnimatedNumber value={metrics.masteredTopics} />}
               icon={<Target className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
               iconContainerClassName="bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 dark:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
               delay={0.2}
@@ -186,7 +186,14 @@ export default function DashboardPage() {
         {/* ROW 2: Timeline, Continue Learning & Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          <DashboardCard className="lg:col-span-4 min-h-[320px]" delay={0.5}>
+          <DashboardCard 
+            className="lg:col-span-4 min-h-[320px]" 
+            delay={0.5}
+            data-context-target="dashboard-widget"
+            data-context-id="timeline"
+            data-context-title="Today's Timeline"
+            data-context-data={JSON.stringify({ widget: "timeline" })}
+          >
             <div className="mb-6">
               <h3 className="font-semibold text-lg">Today&apos;s Timeline</h3>
               <p className="text-sm text-muted-foreground">Your scheduled sessions</p>
@@ -198,14 +205,31 @@ export default function DashboardPage() {
 
           <div className="lg:col-span-8 flex flex-col gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex flex-col min-h-[240px]">
+              <div 
+                className="flex flex-col min-h-[240px]"
+                data-context-target="dashboard-widget"
+                data-context-id="continue-learning"
+                data-context-title="Continue Learning"
+                data-context-data={JSON.stringify({ 
+                  widget: "continue-learning", 
+                  subjectSlug: metrics.lastActiveChapter?.subjectSlug, 
+                  chapterSlug: metrics.lastActiveChapter?.chapterSlug 
+                })}
+              >
                 <div className="mb-4">
                   <h3 className="font-semibold text-lg">Continue Learning</h3>
                 </div>
                 <ContinueLearning lastActiveChapter={metrics.lastActiveChapter} />
               </div>
               
-              <DashboardCard delay={0.7} className="min-h-[240px] flex flex-col justify-between">
+              <DashboardCard 
+                delay={0.7} 
+                className="min-h-[240px] flex flex-col justify-between"
+                data-context-target="dashboard-widget"
+                data-context-id="weekly-progress"
+                data-context-title="Weekly Progress"
+                data-context-data={JSON.stringify({ widget: "weekly-progress" })}
+              >
                 <WeeklyProgress hoursCompleted={metrics.weeklyStudyHours} weeklyGoalHours={20} sessions={metrics.study_sessions} />
               </DashboardCard>
             </div>
@@ -219,7 +243,14 @@ export default function DashboardPage() {
 
         {/* ROW 3: Journey & Bottom content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          <DashboardCard className="lg:col-span-5" delay={0.8}>
+          <DashboardCard 
+            className="lg:col-span-5" 
+            delay={0.8}
+            data-context-target="dashboard-widget"
+            data-context-id="stat-streak"
+            data-context-title="Your Journey"
+            data-context-data={JSON.stringify({ widget: "stat-streak" })}
+          >
             <div className="mb-6">
               <h3 className="font-semibold text-lg">Your Journey</h3>
               <p className="text-sm text-muted-foreground">Progress towards the next milestone</p>
@@ -227,7 +258,13 @@ export default function DashboardPage() {
             <JourneyTracker xpDetails={metrics.xpDetails} achievements={metrics.achievements} />
           </DashboardCard>
           
-          <div className="lg:col-span-7">
+          <div 
+            className="lg:col-span-7"
+            data-context-target="dashboard-widget"
+            data-context-id="missions"
+            data-context-title="Daily Missions"
+            data-context-data={JSON.stringify({ widget: "missions" })}
+          >
              <DailyMissionsCard missions={metrics.dailyMissions} delay={0.9} />
           </div>
         </div>

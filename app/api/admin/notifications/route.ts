@@ -13,8 +13,36 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = Math.min(parseInt(searchParams.get("pageSize") || "20", 10), 100);
+  const search = searchParams.get("search") || undefined;
+  const typeFilter = searchParams.get("type") || undefined;
+  const targetTypeFilter = searchParams.get("target_type") || undefined;
 
-  const result = await getNotifications(page, pageSize);
+  const result = await getNotifications(page, pageSize, search, typeFilter, targetTypeFilter);
+
+  return NextResponse.json(result);
+}
+
+export async function DELETE(request: NextRequest) {
+  const { user } = await verifyAdmin();
+  const searchParams = request.nextUrl.searchParams;
+  const search = searchParams.get("search") || undefined;
+  const typeFilter = searchParams.get("type") || undefined;
+
+  const { clearNotifications } = await import("@/features/admin/services/admin-notifications.service");
+  const result = await clearNotifications(search, typeFilter);
+
+  if (!result.success) {
+    return NextResponse.json(
+      { error: result.error || "Failed to clear notifications" },
+      { status: 500 }
+    );
+  }
+
+  // Audit log
+  await logAuditEvent(user.id, "notifications.cleared", "notifications", "all", {
+    cleared_count: result.clearedCount,
+    filter: search || "ALL",
+  });
 
   return NextResponse.json(result);
 }

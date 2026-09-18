@@ -21,8 +21,24 @@ interface StatCardProps {
 }
 
 export const StatCard = React.memo(function StatCard({ title, value, icon, iconContainerClassName, trend, delay = 0, className, hoverTint }: StatCardProps) {
+  const widgetId = title.toLowerCase().includes("time") 
+    ? "stat-time" 
+    : title.toLowerCase().includes("topic") 
+    ? "stat-topics" 
+    : title.toLowerCase().includes("streak") 
+    ? "stat-streak" 
+    : "stat-level";
+
   return (
-    <DashboardCard delay={delay} hoverTint={hoverTint} className={cn("flex flex-col gap-5 overflow-hidden relative cursor-default", className)}>
+    <DashboardCard 
+      delay={delay} 
+      hoverTint={hoverTint} 
+      className={cn("flex flex-col gap-5 overflow-hidden relative cursor-default", className)}
+      data-context-target="dashboard-widget"
+      data-context-id={widgetId}
+      data-context-title={title}
+      data-context-data={JSON.stringify({ widget: widgetId })}
+    >
       
       <div className="flex items-center justify-between relative z-10">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</h3>

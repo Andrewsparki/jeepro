@@ -7,6 +7,8 @@ import { ChatMessage, ChatPresenceUser, ChatSystemStatus, ChatSender } from "../
 import { useAuth } from "@/features/auth/components/auth-provider";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { dispatchInteractionSound } from "@/lib/sound-engine";
+import { adminDeleteChatMessage } from "@/features/admin/services/admin-chat-actions";
 
 export function useGlobalChat() {
   const { user, profile } = useAuth();
@@ -134,6 +136,7 @@ export function useGlobalChat() {
     setIsSending(true);
     try {
       const newMessage = await GlobalChatService.sendMessage(content);
+      dispatchInteractionSound("social.messageSent");
 
       // Append immediately if not received through realtime yet
       setMessages((prev) => {
@@ -144,8 +147,16 @@ export function useGlobalChat() {
       setUnreadCountBelow(0);
       return true;
     } catch (err: unknown) {
-      console.error("Failed to send message:", err);
       const msg = err instanceof Error ? err.message : "Failed to send message.";
+      const isModerationError =
+        msg.includes("muted") ||
+        msg.includes("restricted") ||
+        msg.includes("banned") ||
+        msg.includes("Community guidelines");
+
+      if (!isModerationError) {
+        console.error("Failed to send message:", err);
+      }
       toast.error(msg);
       return false;
     } finally {
@@ -153,17 +164,22 @@ export function useGlobalChat() {
     }
   }, [isSending, chatStatus.enabled]);
 
-  // 4. Delete Own Message (or admin)
+  // 4. Delete Message (User's own or Admin moderation)
   const deleteMessage = useCallback(async (messageId: string) => {
     try {
-      await GlobalChatService.deleteOwnMessage(messageId);
+      if (profile?.is_admin) {
+        const res = await adminDeleteChatMessage(messageId);
+        if (!res.success) throw new Error(res.error || "Failed to delete message.");
+      } else {
+        await GlobalChatService.deleteOwnMessage(messageId);
+      }
       setMessages((prev) => prev.filter((m) => m.id !== messageId));
       toast.success("Message deleted");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to delete message.";
       toast.error(msg);
     }
-  }, []);
+  }, [profile?.is_admin]);
 
   // 5. Report Message
   const reportMessage = useCallback(async (messageId: string, reason: string, details?: string) => {
@@ -251,6 +267,9 @@ export function useGlobalChat() {
 
         setMessages((prev) => {
           if (prev.some((m) => m.id === rawNew.id)) return prev;
+          if (rawNew.sender_id !== user.id) {
+            dispatchInteractionSound("social.messageReceived");
+          }
           return [...prev, messageWithSender];
         });
 
@@ -361,5 +380,10 @@ export function useGlobalChat() {
     refreshMessages: loadInitialMessages,
     setNearBottom,
     currentUserId: user?.id,
+    isAdmin: profile?.is_admin === true,
+    isMuted: profile?.is_muted === true,
+    isBanned: profile?.is_banned === true,
+    muteReason: profile?.mute_reason || null,
+    banReason: profile?.ban_reason || null,
   };
 }

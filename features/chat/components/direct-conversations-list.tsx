@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useDirectConversations } from "../hooks/use-direct-conversations";
 import { MessageSquare, Users, Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSubSmoothScroll } from "@/components/ui/sub-smooth-scroll";
 
 import { ConversationItem } from "../types/private-chat.types";
 
@@ -20,7 +21,7 @@ function formatRelativeTime(isoString: string): string {
     const date = new Date(isoString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
+    const diffMins = Math.floor(diffMs / (1000 * 60));
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
 
@@ -46,6 +47,14 @@ export function DirectConversationsList({
   const conversations = hasParentData ? propConversations : hookData.conversations;
   const isLoading = hasParentData ? (propIsLoading ?? false) : hookData.isLoading;
   const error = hasParentData ? (propError ?? null) : hookData.error;
+
+  const { containerRef, contentRef, resize } = useSubSmoothScroll<HTMLDivElement>({
+    overscroll: true,
+  });
+
+  React.useEffect(() => {
+    resize();
+  }, [conversations.length, resize]);
 
   if (isLoading) {
     return (
@@ -96,8 +105,13 @@ export function DirectConversationsList({
   }
 
   return (
-    <div className="divide-y divide-border/30 overflow-y-auto max-h-[calc(100dvh-12rem)]">
-      {conversations.map((conv) => {
+    <div
+      ref={containerRef}
+      data-lenis-prevent="true"
+      className="overflow-y-auto max-h-[calc(100dvh-12rem)] overscroll-contain"
+    >
+      <div ref={contentRef} className="divide-y divide-border/30">
+        {conversations.map((conv) => {
         const friend = conv.other_user;
         const initial = (friend.full_name || "S").charAt(0).toUpperCase();
 
@@ -163,6 +177,7 @@ export function DirectConversationsList({
           </Link>
         );
       })}
+      </div>
     </div>
   );
 }

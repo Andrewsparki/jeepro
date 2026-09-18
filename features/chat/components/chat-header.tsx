@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Users, Globe, AlertTriangle, RefreshCw, Sparkles } from "lucide-react";
+import { Users, Globe, AlertTriangle, RefreshCw, Sparkles, Shield } from "lucide-react";
 import { ChatPresenceUser, ChatSystemStatus } from "../types/chat.types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,9 @@ interface ChatHeaderProps {
   onlineUsers: ChatPresenceUser[];
   onlineCount: number;
   chatStatus: ChatSystemStatus;
+  isAdmin?: boolean;
   onRefresh: () => void;
+  onOpenAdminControls?: () => void;
   isLoading: boolean;
 }
 
@@ -18,7 +20,9 @@ export function ChatHeader({
   onlineUsers,
   onlineCount,
   chatStatus,
+  isAdmin = false,
   onRefresh,
+  onOpenAdminControls,
   isLoading,
 }: ChatHeaderProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -35,10 +39,17 @@ export function ChatHeader({
             <h1 className="font-semibold text-base sm:text-lg tracking-tight truncate text-foreground">
               Global Chat
             </h1>
-            <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <Sparkles className="w-2.5 h-2.5" />
-              Community
-            </span>
+            {isAdmin ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-destructive/15 text-destructive border border-destructive/25 shadow-xs">
+                <Shield className="w-3 h-3" />
+                Admin View
+              </span>
+            ) : (
+              <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <Sparkles className="w-2.5 h-2.5" />
+                Community
+              </span>
+            )}
           </div>
 
           {/* Presence Indicator */}
@@ -100,6 +111,19 @@ export function ChatHeader({
 
       {/* Right controls */}
       <div className="flex items-center gap-2 shrink-0">
+        {isAdmin && onOpenAdminControls && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+            onClick={onOpenAdminControls}
+            title="Admin Chat System Controls"
+            aria-label="Admin Chat System Controls"
+          >
+            <Shield className="h-4 w-4" />
+          </Button>
+        )}
+
         <Button
           variant="ghost"
           size="icon"

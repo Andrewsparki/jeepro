@@ -37,14 +37,56 @@ export interface PaginatedNotifications {
 
 export async function getNotifications(
   page: number = 1,
-  pageSize: number = 20
+  pageSize: number = 20,
+  search?: string,
+  typeFilter?: string,
+  targetTypeFilter?: string
 ): Promise<PaginatedNotifications> {
   const supabase = await createAdminClient();
   const offset = (page - 1) * pageSize;
+  const trimmedSearch = search?.trim();
 
-  const { data, count, error } = await supabase
+  let matchingUserIds: string[] = [];
+  if (trimmedSearch) {
+    const { data: matchedProfiles } = await supabase
+      .from("profiles")
+      .select("id")
+      .or(`email.ilike.%${trimmedSearch}%,full_name.ilike.%${trimmedSearch}%`);
+
+    if (matchedProfiles && matchedProfiles.length > 0) {
+      matchingUserIds = matchedProfiles.map((p) => p.id);
+    }
+  }
+
+  let query = supabase
     .from("notifications")
-    .select("*", { count: "exact" })
+    .select("*", { count: "exact" });
+
+  if (typeFilter && typeFilter !== "all") {
+    query = query.eq("type", typeFilter);
+  }
+
+  if (targetTypeFilter && targetTypeFilter !== "all_targets") {
+    query = query.eq("target_type", targetTypeFilter);
+  }
+
+  if (trimmedSearch) {
+    const filters = [
+      `title.ilike.%${trimmedSearch}%`,
+      `message.ilike.%${trimmedSearch}%`,
+      `created_by.ilike.%${trimmedSearch}%`,
+      `target_user_id.ilike.%${trimmedSearch}%`,
+    ];
+
+    if (matchingUserIds.length > 0) {
+      filters.push(`created_by.in.(${matchingUserIds.join(",")})`);
+      filters.push(`target_user_id.in.(${matchingUserIds.join(",")})`);
+    }
+
+    query = query.or(filters.join(","));
+  }
+
+  const { data, count, error } = await query
     .order("created_at", { ascending: false })
     .range(offset, offset + pageSize - 1);
 
@@ -86,6 +128,93 @@ export async function getNotifications(
     pageSize,
     totalPages: Math.ceil(total / pageSize),
   };
+}
+
+/**
+ * Clears/purges notifications (optionally filtered by search/type).
+ */
+export async function clearNotifications(
+  search?: string,
+  typeFilter?: string
+): Promise<{ success: boolean; clearedCount: number; error: string | null }> {
+  const supabase = await createAdminClient();
+  const trimmedSearch = search?.trim();
+
+  try {
+    let idsToDelete: string[] = [];
+
+    if (trimmedSearch || (typeFilter && typeFilter !== "all")) {
+      let matchingUserIds: string[] = [];
+      if (trimmedSearch) {
+        const { data: matchedProfiles } = await supabase
+          .from("profiles")
+          .select("id")
+          .or(`email.ilike.%${trimmedSearch}%,full_name.ilike.%${trimmedSearch}%`);
+
+        if (matchedProfiles && matchedProfiles.length > 0) {
+          matchingUserIds = matchedProfiles.map((p) => p.id);
+        }
+      }
+
+      let query = supabase.from("notifications").select("id");
+
+      if (typeFilter && typeFilter !== "all") {
+        query = query.eq("type", typeFilter);
+      }
+
+      if (trimmedSearch) {
+        const filters = [
+          `title.ilike.%${trimmedSearch}%`,
+          `message.ilike.%${trimmedSearch}%`,
+          `created_by.ilike.%${trimmedSearch}%`,
+          `target_user_id.ilike.%${trimmedSearch}%`,
+        ];
+
+        if (matchingUserIds.length > 0) {
+          filters.push(`created_by.in.(${matchingUserIds.join(",")})`);
+          filters.push(`target_user_id.in.(${matchingUserIds.join(",")})`);
+        }
+
+        query = query.or(filters.join(","));
+      }
+
+      const { data: searchMatches } = await query;
+      idsToDelete = (searchMatches || []).map((m) => m.id);
+
+      if (idsToDelete.length === 0) {
+        return { success: true, clearedCount: 0, error: null };
+      }
+
+      const { error: deleteError } = await supabase
+        .from("notifications")
+        .delete()
+        .in("id", idsToDelete);
+
+      if (deleteError) {
+        return { success: false, clearedCount: 0, error: deleteError.message };
+      }
+    } else {
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true });
+
+      const { error: deleteError } = await supabase
+        .from("notifications")
+        .delete()
+        .neq("id", "00000000-0000-0000-0000-000000000000");
+
+      if (deleteError) {
+        return { success: false, clearedCount: 0, error: deleteError.message };
+      }
+
+      idsToDelete = Array.from({ length: count || 0 });
+    }
+
+    return { success: true, clearedCount: idsToDelete.length, error: null };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Failed to clear notifications";
+    return { success: false, clearedCount: 0, error: msg };
+  }
 }
 
 /**

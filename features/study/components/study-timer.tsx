@@ -34,7 +34,7 @@ export function StudyTimer() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className="fixed bottom-6 right-6 z-50"
+            className="fixed bottom-6 right-6 z-[100]"
           >
             {/* CSS-animated pulse glow — no JS-driven boxShadow */}
             <div className="relative">

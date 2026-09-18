@@ -38,19 +38,20 @@ export function generateXPEvents(
   sessions: StudySession[],
   progress: UserTopicProgress[],
   syllabus: Subject[],
-  completedMissions: { reward_xp?: number; bonus_xp_awarded?: boolean; date?: string; completed_at?: string | null }[] = []
+  completedMissions: { reward_xp?: number; bonus_xp_awarded?: boolean; date?: string; completed_at?: string | null }[] = [],
+  unlockedAchievements: { unlocked_at?: string | null; xp_reward?: number }[] = []
 ): XPEvent[] {
   const events: XPEvent[] = [];
 
   // 1. Session XP
   for (const session of sessions) {
-    if (typeof session.xp_earned === 'number') {
+    if (typeof session.xp_earned === 'number' && session.xp_earned > 0) {
       events.push({ timestamp: session.started_at, xp: session.xp_earned });
     } else {
-      events.push({ 
-        timestamp: session.started_at, 
-        xp: calculateSessionXP(session.duration_seconds, session.activity_type as ActivityType | undefined) 
-      });
+      const xp = calculateSessionXP(session.duration_seconds, session.activity_type as ActivityType | undefined);
+      if (xp > 0) {
+        events.push({ timestamp: session.started_at, xp });
+      }
     }
   }
 
@@ -98,6 +99,16 @@ export function generateXPEvents(
     }
   }
 
+  // 5. Achievement Rewards XP
+  for (const ach of unlockedAchievements) {
+    if (ach.xp_reward && ach.xp_reward > 0) {
+      events.push({
+        timestamp: ach.unlocked_at || new Date().toISOString(),
+        xp: ach.xp_reward,
+      });
+    }
+  }
+
   // Sort by timestamp
   return events.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 }
@@ -106,15 +117,15 @@ export function calculateXPAndLevel(
   sessions: StudySession[],
   progress: UserTopicProgress[],
   syllabus: Subject[],
-  completedMissions: { reward_xp?: number; bonus_xp_awarded?: boolean; date?: string }[] = []
+  completedMissions: { reward_xp?: number; bonus_xp_awarded?: boolean; date?: string }[] = [],
+  achievementXP: number = 0
 ): XPDetails {
   let totalXP = 0;
 
   // 1. Session XP
-  // Rely on the database exact `xp_earned` to prevent any deviations!
-  // If `xp_earned` is null (e.g. legacy row before the update), calculate exactly as fallback.
+  // If xp_earned is present and > 0, use it. If 0 or null (e.g. legacy row), calculate from duration + activity.
   for (const session of sessions) {
-    if (typeof session.xp_earned === 'number') {
+    if (typeof session.xp_earned === 'number' && session.xp_earned > 0) {
       totalXP += session.xp_earned;
     } else {
       totalXP += calculateSessionXP(session.duration_seconds, session.activity_type as ActivityType | undefined);
@@ -145,6 +156,9 @@ export function calculateXPAndLevel(
   
   const datesWithBonus = new Set(completedMissions.filter(m => m.bonus_xp_awarded).map(m => m.date));
   totalXP += datesWithBonus.size * XP_CONFIG.MILESTONES.ALL_DAILY_MISSIONS_COMPLETED;
+
+  // 5. Achievement Rewards XP
+  totalXP += achievementXP;
 
   // Calculate Level
   let currentLevel = 1;

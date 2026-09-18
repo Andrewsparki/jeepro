@@ -9,6 +9,7 @@ export type SoundType =
   | "pop"
   | "soft-tap"
   | "swish"
+  | "liquid-glass"
   | "pop-up"
   | "pop-down"
   | "chime"
@@ -17,7 +18,9 @@ export type SoundType =
   | "muted-error"
   | "tick"
   | "nav-drop"
-  | "notification";
+  | "notification"
+  | "message-sent"
+  | "message-received";
 
 export function playHapticSound(type: SoundType = "click", enabled: boolean = true) {
   if (!enabled || typeof window === "undefined") return;
@@ -176,28 +179,52 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         break;
       }
 
+      case "liquid-glass":
       case "swish": {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
+        // Pristine Liquid-Glass Drop Acoustic Effect
+        // 1. Primary Liquid Droplet Pitch Glide
+        const oscBody = ctx.createOscillator();
+        const gainBody = ctx.createGain();
         const filter = ctx.createBiquadFilter();
-        
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.exponentialRampToValueAtTime(500, now + 0.1);
 
-        filter.type = "bandpass";
-        filter.frequency.setValueAtTime(1000, now);
-        filter.frequency.exponentialRampToValueAtTime(2000, now + 0.1);
+        oscBody.type = "sine";
+        // Smooth hydrostatic pitch sweep from ~650Hz to ~1450Hz
+        oscBody.frequency.setValueAtTime(650, now);
+        oscBody.frequency.exponentialRampToValueAtTime(1450, now + 0.045);
 
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.15, now + 0.05);
-        gain.gain.linearRampToValueAtTime(0, now + 0.1);
+        // Hydrodynamic resonant lowpass filter
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(2600, now);
+        filter.Q.setValueAtTime(2.5, now);
 
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.1);
+        gainBody.gain.setValueAtTime(0, now);
+        gainBody.gain.linearRampToValueAtTime(0.18, now + 0.003);
+        gainBody.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+
+        oscBody.connect(filter);
+        filter.connect(gainBody);
+        gainBody.connect(ctx.destination);
+        oscBody.start(now);
+        oscBody.stop(now + 0.045);
+
+        // 2. High Crystal Glass Overlap Ring
+        const oscGlass = ctx.createOscillator();
+        const gainGlass = ctx.createGain();
+
+        oscGlass.type = "sine";
+        // Shimmering glass harmonic frequency ~2800Hz gliding to ~3600Hz
+        oscGlass.frequency.setValueAtTime(2800, now);
+        oscGlass.frequency.exponentialRampToValueAtTime(3600, now + 0.035);
+
+        gainGlass.gain.setValueAtTime(0, now);
+        gainGlass.gain.linearRampToValueAtTime(0.035, now + 0.002);
+        gainGlass.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
+
+        oscGlass.connect(gainGlass);
+        gainGlass.connect(ctx.destination);
+        oscGlass.start(now);
+        oscGlass.stop(now + 0.035);
+
         break;
       }
 
@@ -374,6 +401,69 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
           overtoneGain.connect(ctx.destination);
           overtone.start(noteTime);
           overtone.stop(noteTime + decay * 0.45);
+        });
+        break;
+      }
+
+      case "message-sent": {
+        // Social App Tactile "Swoosh-Pop" (480Hz -> 1080Hz glide with soft glass resonance)
+        const oscBody = ctx.createOscillator();
+        const gainBody = ctx.createGain();
+        oscBody.type = "sine";
+        oscBody.frequency.setValueAtTime(480, now);
+        oscBody.frequency.exponentialRampToValueAtTime(1080, now + 0.065);
+
+        gainBody.gain.setValueAtTime(0, now);
+        gainBody.gain.linearRampToValueAtTime(0.24, now + 0.005);
+        gainBody.gain.exponentialRampToValueAtTime(0.0001, now + 0.065);
+
+        oscBody.connect(gainBody);
+        gainBody.connect(ctx.destination);
+        oscBody.start(now);
+        oscBody.stop(now + 0.065);
+
+        // High crystal glass over-shimmer
+        const oscGlass = ctx.createOscillator();
+        const gainGlass = ctx.createGain();
+        oscGlass.type = "sine";
+        oscGlass.frequency.setValueAtTime(2200, now);
+        oscGlass.frequency.exponentialRampToValueAtTime(3200, now + 0.05);
+
+        gainGlass.gain.setValueAtTime(0, now);
+        gainGlass.gain.linearRampToValueAtTime(0.04, now + 0.002);
+        gainGlass.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+
+        oscGlass.connect(gainGlass);
+        gainGlass.connect(ctx.destination);
+        oscGlass.start(now);
+        oscGlass.stop(now + 0.05);
+        break;
+      }
+
+      case "message-received": {
+        // JEE Pro Custom Social Message Received Chime (F5: 698.46Hz -> A5: 880Hz -> C6: 1046.50Hz)
+        const notes = [
+          { freq: 698.46, offset: 0, gain: 0.22, decay: 0.25 },
+          { freq: 880.0, offset: 0.05, gain: 0.26, decay: 0.3 },
+          { freq: 1046.5, offset: 0.1, gain: 0.3, decay: 0.4 },
+        ];
+
+        notes.forEach(({ freq, offset, gain: noteGain, decay }) => {
+          const noteTime = now + offset;
+          const osc = ctx.createOscillator();
+          const gainNode = ctx.createGain();
+
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, noteTime);
+
+          gainNode.gain.setValueAtTime(0.0001, noteTime);
+          gainNode.gain.linearRampToValueAtTime(noteGain, noteTime + 0.006);
+          gainNode.gain.exponentialRampToValueAtTime(0.0001, noteTime + decay);
+
+          osc.connect(gainNode);
+          gainNode.connect(ctx.destination);
+          osc.start(noteTime);
+          osc.stop(noteTime + decay);
         });
         break;
       }

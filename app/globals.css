@@ -3,10 +3,6 @@
 
 @custom-variant dark (&:where(.dark, .midnight, .amoled, .titanium, :is(.dark, .midnight, .amoled, .titanium) *));
 
-html {
-  zoom: 0.85;
-}
-
 :root {
   /* Base Variables - Structure, Animation, Motion */
   /* Unified Radii */
@@ -319,6 +315,13 @@ body {
   height: 0 !important;
 }
 
+/* Prevent Radix / react-remove-scroll from injecting phantom right-margin/padding on body,
+   as native scrollbars are removed globally and managed by Locomotive / custom scroll */
+body[data-scroll-locked] {
+  margin-right: 0px !important;
+  padding-right: 0px !important;
+}
+
 /* Selection */
 ::selection {
   background: var(--accent);
@@ -397,6 +400,13 @@ body {
 .animate-stagger-container > *:nth-child(n+9) { animation-delay: 450ms; }
 
 /* Custom Thin Scrollbar (Hidden until hover) */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.custom-scrollbar:hover {
+  scrollbar-color: var(--border) transparent;
+}
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
 }

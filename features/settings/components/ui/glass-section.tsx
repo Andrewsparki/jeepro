@@ -2,6 +2,7 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
+import { ContextMenuTarget } from "@/features/context-menu";
 
 interface GlassSectionProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -96,51 +97,58 @@ export function SettingRow({
   isLast?: boolean;
 }) {
   return (
-    <div
-      className={cn(
-        "relative flex items-center justify-between py-3.5 sm:py-4 px-2 sm:px-3 rounded-2xl gap-4",
-        "transition-colors duration-200 hover:bg-muted/40 dark:hover:bg-white/[0.03] group",
-        className
-      )}
+    <ContextMenuTarget
+      type="setting-item"
+      id={title.toLowerCase().replace(/\s+/g, "-")}
+      title={title}
+      data={{ title, description }}
     >
-      <div className="flex items-center gap-3.5 min-w-0 pr-2">
-        {Icon && (
+      <div
+        className={cn(
+          "relative flex items-center justify-between py-3.5 sm:py-4 px-2 sm:px-3 rounded-2xl gap-4",
+          "transition-colors duration-200 hover:bg-muted/40 dark:hover:bg-white/[0.03] group",
+          className
+        )}
+      >
+        <div className="flex items-center gap-3.5 min-w-0 pr-2">
+          {Icon && (
+            <div
+              className={cn(
+                "w-9 h-9 rounded-[11px] bg-gradient-to-br flex items-center justify-center shrink-0 shadow-md",
+                "border border-white/20 transition-transform duration-200 group-hover:scale-105",
+                iconGradient,
+                iconColor
+              )}
+            >
+              <Icon className="w-4 h-4" />
+            </div>
+          )}
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <span className="text-sm font-medium text-foreground tracking-tight leading-snug">
+              {title}
+            </span>
+            {description && (
+              <span className="text-xs text-muted-foreground leading-relaxed font-normal">
+                {description}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="shrink-0 flex items-center justify-end relative z-10">
+          {children}
+        </div>
+
+        {/* Indented hairline divider matching native grouped tables */}
+        {!isLast && (
           <div
             className={cn(
-              "w-9 h-9 rounded-[11px] bg-gradient-to-br flex items-center justify-center shrink-0 shadow-md",
-              "border border-white/20 transition-transform duration-200 group-hover:scale-105",
-              iconGradient,
-              iconColor
+              "absolute bottom-0 right-3 h-px bg-border/40 dark:bg-white/[0.06] pointer-events-none",
+              Icon ? "left-14 sm:left-15" : "left-3"
             )}
-          >
-            <Icon className="w-4 h-4" />
-          </div>
+          />
         )}
-        <div className="flex flex-col gap-0.5 min-w-0">
-          <span className="text-sm font-medium text-foreground tracking-tight leading-snug">
-            {title}
-          </span>
-          {description && (
-            <span className="text-xs text-muted-foreground leading-relaxed font-normal">
-              {description}
-            </span>
-          )}
-        </div>
       </div>
-
-      <div className="shrink-0 flex items-center justify-end relative z-10">
-        {children}
-      </div>
-
-      {/* Indented hairline divider matching native grouped tables */}
-      {!isLast && (
-        <div
-          className={cn(
-            "absolute bottom-0 right-3 h-px bg-border/40 dark:bg-white/[0.06] pointer-events-none",
-            Icon ? "left-14 sm:left-15" : "left-3"
-          )}
-        />
-      )}
-    </div>
+    </ContextMenuTarget>
   );
 }

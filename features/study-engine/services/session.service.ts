@@ -137,6 +137,11 @@ export class SessionService {
         console.error('[SessionService] Mission progress update failed (non-critical):', missionErr);
       }
 
+      // Hook into Achievements evaluation
+      import("@/features/achievements/services/achievements.service")
+        .then(({ AchievementsService }) => AchievementsService.evaluateAchievements(user.id))
+        .catch((achErr) => console.error('[SessionService] Error evaluating achievements:', achErr));
+
     } catch (error: unknown) {
       const errorMsg = error instanceof Error ? error.message : (error as { details?: string })?.details || String(error);
       console.error('[SessionService] Backend sync failed:', errorMsg);

@@ -7,7 +7,6 @@ import { getDashboardMetrics } from "@/features/study/services/progress";
 import { Clock, Target, Flame, Trophy } from "lucide-react";
 import { AnimatedStatCard, StatCardSkeleton } from "@/features/analytics/components/animated-stat-card";
 import { StudyHeatmapSkeleton } from "@/features/analytics/components/study-heatmap";
-import { SubjectDistributionSkeleton } from "@/features/analytics/components/subject-distribution";
 import { TrendChartSkeleton } from "@/features/analytics/components/trend-chart";
 import { XPGrowthChartSkeleton } from "@/features/analytics/components/xp-growth-chart";
 import { SessionsBarChartSkeleton } from "@/features/analytics/components/sessions-bar-chart";
@@ -23,10 +22,6 @@ const TrendChart = dynamic(
   { ssr: false, loading: () => <TrendChartSkeleton /> }
 );
 
-const SubjectDistribution = dynamic(
-  () => import("@/features/analytics/components/subject-distribution").then(mod => mod.SubjectDistribution),
-  { ssr: false, loading: () => <SubjectDistributionSkeleton /> }
-);
 
 const StudyHeatmap = dynamic(
   () => import("@/features/analytics/components/study-heatmap").then(mod => mod.StudyHeatmap),
@@ -123,10 +118,7 @@ export default function AnalyticsPage() {
             </div>
             <ActivityTimelineSkeleton />
           </div>
-          
-          <div className="grid grid-cols-1 gap-6">
-            <SubjectDistributionSkeleton />
-          </div>
+
         </div>
       </DashboardShell>
     );
@@ -215,11 +207,6 @@ export default function AnalyticsPage() {
             <StudyHeatmap sessions={study_sessions} />
           </div>
           <ActivityTimeline sessions={study_sessions} />
-        </div>
-        
-        {/* Row 5: Subject Distribution */}
-        <div className="grid grid-cols-1 gap-6">
-          <SubjectDistribution sessions={study_sessions} syllabus={syllabus} />
         </div>
       </div>
     </DashboardShell>

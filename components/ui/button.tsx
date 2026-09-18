@@ -38,11 +38,14 @@ const buttonVariants = cva(
   }
 )
 
+import { dispatchInteractionSound } from "@/lib/sound-engine";
+
 function Button({
   className,
   variant = "default",
   size = "default",
   asChild = false,
+  onClick,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -50,12 +53,24 @@ function Button({
   }) {
   const Comp = asChild ? Slot.Root : "button"
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (variant === "destructive") {
+      dispatchInteractionSound("feedback.warning");
+    } else {
+      dispatchInteractionSound("ui.click");
+    }
+    if (onClick) {
+      onClick(e);
+    }
+  };
+
   return (
     <Comp
       data-slot="button"
       data-variant={variant}
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
+      onClick={handleClick}
       {...props}
     />
   )

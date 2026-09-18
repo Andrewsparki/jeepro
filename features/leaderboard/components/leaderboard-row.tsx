@@ -5,6 +5,7 @@ import { LeaderboardEntry } from "../types/leaderboard.types";
 import { cn } from "@/lib/utils";
 import { Award, Zap } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
+import { ContextMenuTarget } from "@/features/context-menu";
 
 interface LeaderboardRowProps {
   entry: LeaderboardEntry;
@@ -26,7 +27,20 @@ export function LeaderboardRow({
   const rowDelay = isCinematic ? 1.05 + Math.min(index, 8) * 0.035 : Math.min(index, 5) * 0.02;
 
   return (
-    <motion.div
+    <ContextMenuTarget
+      type="leaderboard-user"
+      id={entry.userId}
+      title={`${entry.fullName} (#${entry.rank})`}
+      data={{
+        userId: entry.userId,
+        fullName: entry.fullName,
+        rank: entry.rank,
+        totalXp: entry.totalXp,
+        isCurrentUser: entry.isCurrentUser,
+        onUserClick,
+      }}
+    >
+      <motion.div
       initial={
         shouldReduceMotion
           ? false
@@ -150,5 +164,6 @@ export function LeaderboardRow({
         </div>
       </div>
     </motion.div>
+  </ContextMenuTarget>
   );
 }

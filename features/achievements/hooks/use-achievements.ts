@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { AchievementsService } from "../services/achievements.service";
+import { useAuth } from "@/features/auth/components/auth-provider";
 import {
   AchievementItem,
   AchievementCategory,
@@ -9,6 +10,9 @@ import {
 } from "../types/achievement.types";
 
 export function useAchievements() {
+  const { user, isLoading: isAuthLoading } = useAuth();
+  const userId = user?.id;
+
   const [achievements, setAchievements] = useState<AchievementItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -17,12 +21,13 @@ export function useAchievements() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const loadAchievements = useCallback(async (isRefresh = false) => {
+    if (!userId) return;
     if (isRefresh) {
       setIsRefreshing(true);
     }
     try {
-      await AchievementsService.evaluateAchievements();
-      const items = await AchievementsService.getUserAchievements();
+      await AchievementsService.evaluateAchievements(userId);
+      const items = await AchievementsService.getUserAchievements(userId);
       setAchievements(items);
       setError(null);
     } catch (err: unknown) {
@@ -34,14 +39,23 @@ export function useAchievements() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
+    if (isAuthLoading) return;
+
     let ignore = false;
     async function init() {
+      if (!userId) {
+        if (!ignore) {
+          setIsLoading(false);
+        }
+        return;
+      }
+
       try {
-        await AchievementsService.evaluateAchievements();
-        const items = await AchievementsService.getUserAchievements();
+        await AchievementsService.evaluateAchievements(userId);
+        const items = await AchievementsService.getUserAchievements(userId);
         if (!ignore) {
           setAchievements(items);
           setError(null);
@@ -64,7 +78,7 @@ export function useAchievements() {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [userId, isAuthLoading]);
 
   // Listen for realtime unlock events (e.g. from background session/topic completion)
   useEffect(() => {

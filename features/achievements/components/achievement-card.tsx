@@ -18,6 +18,7 @@ import {
   LucideIcon,
 } from "lucide-react";
 import { AchievementItem, AchievementTier } from "../types/achievement.types";
+import { MilestoneProgressBar } from "./milestone-progress-bar";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -206,18 +207,12 @@ export function AchievementCard({ achievement, onClick }: AchievementCardProps) 
             </span>
           </div>
         ) : (
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-[10px] font-semibold text-muted-foreground">
-              <span>{formatProgressLabel()}</span>
-              <span>{Math.round(achievement.progress_percentage)}%</span>
-            </div>
-            <div className="w-full h-1.5 rounded-full bg-muted/60 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-accent to-cyan-400 transition-all duration-500"
-                style={{ width: `${Math.min(100, Math.max(0, achievement.progress_percentage))}%` }}
-              />
-            </div>
-          </div>
+          <MilestoneProgressBar
+            progressPercentage={achievement.progress_percentage}
+            currentProgress={achievement.current_progress}
+            requirementValue={achievement.requirement_value}
+            label={formatProgressLabel()}
+          />
         )}
       </div>
     </div>

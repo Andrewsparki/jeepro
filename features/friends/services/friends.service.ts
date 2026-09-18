@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { FriendUser, FriendshipStatus, PublicProfile } from "../types/friends.types";
 import { NotificationService } from "@/features/notifications/services/notification.service";
+import { XP_CONFIG } from "@/features/progress/config/xp-config";
 
 interface RawFriendshipRow {
   id: string;
@@ -479,9 +480,10 @@ export class FriendsService {
     // 3. Aggregate public study statistics (sessions & mastered topics count)
     let studySessionsCount = 0;
     let masteredTopicsCount = 0;
+    let totalXP = 0;
 
     try {
-      const [sessionsRes, progressRes] = await Promise.all([
+      const [sessionsRes, progressRes, xpRes] = await Promise.all([
         supabase
           .from("study_sessions")
           .select("id", { count: "exact", head: true })
@@ -491,16 +493,24 @@ export class FriendsService {
           .select("id", { count: "exact", head: true })
           .eq("user_id", targetUserId)
           .eq("status", "Mastered"),
+        supabase.rpc("calculate_user_total_xp", { p_user_id: targetUserId }),
       ]);
 
       studySessionsCount = sessionsRes.count || 0;
       masteredTopicsCount = progressRes.count || 0;
+      totalXP = typeof xpRes?.data === "number" ? Number(xpRes.data) : (studySessionsCount * 25 + masteredTopicsCount * 50);
     } catch {
-      // Gracefully fall back if counts unavailable
+      totalXP = studySessionsCount * 25 + masteredTopicsCount * 50;
     }
 
-    const estimatedXP = studySessionsCount * 25 + masteredTopicsCount * 50;
-    const level = Math.max(1, Math.floor(estimatedXP / 100) + 1);
+    let level = 1;
+    let xpForNextLevel = XP_CONFIG.LEVELING.BASE_LEVEL_XP;
+    let xpRemaining = totalXP;
+    while (xpRemaining >= xpForNextLevel) {
+      xpRemaining -= xpForNextLevel;
+      level++;
+      xpForNextLevel = Math.floor(xpForNextLevel * XP_CONFIG.LEVELING.LEVEL_MULTIPLIER);
+    }
 
     return {
       id: profile.id,
@@ -514,7 +524,7 @@ export class FriendsService {
       isRequester,
       stats: {
         level,
-        totalXP: estimatedXP,
+        totalXP,
         masteredTopicsCount,
         studySessionsCount,
       },

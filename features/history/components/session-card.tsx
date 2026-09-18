@@ -22,8 +22,10 @@ import {
   SheetTitle, 
   SheetDescription 
 } from "@/components/ui/sheet";
+import { useSubSmoothScroll } from "@/components/ui/sub-smooth-scroll";
 
 import { Checkbox } from "@/components/ui/checkbox";
+import { ContextMenuTarget } from "@/features/context-menu";
 
 interface SessionCardProps {
   session: StudySession;
@@ -41,6 +43,10 @@ export function SessionCard({
   onSelect
 }: SessionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { containerRef, contentRef } = useSubSmoothScroll<HTMLDivElement>({
+    enabled: isExpanded,
+    overscroll: true,
+  });
   
   const date = new Date(session.started_at);
   const durationMins = Math.floor(session.duration_seconds / 60);
@@ -66,16 +72,30 @@ export function SessionCard({
   };
 
   return (
-    <motion.div 
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      className={cn(
-        "relative rounded-2xl border transition-all duration-300 overflow-hidden group",
-        isSelected ? "border-accent/50 bg-accent/5 shadow-[0_0_15px_rgba(var(--accent-rgb),0.1)]" : "border-border/50 bg-card hover:border-accent/30"
-      )}
+    <ContextMenuTarget
+      type="history-session"
+      id={session.id}
+      title={chapterTitle}
+      data={{
+        session,
+        chapterTitle,
+        subjectName,
+        durationText: `${durationMins}m ${durationSecs}s`,
+        dateText: format(date, "MMM d, yyyy"),
+        onViewDetails: () => setIsExpanded(true),
+        onStartAgain: () => setIsExpanded(true),
+      }}
     >
+      <motion.div 
+        layout
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className={cn(
+          "relative rounded-2xl border transition-all duration-300 overflow-hidden group",
+          isSelected ? "border-accent/50 bg-accent/5 shadow-[0_0_15px_rgba(var(--accent-rgb),0.1)]" : "border-border/50 bg-card hover:border-accent/30"
+        )}
+      >
       <div 
         className="p-5 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -138,7 +158,18 @@ export function SessionCard({
               </SheetHeader>
             </div>
 
-            <motion.div variants={containerVariants} initial="hidden" animate="show" data-lenis-prevent className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+            <div
+              ref={containerRef}
+              data-lenis-prevent="true"
+              className="flex-1 overflow-y-auto p-6 custom-scrollbar overscroll-contain"
+            >
+              <motion.div
+                ref={contentRef}
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="space-y-8"
+              >
               
               {/* Header Info */}
               <motion.div variants={itemVariants} className="flex items-start gap-4">
@@ -179,41 +210,40 @@ export function SessionCard({
                   </div>
                   <span className="text-xl font-bold text-foreground">{completionPercent}%</span>
                 </div>
-                <div className="h-3 bg-muted rounded-full overflow-hidden shadow-inner w-full">
+                <div className="h-2 w-full bg-muted/40 rounded-full overflow-hidden border border-border/20">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${completionPercent}%` }}
-                    transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-                    className="h-full bg-gradient-to-r from-green-500 to-emerald-400" 
+                    transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+                    className="h-full bg-gradient-to-r from-emerald-500 to-green-400 rounded-full" 
                   />
                 </div>
               </motion.div>
 
-              {/* Timeline Section */}
-              <motion.div variants={itemVariants}>
-                <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Session Timeline</h4>
-                <div className="relative pl-4 border-l-2 border-border/50 space-y-6">
-                  <div className="relative">
-                    <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-accent ring-4 ring-background" />
-                    <p className="text-sm font-medium text-foreground">Started Session</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{format(new Date(session.started_at), "h:mm a · MMM d, yyyy")}</p>
-                  </div>
-                  
-                  <div className="relative">
-                    <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-muted-foreground ring-4 ring-background" />
-                    <p className="text-sm font-medium text-foreground">Ended Session</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{format(new Date(session.ended_at), "h:mm a · MMM d, yyyy")}</p>
-                    <div className="mt-2 text-xs font-medium px-2 py-1 bg-muted inline-block rounded-md text-muted-foreground">
-                      Duration: {durationMins}m {durationSecs}s
-                    </div>
+              {/* Session Timeline Track */}
+              <div className="relative pl-6 border-l-2 border-border/60 ml-3 space-y-6 pt-2">
+                <div className="relative">
+                  <div className="absolute -left-[31px] top-1 w-2.5 h-2.5 rounded-full bg-accent ring-4 ring-background" />
+                  <p className="text-sm font-medium text-foreground">Started Session</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{format(date, "h:mm a · MMM d, yyyy")}</p>
+                </div>
+                
+                <div className="relative">
+                  <div className="absolute -left-[31px] top-1 w-2.5 h-2.5 rounded-full bg-muted-foreground ring-4 ring-background" />
+                  <p className="text-sm font-medium text-foreground">Ended Session</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{format(new Date(session.ended_at), "h:mm a · MMM d, yyyy")}</p>
+                  <div className="mt-2 text-xs font-medium px-2 py-1 bg-muted inline-block rounded-md text-muted-foreground">
+                    Duration: {durationMins}m {durationSecs}s
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-            </motion.div>
+              </motion.div>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
     </motion.div>
+  </ContextMenuTarget>
   );
 }
