@@ -1,20 +1,20 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Chapter, Subject } from "@/features/syllabus/services/syllabus";
 import { XP_CONFIG } from "@/features/progress/config/xp-config";
 import { 
   ArrowRight, CheckCircle2, Play, Calculator, Target, Calendar, 
-  Brain, Flame, Activity, ListChecks
+  Brain, Flame, Activity, ListChecks, Pencil, FileText
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { toast } from "sonner";
 import { InfoCard, SidebarCard } from "./components/workspace-cards";
 import { CreateEventDialog } from "@/features/planner/components/create-event-dialog";
-
 import { useStudySession } from "@/features/study/context/study-session-context";
 import { TopicsList } from "@/features/study/components/topics-list";
+import { getUserNotes, UserNote } from "@/features/study/services/notes.service";
+import { getFormulasByChapter, Formula } from "@/features/study/services/formulas";
 
 interface OverviewTabProps {
   chapter: Chapter;
@@ -26,6 +26,13 @@ export function OverviewTab({ chapter, subject, onSelectTab }: OverviewTabProps)
   console.log("[OverviewTab] Rendering OverviewTab for chapter:", chapter?.title, "Topics count:", chapter?.topics?.length);
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
   const { startSession, isActive } = useStudySession();
+  const [recentNotes, setRecentNotes] = useState<UserNote[]>([]);
+  const [formulaCount, setFormulaCount] = useState<number>(0);
+
+  useEffect(() => {
+    getUserNotes(subject.id, chapter.id).then(setRecentNotes);
+    getFormulasByChapter(chapter.id).then((f) => setFormulaCount(f.length));
+  }, [subject.id, chapter.id]);
 
   const { nextChapter, previousChapter, topicsCompleted, xpEarned } = useMemo(() => {
     const currentIndex = subject.chapters.findIndex((c) => c.id === chapter.id);
@@ -68,14 +75,14 @@ export function OverviewTab({ chapter, subject, onSelectTab }: OverviewTabProps)
         <ActionCard 
           icon={Calculator} 
           label="Formula Sheet" 
-          sub="Quick reference" 
+          sub={`${formulaCount} formulas available`} 
           onClick={() => onSelectTab?.("formulas")}
         />
         <ActionCard 
-          icon={Target} 
-          label="Start Practice" 
-          sub="Test your knowledge" 
-          onClick={() => onSelectTab?.("practice")}
+          icon={Pencil} 
+          label="Chapter Notes" 
+          sub={`${recentNotes.length} notes written`} 
+          onClick={() => onSelectTab?.("notes")}
         />
         <ActionCard 
           icon={Calendar} 
@@ -150,6 +157,39 @@ export function OverviewTab({ chapter, subject, onSelectTab }: OverviewTabProps)
                   <span className="text-sm font-bold text-yellow-500">+{xpEarned} XP</span>
                 </div>
               </div>
+            </div>
+          </SidebarCard>
+
+          {/* Recent Notes Summary Card */}
+          <SidebarCard title="Recent Chapter Notes" delay={0.35}>
+            <div className="space-y-3">
+              {recentNotes.length === 0 ? (
+                <div className="text-xs text-muted-foreground italic py-2">
+                  No notes taken for this chapter yet. Click Chapter Notes to start writing.
+                </div>
+              ) : (
+                recentNotes.slice(0, 3).map((note) => (
+                  <div
+                    key={note.id}
+                    onClick={() => onSelectTab?.("notes")}
+                    className="p-3 rounded-xl bg-surface-hover/40 border border-glass-border hover:bg-surface-hover transition-colors cursor-pointer space-y-1"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-foreground truncate">{note.title}</span>
+                      <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+                    </div>
+                    <p className="text-[11px] text-muted-foreground line-clamp-1">
+                      {note.content.replace(/[#*`$]/g, "") || "Empty note"}
+                    </p>
+                  </div>
+                ))
+              )}
+              <button
+                onClick={() => onSelectTab?.("notes")}
+                className="w-full py-2 text-xs text-center font-medium text-primary hover:underline"
+              >
+                View all notes &rarr;
+              </button>
             </div>
           </SidebarCard>
 

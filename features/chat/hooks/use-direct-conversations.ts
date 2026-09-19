@@ -6,6 +6,7 @@ import { PrivateChatService } from "../services/private-chat.service";
 import { ConversationItem } from "../types/private-chat.types";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import { RealtimeChannel } from "@supabase/supabase-js";
+import { isModerationError } from "../utils/moderation";
 
 export function useDirectConversations(enabled: boolean = true) {
   const { user } = useAuth();
@@ -22,7 +23,9 @@ export function useDirectConversations(enabled: boolean = true) {
       setConversations(list);
       setError(null);
     } catch (err: unknown) {
-      console.error("[useDirectConversations] Error loading conversations:", err);
+      if (!isModerationError(err)) {
+        console.error("[useDirectConversations] Error loading conversations:", err);
+      }
       setError("Failed to load direct messages.");
     } finally {
       if (!silent) setIsLoading(false);
@@ -48,7 +51,9 @@ export function useDirectConversations(enabled: boolean = true) {
         }
       } catch (err) {
         if (!ignore) {
-          console.error("[useDirectConversations] Init error:", err);
+          if (!isModerationError(err)) {
+            console.error("[useDirectConversations] Init error:", err);
+          }
           setError("Failed to load direct messages.");
         }
       } finally {

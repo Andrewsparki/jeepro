@@ -71,7 +71,7 @@ const EVENT_MAP: Record<SemanticSoundEvent, SoundType> = {
   "ui.toggleOn": "toggleOn",
   "ui.toggleOff": "toggleOff",
   "ui.checkbox": "tick",
-  "ui.tab": "swish",
+  "ui.tab": "nav-drop",
   "ui.dropdown": "nav-drop",
   "ui.contextMenu": "pop-up",
   "ui.navigation": "nav-drop",

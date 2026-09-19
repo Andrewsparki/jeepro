@@ -6,6 +6,7 @@ import { Chapter, Subject } from "@/features/syllabus/services/syllabus";
 import { cn } from "@/lib/utils";
 import { OverviewTab } from "./overview-tab";
 import { FormulasTab } from "./formulas-tab";
+import { NotesTab } from "./notes-tab";
 import { WorkspaceEmptyState } from "./components/workspace-empty-state";
 import { 
   BookOpen, Calculator, Pencil, Sparkles, 
@@ -14,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useStudySession } from "@/features/study/context/study-session-context";
+import { dispatchInteractionSound } from "@/lib/sound-engine";
 
 interface WorkspaceContentProps {
   chapter: Chapter;
@@ -101,7 +103,10 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
                 key={tab.id}
                 role="tab"
                 aria-selected={isActive}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  dispatchInteractionSound("ui.tab");
+                  setActiveTab(tab.id);
+                }}
                 className={cn(
                   "relative px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap rounded-t-lg",
                   isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground/80 hover:bg-surface-hover/50"
@@ -122,7 +127,7 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
       </header>
 
       {/* Main Content Area with Slide Animation */}
-      <div role="tabpanel" className="flex-1 overflow-y-auto custom-scrollbar p-8 relative min-h-0">
+      <div role="tabpanel" data-lenis-prevent className="flex-1 overflow-y-auto custom-scrollbar p-8 relative min-h-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -136,11 +141,15 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
               <OverviewTab chapter={chapter} subject={subject} onSelectTab={(tabId) => setActiveTab(tabId)} />
             )}
 
-            {activeTab === "formulas" && (
-              <FormulasTab chapter={chapter} />
+            {activeTab === "notes" && (
+              <NotesTab chapter={chapter} subject={subject} />
             )}
 
-            {activeTab !== "overview" && activeTab !== "formulas" && activeTabConfig && (
+            {activeTab === "formulas" && (
+              <FormulasTab chapter={chapter} subject={subject} />
+            )}
+
+            {activeTab !== "overview" && activeTab !== "notes" && activeTab !== "formulas" && activeTabConfig && (
               <WorkspaceEmptyState
                 icon={activeTabConfig.icon}
                 title={`${activeTabConfig.label} Content Incoming`}

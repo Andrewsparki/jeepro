@@ -8,6 +8,7 @@ import {
   MessageSquare,
   Loader2,
   AlertCircle,
+  ShieldAlert,
   Trash2,
   Lock,
   Users,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSubSmoothScroll } from "@/components/ui/sub-smooth-scroll";
+import { isModerationError, extractModerationReason } from "../utils/moderation";
 
 interface PrivateChatMessageListProps {
   messages: PrivateMessage[];
@@ -156,6 +158,37 @@ export function PrivateChatMessageList({
   }
 
   if (error) {
+    if (isModerationError(error)) {
+      const reason = extractModerationReason(error);
+
+      return (
+        <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-8 text-center max-w-md mx-auto space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shadow-sm">
+            <ShieldAlert className="w-7 h-7" />
+          </div>
+          <div className="space-y-1.5">
+            <h2 className="text-base font-semibold text-foreground">
+              Direct Messaging Restricted
+            </h2>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Your direct messaging access has been restricted by an administrator.
+            </p>
+          </div>
+
+          {reason && (
+            <div className="w-full bg-amber-500/10 border border-amber-500/20 rounded-xl p-3.5 text-left space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-500 block">
+                Reason for Restriction
+              </span>
+              <p className="text-xs font-medium text-foreground leading-relaxed break-words">
+                {reason}
+              </p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     const isFriendshipError =
       error.toLowerCase().includes("friend") ||
       error.toLowerCase().includes("unauthorized");

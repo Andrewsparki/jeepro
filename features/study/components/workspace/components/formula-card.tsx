@@ -1,21 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronUp, Bookmark, Share2, Lightbulb, AlertTriangle, Layers } from "lucide-react";
+import { ChevronUp, Bookmark, Share2, Lightbulb, AlertTriangle, Layers, Trash2 } from "lucide-react";
 import { Formula } from "@/features/study/services/formulas";
+import { toggleBookmark, checkIsBookmarked } from "@/features/study/services/bookmarks.service";
 import { cn } from "@/lib/utils";
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface FormulaCardProps {
   formula: Formula;
+  onDelete?: (id: string) => void;
 }
 
-export function FormulaCard({ formula }: FormulaCardProps) {
+export function FormulaCard({ formula, onDelete }: FormulaCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    checkIsBookmarked("formula", formula.id).then((bm) => {
+      if (active) setIsBookmarked(bm);
+    });
+    return () => {
+      active = false;
+    };
+  }, [formula.id]);
+
+  const handleToggleBookmark = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const nextState = await toggleBookmark("formula", formula.id, formula.chapterId, formula.title);
+    setIsBookmarked(nextState);
+    toast(nextState ? `Bookmarked ${formula.title}` : `Removed bookmark for ${formula.title}`);
+  };
 
   const difficultyColors = {
     Easy: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
@@ -40,8 +60,13 @@ export function FormulaCard({ formula }: FormulaCardProps) {
       >
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex flex-col gap-1.5">
-            <motion.h3 layout="position" className="text-base font-semibold group-hover:text-primary transition-colors">
+            <motion.h3 layout="position" className="text-base font-semibold group-hover:text-primary transition-colors flex items-center gap-2">
               {formula.title}
+              {!formula.isOfficial && (
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                  Custom
+                </span>
+              )}
             </motion.h3>
             <motion.div layout="position" className="flex flex-wrap items-center gap-2">
               <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border", difficultyColors[formula.difficulty])}>
@@ -59,10 +84,22 @@ export function FormulaCard({ formula }: FormulaCardProps) {
               variant="ghost" 
               size="icon" 
               className={cn("h-8 w-8 rounded-full", isBookmarked && "text-primary")}
-              onClick={(e) => { e.stopPropagation(); setIsBookmarked(!isBookmarked); }}
+              onClick={handleToggleBookmark}
+              title={isBookmarked ? "Remove Bookmark" : "Bookmark Formula"}
             >
               <Bookmark className={cn("w-4 h-4 transition-transform", isBookmarked && "fill-current scale-110")} />
             </Button>
+            {!formula.isOfficial && onDelete && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 rounded-full text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10"
+                onClick={(e) => { e.stopPropagation(); onDelete(formula.id); }}
+                title="Delete Custom Formula"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hidden sm:flex">
               <Share2 className="w-4 h-4 text-muted-foreground" />
             </Button>
@@ -73,7 +110,7 @@ export function FormulaCard({ formula }: FormulaCardProps) {
         <motion.div 
           layout="position"
           className={cn(
-            "py-4 px-2 rounded-xl flex items-center justify-center transition-colors",
+            "py-4 px-2 rounded-xl flex items-center justify-center transition-colors overflow-x-auto",
             isExpanded ? "bg-background border border-glass-border shadow-inner" : "bg-transparent"
           )}
         >
@@ -84,7 +121,7 @@ export function FormulaCard({ formula }: FormulaCardProps) {
         
         {/* Simple Description when collapsed */}
         <AnimatePresence>
-          {!isExpanded && (
+          {!isExpanded && formula.description && (
             <motion.p 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -109,12 +146,14 @@ export function FormulaCard({ formula }: FormulaCardProps) {
             <div className="px-5 pb-5 space-y-6 pt-2 border-t border-border/50">
               
               {/* Description */}
-              <div className="text-sm text-foreground/90 leading-relaxed">
-                {formula.description}
-              </div>
+              {formula.description && (
+                <div className="text-sm text-foreground/90 leading-relaxed">
+                  {formula.description}
+                </div>
+              )}
 
               {/* Variables List */}
-              {formula.variables.length > 0 && (
+              {formula.variables && formula.variables.length > 0 && (
                 <div className="space-y-3">
                   <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                     <Layers className="w-3.5 h-3.5" />
@@ -124,7 +163,7 @@ export function FormulaCard({ formula }: FormulaCardProps) {
                     {formula.variables.map((v, idx) => (
                       <div key={idx} className="flex items-center gap-3 p-2.5 rounded-lg bg-background border border-border/50">
                         <div className="w-8 h-8 shrink-0 rounded bg-muted flex items-center justify-center font-serif text-sm">
-                          <InlineMath math={v.symbol} />
+                          <InlineMath math={v.symbol || "?"} />
                         </div>
                         <div className="flex flex-col">
                           <span className="text-sm font-medium">{v.name}</span>

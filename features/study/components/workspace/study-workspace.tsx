@@ -21,6 +21,7 @@ export function StudyWorkspace({ subject, chapter }: StudyWorkspaceProps) {
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }} // Premium ease-out curve
         className="fixed inset-0 z-50 bg-background flex flex-row overflow-hidden"
+        data-lenis-prevent
       >
       {/* 
         Note: We use fixed inset-0 to break out of any parent padding constraints 

@@ -14,8 +14,8 @@ We use inline theme custom properties in `globals.css`:
 - `--foreground`: `#ffffff`
 
 ## Typography
-- **Sans-serif**: `Geist`
-- **Monospace**: `Geist Mono`
+- **Sans-serif**: `Google Sans` (via `next/font/local`)
+- **Monospace**: `Geist Mono` (via `next/font/google`)
 
 ## Principles
 1. **Dark Mode First**: The primary experience is dark mode.

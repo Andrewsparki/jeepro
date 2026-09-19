@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { motion, AnimatePresence, useMotionValue, useAnimationFrame, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useAnimationFrame, useTransform, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { TimerMode } from "../store/focus-store";
 import { useSettings } from "@/providers/settings-provider";
@@ -16,9 +16,30 @@ interface FocusTimerProps {
 }
 
 // Rolling digit component for premium vertical sliding transition (iOS/Linear style)
-const RollingDigit = React.memo(function RollingDigit({ char }: { char: string }) {
+const RollingDigit = React.memo(function RollingDigit({ 
+  char, 
+  isActive 
+}: { 
+  char: string; 
+  isActive?: boolean;
+}) {
   if (char === ":") {
-    return <span className="inline-block px-[0.02em] opacity-60 font-medium select-none">:</span>;
+    return (
+      <motion.span 
+        animate={{ 
+          opacity: isActive ? [0.35, 0.95, 0.35] : 0.6,
+          scale: isActive ? [0.96, 1.04, 0.96] : 1,
+        }}
+        transition={{ 
+          duration: 2, 
+          repeat: isActive ? Infinity : 0, 
+          ease: "easeInOut" 
+        }}
+        className="inline-block px-[0.02em] font-medium select-none text-foreground/80"
+      >
+        :
+      </motion.span>
+    );
   }
 
   return (
@@ -26,14 +47,14 @@ const RollingDigit = React.memo(function RollingDigit({ char }: { char: string }
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
           key={char}
-          initial={{ y: "100%", opacity: 0 }}
-          animate={{ y: "0%", opacity: 1 }}
-          exit={{ y: "-100%", opacity: 0 }}
+          initial={{ y: "85%", opacity: 0, filter: "blur(2px)" }}
+          animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
+          exit={{ y: "-85%", opacity: 0, filter: "blur(2px)" }}
           transition={{
             type: "spring",
-            stiffness: 800,
-            damping: 45,
-            mass: 0.5,
+            stiffness: 720,
+            damping: 42,
+            mass: 0.45,
           }}
           className="absolute inset-0 flex items-center justify-center tabular-nums leading-none"
         >
@@ -136,21 +157,24 @@ export const FocusTimer = React.memo(function FocusTimer({
     return `.${ms.toString().padStart(2, '0')}`;
   });
 
-  // Smooth ring progress (0 to 1)
+  // Canonical ring progress: remainingTime / totalTime (from 1.0 down to 0.0)
   const progressMotion = useTransform(elapsedMotion, (elapsed) => {
     if (mode === 'stopwatch' || totalTime <= 0) return 1;
-    const p = elapsed / totalTime;
-    if (p < 0) return 0;
-    if (p > 1) return 1;
-    return p;
+    const remaining = totalTime - elapsed;
+    const p = remaining / totalTime;
+    return Math.max(0, Math.min(1, p));
   });
 
   const radius = 140;
   const circumference = 2 * Math.PI * radius;
   
-  // Transform progress into stroke dash offset for the SVG ring
-  // A timer starts full (offset 0) and depletes clockwise (offset goes to circumference)
-  const strokeDashoffsetMotion = useTransform(progressMotion, (p) => p * circumference);
+  // Transform remaining progress (1.0 to 0.0) into stroke dash offset for the SVG ring
+  // Progress 1.0 (100% remaining) -> strokeDashoffset = 0 (full ring)
+  // Progress 0.0 (0% remaining / 00:00) -> strokeDashoffset = circumference (depleted ring)
+  const strokeDashoffsetMotion = useTransform(progressMotion, (p) => (1 - p) * circumference);
+
+  // Hide stroke opacity completely when progress hits 0 (00:00) to prevent strokeLinecap="round" from leaving a cap dot
+  const ringOpacityMotion = useTransform(progressMotion, (p) => (p <= 0 ? 0 : 1));
 
   // Stopwatch Ring Rotations
   const slowRotationOffset = useTransform(elapsedMotion, (e) => -(e / 60) * (2 * Math.PI * (radius + 8)));
@@ -186,9 +210,23 @@ export const FocusTimer = React.memo(function FocusTimer({
     };
   }
 
+  const shouldReduceMotion = useReducedMotion();
+  const hasHours = formattedTime.length > 5;
+
   return (
     <motion.div 
-      className={cn("relative flex items-center justify-center w-full max-w-[350px] aspect-square rounded-full transition-shadow duration-1000")}
+      animate={{
+        scale: isActive && !shouldReduceMotion ? [1, 1.008, 1] : 1,
+      }}
+      transition={{
+        duration: 4.5,
+        repeat: isActive && !shouldReduceMotion ? Infinity : 0,
+        ease: "easeInOut",
+      }}
+      className={cn(
+        "relative flex items-center justify-center aspect-square rounded-full transition-all duration-700 shrink-0 mx-auto",
+        "w-[min(76vw,340px)] sm:w-[min(60vw,390px)] md:w-[min(52vh,420px)] lg:w-[min(55vh,450px)]"
+      )}
     >
       {/* SVG Ring Background */}
       <svg className="absolute inset-0 w-full h-full -rotate-90 transform" viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet">
@@ -204,19 +242,19 @@ export const FocusTimer = React.memo(function FocusTimer({
           </filter>
           <linearGradient id="study-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#818cf8" />
-            <stop offset="100%" stopColor="#4338ca" />
+            <stop offset="100%" stopColor="#4f46e5" />
           </linearGradient>
           <linearGradient id="shortBreak-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#34d399" />
-            <stop offset="100%" stopColor="#047857" />
+            <stop offset="100%" stopColor="#059669" />
           </linearGradient>
           <linearGradient id="longBreak-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#60a5fa" />
-            <stop offset="100%" stopColor="#1d4ed8" />
+            <stop offset="0%" stopColor="#38bdf8" />
+            <stop offset="100%" stopColor="#2563eb" />
           </linearGradient>
         </defs>
         
-        {/* Track Layer (Dark version of accent, not black) */}
+        {/* Track Layer */}
         {mode !== 'stopwatch' && (
           <circle
             cx="160"
@@ -224,7 +262,36 @@ export const FocusTimer = React.memo(function FocusTimer({
             r={radius}
             fill="transparent"
             stroke={ringColorTheme.trackHex}
-            strokeWidth="14"
+            strokeWidth="12"
+          />
+        )}
+
+        {/* Ambient Ring Halo (Alive continuous breath when running) */}
+        {mode !== 'stopwatch' && isActive && !shouldReduceMotion && (
+          <motion.circle
+            cx="160"
+            cy="160"
+            r={radius}
+            fill="transparent"
+            stroke={`url(#${ringColorTheme.gradientId})`}
+            strokeWidth="20"
+            strokeLinecap="round"
+            className="pointer-events-none"
+            animate={{
+              opacity: [0.08, 0.22, 0.08],
+              scale: [0.996, 1.012, 0.996],
+            }}
+            transition={{
+              duration: 3.8,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            style={{
+              transformOrigin: "160px 160px",
+              strokeDasharray: circumference,
+              strokeDashoffset: strokeDashoffsetMotion,
+              filter: "blur(4px)",
+            }}
           />
         )}
         
@@ -236,13 +303,17 @@ export const FocusTimer = React.memo(function FocusTimer({
             r={radius}
             fill="transparent"
             stroke={`url(#${ringColorTheme.gradientId})`}
-            strokeWidth="14"
+            strokeWidth="12"
             strokeLinecap="round"
             filter="url(#progress-shadow)"
-            className={cn(isActive && ringColorTheme.glowClass)}
+            className={cn(
+              "transition-[opacity,filter] duration-500",
+              isActive ? ringColorTheme.glowClass : "opacity-90"
+            )}
             style={{
               strokeDasharray: circumference,
               strokeDashoffset: strokeDashoffsetMotion,
+              opacity: ringOpacityMotion,
             }}
           />
         )}
@@ -271,7 +342,7 @@ export const FocusTimer = React.memo(function FocusTimer({
               r={radius}
               fill="transparent"
               stroke={`url(#${ringColorTheme.gradientId})`}
-              strokeWidth="3"
+              strokeWidth="3.5"
               strokeDasharray={`80 ${circumference - 80}`}
               strokeLinecap="round"
               filter="url(#progress-shadow)"
@@ -285,58 +356,70 @@ export const FocusTimer = React.memo(function FocusTimer({
       </svg>
 
       {/* Timer Text with Premium Rolling Digits */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
+      <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none px-4">
         <div 
-          className="relative flex items-center justify-center drop-shadow-md text-[5.5rem] sm:text-[6.5rem] font-medium text-foreground tabular-nums leading-none tracking-tighter"
+          className={cn(
+            "relative flex items-center justify-center font-medium tabular-nums leading-none tracking-tighter transition-all duration-500",
+            isActive 
+              ? "drop-shadow-[0_0_24px_rgba(79,70,229,0.35)] text-white" 
+              : "drop-shadow-md text-foreground/95",
+            hasHours
+              ? "text-[2.65rem] xs:text-[3.2rem] sm:text-[3.9rem] md:text-[4.4rem]"
+              : "text-[4.2rem] xs:text-[4.8rem] sm:text-[5.5rem] md:text-[6.2rem]"
+          )}
           style={{ 
-            fontFamily: "'SF Pro Display', 'Inter Display', 'Geist', -apple-system, sans-serif",
+            fontFamily: "var(--font-sans), system-ui, sans-serif",
             letterSpacing: "-0.04em"
           }}
         >
           {formattedTime.split("").reverse().map((char, index) => (
-            <RollingDigit key={index} char={char} />
+            <RollingDigit key={index} char={char} isActive={isActive} />
           )).reverse()}
 
           {mode === 'stopwatch' && (
-            <motion.span className="absolute left-[100%] ml-2 bottom-[10px] text-4xl sm:text-5xl text-muted-foreground/50 font-light tabular-nums tracking-tighter">
+            <motion.span className="text-[0.45em] text-muted-foreground/60 font-normal tabular-nums ml-1 select-none self-end pb-[0.1em]">
               {msStringMotion}
             </motion.span>
           )}
         </div>
         
-        <div className="absolute top-[65%] left-0 right-0 flex justify-center">
+        {/* Subtle Status Pill */}
+        <div className="absolute top-[68%] left-0 right-0 flex justify-center pointer-events-none">
           <AnimatePresence mode="wait">
             {(isPaused || isStopwatchPaused) ? (
               <motion.div
                 key="paused"
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 5 }}
-                className="text-xs font-medium uppercase tracking-widest text-muted-foreground/60 px-3 py-1 rounded-full border border-white/5 bg-white/5"
+                initial={{ opacity: 0, scale: 0.9, y: 4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-0.5 rounded-full backdrop-blur-md shadow-xs"
               >
                 Paused
               </motion.div>
             ) : mode === 'stopwatch' ? (
               <motion.div
                 key="stopwatch-label"
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 5 }}
-                className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground/40"
-                style={{ fontFamily: "'SF Pro Display', 'Inter', sans-serif" }}
+                initial={{ opacity: 0, scale: 0.9, y: 4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/50 bg-white/5 border border-white/5 px-3 py-0.5 rounded-full"
               >
-                ELAPSED TIME
+                Stopwatch
               </motion.div>
             ) : phase ? (
               <motion.div
-                key="running"
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 5 }}
-                className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground/80"
-                style={{ fontFamily: "'SF Pro Display', 'Inter', sans-serif" }}
+                key={phase}
+                initial={{ opacity: 0, scale: 0.9, y: 4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                className={cn(
+                  "text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.2em] px-3 py-0.5 rounded-full backdrop-blur-md shadow-xs",
+                  phase === "study" && "text-accent bg-accent/10 border border-accent/20",
+                  phase === "shortBreak" && "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20",
+                  phase === "longBreak" && "text-sky-400 bg-sky-500/10 border border-sky-500/20"
+                )}
               >
-                {phase === "study" ? "FOCUS" : phase === "shortBreak" ? "SHORT BREAK" : "LONG BREAK"}
+                {phase === "study" ? "Deep Focus" : phase === "shortBreak" ? "Short Break" : "Long Break"}
               </motion.div>
             ) : null}
           </AnimatePresence>

@@ -202,8 +202,27 @@ export class GroupsService {
    * Join a public study group
    */
   static async joinGroup(groupId: string): Promise<boolean> {
-    await this.getAuthUser();
+    const user = await this.getAuthUser();
     const supabase = createClient();
+
+    // Check study_groups moderation status
+    const { data: modScope } = await supabase
+      .from("user_moderation_scopes")
+      .select("status, reason, expires_at")
+      .eq("user_id", user.id)
+      .eq("scope", "study_groups")
+      .maybeSingle();
+
+    if (modScope && modScope.status !== "active") {
+      const isExpired = modScope.expires_at && new Date(modScope.expires_at) <= new Date();
+      if (!isExpired) {
+        throw new Error(
+          modScope.reason
+            ? `Study Groups Restricted: ${modScope.reason}`
+            : "Your access to Study Groups has been restricted by an administrator."
+        );
+      }
+    }
 
     const { error } = await supabase.rpc("join_public_group", {
       p_group_id: groupId,
@@ -457,6 +476,25 @@ export class GroupsService {
     }
     if (cleanContent.length > 1000) {
       throw new Error("Message exceeds maximum length of 1000 characters.");
+    }
+
+    // Check study_groups moderation status
+    const { data: modScope } = await supabase
+      .from("user_moderation_scopes")
+      .select("status, reason, expires_at")
+      .eq("user_id", user.id)
+      .eq("scope", "study_groups")
+      .maybeSingle();
+
+    if (modScope && modScope.status !== "active") {
+      const isExpired = modScope.expires_at && new Date(modScope.expires_at) <= new Date();
+      if (!isExpired) {
+        throw new Error(
+          modScope.reason
+            ? `Study Groups Restricted: ${modScope.reason}`
+            : "Your access to Study Groups has been restricted by an administrator."
+        );
+      }
     }
 
     const { data, error } = await supabase

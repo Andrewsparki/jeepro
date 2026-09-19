@@ -8,23 +8,41 @@ import { useAuth } from "@/features/auth/components/auth-provider";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { dispatchInteractionSound } from "@/lib/sound-engine";
+import { isModerationError } from "../utils/moderation";
 
 function formatErrorDetails(err: unknown) {
-  if (err && typeof err === "object") {
+  let message = "An unexpected error occurred.";
+  let code: string | undefined = undefined;
+  let details: string | undefined = undefined;
+  let hint: string | undefined = undefined;
+
+  if (err instanceof Error) {
+    message = err.message || message;
+    code = (err as any).code;
+    details = (err as any).details;
+    hint = (err as any).hint;
+  } else if (err && typeof err === "object") {
     const e = err as Record<string, unknown>;
-    return {
-      message:
-        typeof e.message === "string"
-          ? e.message
-          : err instanceof Error
-          ? err.message
-          : "An unexpected error occurred.",
-      code: typeof e.code === "string" ? e.code : undefined,
-      details: typeof e.details === "string" ? e.details : undefined,
-      hint: typeof e.hint === "string" ? e.hint : undefined,
-    };
+    if (typeof e.message === "string" && e.message.trim()) {
+      message = e.message;
+    } else if (typeof e.error === "string" && e.error.trim()) {
+      message = e.error;
+    }
+    if (typeof e.code === "string") code = e.code;
+    if (typeof e.details === "string") details = e.details;
+    if (typeof e.hint === "string") hint = e.hint;
+  } else if (typeof err === "string" && err.trim()) {
+    message = err;
+  } else if (err !== null && err !== undefined) {
+    message = String(err);
   }
-  return { message: String(err) };
+
+  const result: Record<string, string> = { message };
+  if (code) result.code = code;
+  if (details) result.details = details;
+  if (hint) result.hint = hint;
+
+  return result;
 }
 
 export function usePrivateChat(otherUserId: string) {
@@ -73,25 +91,32 @@ export function usePrivateChat(otherUserId: string) {
         otherUserId
       );
 
-      setConversationId(convData.conversation_id);
+      setConversationId(convData.conversation_id || null);
       setOtherUser(convData.other_user);
       setFriendshipStatus(
         (convData.friendship_status as "accepted" | "pending" | "none") ||
           "none"
       );
 
-      const result = await PrivateChatService.getMessages(
-        convData.conversation_id,
-        30
-      );
+      if (convData.conversation_id) {
+        const result = await PrivateChatService.getMessages(
+          convData.conversation_id,
+          30
+        );
 
-      setMessages(result.messages);
-      setHasMore(result.hasMore);
+        setMessages(result.messages);
+        setHasMore(result.hasMore);
 
-      await PrivateChatService.markAsRead(convData.conversation_id);
+        await PrivateChatService.markAsRead(convData.conversation_id);
+      } else {
+        setMessages([]);
+        setHasMore(false);
+      }
     } catch (err: unknown) {
       const details = formatErrorDetails(err);
-      console.error("[usePrivateChat] Init error:", details);
+      if (!isModerationError(err)) {
+        console.error("[usePrivateChat] Init error:", details.message, details);
+      }
       setError(details.message || "Failed to initialize conversation.");
     } finally {
       setIsLoading(false);
@@ -100,50 +125,8 @@ export function usePrivateChat(otherUserId: string) {
 
   useEffect(() => {
     if (!user || !otherUserId) return;
-    let ignore = false;
-
-    async function load() {
-      try {
-        const convData = await PrivateChatService.getOrCreateConversation(
-          otherUserId
-        );
-        if (ignore) return;
-
-        setConversationId(convData.conversation_id);
-        setOtherUser(convData.other_user);
-        setFriendshipStatus(
-          (convData.friendship_status as "accepted" | "pending" | "none") ||
-            "none"
-        );
-
-        const result = await PrivateChatService.getMessages(
-          convData.conversation_id,
-          30
-        );
-        if (ignore) return;
-
-        setMessages(result.messages);
-        setHasMore(result.hasMore);
-
-        await PrivateChatService.markAsRead(convData.conversation_id);
-      } catch (err: unknown) {
-        if (ignore) return;
-        const details = formatErrorDetails(err);
-        console.error("[usePrivateChat] Init error:", details);
-        setError(details.message || "Failed to initialize conversation.");
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    load();
-
-    return () => {
-      ignore = true;
-    };
-  }, [user, otherUserId]);
+    initConversation();
+  }, [user, otherUserId, initConversation]);
 
   // 2. Cursor pagination for loading older history
   const loadOlderMessages = useCallback(async () => {
@@ -168,7 +151,9 @@ export function usePrivateChat(otherUserId: string) {
       setHasMore(result.hasMore);
     } catch (err: unknown) {
       const details = formatErrorDetails(err);
-      console.error("[usePrivateChat] Load older messages error:", details);
+      if (!isModerationError(err)) {
+        console.error("[usePrivateChat] Load older messages error:", details);
+      }
       toast.error("Could not load older messages.");
     } finally {
       setIsLoadingOlder(false);
@@ -208,7 +193,9 @@ export function usePrivateChat(otherUserId: string) {
         return true;
       } catch (err: unknown) {
         const details = formatErrorDetails(err);
-        console.error("[usePrivateChat] Send message error:", details);
+        if (!isModerationError(err)) {
+          console.error("[usePrivateChat] Send message error:", details);
+        }
         toast.error(details.message || "Failed to send message.");
         return false;
       } finally {
@@ -226,7 +213,9 @@ export function usePrivateChat(otherUserId: string) {
       toast.success("Message deleted");
     } catch (err: unknown) {
       const details = formatErrorDetails(err);
-      console.error("[usePrivateChat] Delete message error:", details);
+      if (!isModerationError(err)) {
+        console.error("[usePrivateChat] Delete message error:", details);
+      }
       toast.error(details.message || "Failed to delete message.");
     }
   }, []);

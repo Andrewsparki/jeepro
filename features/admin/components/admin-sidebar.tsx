@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   Flag,
   LifeBuoy,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, LayoutGroup } from "framer-motion";
@@ -20,6 +21,7 @@ import { playHapticSound } from "@/lib/sound-effects";
 
 export const ADMIN_NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/whats-new", label: "What's New", icon: Sparkles },
   { href: "/admin/reports", label: "Chat Moderation", icon: Flag },
   { href: "/admin/support", label: "Support Desk", icon: LifeBuoy },
   { href: "/admin/users", label: "Users", icon: Users },

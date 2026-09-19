@@ -3,6 +3,7 @@
 import { verifyAdmin } from "./admin-auth.service";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAuditEvent } from "./audit-log.service";
+import { createClient } from "@/lib/supabase/server";
 
 export type ModerationScope = "global_chat" | "direct_messages" | "study_groups" | "platform_access";
 export type ModerationStatus = "active" | "muted" | "restricted" | "banned" | "suspended";
@@ -34,6 +35,47 @@ const DEFAULT_SCOPES: ModerationScope[] = [
   "study_groups",
   "platform_access",
 ];
+
+/**
+ * Server-side helper to check if a user is restricted for a specific scope.
+ */
+export async function checkUserScopeModeration(
+  userId: string,
+  scope: ModerationScope
+): Promise<{ isRestricted: boolean; status: ModerationStatus; reason: string | null; expiresAt: string | null }> {
+  try {
+    const supabase = await createClient();
+    const { data: row, error } = await supabase
+      .from("user_moderation_scopes")
+      .select("status, reason, expires_at")
+      .eq("user_id", userId)
+      .eq("scope", scope)
+      .maybeSingle();
+
+    if (error || !row) {
+      return { isRestricted: false, status: "active", reason: null, expiresAt: null };
+    }
+
+    if (row.status === "active") {
+      return { isRestricted: false, status: "active", reason: null, expiresAt: null };
+    }
+
+    // Check expiration
+    if (row.expires_at && new Date(row.expires_at) <= new Date()) {
+      return { isRestricted: false, status: "active", reason: null, expiresAt: null };
+    }
+
+    return {
+      isRestricted: true,
+      status: row.status as ModerationStatus,
+      reason: row.reason,
+      expiresAt: row.expires_at,
+    };
+  } catch (err) {
+    console.error("Error in checkUserScopeModeration:", err);
+    return { isRestricted: false, status: "active", reason: null, expiresAt: null };
+  }
+}
 
 /**
  * Fetch a user's scoped moderation summary across all feature scopes.
@@ -139,7 +181,7 @@ export async function adminUpdateScopedModeration(
       updated_at: new Date().toISOString(),
     };
 
-    // Upsert into user_moderation_scopes
+    // 1. Upsert into user_moderation_scopes
     const { error: upsertError } = await supabase
       .from("user_moderation_scopes")
       .upsert(payload, { onConflict: "user_id,scope" });
@@ -149,7 +191,7 @@ export async function adminUpdateScopedModeration(
       return { success: false, error: upsertError.message };
     }
 
-    // Sync legacy profiles columns for global_chat backward compatibility
+    // 2. Handle Scope-Specific Side Effects & Profile Syncs
     if (scope === "global_chat") {
       const isMuted = status === "muted";
       const isBanned = status === "banned";
@@ -163,9 +205,23 @@ export async function adminUpdateScopedModeration(
           updated_at: new Date().toISOString(),
         })
         .eq("id", targetUserId);
+    } else if (scope === "platform_access") {
+      const isSuspended = status === "suspended";
+      await supabase
+        .from("profiles")
+        .update({
+          is_suspended: isSuspended,
+          suspended_reason: isSuspended ? trimmedReason : null,
+          suspended_until: isSuspended ? expiresAt : null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", targetUserId);
+    } else if (scope === "study_groups" && status === "banned") {
+      // Eject user from all study groups when banned from Study Groups
+      await supabase.from("group_members").delete().eq("user_id", targetUserId);
     }
 
-    // Audit log
+    // 3. Log Audit Event
     await logAuditEvent(admin.user.id, `moderation.${scope}.${status}`, "user_moderation", targetUserId, {
       scope,
       status,

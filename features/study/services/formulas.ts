@@ -1,3 +1,5 @@
+import { createClient } from "@/lib/supabase/client";
+
 export interface FormulaVariable {
   name: string;
   symbol: string;
@@ -7,7 +9,10 @@ export interface FormulaVariable {
 
 export interface Formula {
   id: string;
+  user_id?: string | null;
+  subjectId?: string;
   chapterId: string;
+  topicId?: string | null;
   title: string;
   formula: string; // LaTeX string
   description: string;
@@ -17,10 +22,12 @@ export interface Formula {
   relatedIds?: string[];
   commonMistakes?: string[];
   memoryTrick?: string;
+  isOfficial?: boolean;
+  createdAt?: string;
 }
 
-// Mock Database for Sprint 5.3
-const MOCK_FORMULAS: Formula[] = [
+// Default Seeded Official Formulas Fallback
+const DEFAULT_OFFICIAL_FORMULAS: Formula[] = [
   // Kinematics Formulas
   {
     id: "f-kin-001",
@@ -40,7 +47,8 @@ const MOCK_FORMULAS: Formula[] = [
       "Using this equation when acceleration is not constant.",
       "Forgetting sign conventions for velocity and acceleration."
     ],
-    memoryTrick: "v-u-a-t -> 'vuat' sounds like 'what'. What is the velocity?"
+    memoryTrick: "v-u-a-t -> 'vuat' sounds like 'what'. What is the velocity?",
+    isOfficial: true
   },
   {
     id: "f-kin-002",
@@ -60,7 +68,8 @@ const MOCK_FORMULAS: Formula[] = [
     commonMistakes: [
       "Confusing displacement (s) with distance traveled.",
       "Forgetting the square on time (t²)."
-    ]
+    ],
+    isOfficial: true
   },
   {
     id: "f-kin-003",
@@ -76,7 +85,8 @@ const MOCK_FORMULAS: Formula[] = [
     ],
     difficulty: "Medium",
     tags: ["Kinematics", "Time-Independent"],
-    relatedIds: ["f-kin-001", "f-kin-002"]
+    relatedIds: ["f-kin-001", "f-kin-002"],
+    isOfficial: true
   },
   {
     id: "f-kin-004",
@@ -96,7 +106,8 @@ const MOCK_FORMULAS: Formula[] = [
       "Using sine squared instead of sine of 2-theta.",
       "Using this formula when launch and landing heights are different."
     ],
-    memoryTrick: "Range is maximized when sin(2θ) = 1, which happens at θ = 45°."
+    memoryTrick: "Range is maximized when sin(2θ) = 1, which happens at θ = 45°.",
+    isOfficial: true
   },
   
   // Gravitation Formulas
@@ -115,26 +126,214 @@ const MOCK_FORMULAS: Formula[] = [
     ],
     difficulty: "Medium",
     tags: ["Gravitation", "Force", "Newton"],
+    isOfficial: true
   }
 ];
 
-export async function getFormulasByChapter(chapterId: string): Promise<Formula[]> {
-  const directMatches = MOCK_FORMULAS.filter(f => f.chapterId === chapterId || chapterId.includes(f.chapterId));
-  if (directMatches.length > 0) return directMatches;
-  // Fallback to provide formula reference for demo/testing
-  return MOCK_FORMULAS;
+const LOCAL_CUSTOM_FORMULAS_KEY = "jee_custom_formulas_v1";
+
+function getLocalCustomFormulas(chapterId: string): Formula[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(`${LOCAL_CUSTOM_FORMULAS_KEY}_${chapterId}`);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
 }
 
-export async function searchFormulas(query: string, chapterId?: string): Promise<Formula[]> {
+function setLocalCustomFormulas(chapterId: string, formulas: Formula[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(`${LOCAL_CUSTOM_FORMULAS_KEY}_${chapterId}`, JSON.stringify(formulas));
+  } catch (err) {
+    console.error("setLocalCustomFormulas error:", err);
+  }
+}
+
+export async function getFormulasByChapter(chapterId: string, topicId?: string): Promise<Formula[]> {
+  const customLocal = getLocalCustomFormulas(chapterId);
+  const officialLocal = DEFAULT_OFFICIAL_FORMULAS.filter(
+    (f) => f.chapterId === chapterId || chapterId.includes(f.chapterId)
+  );
+
+  let allFormulas: Formula[] = [...officialLocal, ...customLocal];
+
+  try {
+    const supabase = createClient();
+    const { data: dbFormulas, error } = await supabase
+      .from("formulas")
+      .select("*")
+      .or(`chapter_id.eq.${chapterId},chapter_id.ilike.%${chapterId}%`);
+
+    if (!error && dbFormulas && dbFormulas.length > 0) {
+      const mapped: Formula[] = dbFormulas.map((row: Record<string, any>) => ({
+        id: row.id,
+        user_id: row.user_id,
+        subjectId: row.subject_id,
+        chapterId: row.chapter_id,
+        topicId: row.topic_id,
+        title: row.title,
+        formula: row.formula,
+        description: row.description || "",
+        variables: Array.isArray(row.variables) ? row.variables : [],
+        difficulty: row.difficulty || "Medium",
+        tags: row.tags || [],
+        commonMistakes: row.common_mistakes || [],
+        memoryTrick: row.memory_trick || undefined,
+        isOfficial: row.is_official || false,
+        createdAt: row.created_at,
+      }));
+
+      // Combine DB formulas with default fallback if DB has non-overlapping items
+      const existingIds = new Set(mapped.map((f) => f.id));
+      const extraDefaults = officialLocal.filter((f) => !existingIds.has(f.id));
+      allFormulas = [...mapped, ...extraDefaults];
+    }
+  } catch (err) {
+    console.warn("[getFormulasByChapter] DB query failed, using fallback:", err);
+  }
+
+  if (topicId) {
+    return allFormulas.filter((f) => !f.topicId || f.topicId === topicId);
+  }
+
+  return allFormulas;
+}
+
+export async function searchFormulas(
+  query: string,
+  chapterId?: string,
+  topicId?: string,
+  difficultyFilter: string = "All",
+  sourceFilter: string = "All"
+): Promise<Formula[]> {
+  const baseFormulas = chapterId ? await getFormulasByChapter(chapterId, topicId) : DEFAULT_OFFICIAL_FORMULAS;
+
   const q = query.toLowerCase().trim();
-  const baseFormulas = chapterId ? await getFormulasByChapter(chapterId) : MOCK_FORMULAS;
-  
-  if (!q) return baseFormulas;
-  
-  return baseFormulas.filter(f => {
-    return f.title.toLowerCase().includes(q) || 
-           f.description.toLowerCase().includes(q) ||
-           f.tags.some(t => t.toLowerCase().includes(q)) ||
-           f.variables.some(v => v.name.toLowerCase().includes(q) || v.symbol.toLowerCase().includes(q));
+
+  return baseFormulas.filter((f) => {
+    // Difficulty filter
+    if (difficultyFilter !== "All" && f.difficulty !== difficultyFilter) {
+      return false;
+    }
+
+    // Source filter
+    if (sourceFilter === "Official" && !f.isOfficial) return false;
+    if (sourceFilter === "Custom" && f.isOfficial) return false;
+
+    // Search query filter
+    if (!q) return true;
+
+    return (
+      f.title.toLowerCase().includes(q) ||
+      f.description.toLowerCase().includes(q) ||
+      f.formula.toLowerCase().includes(q) ||
+      f.tags.some((t) => t.toLowerCase().includes(q)) ||
+      f.variables.some((v) => v.name.toLowerCase().includes(q) || v.symbol.toLowerCase().includes(q))
+    );
   });
+}
+
+export async function createCustomFormula(
+  formulaData: Partial<Formula> & { chapterId: string; title: string; formula: string }
+): Promise<Formula> {
+  const newId = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `formula-${Date.now()}`;
+  const now = new Date().toISOString();
+
+  const newFormula: Formula = {
+    id: newId,
+    user_id: "guest",
+    subjectId: formulaData.subjectId || "physics",
+    chapterId: formulaData.chapterId,
+    topicId: formulaData.topicId || null,
+    title: formulaData.title,
+    formula: formulaData.formula,
+    description: formulaData.description || "",
+    variables: formulaData.variables || [],
+    difficulty: formulaData.difficulty || "Medium",
+    tags: formulaData.tags || ["Custom"],
+    commonMistakes: formulaData.commonMistakes || [],
+    memoryTrick: formulaData.memoryTrick || undefined,
+    isOfficial: false,
+    createdAt: now,
+  };
+
+  try {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      newFormula.user_id = user.id;
+      const { data, error } = await supabase
+        .from("formulas")
+        .insert({
+          user_id: user.id,
+          subject_id: newFormula.subjectId,
+          chapter_id: newFormula.chapterId,
+          topic_id: newFormula.topicId,
+          title: newFormula.title,
+          formula: newFormula.formula,
+          description: newFormula.description,
+          variables: newFormula.variables,
+          difficulty: newFormula.difficulty,
+          tags: newFormula.tags,
+          common_mistakes: newFormula.commonMistakes,
+          memory_trick: newFormula.memoryTrick,
+          is_official: false,
+        })
+        .select()
+        .single();
+
+      if (!error && data) {
+        const created: Formula = {
+          id: data.id,
+          user_id: data.user_id,
+          subjectId: data.subject_id,
+          chapterId: data.chapter_id,
+          topicId: data.topic_id,
+          title: data.title,
+          formula: data.formula,
+          description: data.description,
+          variables: data.variables || [],
+          difficulty: data.difficulty,
+          tags: data.tags || [],
+          commonMistakes: data.common_mistakes || [],
+          memoryTrick: data.memory_trick,
+          isOfficial: false,
+          createdAt: data.created_at,
+        };
+
+        const currentLocal = getLocalCustomFormulas(formulaData.chapterId);
+        setLocalCustomFormulas(formulaData.chapterId, [created, ...currentLocal]);
+        return created;
+      }
+    }
+  } catch (err) {
+    console.warn("[createCustomFormula] Failed DB insert, using local fallback:", err);
+  }
+
+  const currentLocal = getLocalCustomFormulas(formulaData.chapterId);
+  setLocalCustomFormulas(formulaData.chapterId, [newFormula, ...currentLocal]);
+  return newFormula;
+}
+
+export async function deleteCustomFormula(id: string, chapterId: string): Promise<boolean> {
+  try {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user && !id.startsWith("formula-")) {
+      await supabase.from("formulas").delete().eq("id", id).eq("user_id", user.id);
+    }
+  } catch (err) {
+    console.warn("[deleteCustomFormula] DB delete error:", err);
+  }
+
+  const local = getLocalCustomFormulas(chapterId);
+  setLocalCustomFormulas(
+    chapterId,
+    local.filter((f) => f.id !== id)
+  );
+  return true;
 }

@@ -27,9 +27,10 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/reset-password')
   const isAuthCallback = pathname.startsWith('/api/auth')
   const isMaintenancePage = pathname === '/maintenance'
+  const isSuspendedPage = pathname === '/suspended'
 
   // Fast-path 1: completely bypass expensive Supabase network round-trips for public marketing routes.
-  if (!isProtectedRoute && !isAuthRoute && !isAuthCallback && !isAdminRoute && !isMaintenancePage) {
+  if (!isProtectedRoute && !isAuthRoute && !isAuthCallback && !isAdminRoute && !isMaintenancePage && !isSuspendedPage) {
     return supabaseResponse
   }
 
@@ -77,6 +78,34 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
+
+  // ── Platform Access Suspension Check ─────────────────────────────────
+  if (user && !isAdminRoute) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_suspended, suspended_until, is_admin')
+      .eq('id', user.id)
+      .single()
+
+    const isSuspended =
+      profile?.is_suspended === true &&
+      (!profile?.suspended_until || new Date(profile.suspended_until) > new Date()) &&
+      !profile?.is_admin
+
+    if (isSuspended && !isSuspendedPage) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/suspended'
+      url.search = ''
+      return NextResponse.redirect(url)
+    }
+
+    if (!isSuspended && isSuspendedPage) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard'
+      url.search = ''
+      return NextResponse.redirect(url)
+    }
+  }
 
   // ── Admin Route Protection ──────────────────────────────────────────
   if (isAdminRoute) {

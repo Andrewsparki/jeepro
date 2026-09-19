@@ -255,7 +255,7 @@
   --color-warning: var(--warning);
   --color-danger: var(--danger);
 
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-google-sans);
   --font-mono: var(--font-geist-mono);
 
   --radius-sm: var(--radius-sm);
@@ -295,12 +295,41 @@ html {
   }
 }
 
+/* Typography Base - Google Sans Global System */
+html,
+body,
+h1, h2, h3, h4, h5, h6,
+p, span, a, label, li,
+button, input, textarea, select, optgroup,
+table, th, td,
+nav, dialog, [role="dialog"], [role="menu"], [role="tooltip"], [role="tab"], [role="tabpanel"],
+.font-sans {
+  font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Strict Monospace Preservation - Code, KBD, Timestamps, System IDs */
+code,
+kbd,
+samp,
+pre,
+.font-mono,
+[data-font="mono"] {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+}
+
+/* Mathematical Notation & Formula Preservation */
+.font-serif,
+.katex,
+.katex * {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
 /* Delete all native browser scrollbars globally so Locomotive Scroll controls all scrolling */
@@ -399,26 +428,42 @@ body[data-scroll-locked] {
 .animate-stagger-container > *:nth-child(7) { animation-delay: 350ms; }
 .animate-stagger-container > *:nth-child(n+9) { animation-delay: 450ms; }
 
-/* Custom Thin Scrollbar (Hidden until hover) */
+/* Custom Thin Scrollbar (Subtle translucent thumb, visible on hover/scroll) */
 .custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent !important;
 }
 .custom-scrollbar:hover {
-  scrollbar-color: var(--border) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent !important;
 }
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+  display: block !important;
+  width: 4px !important;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: transparent !important;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: transparent;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-radius: 9999px !important;
 }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: rgba(255, 255, 255, 0.35) !important;
+}
+
+.light .custom-scrollbar {
+  scrollbar-color: rgba(15, 23, 42, 0.16) transparent !important;
+}
+.light .custom-scrollbar:hover {
+  scrollbar-color: rgba(15, 23, 42, 0.3) transparent !important;
+}
+.light .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.16) !important;
+}
+.light .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.light .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.35) !important;
 }
 /* Compositor-friendly GPU animations for CTA and micro-interactions */
 @keyframes sheen-sweep {

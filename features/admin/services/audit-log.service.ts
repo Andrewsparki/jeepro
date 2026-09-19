@@ -142,7 +142,7 @@ export async function clearAuditLogs(
   const trimmedSearch = search?.trim();
 
   try {
-    let idsToDelete: string[] = [];
+    let clearedCount = 0;
 
     if (trimmedSearch) {
       // Find matching IDs to delete
@@ -170,45 +170,45 @@ export async function clearAuditLogs(
       }
 
       const { data: searchMatches } = await query.or(filters.join(","));
-      idsToDelete = (searchMatches || []).map((m) => m.id);
+      const idsToDelete = (searchMatches || []).map((m) => m.id);
 
       if (idsToDelete.length === 0) {
         return { success: true, clearedCount: 0 };
       }
 
-      const { error: deleteError } = await supabase
+      const { data: deletedRows, error: deleteError } = await supabase
         .from("audit_logs")
         .delete()
-        .in("id", idsToDelete);
+        .in("id", idsToDelete)
+        .select("id");
 
       if (deleteError) {
         return { success: false, clearedCount: 0, error: deleteError.message };
       }
+
+      clearedCount = deletedRows?.length || 0;
     } else {
-      // Full purge
-      const { count } = await supabase
-        .from("audit_logs")
-        .select("id", { count: "exact", head: true });
-
-      const { error: deleteError } = await supabase
+      // Full purge: delete all rows created on or before current timestamp
+      const { data: deletedRows, error: deleteError } = await supabase
         .from("audit_logs")
         .delete()
-        .neq("id", "00000000-0000-0000-0000-000000000000"); // Delete all
+        .gte("created_at", "1970-01-01T00:00:00Z")
+        .select("id");
 
       if (deleteError) {
         return { success: false, clearedCount: 0, error: deleteError.message };
       }
 
-      idsToDelete = Array.from({ length: count || 0 });
+      clearedCount = deletedRows?.length || 0;
     }
 
-    // Record audit event for the clear operation
-    await logAuditEvent(adminUserId, "audit_logs.cleared", "audit_logs", "all", {
-      cleared_count: idsToDelete.length,
+    // Record audit event for the clear operation AFTER database deletion succeeds
+    await logAuditEvent(adminUserId, "audit_logs.cleared", "audit_logs", trimmedSearch ? "filtered" : "all", {
+      cleared_count: clearedCount,
       filter: trimmedSearch || "ALL",
     });
 
-    return { success: true, clearedCount: idsToDelete.length };
+    return { success: true, clearedCount };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Failed to clear audit logs";
     return { success: false, clearedCount: 0, error: msg };

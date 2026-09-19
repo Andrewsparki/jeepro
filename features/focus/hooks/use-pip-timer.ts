@@ -56,7 +56,7 @@ export function usePipTimer() {
           overflow: hidden;
           background: #0a0a0f;
           color: #e4e4e7;
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-family: 'Google Sans', 'fontSans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
           user-select: none;

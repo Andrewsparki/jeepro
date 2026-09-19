@@ -5,6 +5,7 @@ import { usePrivateChat } from "../hooks/use-private-chat";
 import { PrivateChatHeader } from "./private-chat-header";
 import { PrivateChatMessageList } from "./private-chat-message-list";
 import { ChatComposer } from "./chat-composer";
+import { isModerationError } from "../utils/moderation";
 
 interface PrivateChatViewProps {
   otherUserId: string;
@@ -32,8 +33,11 @@ export function PrivateChatView({ otherUserId, onBack }: PrivateChatViewProps) {
   } = usePrivateChat(otherUserId);
 
   const isFriend = friendshipStatus === "accepted";
-  const composerDisabled = !isFriend || !conversationId;
-  const disabledReason = !isFriend
+  const isModError = Boolean(error && isModerationError(error));
+  const composerDisabled = !isFriend || !conversationId || isModError;
+  const disabledReason = isModError
+    ? "Direct messaging is restricted due to moderation."
+    : !isFriend
     ? "Direct messaging is only available between accepted friends."
     : null;
 

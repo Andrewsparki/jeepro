@@ -218,7 +218,7 @@ export function FallbackFloatingTimer({
                       className="text-4xl font-medium tabular-nums leading-none tracking-tighter text-[#f4f4f5]"
                       style={{
                         fontFamily:
-                          "'SF Pro Display', 'Inter', -apple-system, sans-serif",
+                          "var(--font-sans), system-ui, sans-serif",
                         letterSpacing: "-0.04em",
                         textShadow: `0 0 30px ${accent}33`,
                       }}

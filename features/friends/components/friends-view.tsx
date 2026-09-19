@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { dispatchInteractionSound } from "@/lib/sound-engine";
 
 type ActiveTab = "friends" | "pending" | "find";
 
@@ -118,7 +119,10 @@ export function FriendsView() {
             <button
               key={tab}
               type="button"
-              onClick={() => setActiveTab(tab)}
+              onClick={() => {
+                dispatchInteractionSound("ui.tab");
+                setActiveTab(tab);
+              }}
               className={cn(
                 "relative flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-colors duration-200 cursor-pointer outline-none z-10 select-none",
                 isActive ? "text-accent-foreground font-bold" : "text-muted-foreground hover:text-foreground"

@@ -20,6 +20,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { dispatchInteractionSound } from "@/lib/sound-engine";
 
 export function GroupsView() {
   const {
@@ -94,7 +95,10 @@ export function GroupsView() {
               <button
                 key={tab}
                 type="button"
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  dispatchInteractionSound("ui.tab");
+                  setActiveTab(tab);
+                }}
                 className={cn(
                   "relative flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 z-10 select-none",
                   isActive

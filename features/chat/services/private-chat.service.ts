@@ -6,6 +6,7 @@ import {
   DirectUser,
 } from "../types/private-chat.types";
 import { NotificationService } from "@/features/notifications/services/notification.service";
+import { isModerationError } from "../utils/moderation";
 
 export class PrivateChatService {
   /**
@@ -29,6 +30,25 @@ export class PrivateChatService {
       throw new Error("You cannot open a private chat with yourself.");
     }
 
+    // Check direct_messages moderation status
+    const { data: modScope } = await supabase
+      .from("user_moderation_scopes")
+      .select("status, reason, expires_at")
+      .eq("user_id", user.id)
+      .eq("scope", "direct_messages")
+      .maybeSingle();
+
+    if (modScope && modScope.status !== "active") {
+      const isExpired = modScope.expires_at && new Date(modScope.expires_at) <= new Date();
+      if (!isExpired) {
+        throw new Error(
+          modScope.reason
+            ? `Direct Messaging Restricted: ${modScope.reason}`
+            : "Your direct messaging access has been restricted by an administrator."
+        );
+      }
+    }
+
     // 1. Primary path: Call the secure server-side RPC function
     const { data, error } = await supabase.rpc("get_or_create_conversation", {
       p_other_user_id: otherUserId,
@@ -38,14 +58,44 @@ export class PrivateChatService {
       return data as GetOrCreateConversationResult;
     }
 
-    // If the RPC returned an authorization or validation error, throw it directly
+    // Handle non-accepted friendship status gracefully without throwing an unhandled exception
+    if (error && error.message?.includes("Direct messaging requires an accepted friendship")) {
+      const { data: friendship } = await supabase
+        .from("friendships")
+        .select("status")
+        .or(
+          `and(requester_id.eq.${user.id},addressee_id.eq.${otherUserId}),and(requester_id.eq.${otherUserId},addressee_id.eq.${user.id})`
+        )
+        .maybeSingle();
+
+      const { data: otherProfile } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, target_exam, target_year")
+        .eq("id", otherUserId)
+        .maybeSingle();
+
+      return {
+        conversation_id: "",
+        created_at: new Date().toISOString(),
+        other_user: (otherProfile as DirectUser) || {
+          id: otherUserId,
+          full_name: "Student",
+          avatar_url: null,
+        },
+        friendship_status: (friendship?.status as any) || "none",
+      };
+    }
+
+    // If the RPC returned a real database or authorization error, throw it directly
     if (error && error.code !== "42883" && error.code !== "PGRST202") {
-      console.error("[PrivateChatService] RPC get_or_create_conversation error:", {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-      });
+      if (!isModerationError(error)) {
+        console.error("[PrivateChatService] RPC get_or_create_conversation error:", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        });
+      }
       throw new Error(error.message || "Failed to access private conversation.");
     }
 
@@ -65,11 +115,13 @@ export class PrivateChatService {
       .maybeSingle();
 
     if (friendError) {
-      console.error("[PrivateChatService] Friendship verification error:", {
-        message: friendError.message,
-        code: friendError.code,
-        details: friendError.details,
-      });
+      if (!isModerationError(friendError)) {
+        console.error("[PrivateChatService] Friendship verification error:", {
+          message: friendError.message,
+          code: friendError.code,
+          details: friendError.details,
+        });
+      }
       throw new Error(friendError.message || "Failed to verify friendship status.");
     }
 
@@ -85,7 +137,9 @@ export class PrivateChatService {
       .single();
 
     if (profileErr || !otherProfile) {
-      console.error("[PrivateChatService] Target profile fetch error:", profileErr);
+      if (!isModerationError(profileErr)) {
+        console.error("[PrivateChatService] Target profile fetch error:", profileErr);
+      }
       throw new Error(profileErr?.message || "Target user profile was not found.");
     }
 
@@ -102,7 +156,9 @@ export class PrivateChatService {
       .maybeSingle();
 
     if (convLookupErr) {
-      console.error("[PrivateChatService] Conversation lookup error:", convLookupErr);
+      if (!isModerationError(convLookupErr)) {
+        console.error("[PrivateChatService] Conversation lookup error:", convLookupErr);
+      }
       throw new Error(convLookupErr.message || "Failed to query conversations.");
     }
 
@@ -143,11 +199,13 @@ export class PrivateChatService {
         };
       }
 
-      console.error("[PrivateChatService] Conversation creation error:", {
-        message: insertError.message,
-        code: insertError.code,
-        details: insertError.details,
-      });
+      if (!isModerationError(insertError)) {
+        console.error("[PrivateChatService] Conversation creation error:", {
+          message: insertError.message,
+          code: insertError.code,
+          details: insertError.details,
+        });
+      }
       throw new Error(insertError.message || "Failed to create conversation.");
     }
 
@@ -182,7 +240,9 @@ export class PrivateChatService {
     }
 
     if (error && error.code !== "42883" && error.code !== "PGRST202") {
-      console.error("[PrivateChatService] RPC get_user_conversations error:", error.message);
+      if (!isModerationError(error)) {
+        console.error("[PrivateChatService] RPC get_user_conversations error:", error.message);
+      }
     }
 
     // 2. Direct fallback
@@ -342,11 +402,13 @@ export class PrivateChatService {
 
     const { data: rawMessages, error } = await query;
     if (error) {
-      console.error("[PrivateChatService] getMessages error:", {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-      });
+      if (!isModerationError(error)) {
+        console.error("[PrivateChatService] getMessages error:", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+        });
+      }
       throw new Error(error.message || "Failed to load messages.");
     }
 
@@ -407,6 +469,25 @@ export class PrivateChatService {
       throw new Error("You must be signed in to send private messages.");
     }
 
+    // Check direct_messages moderation status
+    const { data: modScope } = await supabase
+      .from("user_moderation_scopes")
+      .select("status, reason, expires_at")
+      .eq("user_id", user.id)
+      .eq("scope", "direct_messages")
+      .maybeSingle();
+
+    if (modScope && modScope.status !== "active") {
+      const isExpired = modScope.expires_at && new Date(modScope.expires_at) <= new Date();
+      if (!isExpired) {
+        throw new Error(
+          modScope.reason
+            ? `Direct Messaging Restricted: ${modScope.reason}`
+            : "Your direct messaging access has been restricted by an administrator."
+        );
+      }
+    }
+
     // Insert message into private_messages (RLS verifies membership & accepted friendship)
     const { data: inserted, error: insertError } = await supabase
       .from("private_messages")
@@ -419,11 +500,13 @@ export class PrivateChatService {
       .single();
 
     if (insertError) {
-      console.error("[PrivateChatService] Message send error:", {
-        message: insertError.message,
-        code: insertError.code,
-        details: insertError.details,
-      });
+      if (!isModerationError(insertError)) {
+        console.error("[PrivateChatService] Message send error:", {
+          message: insertError.message,
+          code: insertError.code,
+          details: insertError.details,
+        });
+      }
       throw new Error(insertError.message || "Failed to send message.");
     }
 
@@ -498,7 +581,9 @@ export class PrivateChatService {
       .eq("sender_id", user.id);
 
     if (error) {
-      console.error("[PrivateChatService] Delete error:", error);
+      if (!isModerationError(error)) {
+        console.error("[PrivateChatService] Delete error:", error);
+      }
       throw new Error(error.message || "Failed to delete message.");
     }
   }

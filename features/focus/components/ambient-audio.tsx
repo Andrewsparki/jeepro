@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useFocusStore, AmbientSound } from "../store/focus-store";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn } from "@/lib/utils";
 
 import { useSettings } from "@/providers/settings-provider";
+import { useAmbientSound } from "../hooks/use-ambient-sound";
 
 const SOUNDS: { id: AmbientSound; label: string; icon: React.ElementType }[] = [
   { id: 'none', label: 'None', icon: Music },
@@ -21,15 +22,41 @@ const SOUNDS: { id: AmbientSound; label: string; icon: React.ElementType }[] = [
   { id: 'white', label: 'White Noise', icon: AudioWaveform },
 ];
 
-export const AmbientAudio = React.memo(function AmbientAudio() {
+interface AmbientAudioProps {
+  className?: string;
+  contentClassName?: string;
+  side?: "top" | "bottom" | "left" | "right";
+  align?: "start" | "center" | "end";
+}
+
+export const AmbientAudio = React.memo(function AmbientAudio({
+  className,
+  contentClassName,
+  side = "top",
+  align = "center",
+}: AmbientAudioProps = {}) {
   const { ambientSound, setAmbientSound, soundVolume, setSoundVolume } = useFocusStore();
   const { playSound } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
 
+  const { isAudioActive } = useAmbientSound(isMuted);
+
   const currentSound = SOUNDS.find(s => s.id === ambientSound) || SOUNDS[0];
   const displayVolume = isMuted ? 0 : Math.round(soundVolume * 100);
+  const shouldReduceMotion = useReducedMotion();
+
+  const activeItemRef = React.useRef<HTMLButtonElement | null>(null);
+
+  React.useEffect(() => {
+    if (isOpen && activeItemRef.current) {
+      const timer = setTimeout(() => {
+        activeItemRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   return (
     <Popover open={isOpen} onOpenChange={(open) => {
@@ -37,42 +64,92 @@ export const AmbientAudio = React.memo(function AmbientAudio() {
       setIsOpen(open);
     }}>
       <PopoverTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => playSound("pop-up")}
-          className={cn(
-            "rounded-full px-5 h-11 border border-white/5 bg-white/5 backdrop-blur-md shadow-lg transition-all duration-300",
-            ambientSound !== 'none' 
-              ? "text-accent hover:bg-white/10 hover:border-white/10" 
-              : "text-muted-foreground hover:bg-white/10 hover:text-foreground"
-          )}
+        <motion.div
+          whileHover={!shouldReduceMotion ? { scale: 1.025 } : undefined}
+          whileTap={!shouldReduceMotion ? { scale: 0.96 } : undefined}
+          className="inline-flex"
         >
-          {ambientSound !== 'none' && !isMuted ? (
-            <Volume2 className="w-4 h-4 mr-2" />
-          ) : (
-            <Music className="w-4 h-4 mr-2 opacity-70" />
-          )}
-          <span className="font-medium tracking-wide">
-            {ambientSound !== 'none' ? currentSound.label : 'Ambient Sound'}
-          </span>
-        </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => playSound("pop-up")}
+            className={cn(
+              "rounded-full px-4 h-10 border transition-all duration-300 shadow-xs",
+              isAudioActive && !isMuted 
+                ? "text-accent bg-accent/15 border-accent/30 hover:bg-accent/25 shadow-[0_0_16px_rgba(var(--accent),0.15)]" 
+                : "border-white/8 bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground",
+              className
+            )}
+          >
+            {isAudioActive && !isMuted ? (
+              <div className="flex items-center gap-0.5 h-3.5 mr-2" aria-hidden="true">
+                {[0.55, 1, 0.45].map((initialH, i) => (
+                  <motion.span
+                    key={i}
+                    className="w-0.5 rounded-full bg-accent inline-block"
+                    animate={!shouldReduceMotion ? {
+                      height: ["30%", "100%", "30%"],
+                    } : undefined}
+                    transition={{
+                      duration: 0.85 + i * 0.2,
+                      repeat: Infinity,
+                      repeatType: "reverse",
+                      ease: "easeInOut",
+                      delay: i * 0.18,
+                    }}
+                    style={{ height: `${initialH * 100}%` }}
+                  />
+                ))}
+              </div>
+            ) : isAudioActive ? (
+              <Volume2 className="w-4 h-4 mr-2" />
+            ) : (
+              <Music className="w-4 h-4 mr-2 opacity-70" />
+            )}
+            <span className="font-medium tracking-wide">
+              {isAudioActive ? currentSound.label : 'Ambient Sound'}
+            </span>
+          </Button>
+        </motion.div>
       </PopoverTrigger>
       
       <PopoverContent 
-        className="w-80 p-0 rounded-2xl border border-white/10 bg-black/40 backdrop-blur-3xl shadow-2xl overflow-hidden" 
-        align="end"
-        sideOffset={20}
+        align={align}
+        side={side}
+        sideOffset={14}
+        collisionPadding={12}
+        data-lenis-prevent
+        className={cn(
+          "w-80 p-0 rounded-2xl border border-white/10 bg-black/75 dark:bg-black/85 backdrop-blur-3xl shadow-2xl z-50",
+          "flex flex-col overflow-hidden",
+          contentClassName
+        )}
+        style={{
+          maxHeight: "min(var(--radix-popover-content-available-height, calc(100dvh - 28px)), 460px)",
+        }}
       >
-        <div className="p-6 pb-4">
-          <div className="flex items-start justify-between mb-6">
+        {/* Fixed Header & Volume Controls */}
+        <div className="p-5 sm:p-6 pb-4 shrink-0">
+          <div className="flex items-start justify-between mb-4 sm:mb-5">
             <div>
               <h4 className="font-semibold text-base text-foreground tracking-tight">Soundscapes</h4>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-accent/20 text-accent/90 border border-accent/20">
-                  Coming Soon
-                </span>
-                <p className="text-xs text-muted-foreground">Playback in next update</p>
+                {ambientSound !== 'none' && !isMuted ? (
+                  <>
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Playing
+                    </span>
+                    <p className="text-xs text-muted-foreground">{currentSound.label}</p>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-white/10 text-muted-foreground border border-white/10">
+                      Off
+                    </span>
+                    <p className="text-xs text-muted-foreground">Focus & study audio</p>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -97,19 +174,22 @@ export const AmbientAudio = React.memo(function AmbientAudio() {
             </div>
             
             <div className="flex items-center gap-4">
-              <button
+              <motion.button
+                whileHover={!shouldReduceMotion ? { scale: 1.1 } : undefined}
+                whileTap={!shouldReduceMotion ? { scale: 0.88 } : undefined}
                 onClick={() => {
                   playSound(isMuted ? "toggleOn" : "toggleOff");
                   setIsMuted(!isMuted);
                 }}
                 className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={isMuted || displayVolume === 0 ? "Unmute audio" : "Mute audio"}
               >
                 {isMuted || displayVolume === 0 ? (
                   <VolumeX className="w-4 h-4" />
                 ) : (
                   <Volume2 className="w-4 h-4" />
                 )}
-              </button>
+              </motion.button>
               
               <SliderPrimitive.Root
                 className="relative flex w-full touch-none select-none items-center"
@@ -132,22 +212,35 @@ export const AmbientAudio = React.memo(function AmbientAudio() {
           </div>
         </div>
 
-        <div className="h-px bg-white/5 w-full" />
+        {/* Fixed Visual Divider */}
+        <div className="h-px bg-white/5 w-full shrink-0" />
 
-        <div className="p-2 space-y-0.5 max-h-[240px] overflow-y-auto custom-scrollbar">
+        {/* Internally Scrollable Sound Options List */}
+        <div 
+          data-lenis-prevent
+          className="p-2 space-y-0.5 overflow-y-auto flex-1 min-h-0 overscroll-contain custom-scrollbar touch-pan-y select-none"
+          style={{
+            WebkitOverflowScrolling: "touch",
+            overscrollBehavior: "contain",
+          }}
+        >
           {SOUNDS.map((sound) => {
             const Icon = sound.icon;
             const isActive = ambientSound === sound.id;
             
             return (
-              <button
+              <motion.button
                 key={sound.id}
+                ref={isActive ? activeItemRef : undefined}
+                whileHover={!shouldReduceMotion ? { x: 2 } : undefined}
+                whileTap={!shouldReduceMotion ? { scale: 0.98 } : undefined}
+                transition={{ duration: 0.15 }}
                 onClick={() => {
                   playSound("click");
                   setAmbientSound(sound.id);
                 }}
                 className={cn(
-                  "w-full flex items-center justify-between px-4 py-3 text-sm rounded-xl transition-all duration-200 group relative overflow-hidden",
+                  "w-full flex items-center justify-between px-4 py-3 text-sm rounded-xl transition-colors duration-200 group relative overflow-hidden shrink-0",
                   isActive 
                     ? "bg-accent/15 text-accent font-medium" 
                     : "hover:bg-white/5 text-muted-foreground hover:text-foreground"
@@ -174,12 +267,13 @@ export const AmbientAudio = React.memo(function AmbientAudio() {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     className="relative z-10"
                   >
                     <Check className="w-4 h-4" />
                   </motion.div>
                 )}
-              </button>
+              </motion.button>
             );
           })}
         </div>

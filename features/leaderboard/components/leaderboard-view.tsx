@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LeaderboardPeriod } from "../types/leaderboard.types";
 import { useSmoothScroll } from "@/components/ui/smooth-scroll-provider";
+import { dispatchInteractionSound } from "@/lib/sound-engine";
 
 export function LeaderboardView() {
   const {
@@ -155,7 +156,10 @@ export function LeaderboardView() {
             return (
               <button
                 key={t.id}
-                onClick={() => setPeriod(t.id)}
+                onClick={() => {
+                  dispatchInteractionSound("ui.tab");
+                  setPeriod(t.id);
+                }}
                 className={cn(
                   "relative px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 z-10 select-none",
                   isActive

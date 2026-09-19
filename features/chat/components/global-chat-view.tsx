@@ -14,6 +14,8 @@ import { DirectConversationsList } from "./direct-conversations-list";
 import { ChatMessage, ChatSender } from "../types/chat.types";
 import { Globe, MessageSquare } from "lucide-react";
 
+import { dispatchInteractionSound } from "@/lib/sound-engine";
+
 export function GlobalChatView() {
   const [activeTab, setActiveTab] = useState<"global" | "direct">("global");
   const {
@@ -63,7 +65,10 @@ export function GlobalChatView() {
           return (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => {
+                dispatchInteractionSound("ui.tab");
+                setActiveTab(tab);
+              }}
               className={`relative flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors duration-200 z-10 select-none ${
                 isActive
                   ? "text-accent font-bold"

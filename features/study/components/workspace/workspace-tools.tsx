@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Timer, Target, StickyNote, Sparkles, Bookmark, History, 
-  ChevronRight, X, Play, Square, CheckCircle2, Clock, Send 
+  ChevronRight, X, Play, Square, CheckCircle2, Clock, Send, Plus, Check
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Chapter, Subject } from "@/features/syllabus/services/syllabus";
 import { useStudySession, useStudyTimer } from "@/features/study/context/study-session-context";
+import { UserNote, getUserNotes, createNote, updateNote } from "@/features/study/services/notes.service";
+import { UserBookmark, getUserBookmarks } from "@/features/study/services/bookmarks.service";
 
 type ToolId = "timer" | "goal" | "notes" | "ai" | "bookmarks" | "history" | null;
 
@@ -25,27 +27,77 @@ export function WorkspaceTools({ chapter, subject }: WorkspaceToolsProps) {
   const { isActive, startSession, endSession } = useStudySession();
   const elapsedSeconds = useStudyTimer();
 
-  // Notes state saved per chapter initialized lazily
-  const [noteText, setNoteText] = useState(() => {
-    if (typeof window !== "undefined" && chapter) {
-      return localStorage.getItem(`jee_notes_${chapter.id}`) || "";
-    }
-    return "";
-  });
+  // Real Notes State
+  const [notesList, setNotesList] = useState<UserNote[]>([]);
+  const [activeNote, setActiveNote] = useState<UserNote | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Real Bookmarks State
+  const [bookmarks, setBookmarks] = useState<UserBookmark[]>([]);
 
   // AI input state
   const [aiQuestion, setAiQuestion] = useState("");
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
 
-  const handleNotesChange = (val: string) => {
-    setNoteText(val);
-    if (chapter) {
-      localStorage.setItem(`jee_notes_${chapter.id}`, val);
-      setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 2000);
+  // Fetch Notes when chapter changes or notes tool is opened
+  useEffect(() => {
+    if (chapter && subject) {
+      getUserNotes(subject.id, chapter.id).then((notes) => {
+        setNotesList(notes);
+        if (notes.length > 0) {
+          setActiveNote(notes[0]);
+        }
+      });
     }
+  }, [chapter, subject]);
+
+  // Fetch Bookmarks when bookmarks tool is opened
+  useEffect(() => {
+    if (activeTool === "bookmarks" && chapter) {
+      getUserBookmarks(chapter.id).then(setBookmarks);
+    }
+  }, [activeTool, chapter]);
+
+  const handleNotesChange = (content: string) => {
+    if (!activeNote || !chapter || !subject) {
+      // Create first note if none exists
+      if (chapter && subject && content.trim()) {
+        createNote({
+          subject_id: subject.id,
+          chapter_id: chapter.id,
+          title: "Quick Note",
+          content,
+        }).then((newNote) => {
+          setActiveNote(newNote);
+          setNotesList([newNote]);
+        });
+      }
+      return;
+    }
+
+    const updated = { ...activeNote, content };
+    setActiveNote(updated);
+
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(async () => {
+      setIsSaved(true);
+      await updateNote(activeNote.id, chapter.id, { content });
+      setTimeout(() => setIsSaved(false), 2000);
+    }, 500);
+  };
+
+  const handleCreateNewQuickNote = async () => {
+    if (!chapter || !subject) return;
+    const newNote = await createNote({
+      subject_id: subject.id,
+      chapter_id: chapter.id,
+      title: "Quick Workspace Note",
+      content: "",
+    });
+    setNotesList((prev) => [newNote, ...prev]);
+    setActiveNote(newNote);
   };
 
   const formatTimer = (totalSecs: number) => {
@@ -231,18 +283,44 @@ export function WorkspaceTools({ chapter, subject }: WorkspaceToolsProps) {
                     </div>
                   )}
 
-                  {/* NOTES WIDGET */}
+                  {/* REAL NOTES WIDGET */}
                   {activeTool === "notes" && (
                     <div className="flex-1 flex flex-col space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground font-medium">Auto-saved to chapter</span>
-                        {isSaved && <span className="text-[10px] text-emerald-500 font-medium">Saved</span>}
+                        <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                          <StickyNote className="w-3 h-3 text-primary" />
+                          {activeNote ? activeNote.title : "Chapter Notes"}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          {isSaved && <span className="text-[10px] text-emerald-500 font-medium flex items-center gap-0.5"><Check className="w-3 h-3" /> Saved</span>}
+                          <Button variant="ghost" size="icon" onClick={handleCreateNewQuickNote} className="h-6 w-6 rounded-md" title="New Quick Note">
+                            <Plus className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
                       </div>
+
+                      {notesList.length > 1 && (
+                        <div className="flex items-center gap-1 overflow-x-auto pb-1 no-scrollbar-arrows">
+                          {notesList.map((n) => (
+                            <button
+                              key={n.id}
+                              onClick={() => setActiveNote(n)}
+                              className={cn(
+                                "px-2 py-0.5 rounded-lg text-[10px] whitespace-nowrap transition-colors shrink-0",
+                                activeNote?.id === n.id ? "bg-primary text-primary-foreground font-medium" : "bg-surface/60 text-muted-foreground hover:text-foreground"
+                              )}
+                            >
+                              {n.title}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
                       <textarea 
-                        value={noteText}
+                        value={activeNote ? activeNote.content : ""}
                         onChange={(e) => handleNotesChange(e.target.value)}
                         placeholder="Jot down quick formulas, insights, or key points for this chapter..."
-                        className="flex-1 min-h-[220px] resize-none text-xs bg-surface/40 border-glass-border rounded-xl p-3 focus-visible:ring-primary/50 text-foreground outline-none"
+                        className="flex-1 min-h-[220px] resize-none text-xs bg-surface/40 border-glass-border rounded-xl p-3 focus-visible:ring-primary/50 text-foreground outline-none font-mono"
                       />
                     </div>
                   )}
@@ -280,14 +358,37 @@ export function WorkspaceTools({ chapter, subject }: WorkspaceToolsProps) {
                     </div>
                   )}
 
-                  {/* BOOKMARKS WIDGET */}
+                  {/* REAL BOOKMARKS WIDGET */}
                   {activeTool === "bookmarks" && (
-                    <div className="flex-1 flex flex-col p-4 border border-glass-border rounded-2xl bg-surface/30 items-center justify-center text-center space-y-2">
-                      <Bookmark className="w-6 h-6 text-primary/60 mb-1" />
-                      <h4 className="text-xs font-semibold">Workspace Bookmarks</h4>
-                      <p className="text-[11px] text-muted-foreground">
-                        Bookmark important formulas and concepts while studying to reference them here.
-                      </p>
+                    <div className="flex-1 flex flex-col space-y-3">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-muted-foreground uppercase tracking-wider">Bookmarked Items</span>
+                        <span className="text-primary font-bold">{bookmarks.length}</span>
+                      </div>
+
+                      {bookmarks.length === 0 ? (
+                        <div className="flex-1 flex flex-col p-4 border border-glass-border rounded-2xl bg-surface/30 items-center justify-center text-center space-y-2">
+                          <Bookmark className="w-6 h-6 text-primary/60 mb-1" />
+                          <h4 className="text-xs font-semibold">No Bookmarks Yet</h4>
+                          <p className="text-[11px] text-muted-foreground">
+                            Click the bookmark icon on formulas or notes to pin them here for quick access.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+                          {bookmarks.map((bm) => (
+                            <div key={bm.id} className="p-2.5 rounded-xl border border-glass-border bg-surface/40 flex items-center justify-between text-xs gap-2">
+                              <div className="flex items-center gap-2 overflow-hidden">
+                                <Bookmark className="w-3.5 h-3.5 text-primary shrink-0 fill-current" />
+                                <span className="truncate font-medium">{bm.notes || `${bm.item_type.toUpperCase()} - ${bm.item_id}`}</span>
+                              </div>
+                              <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-surface border border-border/40 text-muted-foreground shrink-0">
+                                {bm.item_type}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
 
