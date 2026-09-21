@@ -4,24 +4,24 @@ import { useState } from "react";
 import Link from "next/link";
 import { SidebarItem } from "./sidebar-item";
 import { BrandLogo } from "./brand-logo";
-import { 
-  LayoutDashboard, 
-  BookOpen, 
-  Target, 
-  LineChart, 
-  Calendar, 
-  Settings, 
-  LogOut, 
-  History, 
-  Crosshair, 
-  MessageSquare, 
-  Users, 
-  Trophy, 
-  Award, 
-  ChevronDown, 
-  ChevronRight, 
+import {
+  LayoutDashboard,
+  BookOpen,
+  Target,
+  LineChart,
+  Calendar,
+  Settings,
+  LogOut,
+  History,
+  Crosshair,
+  MessageSquare,
+  Users,
+  Trophy,
+  Award,
+  ChevronDown,
+  ChevronRight,
   GraduationCap,
-  LifeBuoy 
+  LifeBuoy
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/features/auth/components/auth-provider";
@@ -43,18 +43,18 @@ const mainNav = [
   { href: "/dashboard/analytics", label: "Analytics", icon: <LineChart className="h-5 w-5" /> },
   { href: "/dashboard/planner", label: "Planner", icon: <Calendar className="h-5 w-5" /> },
   { href: "/dashboard/history", label: "History", icon: <History className="h-5 w-5" /> },
-];
+] as const;
 
 export function Sidebar() {
   const { profile, user } = useAuth();
   const pathname = usePathname();
   const { isImmersive } = useFocusStore();
   const { playSound } = useSettings();
-  
+
   const [isSocialOpen, setIsSocialOpen] = useState(true);
   const { totalUnreadCount } = useDirectConversations();
   const { pendingReceived } = useFriends();
-  
+
   const displayName = profile?.full_name || user?.email?.split('@')[0] || "Student";
   const initials = displayName.substring(0, 1).toUpperCase();
 
@@ -69,7 +69,7 @@ export function Sidebar() {
   ];
 
   return (
-    <motion.aside 
+    <motion.aside
       initial={false}
       animate={{
         width: isHidden ? 0 : 260,
@@ -103,7 +103,7 @@ export function Sidebar() {
             </nav>
 
             <div className="mt-6 mb-2">
-              <button 
+              <button
                 onClick={() => {
                   setIsSocialOpen(!isSocialOpen);
                   playSound("liquid-glass");
@@ -113,10 +113,10 @@ export function Sidebar() {
                 SOCIAL
                 {isSocialOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
               </button>
-              
+
               <AnimatePresence initial={false}>
                 {isSocialOpen && (
-                  <motion.nav 
+                  <motion.nav
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
@@ -137,14 +137,14 @@ export function Sidebar() {
           <WhatsNewTrigger variant="sidebar" />
           <SidebarItem href="/dashboard/support" label="Support" icon={<LifeBuoy className="h-5 w-5" />} />
           <SidebarItem href="/dashboard/settings" label="Settings" icon={<Settings className="h-5 w-5" />} />
-          
+
           <form action={logout} className="w-full mt-2">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               onClick={() => playSound("liquid-glass")}
               className={cn(
-              "w-full relative flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted/30 text-muted-foreground hover:text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            )}>
+                "w-full relative flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted/30 text-muted-foreground hover:text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              )}>
               <div className="flex items-center gap-3">
                 <div className="h-8 w-8 rounded-full bg-accent/20 flex items-center justify-center border border-accent/30 text-accent font-semibold text-xs uppercase shrink-0">
                   {initials}

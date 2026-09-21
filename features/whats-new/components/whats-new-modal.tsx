@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -28,6 +22,7 @@ import {
   Filter,
   ArrowRight,
   Clock,
+  X,
 } from "lucide-react";
 import { AppUpdate, AppUpdateCategory, AppUpdateStatus } from "../types/whats-new.types";
 import { dispatchInteractionSound } from "@/lib/sound-engine";
@@ -145,20 +140,38 @@ export function WhatsNewModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-background/95 backdrop-blur-xl border border-border/60 shadow-2xl rounded-2xl">
-        {/* Header section */}
-        <div className="p-6 border-b border-border/40 bg-gradient-to-r from-primary/5 via-background to-primary/5">
+    <Modal
+      isOpen={open}
+      onClose={() => {
+        dispatchInteractionSound("ui.close");
+        onOpenChange(false);
+      }}
+      className="sm:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-background/95 backdrop-blur-xl border border-border/60 shadow-2xl rounded-2xl"
+    >
+      {/* Close Button */}
+      <button
+        onClick={() => {
+          dispatchInteractionSound("ui.close");
+          onOpenChange(false);
+        }}
+        className="absolute top-4 right-4 z-10 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+        aria-label="Close"
+      >
+        <X className="w-4 h-4" />
+      </button>
+
+      {/* Header section */}
+      <div className="p-6 pr-12 border-b border-border/40 bg-gradient-to-r from-primary/5 via-background to-primary/5">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2.5">
               <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20 text-primary">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <DialogTitle className="text-xl font-bold tracking-tight">Product Updates</DialogTitle>
-                <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                <h2 className="text-xl font-bold tracking-tight text-foreground">Product Updates</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
                   See what&apos;s new, improved, and currently building in JEE Pro
-                </DialogDescription>
+                </p>
               </div>
             </div>
 
@@ -304,7 +317,6 @@ export function WhatsNewModal({
             ))
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }

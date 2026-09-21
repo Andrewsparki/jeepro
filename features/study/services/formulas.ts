@@ -109,7 +109,7 @@ const DEFAULT_OFFICIAL_FORMULAS: Formula[] = [
     memoryTrick: "Range is maximized when sin(2θ) = 1, which happens at θ = 45°.",
     isOfficial: true
   },
-  
+
   // Gravitation Formulas
   {
     id: "f-grav-001",
@@ -167,22 +167,22 @@ export async function getFormulasByChapter(chapterId: string, topicId?: string):
       .or(`chapter_id.eq.${chapterId},chapter_id.ilike.%${chapterId}%`);
 
     if (!error && dbFormulas && dbFormulas.length > 0) {
-      const mapped: Formula[] = dbFormulas.map((row: Record<string, any>) => ({
-        id: row.id,
-        user_id: row.user_id,
-        subjectId: row.subject_id,
-        chapterId: row.chapter_id,
-        topicId: row.topic_id,
-        title: row.title,
-        formula: row.formula,
-        description: row.description || "",
-        variables: Array.isArray(row.variables) ? row.variables : [],
-        difficulty: row.difficulty || "Medium",
-        tags: row.tags || [],
-        commonMistakes: row.common_mistakes || [],
-        memoryTrick: row.memory_trick || undefined,
-        isOfficial: row.is_official || false,
-        createdAt: row.created_at,
+      const mapped: Formula[] = dbFormulas.map((row: Record<string, unknown>) => ({
+        id: String(row.id),
+        user_id: typeof row.user_id === "string" ? row.user_id : null,
+        subjectId: String(row.subject_id ?? ""),
+        chapterId: String(row.chapter_id ?? ""),
+        topicId: typeof row.topic_id === "string" ? row.topic_id : undefined,
+        title: String(row.title ?? ""),
+        formula: String(row.formula ?? ""),
+        description: typeof row.description === "string" ? row.description : "",
+        variables: Array.isArray(row.variables) ? row.variables.map(String) : [],
+        difficulty: typeof row.difficulty === "string" ? row.difficulty : "Medium",
+        tags: Array.isArray(row.tags) ? row.tags.map(String) : [],
+        commonMistakes: Array.isArray(row.common_mistakes) ? row.common_mistakes.map(String) : [],
+        memoryTrick: typeof row.memory_trick === "string" ? row.memory_trick : undefined,
+        isOfficial: Boolean(row.is_official),
+        createdAt: typeof row.created_at === "string" ? row.created_at : new Date().toISOString(),
       }));
 
       // Combine DB formulas with default fallback if DB has non-overlapping items

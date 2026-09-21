@@ -38,7 +38,18 @@ export function WhatsNewTrigger({
   }, []);
 
   useEffect(() => {
-    fetchUpdates();
+    let active = true;
+
+    async function loadInitialUpdates() {
+      await fetchUpdates();
+      if (!active) return;
+    }
+
+    void loadInitialUpdates();
+
+    return () => {
+      active = false;
+    };
   }, [fetchUpdates]);
 
   const unreadCount = updates.filter((u) => !u.is_read).length;

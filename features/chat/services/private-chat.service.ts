@@ -74,6 +74,9 @@ export class PrivateChatService {
         .eq("id", otherUserId)
         .maybeSingle();
 
+      const friendshipStatus =
+        typeof friendship?.status === "string" ? friendship.status : "none";
+
       return {
         conversation_id: "",
         created_at: new Date().toISOString(),
@@ -82,7 +85,7 @@ export class PrivateChatService {
           full_name: "Student",
           avatar_url: null,
         },
-        friendship_status: (friendship?.status as any) || "none",
+        friendship_status: friendshipStatus,
       };
     }
 

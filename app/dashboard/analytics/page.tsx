@@ -68,7 +68,8 @@ import { useStudySession } from "@/features/study/context/study-session-context"
 export default function AnalyticsPage() {
   const { refreshKey } = useStudySession();
   const [metrics, setMetrics] = useState<Awaited<ReturnType<typeof getDashboardMetrics>> | null>(null);
-  
+  const [chartsReady, setChartsReady] = useState(false);
+
   useEffect(() => {
     async function loadData() {
       const data = await getDashboardMetrics();
@@ -76,6 +77,28 @@ export default function AnalyticsPage() {
     }
     loadData();
   }, [refreshKey]);
+
+  useEffect(() => {
+    let idleId: number | ReturnType<typeof setTimeout> | undefined;
+    const hasIdleCallback = typeof globalThis.requestIdleCallback === "function";
+
+    if (hasIdleCallback) {
+      idleId = globalThis.requestIdleCallback(() => setChartsReady(true));
+    } else {
+      idleId = globalThis.setTimeout(() => setChartsReady(true), 150);
+    }
+
+    return () => {
+      if (typeof idleId === "number" && typeof globalThis.cancelIdleCallback === "function") {
+        globalThis.cancelIdleCallback(idleId);
+        return;
+      }
+
+      if (idleId) {
+        globalThis.clearTimeout(idleId);
+      }
+    };
+  }, []);
 
   if (!metrics) {
     // Return completely skeletonized page to avoid layout shifts
@@ -183,30 +206,30 @@ export default function AnalyticsPage() {
         {/* Row 1: Weekly Study Time (Trend) + Level Progress */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <TrendChart sessions={study_sessions} />
+            {chartsReady ? <TrendChart sessions={study_sessions} /> : <TrendChartSkeleton />}
           </div>
-          <LevelProgressChart xpDetails={xpDetails} />
+          {chartsReady ? <LevelProgressChart xpDetails={xpDetails} /> : <LevelProgressChartSkeleton />}
         </div>
 
         {/* Row 2: XP Growth + Streak Calendar */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <XPGrowthChart events={xpEvents} />
-          <StreakCalendar sessions={study_sessions} />
+          {chartsReady ? <XPGrowthChart events={xpEvents} /> : <XPGrowthChartSkeleton />}
+          {chartsReady ? <StreakCalendar sessions={study_sessions} /> : <StreakCalendarSkeleton />}
         </div>
 
         {/* Row 3: Sessions, Focus, Completion */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <SessionsBarChart sessions={study_sessions} />
-          <FocusDistribution sessions={study_sessions} />
-          <CompletionTrend progress={progress} />
+          {chartsReady ? <SessionsBarChart sessions={study_sessions} /> : <SessionsBarChartSkeleton />}
+          {chartsReady ? <FocusDistribution sessions={study_sessions} /> : <FocusDistributionSkeleton />}
+          {chartsReady ? <CompletionTrend progress={progress} /> : <CompletionTrendSkeleton />}
         </div>
 
         {/* Row 4: Study Heatmap + Activity Timeline */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <StudyHeatmap sessions={study_sessions} />
+            {chartsReady ? <StudyHeatmap sessions={study_sessions} /> : <StudyHeatmapSkeleton />}
           </div>
-          <ActivityTimeline sessions={study_sessions} />
+          {chartsReady ? <ActivityTimeline sessions={study_sessions} /> : <ActivityTimelineSkeleton />}
         </div>
       </div>
     </DashboardShell>

@@ -2,14 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { StudySession } from "@/features/study/services/progress";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
 } from "recharts";
 import { format, subDays, startOfDay, isSameDay } from "date-fns";
 import { CalendarDays } from "lucide-react";
@@ -28,9 +28,9 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
   const data = useMemo(() => {
     const today = startOfDay(new Date());
     const days = timeRange === "7D" ? 7 : 30;
-    
+
     const chartData: { date: Date; displayDate: string; count: number }[] = [];
-    
+
     // Generate dates
     for (let i = days - 1; i >= 0; i--) {
       chartData.push({
@@ -63,7 +63,7 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
           </div>
           <h3 className="font-bold text-xl tracking-tight text-foreground">Sessions Per Day</h3>
         </div>
-        
+
         {/* Time Range Selector */}
         <div className="flex items-center gap-1 bg-surface p-1 rounded-xl border border-border/50 shadow-sm">
           {(["7D", "30D"] as TimeRange[]).map((range) => (
@@ -72,8 +72,8 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
               onClick={() => setTimeRange(range)}
               className={cn(
                 "px-4 py-1.5 text-xs font-bold rounded-lg transition-all duration-300 tracking-wider",
-                timeRange === range 
-                  ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm scale-100" 
+                timeRange === range
+                  ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm scale-100"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
@@ -82,7 +82,7 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
           ))}
         </div>
       </div>
-      
+
       <div className="flex-1 w-full min-h-0 relative z-10 px-4 pb-4">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
@@ -93,53 +93,52 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} opacity={0.3} />
-            <XAxis 
-              dataKey="displayDate" 
-              stroke="var(--muted-foreground)" 
-              fontSize={11} 
+            <XAxis
+              dataKey="displayDate"
+              stroke="var(--muted-foreground)"
+              fontSize={11}
               fontWeight={600}
-              tickLine={false} 
+              tickLine={false}
               axisLine={false}
               dy={10}
             />
-            <YAxis 
-              stroke="var(--muted-foreground)" 
-              fontSize={11} 
+            <YAxis
+              stroke="var(--muted-foreground)"
+              fontSize={11}
               fontWeight={600}
-              tickLine={false} 
+              tickLine={false}
               axisLine={false}
               domain={[0, Math.ceil(maxCount + 1)]}
               dx={-5}
             />
-            <Tooltip 
-               cursor={{ fill: 'var(--accent)', opacity: 0.1 }}
-               content={({ active, payload }) => {
-                 if (active && payload && payload.length) {
-                   return (
-                     <div className="bg-popover/95 border border-border/70 text-popover-foreground p-3 rounded-xl shadow-strong z-50 min-w-[120px]">
-                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
-                         {payload[0].payload.displayDate}
-                       </p>
-                       <div className="flex items-center justify-between gap-4">
-                         <div className="flex items-center gap-1.5">
-                           <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
-                           <span className="text-xs font-semibold text-foreground">Sessions</span>
-                         </div>
-                         <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{payload[0]?.value}</span>
-                       </div>
-                     </div>
-                   );
-                 }
-                 return null;
-               }}
+            <Tooltip
+              cursor={{ fill: 'var(--accent)', opacity: 0.1 }}
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div className="bg-popover/95 border border-border/70 text-popover-foreground p-3 rounded-xl shadow-strong z-50 min-w-[120px]">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                        {payload[0].payload.displayDate}
+                      </p>
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
+                          <span className="text-xs font-semibold text-foreground">Sessions</span>
+                        </div>
+                        <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{payload[0]?.value}</span>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              }}
             />
-            <Bar 
-              dataKey="count" 
-              fill="url(#colorSessions)" 
-              radius={[6, 6, 0, 0]} 
+            <Bar
+              dataKey="count"
+              fill="url(#colorSessions)"
+              radius={[6, 6, 0, 0]}
               barSize={timeRange === "7D" ? 40 : 12}
-              animationDuration={1500}
-              animationEasing="ease-out"
+              isAnimationActive={false}
               style={{ filter: 'url(#neonGlowBar)' }}
             />
           </BarChart>

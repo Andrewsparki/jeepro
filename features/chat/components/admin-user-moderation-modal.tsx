@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +24,6 @@ import {
   UserCheck,
   CheckCircle2,
   Clock,
-  User,
 } from "lucide-react";
 import { ChatSender } from "../types/chat.types";
 import {
@@ -57,21 +56,23 @@ export function AdminUserModerationModal({
   const [summary, setSummary] = useState<AdminUserModerationSummary | null>(null);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
 
-  useEffect(() => {
-    if (isOpen && targetUser?.id) {
+  const handleDialogOpenChange = async (open: boolean) => {
+    if (open && targetUser?.id) {
       setReason("");
       setDetails("");
       setIsLoadingSummary(true);
-      adminGetUserModerationSummary(targetUser.id).then((res) => {
-        setIsLoadingSummary(false);
-        if (res.success && res.data) {
-          setSummary(res.data);
-        }
-      });
-    } else {
+
+      const res = await adminGetUserModerationSummary(targetUser.id);
+      setIsLoadingSummary(false);
+
+      if (res.success && res.data) {
+        setSummary(res.data);
+      }
+    } else if (!open) {
       setSummary(null);
+      onClose();
     }
-  }, [isOpen, targetUser]);
+  };
 
   if (!targetUser) return null;
 
@@ -150,7 +151,7 @@ export function AdminUserModerationModal({
   const isBanned = summary?.profile?.is_banned ?? false;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="sm:max-w-lg rounded-2xl bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-6">
         <DialogHeader className="space-y-2">
           <div className="flex items-center gap-3">
@@ -209,22 +210,20 @@ export function AdminUserModerationModal({
           <button
             type="button"
             onClick={() => setActiveTab("actions")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-              activeTab === "actions"
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${activeTab === "actions"
                 ? "bg-accent/15 text-accent border border-accent/25"
                 : "text-muted-foreground hover:text-foreground"
-            }`}
+              }`}
           >
             Moderation Actions
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("history")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
-              activeTab === "history"
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${activeTab === "history"
                 ? "bg-accent/15 text-accent border border-accent/25"
                 : "text-muted-foreground hover:text-foreground"
-            }`}
+              }`}
           >
             <History className="w-3.5 h-3.5" />
             Moderation History
@@ -272,9 +271,8 @@ export function AdminUserModerationModal({
               <Button
                 type="button"
                 variant="outline"
-                className={`justify-start gap-2 text-xs rounded-xl border-border/40 ${
-                  isMuted ? "hover:bg-emerald-500/10 text-emerald-400" : "hover:bg-amber-500/10 text-amber-400"
-                }`}
+                className={`justify-start gap-2 text-xs rounded-xl border-border/40 ${isMuted ? "hover:bg-emerald-500/10 text-emerald-400" : "hover:bg-amber-500/10 text-amber-400"
+                  }`}
                 onClick={() => handleToggleMute(isMuted)}
                 disabled={isSubmitting}
               >
@@ -285,9 +283,8 @@ export function AdminUserModerationModal({
               <Button
                 type="button"
                 variant="outline"
-                className={`justify-start gap-2 text-xs rounded-xl border-border/40 ${
-                  isBanned ? "hover:bg-emerald-500/10 text-emerald-400" : "hover:bg-destructive/10 text-destructive"
-                }`}
+                className={`justify-start gap-2 text-xs rounded-xl border-border/40 ${isBanned ? "hover:bg-emerald-500/10 text-emerald-400" : "hover:bg-destructive/10 text-destructive"
+                  }`}
                 onClick={() => handleToggleBan(isBanned)}
                 disabled={isSubmitting}
               >

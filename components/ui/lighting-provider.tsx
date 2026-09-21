@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { usePerformance } from "@/lib/performance-context";
 
 interface LightingContextType {
@@ -20,11 +21,14 @@ export function useLighting() {
 import { CustomCursor } from "@/components/ui/custom-cursor";
 
 export function LightingProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const mouse = useRef({ x: 0, y: 0 });
   const [isTouch, setIsTouch] = useState(false);
   const { enableMouseLighting } = usePerformance();
+  const isAdminRoute = pathname?.startsWith("/admin") ?? false;
 
   useEffect(() => {
+    if (isAdminRoute) return;
     const touch = window.matchMedia("(pointer: coarse)").matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -62,6 +66,10 @@ export function LightingProvider({ children }: { children: React.ReactNode }) {
   }, [enableMouseLighting]);
 
   const contextValue = React.useMemo(() => ({ isTouch, mouseRef: mouse }), [isTouch]);
+
+  if (isAdminRoute) {
+    return <>{children}</>;
+  }
 
   return (
     <LightingContext.Provider value={contextValue}>

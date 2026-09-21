@@ -55,13 +55,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     isFetchingRef.current = true;
 
     try {
-      const [listResult, count] = await Promise.all([
-        NotificationService.getNotifications(userId, 40),
-        NotificationService.getUnreadCount(userId),
-      ]);
+      const listResult = await NotificationService.getNotifications(userId, 40);
+      const nextNotifications = listResult.notifications;
+      const nextUnreadCount = nextNotifications.filter((item) => !item.seen_at).length;
 
-      setNotifications(listResult.notifications);
-      setUnreadCount(count);
+      setNotifications(nextNotifications);
+      setUnreadCount(nextUnreadCount);
     } catch (err) {
       console.error("[NotificationProvider] Error fetching notifications:", err);
     } finally {
@@ -149,15 +148,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               seen_at: (raw.seen_at ?? null) as string | null,
             };
 
-            setNotifications((prev) =>
-              prev.map((n) => (n.id === updated.id ? updated : n))
-            );
-
-            // Recompute unread count based on current state
-            setNotifications((current) => {
-              const activeUnread = current.filter((n) => !n.seen_at).length;
-              setUnreadCount(activeUnread);
-              return current;
+            setNotifications((prev) => {
+              const next = prev.map((n) => (n.id === updated.id ? updated : n));
+              setUnreadCount(next.filter((n) => !n.seen_at).length);
+              return next;
             });
           } else if (payload.eventType === "DELETE") {
             const deleted = payload.old as unknown as { id: string };

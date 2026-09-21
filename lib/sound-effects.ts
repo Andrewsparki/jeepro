@@ -22,8 +22,34 @@ export type SoundType =
   | "message-sent"
   | "message-received";
 
-export function playHapticSound(type: SoundType = "click", enabled: boolean = true) {
-  if (!enabled || typeof window === "undefined") return;
+export function getGlobalSoundSettings(): { enabled: boolean; volume: number } {
+  if (typeof window === "undefined") return { enabled: true, volume: 0.8 };
+  try {
+    const stored = localStorage.getItem("jee-pro-user-settings");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const enabled = parsed.sounds !== undefined ? Boolean(parsed.sounds) : true;
+      const volume = typeof parsed.soundVolume === "number" ? Math.max(0, Math.min(1, parsed.soundVolume)) : 0.8;
+      return { enabled, volume };
+    }
+  } catch {
+    // Ignore storage read error
+  }
+  return { enabled: true, volume: 0.8 };
+}
+
+export function playHapticSound(
+  type: SoundType = "click",
+  enabled: boolean = true,
+  customVolume?: number
+) {
+  if (typeof window === "undefined") return;
+
+  const globalSettings = getGlobalSoundSettings();
+  const isEnabled = enabled && globalSettings.enabled;
+  const vol = customVolume !== undefined ? customVolume : globalSettings.volume;
+
+  if (!isEnabled || vol <= 0) return;
 
   try {
     const AudioCtx =
@@ -45,7 +71,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.setValueAtTime(600, now);
         osc.frequency.exponentialRampToValueAtTime(350, now + 0.035);
 
-        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.setValueAtTime(0.25 * vol, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
 
         osc.connect(gain);
@@ -62,7 +88,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.setValueAtTime(880, now); // A5
         osc.frequency.exponentialRampToValueAtTime(1320, now + 0.08); // E6
 
-        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.setValueAtTime(0.35 * vol, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
         osc.connect(gain);
@@ -79,7 +105,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.setValueAtTime(1100, now);
         osc.frequency.exponentialRampToValueAtTime(700, now + 0.08);
 
-        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.setValueAtTime(0.3 * vol, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
         osc.connect(gain);
@@ -100,7 +126,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
           osc.type = "sine";
           osc.frequency.setValueAtTime(freq, noteTime);
 
-          gain.gain.setValueAtTime(0.3, noteTime);
+          gain.gain.setValueAtTime(0.3 * vol, noteTime);
           gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.15);
 
           osc.connect(gain);
@@ -118,7 +144,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.setValueAtTime(180, now);
         osc.frequency.exponentialRampToValueAtTime(90, now + 0.15);
 
-        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.setValueAtTime(0.4 * vol, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
 
         osc.connect(gain);
@@ -135,7 +161,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.setValueAtTime(400, now);
         osc.frequency.exponentialRampToValueAtTime(850, now + 0.05);
 
-        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.setValueAtTime(0.3 * vol, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
         osc.connect(gain);
@@ -152,7 +178,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.setValueAtTime(300, now);
         osc.frequency.exponentialRampToValueAtTime(150, now + 0.02);
 
-        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.setValueAtTime(0.2 * vol, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
 
         osc.connect(gain);
@@ -169,7 +195,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.setValueAtTime(1500, now);
         osc.frequency.exponentialRampToValueAtTime(800, now + 0.015);
 
-        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.setValueAtTime(0.12 * vol, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
 
         osc.connect(gain);
@@ -198,7 +224,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         filter.Q.setValueAtTime(2.5, now);
 
         gainBody.gain.setValueAtTime(0, now);
-        gainBody.gain.linearRampToValueAtTime(0.18, now + 0.003);
+        gainBody.gain.linearRampToValueAtTime(0.18 * vol, now + 0.003);
         gainBody.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
 
         oscBody.connect(filter);
@@ -217,7 +243,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         oscGlass.frequency.exponentialRampToValueAtTime(3600, now + 0.035);
 
         gainGlass.gain.setValueAtTime(0, now);
-        gainGlass.gain.linearRampToValueAtTime(0.035, now + 0.002);
+        gainGlass.gain.linearRampToValueAtTime(0.035 * vol, now + 0.002);
         gainGlass.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
 
         oscGlass.connect(gainGlass);
@@ -237,7 +263,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.exponentialRampToValueAtTime(1200, now + 0.05);
 
         gain.gain.setValueAtTime(0.001, now);
-        gain.gain.exponentialRampToValueAtTime(0.25, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.25 * vol, now + 0.01);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
         osc.connect(gain);
@@ -255,7 +281,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
 
         gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
+        gain.gain.linearRampToValueAtTime(0.25 * vol, now + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
 
         osc.connect(gain);
@@ -273,7 +299,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
 
         gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
+        gain.gain.linearRampToValueAtTime(0.25 * vol, now + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
 
         osc.connect(gain);
@@ -293,7 +319,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
           osc.type = "sine";
           osc.frequency.setValueAtTime(freq, noteTime);
 
-          gain.gain.setValueAtTime(0.25, noteTime);
+          gain.gain.setValueAtTime(0.25 * vol, noteTime);
           gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.3);
 
           osc.connect(gain);
@@ -314,7 +340,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
           osc.type = "sine";
           osc.frequency.setValueAtTime(freq, noteTime);
 
-          gain.gain.setValueAtTime(0.3, noteTime);
+          gain.gain.setValueAtTime(0.3 * vol, noteTime);
           gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.4);
 
           osc.connect(gain);
@@ -333,7 +359,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.linearRampToValueAtTime(1200, now + 0.15);
 
         gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+        gain.gain.linearRampToValueAtTime(0.2 * vol, now + 0.05);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
 
         osc.connect(gain);
@@ -350,7 +376,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         osc.frequency.setValueAtTime(150, now);
         osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
 
-        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.setValueAtTime(0.35 * vol, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
 
         osc.connect(gain);
@@ -361,8 +387,6 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
       }
 
       case "notification": {
-        // Pristine glass-bell chime (A5: 880Hz -> D6: 1174.66Hz -> A6: 1760Hz)
-        // With crystalline harmonic overtones and warm acoustic decay
         const notes = [
           { freq: 880.0, offset: 0, gain: 0.25, decay: 0.35 },
           { freq: 1174.66, offset: 0.07, gain: 0.28, decay: 0.4 },
@@ -372,14 +396,13 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         notes.forEach(({ freq, offset, gain: noteGain, decay }) => {
           const noteTime = now + offset;
 
-          // Pure sine fundamental
           const osc = ctx.createOscillator();
           const gainNode = ctx.createGain();
           osc.type = "sine";
           osc.frequency.setValueAtTime(freq, noteTime);
 
           gainNode.gain.setValueAtTime(0.0001, noteTime);
-          gainNode.gain.linearRampToValueAtTime(noteGain, noteTime + 0.008);
+          gainNode.gain.linearRampToValueAtTime(noteGain * vol, noteTime + 0.008);
           gainNode.gain.exponentialRampToValueAtTime(0.0001, noteTime + decay);
 
           osc.connect(gainNode);
@@ -387,14 +410,13 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
           osc.start(noteTime);
           osc.stop(noteTime + decay);
 
-          // Subtle crystal overtone (bell shimmer at 2.01x freq)
           const overtone = ctx.createOscillator();
           const overtoneGain = ctx.createGain();
           overtone.type = "sine";
           overtone.frequency.setValueAtTime(freq * 2.01, noteTime);
 
           overtoneGain.gain.setValueAtTime(0.0001, noteTime);
-          overtoneGain.gain.linearRampToValueAtTime(noteGain * 0.22, noteTime + 0.005);
+          overtoneGain.gain.linearRampToValueAtTime(noteGain * 0.22 * vol, noteTime + 0.005);
           overtoneGain.gain.exponentialRampToValueAtTime(0.0001, noteTime + decay * 0.45);
 
           overtone.connect(overtoneGain);
@@ -406,7 +428,6 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
       }
 
       case "message-sent": {
-        // Social App Tactile "Swoosh-Pop" (480Hz -> 1080Hz glide with soft glass resonance)
         const oscBody = ctx.createOscillator();
         const gainBody = ctx.createGain();
         oscBody.type = "sine";
@@ -414,7 +435,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         oscBody.frequency.exponentialRampToValueAtTime(1080, now + 0.065);
 
         gainBody.gain.setValueAtTime(0, now);
-        gainBody.gain.linearRampToValueAtTime(0.24, now + 0.005);
+        gainBody.gain.linearRampToValueAtTime(0.24 * vol, now + 0.005);
         gainBody.gain.exponentialRampToValueAtTime(0.0001, now + 0.065);
 
         oscBody.connect(gainBody);
@@ -422,7 +443,6 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         oscBody.start(now);
         oscBody.stop(now + 0.065);
 
-        // High crystal glass over-shimmer
         const oscGlass = ctx.createOscillator();
         const gainGlass = ctx.createGain();
         oscGlass.type = "sine";
@@ -430,7 +450,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
         oscGlass.frequency.exponentialRampToValueAtTime(3200, now + 0.05);
 
         gainGlass.gain.setValueAtTime(0, now);
-        gainGlass.gain.linearRampToValueAtTime(0.04, now + 0.002);
+        gainGlass.gain.linearRampToValueAtTime(0.04 * vol, now + 0.002);
         gainGlass.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
 
         oscGlass.connect(gainGlass);
@@ -441,7 +461,6 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
       }
 
       case "message-received": {
-        // JEE Pro Custom Social Message Received Chime (F5: 698.46Hz -> A5: 880Hz -> C6: 1046.50Hz)
         const notes = [
           { freq: 698.46, offset: 0, gain: 0.22, decay: 0.25 },
           { freq: 880.0, offset: 0.05, gain: 0.26, decay: 0.3 },
@@ -457,7 +476,7 @@ export function playHapticSound(type: SoundType = "click", enabled: boolean = tr
           osc.frequency.setValueAtTime(freq, noteTime);
 
           gainNode.gain.setValueAtTime(0.0001, noteTime);
-          gainNode.gain.linearRampToValueAtTime(noteGain, noteTime + 0.006);
+          gainNode.gain.linearRampToValueAtTime(noteGain * vol, noteTime + 0.006);
           gainNode.gain.exponentialRampToValueAtTime(0.0001, noteTime + decay);
 
           osc.connect(gainNode);

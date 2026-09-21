@@ -8,14 +8,18 @@ import {
   deleteUpdateAdmin,
 } from "@/features/whats-new/services/whats-new.service";
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+
 export async function GET() {
   try {
     await verifyAdmin();
     const updates = await getAllUpdatesAdmin();
     return NextResponse.json({ updates });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in GET /api/admin/whats-new:", error);
-    return NextResponse.json({ error: error?.message || "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: getErrorMessage(error, "Unauthorized") }, { status: 401 });
   }
 }
 
@@ -49,9 +53,9 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ update: newUpdate }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in POST /api/admin/whats-new:", error);
-    return NextResponse.json({ error: error?.message || "Failed to create update" }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error, "Failed to create update") }, { status: 500 });
   }
 }
 
@@ -86,9 +90,9 @@ export async function PUT(request: NextRequest) {
     });
 
     return NextResponse.json({ update: updated });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in PUT /api/admin/whats-new:", error);
-    return NextResponse.json({ error: error?.message || "Failed to update update post" }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error, "Failed to update update post") }, { status: 500 });
   }
 }
 
@@ -107,8 +111,8 @@ export async function DELETE(request: NextRequest) {
     await logAuditEvent(user.id, "app_update.deleted", "app_updates", id, {});
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in DELETE /api/admin/whats-new:", error);
-    return NextResponse.json({ error: error?.message || "Failed to delete update post" }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error, "Failed to delete update post") }, { status: 500 });
   }
 }

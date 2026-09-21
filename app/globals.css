@@ -22,9 +22,9 @@
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   --radius: var(--radius-lg);
-  
+
   /* Shared standard semantic properties */
   --background: var(--bg-primary);
   --foreground: var(--text-primary);
@@ -45,18 +45,20 @@
 }
 
 /* Midnight Theme (Default) */
-:root, .midnight, .dark {
+:root,
+.midnight,
+.dark {
   --bg-primary: #0A0A0A;
   --bg-secondary: #121212;
   --bg-elevated: #1A1A1A;
-  
-  --surface: rgba(255, 255, 255, 0.03); 
-  --surface-hover: rgba(255, 255, 255, 0.06); 
+
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.06);
   --surface-active: rgba(255, 255, 255, 0.09);
 
   --glass: rgba(10, 10, 10, 0.65);
-  --glass-strong: rgba(5, 5, 5, 0.85); 
-  --glass-border: rgba(255, 255, 255, 0.08); 
+  --glass-strong: rgba(5, 5, 5, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
 
   --text-primary: #FAFAFA;
   --text-secondary: #A1A1AA;
@@ -78,7 +80,7 @@
 
   --card-highlight-start: rgba(255, 255, 255, 0.03);
   --card-highlight-end: rgba(255, 255, 255, 0);
-  
+
   --muted: rgba(255, 255, 255, 0.07);
 }
 
@@ -204,8 +206,9 @@
   -webkit-backdrop-filter: blur(24px);
   background: var(--glass);
   box-shadow: var(--shadow-medium);
-  border-radius: var(--radius-xl); /* standardized */
-  transform: translateZ(0); 
+  border-radius: var(--radius-xl);
+  /* standardized */
+  transform: translateZ(0);
   backface-visibility: hidden;
 }
 
@@ -250,7 +253,7 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  
+
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
@@ -298,11 +301,32 @@ html {
 /* Typography Base - Google Sans Global System */
 html,
 body,
-h1, h2, h3, h4, h5, h6,
-p, span, a, label, li,
-button, input, textarea, select, optgroup,
-table, th, td,
-nav, dialog, [role="dialog"], [role="menu"], [role="tooltip"], [role="tab"], [role="tabpanel"],
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a,
+label,
+li,
+button,
+input,
+textarea,
+select,
+optgroup,
+table,
+th,
+td,
+nav,
+dialog,
+[role="dialog"],
+[role="menu"],
+[role="tooltip"],
+[role="tab"],
+[role="tabpanel"],
 .font-sans {
   font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
@@ -365,25 +389,56 @@ body[data-scroll-locked] {
 
 @theme {
   --animate-marquee: marquee 30s linear infinite;
+
   @keyframes marquee {
-    0% { transform: translateX(0%); }
-    100% { transform: translateX(-50%); }
+    0% {
+      transform: translateX(0%);
+    }
+
+    100% {
+      transform: translateX(-50%);
+    }
   }
 }
 
 /* Utility classes for typography to ensure consistent crisp rendering */
-.tracking-tightest { letter-spacing: -0.04em; }
-.tracking-tighter { letter-spacing: -0.02em; }
-.tracking-tight { letter-spacing: -0.01em; }
+.tracking-tightest {
+  letter-spacing: -0.04em;
+}
+
+.tracking-tighter {
+  letter-spacing: -0.02em;
+}
+
+.tracking-tight {
+  letter-spacing: -0.01em;
+}
+
 /* Performance-optimized keyframes — GPU compositable (transform + opacity only) */
 @keyframes timer-pulse {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.08); }
+
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    transform: scale(1.08);
+  }
 }
 
 @keyframes recording-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
 .animate-timer-pulse {
@@ -395,58 +450,61 @@ body[data-scroll-locked] {
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .animate-shimmer {
   animation: shimmer 2s infinite linear;
 }
-/* Page Transition Stagger Engine */
-@keyframes content-stagger-enter {
+
+/* Dashboard entry: a single, subtle page settle-in without staggered per-card motion */
+@keyframes dashboard-page-enter {
   0% {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(6px);
   }
+
   100% {
     opacity: 1;
-    transform: none;
+    transform: translateY(0);
   }
 }
 
-.animate-stagger-container > * {
+.dashboard-page-enter {
   opacity: 0;
-  animation: content-stagger-enter 600ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: dashboard-page-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-
-.animate-stagger-container > *:nth-child(1) { animation-delay: 50ms; }
-.animate-stagger-container > *:nth-child(2) { animation-delay: 100ms; }
-.animate-stagger-container > *:nth-child(3) { animation-delay: 150ms; }
-.animate-stagger-container > *:nth-child(4) { animation-delay: 200ms; }
-.animate-stagger-container > *:nth-child(5) { animation-delay: 250ms; }
-.animate-stagger-container > *:nth-child(6) { animation-delay: 300ms; }
-.animate-stagger-container > *:nth-child(7) { animation-delay: 350ms; }
-.animate-stagger-container > *:nth-child(n+9) { animation-delay: 450ms; }
 
 /* Custom Thin Scrollbar (Subtle translucent thumb, visible on hover/scroll) */
 .custom-scrollbar {
   scrollbar-width: thin !important;
   scrollbar-color: rgba(255, 255, 255, 0.16) transparent !important;
 }
+
 .custom-scrollbar:hover {
   scrollbar-color: rgba(255, 255, 255, 0.3) transparent !important;
 }
+
 .custom-scrollbar::-webkit-scrollbar {
   display: block !important;
   width: 4px !important;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent !important;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.16) !important;
   border-radius: 9999px !important;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover,
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.35) !important;
@@ -455,25 +513,44 @@ body[data-scroll-locked] {
 .light .custom-scrollbar {
   scrollbar-color: rgba(15, 23, 42, 0.16) transparent !important;
 }
+
 .light .custom-scrollbar:hover {
   scrollbar-color: rgba(15, 23, 42, 0.3) transparent !important;
 }
+
 .light .custom-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(15, 23, 42, 0.16) !important;
 }
+
 .light .custom-scrollbar::-webkit-scrollbar-thumb:hover,
 .light .custom-scrollbar:hover::-webkit-scrollbar-thumb {
   background: rgba(15, 23, 42, 0.35) !important;
 }
+
 /* Compositor-friendly GPU animations for CTA and micro-interactions */
 @keyframes sheen-sweep {
-  0% { transform: translateX(-250%) skewX(-20deg); }
-  40%, 100% { transform: translateX(350%) skewX(-20deg); }
+  0% {
+    transform: translateX(-250%) skewX(-20deg);
+  }
+
+  40%,
+  100% {
+    transform: translateX(350%) skewX(-20deg);
+  }
 }
 
 @keyframes cta-ambient-pulse {
-  0%, 100% { opacity: 0.35; transform: scale(0.98); }
-  50% { opacity: 0.55; transform: scale(1.03); }
+
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.98);
+  }
+
+  50% {
+    opacity: 0.55;
+    transform: scale(1.03);
+  }
 }
 
 .animate-sheen-sweep {
@@ -486,26 +563,11 @@ body[data-scroll-locked] {
   will-change: transform, opacity;
 }
 
-/* Page transition animation */
-@keyframes page-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.page-transition {
-  animation: page-enter 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
 @media (prefers-reduced-motion: reduce) {
+
   .animate-sheen-sweep,
   .animate-cta-pulse,
-  .page-transition {
+  .dashboard-page-enter {
     animation: none !important;
   }
 }

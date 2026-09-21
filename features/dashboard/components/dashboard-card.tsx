@@ -1,7 +1,7 @@
 "use client";
 
 import React, { ReactNode } from "react";
-import { motion, HTMLMotionProps } from "framer-motion";
+import { HTMLMotionProps } from "framer-motion";
 import { GlassCard, HoverTint } from "@/components/ui/glass-card";
 
 interface DashboardCardProps extends HTMLMotionProps<"div"> {
@@ -11,17 +11,12 @@ interface DashboardCardProps extends HTMLMotionProps<"div"> {
   hoverTint?: HoverTint;
 }
 
-export const DashboardCard = React.memo(function DashboardCard({ children, className, delay = 0, hoverTint, ...props }: DashboardCardProps) {
+export const DashboardCard = React.memo(function DashboardCard({ children, className, hoverTint, ...props }: DashboardCardProps) {
   return (
     <GlassCard hoverTint={hoverTint} className={className} {...props}>
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay, ease: "easeOut" }}
-        className="min-h-full w-full p-6 flex flex-col relative z-10"
-      >
+      <div className="min-h-full w-full p-6 flex flex-col relative z-10">
         {children}
-      </motion.div>
+      </div>
     </GlassCard>
   );
 });

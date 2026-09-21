@@ -13,35 +13,38 @@ interface StudyHeatmapProps {
   weeksCount?: number;
 }
 
-export function StudyHeatmap({ sessions, weeksCount = 22 }: StudyHeatmapProps) {
+export function StudyHeatmap({ sessions, weeksCount = 12 }: StudyHeatmapProps) {
   const daysTotal = weeksCount * 7;
 
   const { heatmapData, monthLabels, stats } = useMemo(() => {
     const today = startOfDay(new Date());
     const data: { date: Date; duration: number; level: number; dayOfWeek: number }[] = [];
+    const entriesByDate = new Map<string, { date: Date; duration: number; level: number; dayOfWeek: number }>();
 
     // Initialize array of dates for the specified weeks
     for (let i = daysTotal - 1; i >= 0; i--) {
       const date = subDays(today, i);
-      data.push({
+      const entry = {
         date,
         duration: 0,
         level: 0,
         dayOfWeek: getDay(date)
-      });
+      };
+      entriesByDate.set(date.toISOString(), entry);
+      data.push(entry);
     }
 
     let totalDurationSeconds = 0;
     let activeDaysCount = 0;
 
     // Populate with session durations
-    sessions.forEach(session => {
+    for (const session of sessions) {
       const sessionDate = startOfDay(new Date(session.started_at));
-      const dayData = data.find(d => isSameDay(d.date, sessionDate));
+      const dayData = entriesByDate.get(sessionDate.toISOString());
       if (dayData) {
         dayData.duration += session.duration_seconds;
       }
-    });
+    }
 
     // Calculate levels and stats
     data.forEach(d => {
@@ -95,7 +98,7 @@ export function StudyHeatmap({ sessions, weeksCount = 22 }: StudyHeatmapProps) {
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration % 3600) / 60);
     const dateStr = format(date, "EEE, MMM d, yyyy");
-    
+
     if (duration === 0) return `No study activity on ${dateStr}`;
     if (hours === 0) return `${minutes}m study time on ${dateStr}`;
     return `${hours}h ${minutes}m study time on ${dateStr}`;
@@ -106,7 +109,7 @@ export function StudyHeatmap({ sessions, weeksCount = 22 }: StudyHeatmapProps) {
   return (
     <GlassCard hoverTint="orange" className="flex flex-col h-full relative overflow-hidden group">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-      
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 px-6 pt-6 relative z-10">
         <div className="flex items-center gap-3">
@@ -136,14 +139,14 @@ export function StudyHeatmap({ sessions, weeksCount = 22 }: StudyHeatmapProps) {
 
       {/* Main Heatmap Container */}
       <div className="flex-1 flex flex-col justify-center px-6 relative z-10 overflow-x-auto pb-4">
-        
+
         <div className="min-w-max mx-auto flex flex-col gap-2">
-          
+
           {/* Month Header Row */}
           <div className="flex items-center pl-8 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 h-5 relative">
             {monthLabels.map((m, idx) => (
-              <span 
-                key={idx} 
+              <span
+                key={idx}
                 className="absolute transition-colors hover:text-foreground select-none"
                 style={{ left: `${m.columnIndex * 17.5 + 32}px` }}
               >
@@ -154,7 +157,7 @@ export function StudyHeatmap({ sessions, weeksCount = 22 }: StudyHeatmapProps) {
 
           {/* Grid + Day Labels */}
           <div className="flex items-start gap-2">
-            
+
             {/* Day Labels Column */}
             <div className="flex flex-col gap-[3.5px] pr-2 text-[10px] font-semibold text-muted-foreground/50 uppercase select-none pt-0.5">
               {dayLabels.map((day, i) => (
@@ -216,7 +219,7 @@ export function StudyHeatmapSkeleton() {
       </div>
       <div className="flex-1 flex items-center justify-center opacity-50">
         <div className="grid grid-flow-col grid-rows-7 gap-1.5">
-          {Array.from({length: 154}).map((_, i) => (
+          {Array.from({ length: 154 }).map((_, i) => (
             <Skeleton key={i} className="w-[14px] h-[14px] rounded-[3px]" />
           ))}
         </div>

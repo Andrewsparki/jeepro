@@ -9,6 +9,7 @@ import { getDashboardMetrics } from "@/features/study/services/progress";
 import { useStudySession } from "@/features/study/context/study-session-context";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { useAuth } from "@/features/auth/components/auth-provider";
+import { useBootSequence } from "@/components/ui/cinematic-preloader";
 import dynamic from "next/dynamic";
 
 // Static imports for above-the-fold content
@@ -68,7 +69,7 @@ function DashboardSkeleton() {
               ))}
             </div>
           </div>
-          
+
           <div className="lg:col-span-8 flex flex-col gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="min-h-[240px]">
@@ -99,7 +100,8 @@ import { DailyMissionsCard } from "@/features/daily-missions/components/daily-mi
 
 export default function DashboardPage() {
   const { refreshKey } = useStudySession();
-  const { profile, user } = useAuth();
+  const { profile, user, isLoading: isAuthLoading } = useAuth();
+  const { markCriticalReady } = useBootSequence();
   const [metrics, setMetrics] = useState<Metrics | null>(null);
 
   const displayName = profile?.full_name || user?.email?.split('@')[0] || "Student";
@@ -107,15 +109,23 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let isMounted = true;
+
     async function loadMetrics() {
+      if (isAuthLoading || !user) return;
+
       const data = await getDashboardMetrics();
-      if (isMounted) setMetrics(data);
+      if (!isMounted) return;
+
+      setMetrics(data);
+      markCriticalReady();
     }
+
     loadMetrics();
+
     return () => {
       isMounted = false;
     };
-  }, [refreshKey]);
+  }, [isAuthLoading, markCriticalReady, refreshKey, user]);
 
   if (!metrics) {
     return <DashboardSkeleton />;
@@ -125,14 +135,14 @@ export default function DashboardPage() {
     <DashboardShell>
       <LevelUpToast currentLevel={metrics.xpDetails.currentLevel} />
       <MilestoneCelebration streakDays={metrics.currentStreak} />
-      <div className="flex flex-col gap-6 md:gap-8 pb-10 max-w-7xl mx-auto animate-stagger-container">
-        
+      <div className="flex flex-col gap-6 md:gap-8 pb-10 max-w-7xl mx-auto dashboard-page-enter">
+
         {/* ROW 1: Hero & Stats */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
           <div className="xl:col-span-8">
             <DashboardHero userName={firstName} lastActiveChapter={metrics.lastActiveChapter} />
           </div>
-          
+
           <div className="xl:col-span-4 grid grid-cols-2 gap-4">
             <StatCard
               title="Today's Study Time"
@@ -185,9 +195,9 @@ export default function DashboardPage() {
 
         {/* ROW 2: Timeline, Continue Learning & Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          
-          <DashboardCard 
-            className="lg:col-span-4 min-h-[320px]" 
+
+          <DashboardCard
+            className="lg:col-span-4 min-h-[320px]"
             delay={0.5}
             data-context-target="dashboard-widget"
             data-context-id="timeline"
@@ -205,15 +215,15 @@ export default function DashboardPage() {
 
           <div className="lg:col-span-8 flex flex-col gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div 
+              <div
                 className="flex flex-col min-h-[240px]"
                 data-context-target="dashboard-widget"
                 data-context-id="continue-learning"
                 data-context-title="Continue Learning"
-                data-context-data={JSON.stringify({ 
-                  widget: "continue-learning", 
-                  subjectSlug: metrics.lastActiveChapter?.subjectSlug, 
-                  chapterSlug: metrics.lastActiveChapter?.chapterSlug 
+                data-context-data={JSON.stringify({
+                  widget: "continue-learning",
+                  subjectSlug: metrics.lastActiveChapter?.subjectSlug,
+                  chapterSlug: metrics.lastActiveChapter?.chapterSlug
                 })}
               >
                 <div className="mb-4">
@@ -221,9 +231,9 @@ export default function DashboardPage() {
                 </div>
                 <ContinueLearning lastActiveChapter={metrics.lastActiveChapter} />
               </div>
-              
-              <DashboardCard 
-                delay={0.7} 
+
+              <DashboardCard
+                delay={0.7}
                 className="min-h-[240px] flex flex-col justify-between"
                 data-context-target="dashboard-widget"
                 data-context-id="weekly-progress"
@@ -234,17 +244,15 @@ export default function DashboardPage() {
               </DashboardCard>
             </div>
 
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 fill-mode-both">
-               <QuickActions />
-            </div>
+            <QuickActions />
           </div>
-          
+
         </div>
 
         {/* ROW 3: Journey & Bottom content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          <DashboardCard 
-            className="lg:col-span-5" 
+          <DashboardCard
+            className="lg:col-span-5"
             delay={0.8}
             data-context-target="dashboard-widget"
             data-context-id="stat-streak"
@@ -257,15 +265,15 @@ export default function DashboardPage() {
             </div>
             <JourneyTracker xpDetails={metrics.xpDetails} achievements={metrics.achievements} />
           </DashboardCard>
-          
-          <div 
+
+          <div
             className="lg:col-span-7"
             data-context-target="dashboard-widget"
             data-context-id="missions"
             data-context-title="Daily Missions"
             data-context-data={JSON.stringify({ widget: "missions" })}
           >
-             <DailyMissionsCard missions={metrics.dailyMissions} delay={0.9} />
+            <DailyMissionsCard missions={metrics.dailyMissions} delay={0.9} />
           </div>
         </div>
 

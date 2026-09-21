@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,9 +16,6 @@ import {
   Shield,
   Power,
   Trash2,
-  ExternalLink,
-  AlertTriangle,
-  CheckCircle2,
   FileText,
   Activity,
 } from "lucide-react";
@@ -46,12 +43,16 @@ export function AdminChatControlsModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmPurge, setConfirmPurge] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
+  const handleDialogOpenChange = (open: boolean) => {
+    if (open) {
       setDisabledReason(chatStatus.disabled_reason || "");
       setConfirmPurge(false);
     }
-  }, [isOpen, chatStatus]);
+
+    if (!open) {
+      onClose();
+    }
+  };
 
   const handleToggleStatus = async (enable: boolean) => {
     if (!enable && !disabledReason.trim()) {
@@ -91,7 +92,7 @@ export function AdminChatControlsModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="sm:max-w-md rounded-2xl bg-card/95 backdrop-blur-2xl border-border/50 shadow-2xl p-6">
         <DialogHeader className="space-y-2">
           <div className="flex items-center gap-3">

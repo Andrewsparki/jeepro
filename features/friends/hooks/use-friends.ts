@@ -51,7 +51,8 @@ export function useFriends() {
 
   useEffect(() => {
     let ignore = false;
-    async function init() {
+
+    const init = async () => {
       try {
         const [friendsList, pending] = await Promise.all([
           FriendsService.getFriends(),
@@ -72,7 +73,8 @@ export function useFriends() {
           setIsLoading(false);
         }
       }
-    }
+    };
+
     init();
     return () => {
       ignore = true;

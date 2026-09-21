@@ -12,6 +12,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     <NextThemesProvider
       attribute="class"
       defaultTheme="midnight"
+      storageKey="jee-pro-theme"
       themes={["midnight", "amoled", "titanium", "light"]}
       enableSystem={false}
       disableTransitionOnChange

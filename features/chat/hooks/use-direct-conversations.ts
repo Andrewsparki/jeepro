@@ -40,9 +40,9 @@ export function useDirectConversations(enabled: boolean = true) {
 
   useEffect(() => {
     if (!enabled || !user) return;
-    let ignore = false;
 
-    async function init() {
+    let ignore = false;
+    const init = async () => {
       try {
         const list = await PrivateChatService.getConversations();
         if (!ignore) {
@@ -61,7 +61,7 @@ export function useDirectConversations(enabled: boolean = true) {
           setIsLoading(false);
         }
       }
-    }
+    };
 
     init();
 

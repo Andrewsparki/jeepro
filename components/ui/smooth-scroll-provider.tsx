@@ -31,11 +31,11 @@ interface SmoothScrollContextType {
 }
 
 const SmoothScrollContext = createContext<SmoothScrollContextType>({
-  scrollTo: () => {},
+  scrollTo: () => { },
   getLocomotive: () => null,
-  resize: () => {},
-  start: () => {},
-  stop: () => {},
+  resize: () => { },
+  start: () => { },
+  stop: () => { },
   smoother: null,
 });
 
@@ -108,6 +108,8 @@ function checkIsScrollLocked(): boolean {
  */
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith("/admin") ?? false;
+
   const locomotiveRef = useRef<LocomotiveScroll | null>(null);
   const isStoppedRef = useRef(false);
 
@@ -248,7 +250,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
 
   // Route change: immediately reset scroll, clear any orphaned locks, and recalculate heights
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (isAdminRoute || typeof window === "undefined") return;
 
     // Clear any orphaned lock left by unmounted modals from the previous route
     const hasOpenDialog = Boolean(
@@ -382,6 +384,10 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
   };
+
+  if (isAdminRoute) {
+    return <>{children}</>;
+  }
 
   return (
     <SmoothScrollContext.Provider value={contextValue}>

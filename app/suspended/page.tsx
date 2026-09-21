@@ -87,9 +87,8 @@ export default function SuspendedPage() {
       const result = await createSupportTicket({
         category: "account",
         subject: `Account Suspension Appeal (${isTemporary ? "Temporary" : "Permanent"})`,
-        description: `APPEAL DETAILS:\n${appealMessage.trim()}\n\nSUSPENSION REASON: ${
-          reason || "Standard Terms Violation"
-        }\nSUSPENSION TYPE: ${isTemporary ? `Temporary (Until ${expiresAt})` : "Permanent"}`,
+        description: `APPEAL DETAILS:\n${appealMessage.trim()}\n\nSUSPENSION REASON: ${reason || "Standard Terms Violation"
+          }\nSUSPENSION TYPE: ${isTemporary ? `Temporary (Until ${expiresAt})` : "Permanent"}`,
         priority: "high",
       });
 
@@ -101,8 +100,9 @@ export default function SuspendedPage() {
       } else {
         toast.error(result.error || "Failed to submit appeal. Please try again.");
       }
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to submit support appeal.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to submit support appeal.";
+      toast.error(message);
     } finally {
       setIsSubmittingAppeal(false);
     }
@@ -112,9 +112,8 @@ export default function SuspendedPage() {
     <div className="min-h-screen w-full flex items-center justify-center p-6 bg-[#09090b] text-white relative overflow-hidden select-none">
       {/* Background Glow */}
       <div
-        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 blur-[130px] rounded-full pointer-events-none ${
-          isTemporary ? "bg-amber-500/10" : "bg-rose-500/10"
-        }`}
+        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 blur-[130px] rounded-full pointer-events-none ${isTemporary ? "bg-amber-500/10" : "bg-rose-500/10"
+          }`}
       />
 
       {/* Main Card Container */}
@@ -122,11 +121,10 @@ export default function SuspendedPage() {
         {/* Icon & Badge */}
         <div className="flex flex-col items-center gap-3">
           <div
-            className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg ${
-              isTemporary
+            className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg ${isTemporary
                 ? "bg-amber-500/10 border border-amber-500/20 text-amber-400 shadow-amber-500/10"
                 : "bg-rose-500/10 border border-rose-500/20 text-rose-500 shadow-rose-500/10"
-            }`}
+              }`}
           >
             {isTemporary ? <Clock className="w-8 h-8" /> : <ShieldAlert className="w-8 h-8" />}
           </div>
@@ -174,15 +172,14 @@ export default function SuspendedPage() {
                   Suspension Duration
                 </span>
                 <p
-                  className={`font-semibold text-xs mt-0.5 ${
-                    isTemporary ? "text-amber-400 font-mono" : "text-rose-400 font-bold"
-                  }`}
+                  className={`font-semibold text-xs mt-0.5 ${isTemporary ? "text-amber-400 font-mono" : "text-rose-400 font-bold"
+                    }`}
                 >
                   {isTemporary
                     ? new Date(expiresAt!).toLocaleString(undefined, {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      })
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })
                     : "Permanent (Indefinite)"}
                 </p>
               </div>

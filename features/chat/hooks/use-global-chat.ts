@@ -47,7 +47,6 @@ export function useGlobalChat() {
       setMessages(result.messages);
       setHasMore(result.hasMore);
 
-      // Cache senders
       result.messages.forEach((m) => {
         if (m.sender) {
           profileCache.current.set(m.sender_id, m.sender);
@@ -64,12 +63,19 @@ export function useGlobalChat() {
 
   useEffect(() => {
     let ignore = false;
-    async function init() {
+
+    const init = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const [status, result] = await Promise.all([
           GlobalChatService.getChatStatus(),
           GlobalChatService.getMessages(40),
         ]);
+
         if (!ignore) {
           setChatStatus(status);
           setMessages(result.messages);
@@ -89,13 +95,13 @@ export function useGlobalChat() {
           setIsLoading(false);
         }
       }
-    }
+    };
 
     init();
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [user]);
 
   // 2. Cursor pagination for loading older history
   const loadOlderMessages = useCallback(async () => {
@@ -106,7 +112,6 @@ export function useGlobalChat() {
       const oldest = messages[0];
       const result = await GlobalChatService.getMessages(30, oldest.created_at);
 
-      // Cache senders
       result.messages.forEach((m) => {
         if (m.sender) {
           profileCache.current.set(m.sender_id, m.sender);
@@ -114,7 +119,6 @@ export function useGlobalChat() {
       });
 
       setMessages((prev) => {
-        // De-duplicate by ID
         const existingIds = new Set(prev.map((m) => m.id));
         const newUnique = result.messages.filter((m) => !existingIds.has(m.id));
         return [...newUnique, ...prev];
@@ -127,7 +131,7 @@ export function useGlobalChat() {
     } finally {
       setIsLoadingOlder(false);
     }
-  }, [isLoadingOlder, hasMore, messages]);
+  }, [isLoadingOlder, hasMore, messages.length]);
 
   // 3. Send Message
   const sendMessage = useCallback(async (content: string): Promise<boolean> => {
@@ -165,9 +169,11 @@ export function useGlobalChat() {
   }, [isSending, chatStatus.enabled]);
 
   // 4. Delete Message (User's own or Admin moderation)
+  const isAdmin = profile?.is_admin === true;
+
   const deleteMessage = useCallback(async (messageId: string) => {
     try {
-      if (profile?.is_admin) {
+      if (isAdmin) {
         const res = await adminDeleteChatMessage(messageId);
         if (!res.success) throw new Error(res.error || "Failed to delete message.");
       } else {
@@ -179,7 +185,7 @@ export function useGlobalChat() {
       const msg = err instanceof Error ? err.message : "Failed to delete message.";
       toast.error(msg);
     }
-  }, [profile?.is_admin]);
+  }, [isAdmin]);
 
   // 5. Report Message
   const reportMessage = useCallback(async (messageId: string, reason: string, details?: string) => {

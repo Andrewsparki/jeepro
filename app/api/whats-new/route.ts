@@ -6,6 +6,10 @@ import {
   markAllUpdatesAsRead,
 } from "@/features/whats-new/services/whats-new.service";
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+
 export async function GET() {
   try {
     const supabase = await createClient();
@@ -15,9 +19,9 @@ export async function GET() {
 
     const updates = await getPublishedUpdates(user?.id);
     return NextResponse.json({ updates });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in GET /api/whats-new:", error);
-    return NextResponse.json({ error: error?.message || "Failed to fetch updates" }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error, "Failed to fetch updates") }, { status: 500 });
   }
 }
 
@@ -45,8 +49,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ error: "Missing updateId or updateIds" }, { status: 400 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in POST /api/whats-new:", error);
-    return NextResponse.json({ error: error?.message || "Failed to mark as read" }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error, "Failed to mark as read") }, { status: 500 });
   }
 }

@@ -156,7 +156,7 @@ export async function clearAuditLogs(
         matchingUserIds = matchedProfiles.map((p) => p.id);
       }
 
-      let query = supabase.from("audit_logs").select("id");
+      const query = supabase.from("audit_logs").select("id");
       const filters = [
         `action.ilike.%${trimmedSearch}%`,
         `target_type.ilike.%${trimmedSearch}%`,

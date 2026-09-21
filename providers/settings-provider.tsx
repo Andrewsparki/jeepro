@@ -104,8 +104,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const playSound = useCallback((type: SoundType = "click") => {
-    playHapticSound(type, settings.sounds);
-  }, [settings.sounds]);
+    playHapticSound(type, settings.sounds, settings.soundVolume);
+  }, [settings.sounds, settings.soundVolume]);
 
   const playInteractionSound = useCallback((event: SemanticSoundEvent) => {
     dispatchInteractionSound(event, settings.sounds);

@@ -19,7 +19,6 @@ import {
   Users,
   Lock,
   Clock,
-  CheckCircle2,
   AlertTriangle,
   History,
   RotateCcw,
@@ -105,10 +104,14 @@ export function ScopedUserModerationModal({
 
   useEffect(() => {
     if (isOpen && targetUser?.id) {
+      // This reset is intentionally tied to the modal open lifecycle.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setReason("");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDurationMins("0");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoadingSummary(true);
-      adminGetUserScopedModeration(targetUser.id).then((res) => {
+      void adminGetUserScopedModeration(targetUser.id).then((res) => {
         setIsLoadingSummary(false);
         if (res.success && res.data) {
           setSummary(res.data);
@@ -205,22 +208,20 @@ export function ScopedUserModerationModal({
           <button
             type="button"
             onClick={() => setActiveTab("scopes")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-              activeTab === "scopes"
-                ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
-                : "text-zinc-400 hover:text-white"
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${activeTab === "scopes"
+              ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
+              : "text-zinc-400 hover:text-white"
+              }`}
           >
             Feature Scopes
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("history")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
-              activeTab === "history"
-                ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
-                : "text-zinc-400 hover:text-white"
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${activeTab === "history"
+              ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
+              : "text-zinc-400 hover:text-white"
+              }`}
           >
             <History className="w-3.5 h-3.5" />
             Audit History
@@ -246,11 +247,10 @@ export function ScopedUserModerationModal({
                       playHapticSound("click");
                       setSelectedScope(scopeKey);
                     }}
-                    className={`p-2.5 rounded-xl border text-left transition-all relative ${
-                      isSelected
-                        ? "border-amber-500/40 bg-amber-500/10 text-white shadow-[0_0_12px_rgba(245,158,11,0.1)]"
-                        : "border-white/[0.06] bg-white/[0.02] text-zinc-400 hover:border-white/[0.12] hover:text-zinc-200"
-                    }`}
+                    className={`p-2.5 rounded-xl border text-left transition-all relative ${isSelected
+                      ? "border-amber-500/40 bg-amber-500/10 text-white shadow-[0_0_12px_rgba(245,158,11,0.1)]"
+                      : "border-white/[0.06] bg-white/[0.02] text-zinc-400 hover:border-white/[0.12] hover:text-zinc-200"
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <Icon className={`w-4 h-4 ${isSelected ? "text-amber-400" : "text-zinc-500"}`} />
@@ -357,11 +357,10 @@ export function ScopedUserModerationModal({
                     variant="outline"
                     onClick={() => handleApplyAction(act.status)}
                     disabled={isSubmitting || currentScopeData?.status === act.status}
-                    className={`text-xs rounded-xl font-semibold gap-1.5 ${
-                      act.isDestructive
-                        ? "border-rose-500/30 text-rose-400 hover:bg-rose-500/10"
-                        : "border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
-                    }`}
+                    className={`text-xs rounded-xl font-semibold gap-1.5 ${act.isDestructive
+                      ? "border-rose-500/30 text-rose-400 hover:bg-rose-500/10"
+                      : "border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                      }`}
                   >
                     {act.isDestructive ? <Lock className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
                     {act.label}

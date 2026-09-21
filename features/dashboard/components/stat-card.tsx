@@ -3,7 +3,6 @@
 import React, { ReactNode } from "react";
 import { DashboardCard } from "./dashboard-card";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import { HoverTint } from "@/components/ui/glass-card";
 
 interface StatCardProps {
@@ -21,39 +20,37 @@ interface StatCardProps {
 }
 
 export const StatCard = React.memo(function StatCard({ title, value, icon, iconContainerClassName, trend, delay = 0, className, hoverTint }: StatCardProps) {
-  const widgetId = title.toLowerCase().includes("time") 
-    ? "stat-time" 
-    : title.toLowerCase().includes("topic") 
-    ? "stat-topics" 
-    : title.toLowerCase().includes("streak") 
-    ? "stat-streak" 
-    : "stat-level";
+  const widgetId = title.toLowerCase().includes("time")
+    ? "stat-time"
+    : title.toLowerCase().includes("topic")
+      ? "stat-topics"
+      : title.toLowerCase().includes("streak")
+        ? "stat-streak"
+        : "stat-level";
 
   return (
-    <DashboardCard 
-      delay={delay} 
-      hoverTint={hoverTint} 
+    <DashboardCard
+      delay={delay}
+      hoverTint={hoverTint}
       className={cn("flex flex-col gap-5 overflow-hidden relative cursor-default", className)}
       data-context-target="dashboard-widget"
       data-context-id={widgetId}
       data-context-title={title}
       data-context-data={JSON.stringify({ widget: widgetId })}
     >
-      
+
       <div className="flex items-center justify-between relative z-10">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</h3>
-        <motion.div 
-          animate={{ scale: [1, 1.1, 1], opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        <div
           className={cn(
             "p-2 rounded-xl border",
             iconContainerClassName || "p-2 bg-accent/10 border-accent/20 rounded-xl text-accent shadow-[0_0_15px_rgba(79,70,229,0.15)]"
           )}
         >
           {icon}
-        </motion.div>
+        </div>
       </div>
-      
+
       <div className="relative z-10 mt-auto">
         <div className="text-3xl sm:text-4xl font-bold tracking-tighter text-foreground">{value}</div>
         {trend && (

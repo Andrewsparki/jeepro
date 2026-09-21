@@ -1,6 +1,6 @@
 "use client";
 
-import { playHapticSound, SoundType } from "./sound-effects";
+import { playHapticSound, SoundType, getGlobalSoundSettings } from "./sound-effects";
 
 export type SemanticSoundEvent =
   // UI Interactions
@@ -157,7 +157,12 @@ export function dispatchInteractionSound(
   event: SemanticSoundEvent,
   enabled: boolean = true
 ) {
-  if (!enabled || typeof window === "undefined") return;
+  if (typeof window === "undefined") return;
+
+  const globalSettings = getGlobalSoundSettings();
+  if (!globalSettings.enabled || globalSettings.volume <= 0 || !enabled) {
+    return;
+  }
 
   const now = Date.now();
   const cooldown = COOLDOWN_MS[event] || 20;
@@ -169,5 +174,5 @@ export function dispatchInteractionSound(
   lastTriggeredTimes.set(event, now);
 
   const soundType = EVENT_MAP[event] || "click";
-  playHapticSound(soundType, enabled);
+  playHapticSound(soundType, true, globalSettings.volume);
 }

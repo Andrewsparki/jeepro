@@ -11,6 +11,7 @@ import { AuthProvider } from "@/features/auth/components/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { DialogProvider } from "@/providers/dialog-provider";
 import { ContextMenuProvider } from "@/features/context-menu";
+import { AppBootGuard, AppBootSequenceProvider } from "@/components/ui/cinematic-preloader";
 
 // Lazy-load purely decorative components — they should not block initial render
 const BackgroundSystem = dynamic(
@@ -27,19 +28,21 @@ export function Providers({ children }: ProvidersProps) {
     <ThemeProvider>
       <SettingsProvider>
         <PerformanceProvider>
-          <AuthProvider>
-            <LightingProvider>
-              <DialogProvider>
-                <ContextMenuProvider>
-                  <BackgroundSystem />
-                  <SmoothScrollProvider>
-                    {children}
-                  </SmoothScrollProvider>
-                  <Toaster position="bottom-right" />
-                </ContextMenuProvider>
-              </DialogProvider>
-            </LightingProvider>
-          </AuthProvider>
+          <AppBootSequenceProvider>
+            <AuthProvider>
+              <LightingProvider>
+                <DialogProvider>
+                  <ContextMenuProvider>
+                    <BackgroundSystem />
+                    <SmoothScrollProvider>
+                      <AppBootGuard>{children}</AppBootGuard>
+                    </SmoothScrollProvider>
+                    <Toaster position="bottom-right" />
+                  </ContextMenuProvider>
+                </DialogProvider>
+              </LightingProvider>
+            </AuthProvider>
+          </AppBootSequenceProvider>
         </PerformanceProvider>
       </SettingsProvider>
     </ThemeProvider>

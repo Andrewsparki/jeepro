@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Plus, Search, Pin, Bookmark, Trash2, Edit3, Eye, Columns, 
-  Check, Save, Clock, BookOpen, Sparkles, Tag, Sigma
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import {
+  Plus, Search, Pin, Bookmark, Trash2, Edit3, Eye, Columns,
+  Check, Save, Clock, BookOpen, Sparkles, Sigma
 } from "lucide-react";
-import { Chapter, Subject, Topic } from "@/features/syllabus/services/syllabus";
+import { Chapter, Subject } from "@/features/syllabus/services/syllabus";
 import { UserNote, getUserNotes, createNote, updateNote, deleteNote, togglePinNote } from "@/features/study/services/notes.service";
 import { toggleBookmark, checkIsBookmarked } from "@/features/study/services/bookmarks.service";
 import { MathRenderer } from "@/components/ui/math-renderer";
@@ -26,7 +25,6 @@ type ViewMode = "edit" | "split" | "preview";
 export function NotesTab({ chapter, subject }: NotesTabProps) {
   const [notes, setNotes] = useState<UserNote[]>([]);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
-  const [activeNote, setActiveNote] = useState<UserNote | null>(null);
   const [query, setQuery] = useState("");
   const [selectedTopicId, setSelectedTopicId] = useState<string>("All");
   const [isLoading, setIsLoading] = useState(true);
@@ -36,41 +34,53 @@ export function NotesTab({ chapter, subject }: NotesTabProps) {
 
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Fetch Notes
-  const fetchNotes = useCallback(async () => {
-    setIsLoading(true);
-    const fetched = await getUserNotes(
-      subject.id,
-      chapter.id,
-      selectedTopicId === "All" ? undefined : selectedTopicId
-    );
+  const activeNote = useMemo(
+    () => notes.find((note) => note.id === selectedNoteId) ?? null,
+    [notes, selectedNoteId]
+  );
 
-    setNotes(fetched);
-    setIsLoading(false);
-
-    if (fetched.length > 0 && !selectedNoteId) {
-      setSelectedNoteId(fetched[0].id);
-      setActiveNote(fetched[0]);
-    } else if (fetched.length === 0) {
-      setSelectedNoteId(null);
-      setActiveNote(null);
+  const handleSelectNote = async (noteId: string) => {
+    setSelectedNoteId(noteId);
+    const selected = notes.find((note) => note.id === noteId);
+    if (selected) {
+      const nextBookmarked = await checkIsBookmarked("note", selected.id);
+      setIsBookmarked(nextBookmarked);
     }
-  }, [subject.id, chapter.id, selectedTopicId, selectedNoteId]);
+  };
 
   useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
+    let cancelled = false;
 
-  // Sync active note details when selectedNoteId changes
-  useEffect(() => {
-    if (selectedNoteId) {
-      const found = notes.find((n) => n.id === selectedNoteId);
-      if (found) {
-        setActiveNote(found);
-        checkIsBookmarked("note", found.id).then(setIsBookmarked);
+    async function loadNotes() {
+      setIsLoading(true);
+      try {
+        const fetched = await getUserNotes(
+          subject.id,
+          chapter.id,
+          selectedTopicId === "All" ? undefined : selectedTopicId
+        );
+        if (cancelled) return;
+
+        setNotes(fetched);
+
+        if (fetched.length > 0 && (!selectedNoteId || !fetched.some((note) => note.id === selectedNoteId))) {
+          setSelectedNoteId(fetched[0].id);
+        } else if (fetched.length === 0) {
+          setSelectedNoteId(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     }
-  }, [selectedNoteId, notes]);
+
+    void loadNotes();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [subject.id, chapter.id, selectedNoteId, selectedTopicId]);
 
   // Handle Note Creation
   const handleCreateNote = async () => {
@@ -86,7 +96,7 @@ export function NotesTab({ chapter, subject }: NotesTabProps) {
 
       setNotes((prev) => [created, ...prev]);
       setSelectedNoteId(created.id);
-      setActiveNote(created);
+      setIsBookmarked(false);
       toast.success("New note created!");
     } catch (err) {
       console.error(err);
@@ -99,7 +109,6 @@ export function NotesTab({ chapter, subject }: NotesTabProps) {
     if (!activeNote) return;
 
     const updated = { ...activeNote, ...fields };
-    setActiveNote(updated);
     setSaveStatus("unsaved");
 
     // Update local list state immediately for snappy UI
@@ -144,10 +153,8 @@ export function NotesTab({ chapter, subject }: NotesTabProps) {
     setNotes(remaining);
     if (remaining.length > 0) {
       setSelectedNoteId(remaining[0].id);
-      setActiveNote(remaining[0]);
     } else {
       setSelectedNoteId(null);
-      setActiveNote(null);
     }
   };
 
@@ -237,7 +244,7 @@ export function NotesTab({ chapter, subject }: NotesTabProps) {
               return (
                 <div
                   key={note.id}
-                  onClick={() => setSelectedNoteId(note.id)}
+                  onClick={() => void handleSelectNote(note.id)}
                   className={cn(
                     "p-3 rounded-xl border transition-all cursor-pointer group relative flex flex-col gap-1.5",
                     isSelected

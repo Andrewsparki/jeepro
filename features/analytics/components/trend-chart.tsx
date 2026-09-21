@@ -2,15 +2,15 @@
 
 import { useMemo, useState } from "react";
 import { StudySession } from "@/features/study/services/progress";
-import { 
-  ComposedChart, 
+import {
+  ComposedChart,
   Line,
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
 } from "recharts";
 import { format, subDays, startOfDay, isSameDay } from "date-fns";
 import { Activity } from "lucide-react";
@@ -28,31 +28,29 @@ export function TrendChart({ sessions }: TrendChartProps) {
 
   const data = useMemo(() => {
     const today = startOfDay(new Date());
-    const days = timeRange === "7D" ? 7 : timeRange === "30D" ? 30 : 90; // Limit ALL to 90 days for performance
-    
-    const chartData: { date: Date; displayDate: string; hours: number; rawDuration: number }[] = [];
-    
-    // Generate dates
+    const days = timeRange === "7D" ? 7 : timeRange === "30D" ? 30 : 90;
+
+    const chartData = new Map<string, { date: Date; displayDate: string; hours: number; rawDuration: number }>();
+
     for (let i = days - 1; i >= 0; i--) {
-      chartData.push({
-        date: subDays(today, i),
-        displayDate: format(subDays(today, i), timeRange === "7D" ? "EEE" : "MMM d"),
+      const date = subDays(today, i);
+      chartData.set(date.toISOString(), {
+        date,
+        displayDate: format(date, timeRange === "7D" ? "EEE" : "MMM d"),
         hours: 0,
-        rawDuration: 0
+        rawDuration: 0,
       });
     }
 
-    // Populate data
-    sessions.forEach(session => {
+    for (const session of sessions) {
       const sessionDate = startOfDay(new Date(session.started_at));
-      const dayData = chartData.find(d => isSameDay(d.date, sessionDate));
-      if (dayData) {
-        dayData.rawDuration += session.duration_seconds;
-        dayData.hours = Number((dayData.rawDuration / 3600).toFixed(1));
-      }
-    });
+      const dayData = chartData.get(sessionDate.toISOString());
+      if (!dayData) continue;
+      dayData.rawDuration += session.duration_seconds;
+      dayData.hours = Number((dayData.rawDuration / 3600).toFixed(1));
+    }
 
-    return chartData;
+    return Array.from(chartData.values());
   }, [sessions, timeRange]);
 
   const maxHours = Math.max(...data.map(d => d.hours), 1); // Avoid 0 domain
@@ -66,7 +64,7 @@ export function TrendChart({ sessions }: TrendChartProps) {
           </div>
           <h3 className="font-bold text-xl tracking-tight text-foreground">Study Trend</h3>
         </div>
-        
+
         {/* Time Range Selector */}
         <div className="flex items-center gap-1 bg-surface p-1 rounded-xl border border-border/50 shadow-sm">
           {(["7D", "30D", "ALL"] as TimeRange[]).map((range) => (
@@ -75,8 +73,8 @@ export function TrendChart({ sessions }: TrendChartProps) {
               onClick={() => setTimeRange(range)}
               className={cn(
                 "px-4 py-1.5 text-xs font-bold rounded-lg transition-all duration-300 tracking-wider",
-                timeRange === range 
-                  ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm scale-100" 
+                timeRange === range
+                  ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm scale-100"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
@@ -85,7 +83,7 @@ export function TrendChart({ sessions }: TrendChartProps) {
           ))}
         </div>
       </div>
-      
+
       <div className="flex-1 w-full min-h-0 relative z-10 px-4 pb-4">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
@@ -96,65 +94,63 @@ export function TrendChart({ sessions }: TrendChartProps) {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} opacity={0.3} />
-            <XAxis 
-              dataKey="displayDate" 
-              stroke="var(--muted-foreground)" 
-              fontSize={11} 
+            <XAxis
+              dataKey="displayDate"
+              stroke="var(--muted-foreground)"
+              fontSize={11}
               fontWeight={600}
-              tickLine={false} 
+              tickLine={false}
               axisLine={false}
               dy={10}
             />
-            <YAxis 
-              stroke="var(--muted-foreground)" 
-              fontSize={11} 
+            <YAxis
+              stroke="var(--muted-foreground)"
+              fontSize={11}
               fontWeight={600}
-              tickLine={false} 
+              tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}h`}
               domain={[0, Math.ceil(maxHours + 1)]}
               dx={-5}
             />
-            <Tooltip 
-               cursor={{ stroke: 'rgba(100,116,139,0.1)', strokeWidth: 30 }}
-               content={({ active, payload }) => {
-                 if (active && payload && payload.length) {
-                   return (
-                     <div className="bg-popover/95 border border-border/70 text-popover-foreground p-3 rounded-xl shadow-strong z-50 min-w-[120px]">
-                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
-                         {payload[0].payload.displayDate}
-                       </p>
-                       <div className="flex items-center justify-between gap-4">
-                         <div className="flex items-center gap-1.5">
-                           <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
-                           <span className="text-xs font-semibold text-foreground">Study Time</span>
-                         </div>
-                         <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{payload[0]?.value}h</span>
-                       </div>
-                     </div>
-                   );
-                 }
-                 return null;
-               }}
+            <Tooltip
+              cursor={{ stroke: 'rgba(100,116,139,0.1)', strokeWidth: 30 }}
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div className="bg-popover/95 border border-border/70 text-popover-foreground p-3 rounded-xl shadow-strong z-50 min-w-[120px]">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                        {payload[0].payload.displayDate}
+                      </p>
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
+                          <span className="text-xs font-semibold text-foreground">Study Time</span>
+                        </div>
+                        <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{payload[0]?.value}h</span>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              }}
             />
-            <Area 
-              type="monotone" 
-              dataKey="hours" 
-              stroke="none" 
+            <Area
+              type="monotone"
+              dataKey="hours"
+              stroke="none"
               fillOpacity={1}
               fill="url(#colorHoursTrend)"
-              isAnimationActive={true}
+              isAnimationActive={false}
             />
-            <Line 
-               type="monotone" 
-               dataKey="hours" 
-               stroke="var(--accent)" 
-               strokeWidth={2.5} 
-               dot={{ r: 3, fill: '#0f172a', strokeWidth: 1.5, stroke: 'var(--accent)' }} 
-               activeDot={{ r: 5, fill: '#fff', stroke: 'var(--accent)', strokeWidth: 2 }} 
-               isAnimationActive={true}
-               animationDuration={800}
-               animationEasing="ease-out"
+            <Line
+              type="monotone"
+              dataKey="hours"
+              stroke="var(--accent)"
+              strokeWidth={2.5}
+              dot={{ r: 3, fill: '#0f172a', strokeWidth: 1.5, stroke: 'var(--accent)' }}
+              activeDot={{ r: 5, fill: '#fff', stroke: 'var(--accent)', strokeWidth: 2 }}
+              isAnimationActive={false}
             />
           </ComposedChart>
         </ResponsiveContainer>

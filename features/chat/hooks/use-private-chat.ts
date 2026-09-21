@@ -18,9 +18,14 @@ function formatErrorDetails(err: unknown) {
 
   if (err instanceof Error) {
     message = err.message || message;
-    code = (err as any).code;
-    details = (err as any).details;
-    hint = (err as any).hint;
+    const metadata = err as Error & {
+      code?: string;
+      details?: string;
+      hint?: string;
+    };
+    code = metadata.code;
+    details = metadata.details;
+    hint = metadata.hint;
   } else if (err && typeof err === "object") {
     const e = err as Record<string, unknown>;
     if (typeof e.message === "string" && e.message.trim()) {
@@ -95,7 +100,7 @@ export function usePrivateChat(otherUserId: string) {
       setOtherUser(convData.other_user);
       setFriendshipStatus(
         (convData.friendship_status as "accepted" | "pending" | "none") ||
-          "none"
+        "none"
       );
 
       if (convData.conversation_id) {
@@ -125,7 +130,19 @@ export function usePrivateChat(otherUserId: string) {
 
   useEffect(() => {
     if (!user || !otherUserId) return;
-    initConversation();
+
+    let cancelled = false;
+
+    const loadConversation = async () => {
+      await initConversation();
+      if (cancelled) return;
+    };
+
+    void loadConversation();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user, otherUserId, initConversation]);
 
   // 2. Cursor pagination for loading older history

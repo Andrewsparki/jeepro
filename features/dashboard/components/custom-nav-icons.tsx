@@ -50,8 +50,8 @@ export function DashboardAnimatedIcon({
         isPressed
           ? { scale: 0.88, rotate: -8 }
           : isHovered
-          ? { scale: 1.08, rotate: 2 }
-          : { scale: 1, rotate: 0 }
+            ? { scale: 1.08, rotate: 2 }
+            : { scale: 1, rotate: 0 }
       }
       transition={{ type: "spring", stiffness: 500, damping: 15 }}
     >
@@ -60,12 +60,15 @@ export function DashboardAnimatedIcon({
         width="7"
         height="9"
         rx="1.5"
+        fill="currentColor"
+        fillOpacity={0}
+        initial={false}
         animate={
           isPressed
             ? { x: 4.5, y: 4.5, fill: "currentColor", fillOpacity: 0.4 }
             : isHovered
-            ? { x: 1.5, y: 1.5, fill: "currentColor", fillOpacity: 0.25 }
-            : { x: 3, y: 3, fill: "currentColor", fillOpacity: isActive ? 0.15 : 0 }
+              ? { x: 1.5, y: 1.5, fill: "currentColor", fillOpacity: 0.25 }
+              : { x: 3, y: 3, fill: "currentColor", fillOpacity: isActive ? 0.15 : 0 }
         }
         transition={{ type: "spring", stiffness: 450, damping: 18 }}
       />
@@ -75,12 +78,15 @@ export function DashboardAnimatedIcon({
         width="7"
         height="5"
         rx="1.5"
+        fill="currentColor"
+        fillOpacity={0}
+        initial={false}
         animate={
           isPressed
             ? { x: 12.5, y: 4.5, fill: "currentColor", fillOpacity: 0.4 }
             : isHovered
-            ? { x: 15.5, y: 1.5, fill: "currentColor", fillOpacity: 0.25 }
-            : { x: 14, y: 3, fill: "currentColor", fillOpacity: isActive ? 0.15 : 0 }
+              ? { x: 15.5, y: 1.5, fill: "currentColor", fillOpacity: 0.25 }
+              : { x: 14, y: 3, fill: "currentColor", fillOpacity: isActive ? 0.15 : 0 }
         }
         transition={{ type: "spring", stiffness: 450, damping: 18, delay: 0.02 }}
       />
@@ -90,12 +96,15 @@ export function DashboardAnimatedIcon({
         width="7"
         height="9"
         rx="1.5"
+        fill="currentColor"
+        fillOpacity={0}
+        initial={false}
         animate={
           isPressed
             ? { x: 12.5, y: 10.5, fill: "currentColor", fillOpacity: 0.4 }
             : isHovered
-            ? { x: 15.5, y: 13.5, fill: "currentColor", fillOpacity: 0.25 }
-            : { x: 14, y: 12, fill: "currentColor", fillOpacity: isActive ? 0.15 : 0 }
+              ? { x: 15.5, y: 13.5, fill: "currentColor", fillOpacity: 0.25 }
+              : { x: 14, y: 12, fill: "currentColor", fillOpacity: isActive ? 0.15 : 0 }
         }
         transition={{ type: "spring", stiffness: 450, damping: 18, delay: 0.04 }}
       />
@@ -105,12 +114,15 @@ export function DashboardAnimatedIcon({
         width="7"
         height="5"
         rx="1.5"
+        fill="currentColor"
+        fillOpacity={0}
+        initial={false}
         animate={
           isPressed
             ? { x: 4.5, y: 14.5, fill: "currentColor", fillOpacity: 0.4 }
             : isHovered
-            ? { x: 1.5, y: 17.5, fill: "currentColor", fillOpacity: 0.25 }
-            : { x: 3, y: 16, fill: "currentColor", fillOpacity: isActive ? 0.15 : 0 }
+              ? { x: 1.5, y: 17.5, fill: "currentColor", fillOpacity: 0.25 }
+              : { x: 3, y: 16, fill: "currentColor", fillOpacity: isActive ? 0.15 : 0 }
         }
         transition={{ type: "spring", stiffness: 450, damping: 18, delay: 0.03 }}
       />
@@ -122,12 +134,14 @@ export function DashboardAnimatedIcon({
         r="1"
         fill="currentColor"
         stroke="none"
+        opacity={0}
+        initial={false}
         animate={
           isPressed
             ? { scale: 2.2, opacity: 1 }
             : isHovered
-            ? { scale: 1.5, opacity: 0.9 }
-            : { scale: 0, opacity: 0 }
+              ? { scale: 1.5, opacity: 0.9 }
+              : { scale: 0, opacity: 0 }
         }
         transition={{ type: "spring", stiffness: 500, damping: 14 }}
       />
@@ -178,45 +192,57 @@ export function AnalyticsAnimatedIcon({
       <motion.rect
         x="6.5"
         width="2"
+        height="2"
+        y="18"
         rx="0.75"
         fill="currentColor"
+        fillOpacity={0.08}
         stroke="none"
+        initial={false}
         animate={
           isPressed
             ? { y: 12, height: 8, fillOpacity: 0.5 }
             : isHovered
-            ? { y: 15, height: 5, fillOpacity: 0.25 }
-            : { y: 18, height: 2, fillOpacity: isActive ? 0.15 : 0.08 }
+              ? { y: 15, height: 5, fillOpacity: 0.25 }
+              : { y: 18, height: 2, fillOpacity: isActive ? 0.15 : 0.08 }
         }
         transition={{ type: "spring", stiffness: 500, damping: 16 }}
       />
       <motion.rect
         x="11"
         width="2"
+        height="3"
+        y="17"
         rx="0.75"
         fill="currentColor"
+        fillOpacity={0.08}
         stroke="none"
+        initial={false}
         animate={
           isPressed
             ? { y: 8, height: 12, fillOpacity: 0.6 }
             : isHovered
-            ? { y: 11, height: 9, fillOpacity: 0.3 }
-            : { y: 17, height: 3, fillOpacity: isActive ? 0.15 : 0.08 }
+              ? { y: 11, height: 9, fillOpacity: 0.3 }
+              : { y: 17, height: 3, fillOpacity: isActive ? 0.15 : 0.08 }
         }
         transition={{ type: "spring", stiffness: 500, damping: 16 }}
       />
       <motion.rect
         x="15.5"
         width="2"
+        height="4"
+        y="16"
         rx="0.75"
         fill="currentColor"
+        fillOpacity={0.08}
         stroke="none"
+        initial={false}
         animate={
           isPressed
             ? { y: 5, height: 15, fillOpacity: 0.7 }
             : isHovered
-            ? { y: 8, height: 12, fillOpacity: 0.35 }
-            : { y: 16, height: 4, fillOpacity: isActive ? 0.15 : 0.08 }
+              ? { y: 8, height: 12, fillOpacity: 0.35 }
+              : { y: 16, height: 4, fillOpacity: isActive ? 0.15 : 0.08 }
         }
         transition={{ type: "spring", stiffness: 500, damping: 16 }}
       />
@@ -224,12 +250,13 @@ export function AnalyticsAnimatedIcon({
       {/* Upward trendline */}
       <motion.path
         d="M7 16l4-4 4 4 5-7"
+        initial={false}
         animate={
           isPressed
             ? { strokeWidth: 2.8, y: -2 }
             : isHovered
-            ? { strokeWidth: 2.3, y: -1 }
-            : { strokeWidth: 2, y: 0 }
+              ? { strokeWidth: 2.3, y: -1 }
+              : { strokeWidth: 2, y: 0 }
         }
         transition={{ type: "spring", stiffness: 500, damping: 15 }}
       />
@@ -240,12 +267,13 @@ export function AnalyticsAnimatedIcon({
         cy="9"
         r="2"
         fill="currentColor"
+        initial={false}
         animate={
           isPressed
             ? { scale: 1.6, y: -2 }
             : isHovered
-            ? { scale: 1.3, y: -1 }
-            : { scale: 1, y: 0 }
+              ? { scale: 1.3, y: -1 }
+              : { scale: 1, y: 0 }
         }
         transition={{ type: "spring", stiffness: 550, damping: 13 }}
       />
@@ -296,12 +324,13 @@ export function SyllabusAnimatedIcon({
         cy="12"
         r="10"
         strokeOpacity={isPressed ? 0.9 : isHovered ? 0.8 : 0.5}
+        initial={false}
         animate={
           isPressed
             ? { scale: 0.96 }
             : isHovered
-            ? { scale: 1.04 }
-            : { scale: 1 }
+              ? { scale: 1.04 }
+              : { scale: 1 }
         }
         style={{ originX: "12px", originY: "12px" }}
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -313,12 +342,13 @@ export function SyllabusAnimatedIcon({
         cy="12"
         r="6"
         strokeDasharray="4 2"
+        initial={false}
         animate={
           isPressed
             ? { rotate: 45, scale: 0.95 }
             : isHovered
-            ? { rotate: 30, scale: 1.05 }
-            : { rotate: 0, scale: 1 }
+              ? { rotate: 30, scale: 1.05 }
+              : { rotate: 0, scale: 1 }
         }
         style={{ originX: "12px", originY: "12px" }}
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -330,12 +360,14 @@ export function SyllabusAnimatedIcon({
         cy="12"
         r="2.5"
         fill="currentColor"
+        fillOpacity={0.7}
+        initial={false}
         animate={
           isPressed
             ? { scale: 1.25, fillOpacity: 1 }
             : isHovered
-            ? { scale: 1.18, fillOpacity: 1 }
-            : { scale: 1, fillOpacity: isActive ? 0.9 : 0.7 }
+              ? { scale: 1.18, fillOpacity: 1 }
+              : { scale: 1, fillOpacity: isActive ? 0.9 : 0.7 }
         }
         style={{ originX: "12px", originY: "12px" }}
         transition={{ type: "spring", stiffness: 450, damping: 18 }}
@@ -418,19 +450,23 @@ export function ChatAnimatedIcon({
         isPressed
           ? { scale: 0.84, rotate: -12, y: 2 }
           : isHovered
-          ? { scale: 1.05, rotate: 0, y: -1.5 }
-          : { scale: 1, rotate: 0, y: 0 }
+            ? { scale: 1.05, rotate: 0, y: -1.5 }
+            : { scale: 1, rotate: 0, y: 0 }
       }
       transition={{ type: "spring", stiffness: 550, damping: 13 }}
     >
       <motion.path
         d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+        fill="currentColor"
+        fillOpacity={0}
+        strokeWidth={2}
+        initial={false}
         animate={
           isPressed
             ? { fill: "currentColor", fillOpacity: 0.3, strokeWidth: 2.5 }
             : isHovered
-            ? { fill: "currentColor", fillOpacity: 0.12, strokeWidth: 2.2 }
-            : { fill: "currentColor", fillOpacity: isActive ? 0.08 : 0, strokeWidth: 2 }
+              ? { fill: "currentColor", fillOpacity: 0.12, strokeWidth: 2.2 }
+              : { fill: "currentColor", fillOpacity: isActive ? 0.08 : 0, strokeWidth: 2 }
         }
         transition={{ duration: 0.15 }}
       />
@@ -441,19 +477,21 @@ export function ChatAnimatedIcon({
         r="1.25"
         fill="currentColor"
         stroke="none"
+        opacity={isActive ? 0.8 : 0.5}
+        initial={false}
         animate={
           isPressed
             ? { y: -3, scale: 1.4, opacity: 1 }
             : isHovered
-            ? { y: [-0.5, -2.5, -0.5], opacity: [0.6, 1, 0.6] }
-            : { y: 0, opacity: isActive ? 0.8 : 0.5 }
+              ? { y: [-0.5, -2.5, -0.5], opacity: [0.6, 1, 0.6] }
+              : { y: 0, opacity: isActive ? 0.8 : 0.5 }
         }
         transition={
           isPressed
             ? { type: "spring", stiffness: 600 }
             : isHovered
-            ? { repeat: Infinity, duration: 0.7, delay: 0, ease: "easeInOut" }
-            : { duration: 0.15 }
+              ? { repeat: Infinity, duration: 0.7, delay: 0, ease: "easeInOut" }
+              : { duration: 0.15 }
         }
       />
       <motion.circle
@@ -462,19 +500,21 @@ export function ChatAnimatedIcon({
         r="1.25"
         fill="currentColor"
         stroke="none"
+        opacity={isActive ? 0.8 : 0.5}
+        initial={false}
         animate={
           isPressed
             ? { y: -3, scale: 1.4, opacity: 1 }
             : isHovered
-            ? { y: [-0.5, -2.5, -0.5], opacity: [0.6, 1, 0.6] }
-            : { y: 0, opacity: isActive ? 0.8 : 0.5 }
+              ? { y: [-0.5, -2.5, -0.5], opacity: [0.6, 1, 0.6] }
+              : { y: 0, opacity: isActive ? 0.8 : 0.5 }
         }
         transition={
           isPressed
             ? { type: "spring", stiffness: 600, delay: 0.03 }
             : isHovered
-            ? { repeat: Infinity, duration: 0.7, delay: 0.14, ease: "easeInOut" }
-            : { duration: 0.15 }
+              ? { repeat: Infinity, duration: 0.7, delay: 0.14, ease: "easeInOut" }
+              : { duration: 0.15 }
         }
       />
       <motion.circle
@@ -483,19 +523,21 @@ export function ChatAnimatedIcon({
         r="1.25"
         fill="currentColor"
         stroke="none"
+        opacity={isActive ? 0.8 : 0.5}
+        initial={false}
         animate={
           isPressed
             ? { y: -3, scale: 1.4, opacity: 1 }
             : isHovered
-            ? { y: [-0.5, -2.5, -0.5], opacity: [0.6, 1, 0.6] }
-            : { y: 0, opacity: isActive ? 0.8 : 0.5 }
+              ? { y: [-0.5, -2.5, -0.5], opacity: [0.6, 1, 0.6] }
+              : { y: 0, opacity: isActive ? 0.8 : 0.5 }
         }
         transition={
           isPressed
             ? { type: "spring", stiffness: 600, delay: 0.06 }
             : isHovered
-            ? { repeat: Infinity, duration: 0.7, delay: 0.28, ease: "easeInOut" }
-            : { duration: 0.15 }
+              ? { repeat: Infinity, duration: 0.7, delay: 0.28, ease: "easeInOut" }
+              : { duration: 0.15 }
         }
       />
     </motion.svg>
@@ -545,23 +587,28 @@ export function FriendsAnimatedIcon({
           cx="9"
           cy="7"
           r="4"
+          fill="currentColor"
+          fillOpacity={0}
+          initial={false}
           animate={
             isPressed
               ? { x: 3, y: 0, fill: "currentColor", fillOpacity: 0.35 }
               : isHovered
-              ? { x: 1, y: -0.5, fill: "currentColor", fillOpacity: 0.18 }
-              : { x: 0, y: 0, fill: "currentColor", fillOpacity: isActive ? 0.1 : 0 }
+                ? { x: 1, y: -0.5, fill: "currentColor", fillOpacity: 0.18 }
+                : { x: 0, y: 0, fill: "currentColor", fillOpacity: isActive ? 0.1 : 0 }
           }
           transition={{ type: "spring", stiffness: 550, damping: 16 }}
         />
         <motion.path
           d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+          strokeWidth={2}
+          initial={false}
           animate={
             isPressed
               ? { x: 2, y: 0, strokeWidth: 2.4 }
               : isHovered
-              ? { x: 1, y: -0.5, strokeWidth: 2.2 }
-              : { x: 0, y: 0, strokeWidth: 2 }
+                ? { x: 1, y: -0.5, strokeWidth: 2.2 }
+                : { x: 0, y: 0, strokeWidth: 2 }
           }
           transition={{ type: "spring", stiffness: 550, damping: 16 }}
         />
@@ -570,23 +617,27 @@ export function FriendsAnimatedIcon({
       <g>
         <motion.path
           d="M16 3.13a4 4 0 0 1 0 7.75"
+          strokeWidth={2}
+          initial={false}
           animate={
             isPressed
               ? { x: -3.5, y: 0, strokeWidth: 2.4 }
               : isHovered
-              ? { x: -1.5, y: -0.5, strokeWidth: 2.2 }
-              : { x: 0, y: 0, strokeWidth: 2 }
+                ? { x: -1.5, y: -0.5, strokeWidth: 2.2 }
+                : { x: 0, y: 0, strokeWidth: 2 }
           }
           transition={{ type: "spring", stiffness: 550, damping: 16 }}
         />
         <motion.path
           d="M22 21v-2a4 4 0 0 0-3-3.87"
+          strokeWidth={2}
+          initial={false}
           animate={
             isPressed
               ? { x: -3, y: 0, strokeWidth: 2.4 }
               : isHovered
-              ? { x: -1.5, y: -0.5, strokeWidth: 2.2 }
-              : { x: 0, y: 0, strokeWidth: 2 }
+                ? { x: -1.5, y: -0.5, strokeWidth: 2.2 }
+                : { x: 0, y: 0, strokeWidth: 2 }
           }
           transition={{ type: "spring", stiffness: 550, damping: 16 }}
         />
@@ -598,12 +649,14 @@ export function FriendsAnimatedIcon({
         r="1.5"
         fill="currentColor"
         stroke="none"
+        opacity={0}
+        initial={false}
         animate={
           isPressed
             ? { scale: 2.2, opacity: 1 }
             : isHovered
-            ? { scale: 1.4, opacity: 1 }
-            : { scale: 0, opacity: 0 }
+              ? { scale: 1.4, opacity: 1 }
+              : { scale: 0, opacity: 0 }
         }
         transition={{ type: "spring", stiffness: 600, damping: 12 }}
       />
@@ -644,43 +697,51 @@ export function GroupsAnimatedIcon({
         isPressed
           ? { scale: 0.85, y: -4, rotate: -10 }
           : isHovered
-          ? { scale: 1.05, y: -2, rotate: 6 }
-          : { scale: 1, y: 0, rotate: 0 }
+            ? { scale: 1.05, y: -2, rotate: 6 }
+            : { scale: 1, y: 0, rotate: 0 }
       }
       transition={{ type: "spring", stiffness: 500, damping: 14 }}
     >
       <motion.path
         d="M22 10l-10-5-10 5 10 5z"
+        fill="currentColor"
+        fillOpacity={0}
+        strokeWidth={2}
+        initial={false}
         animate={
           isPressed
             ? { fill: "currentColor", fillOpacity: 0.35, strokeWidth: 2.4 }
             : isHovered
-            ? { fill: "currentColor", fillOpacity: 0.18, strokeWidth: 2.2 }
-            : { fill: "currentColor", fillOpacity: isActive ? 0.1 : 0, strokeWidth: 2 }
+              ? { fill: "currentColor", fillOpacity: 0.18, strokeWidth: 2.2 }
+              : { fill: "currentColor", fillOpacity: isActive ? 0.1 : 0, strokeWidth: 2 }
         }
         transition={{ duration: 0.15 }}
       />
 
       <motion.path
         d="M6 12.5v4.5c3 2.5 9 2.5 12 0v-4.5"
+        strokeWidth={2}
+        initial={false}
         animate={
           isPressed
             ? { y: 1, strokeWidth: 2.4 }
             : isHovered
-            ? { y: 0.5, strokeWidth: 2.2 }
-            : { y: 0, strokeWidth: 2 }
+              ? { y: 0.5, strokeWidth: 2.2 }
+              : { y: 0, strokeWidth: 2 }
         }
         transition={{ duration: 0.15 }}
       />
 
       <motion.path
         d="M22 10v6"
+        strokeWidth={2}
+        initial={false}
         animate={
           isPressed
             ? { rotate: -25, x: -1, y: 1 }
             : isHovered
-            ? { rotate: 14, x: 0.5 }
-            : { rotate: 0, x: 0 }
+              ? { rotate: 14, x: 0.5 }
+              : { rotate: 0, x: 0 }
         }
         style={{ originX: "22px", originY: "10px" }}
         transition={{ type: "spring", stiffness: 450, damping: 12 }}
