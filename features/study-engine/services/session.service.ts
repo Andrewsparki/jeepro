@@ -81,7 +81,8 @@ export class SessionService {
           p_ended_at: sessionData.endedAt,
           p_chapter_id: validChapterId,
           p_topic_id: validTopicId,
-          p_xp_earned: xpEarned
+          p_xp_earned: xpEarned,
+          p_activity_type: sessionData.activityType || 'deep_work',
         });
 
         if (!rpcError) {
@@ -104,6 +105,8 @@ export class SessionService {
             ended_at: sessionData.endedAt,
             chapter_id: validChapterId,
             topic_id: validTopicId,
+            xp_earned: xpEarned,
+            activity_type: sessionData.activityType || 'deep_work',
           });
 
         if (insertError) {
@@ -119,9 +122,9 @@ export class SessionService {
       try {
         const durationMins = Math.floor(sessionData.durationSeconds / 60);
         if (durationMins > 0) {
-          await updateMissionProgress("study_duration", durationMins);
+          await updateMissionProgress("study_duration", durationMins, user.id);
         }
-        await updateMissionProgress("focus_sessions", 1);
+        await updateMissionProgress("focus_sessions", 1, user.id);
 
         // Notify user of completed study session if >= 5 minutes
         if (durationMins >= 5) {
@@ -137,7 +140,15 @@ export class SessionService {
         console.error('[SessionService] Mission progress update failed (non-critical):', missionErr);
       }
 
-      // Hook into Achievements evaluation
+      // Hook into Achievements evaluation and notify clients of session completion
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("jee-pro:study-session-completed", {
+            detail: { userId: user.id, durationSeconds: sessionData.durationSeconds, xpEarned },
+          })
+        );
+      }
+
       import("@/features/achievements/services/achievements.service")
         .then(({ AchievementsService }) => AchievementsService.evaluateAchievements(user.id))
         .catch((achErr) => console.error('[SessionService] Error evaluating achievements:', achErr));

@@ -19,7 +19,7 @@ function StudyWorkspaceSkeleton() {
     <FixedPortal>
       <div className="fixed inset-0 z-50 bg-background flex flex-col h-screen w-screen overflow-hidden">
         {/* Top Navbar */}
-        <div className="h-14 border-b border-glass-border bg-glass px-4 flex items-center justify-between shrink-0">
+        <div className="h-14 border-b border-white/[0.08] bg-[#090C15] px-4 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
             <Skeleton className="h-8 w-8 rounded-full" />
             <Skeleton className="h-5 w-40" />
@@ -33,7 +33,7 @@ function StudyWorkspaceSkeleton() {
         {/* Main Content Area */}
         <div className="flex-1 flex overflow-hidden">
           {/* Sidebar */}
-          <div className="w-80 border-r border-glass-border bg-glass/50 p-4 shrink-0 hidden md:block space-y-4">
+          <div className="w-80 border-r border-white/[0.08] bg-[#090C15]/70 p-4 shrink-0 hidden md:block space-y-4">
             <Skeleton className="h-8 w-full" />
             <div className="space-y-2 mt-6">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -48,13 +48,13 @@ function StudyWorkspaceSkeleton() {
             <Skeleton className="h-4 w-1/2 max-w-md" />
             
             <div className="mt-8 space-y-4">
-              <Skeleton className="h-[400px] w-full rounded-2xl border border-glass-border bg-glass" />
-              <Skeleton className="h-32 w-full rounded-2xl border border-glass-border bg-glass" />
+              <Skeleton className="h-[400px] w-full rounded-xl border border-white/[0.08] bg-[#090C15]" />
+              <Skeleton className="h-32 w-full rounded-xl border border-white/[0.08] bg-[#090C15]" />
             </div>
           </div>
           
           {/* Right Panel (Notes/Tools) */}
-          <div className="w-80 border-l border-glass-border bg-glass/50 p-4 shrink-0 hidden xl:block space-y-4">
+          <div className="w-80 border-l border-white/[0.08] bg-[#090C15]/70 p-4 shrink-0 hidden xl:block space-y-4">
             <div className="flex gap-2 mb-6">
               <Skeleton className="h-10 flex-1" />
               <Skeleton className="h-10 flex-1" />

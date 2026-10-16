@@ -12,7 +12,7 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from "recharts";
-import { format, subDays, startOfDay, isSameDay } from "date-fns";
+import { format, subDays, startOfDay } from "date-fns";
 import { CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -29,32 +29,36 @@ export function CompletionTrend({ progress }: CompletionTrendProps) {
   const data = useMemo(() => {
     const today = startOfDay(new Date());
     const days = timeRange === "30D" ? 30 : 90;
-    
-    // Filter only mastered topics with completed_at
-    const mastered = progress.filter(p => p.status === "Mastered" && p.completed_at);
-    
-    // Sort ascending by completion date
-    mastered.sort((a, b) => new Date(a.completed_at!).getTime() - new Date(b.completed_at!).getTime());
+    const cutoffDate = subDays(today, days - 1);
+
+    // Pre-bucket completions by date string in a single O(N) pass
+    const countByDay = new Map<string, number>();
+    let cumulativeCount = 0;
+
+    for (const p of progress) {
+      if (p.status === "Mastered" && p.completed_at) {
+        const completedDate = new Date(p.completed_at);
+        if (completedDate < cutoffDate) {
+          cumulativeCount++;
+        } else {
+          const key = format(completedDate, "yyyy-MM-dd");
+          countByDay.set(key, (countByDay.get(key) || 0) + 1);
+        }
+      }
+    }
 
     const chartData: { date: Date; displayDate: string; count: number }[] = [];
-    let cumulativeCount = 0;
-    
-    // Find baseline cumulative count (topics mastered before the window)
-    const cutoffDate = subDays(today, days - 1);
-    cumulativeCount = mastered.filter(p => new Date(p.completed_at!) < cutoffDate).length;
 
-    // Generate dates
+    // Generate chronological series in O(days)
     for (let i = days - 1; i >= 0; i--) {
       const date = subDays(today, i);
-      
-      // Count topics mastered on this specific day
-      const masteredToday = mastered.filter(p => isSameDay(new Date(p.completed_at!), date)).length;
-      cumulativeCount += masteredToday;
+      const key = format(date, "yyyy-MM-dd");
+      cumulativeCount += countByDay.get(key) || 0;
 
       chartData.push({
         date,
         displayDate: format(date, "MMM d"),
-        count: cumulativeCount
+        count: cumulativeCount,
       });
     }
 

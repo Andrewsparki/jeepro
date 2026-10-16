@@ -57,10 +57,10 @@ function MobileNavItem({
       onMouseUp={() => setIsPressed(false)}
       onClick={onSelect}
       className={cn(
-        "flex items-center justify-between rounded-lg px-3 py-3 text-base font-medium transition-colors select-none",
+        "flex items-center justify-between rounded-lg px-3 py-3 text-base font-medium transition-all select-none outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] active:scale-[0.98]",
         isActive 
-          ? "bg-accent/15 text-foreground border border-accent/20 font-semibold" 
-          : "text-muted-foreground hover:bg-muted/30 hover:text-foreground active:bg-muted/40"
+          ? "bg-[#78A9FF]/10 text-white border border-[#78A9FF]/20 font-semibold shadow-[inset_0_1px_0_rgba(120,169,255,0.12)]" 
+          : "text-[#A4ADBB] hover:bg-white/[0.04] hover:text-[#F5F7FB] active:bg-white/[0.06]"
       )}
     >
       <div className="flex items-center gap-3">
@@ -71,7 +71,7 @@ function MobileNavItem({
           isActive={isActive}
           className={cn(
             "flex items-center justify-center transition-colors duration-200",
-            isActive ? "text-accent" : "text-muted-foreground"
+            isActive ? "text-[#78A9FF]" : "text-[#A4ADBB]"
           )}
         >
           {icon}
@@ -102,8 +102,8 @@ export function MobileNav() {
   const [open, setOpen] = useState(false);
   const [isSocialOpen, setIsSocialOpen] = useState(true);
   
-  const { totalUnreadCount } = useDirectConversations();
-  const { pendingReceived } = useFriends();
+  const { totalUnreadCount } = useDirectConversations(open);
+  const { pendingReceived } = useFriends({ enabled: open });
 
   const socialNav = [
     { href: "/dashboard/chat", label: "Global Chat", icon: <MessageSquare className="h-5 w-5" />, badge: totalUnreadCount },

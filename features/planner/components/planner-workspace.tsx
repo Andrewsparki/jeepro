@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { format, isSameDay, parseISO } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -11,7 +11,7 @@ import {
   PlannerEvent, getPlannerEvents, deletePlannerEvent, togglePlannerEventStatus 
 } from "@/features/planner/services/planner.service";
 import { CreateEventDialog } from "./create-event-dialog";
-import { DeleteConfirmationDialog } from "./delete-confirmation-dialog";
+import { useDialog } from "@/providers/dialog-provider";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,15 +26,15 @@ import { ContextMenuTarget } from "@/features/context-menu";
 export function PlannerWorkspace() {
   const [events, setEvents] = useState<PlannerEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { confirm } = useDialog();
   
   // Dialog States
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<PlannerEvent | null>(null);
-  const [deletingEvent, setDeletingEvent] = useState<PlannerEvent | null>(null);
   
   const isGoogleConnected = true; // Synced status indicator
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       const data = await getPlannerEvents();
       setEvents(data);
@@ -44,7 +44,7 @@ export function PlannerWorkspace() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -88,18 +88,28 @@ export function PlannerWorkspace() {
   };
 
   // Handle Delete Confirmation & Optimistic UI
-  const handleDeleteConfirm = async () => {
-    if (!deletingEvent || !deletingEvent.id) return;
-    const targetEvent = deletingEvent;
-    const eventId = deletingEvent.id;
+  const handleDeleteEvent = async (event: PlannerEvent) => {
+    if (!event.id) return;
 
+    const confirmed = await confirm({
+      title: "Delete Study Session?",
+      message: `Are you sure you want to delete "${event.title}"?${
+        event.google_event_id ? " This will also remove the synced event from Google Calendar." : ""
+      }`,
+      variant: "destructive",
+      confirmLabel: "Delete Event",
+      cancelLabel: "Cancel",
+    });
+
+    if (!confirmed) return;
+
+    const eventId = event.id;
     // Optimistic removal
     setEvents((prev) => prev.filter((e) => e.id !== eventId));
 
     try {
-      await deletePlannerEvent(eventId, targetEvent.google_event_id);
-      toast.success(`"${targetEvent.title}" deleted`);
-      setDeletingEvent(null);
+      await deletePlannerEvent(eventId, event.google_event_id);
+      toast.success(`"${event.title}" deleted`);
     } catch (err) {
       console.error(err);
       // Revert on error & refresh
@@ -111,14 +121,16 @@ export function PlannerWorkspace() {
   const today = new Date();
 
   // Group events by date (agenda view)
-  const groupedEvents = events.reduce((acc, event) => {
-    const dateKey = format(parseISO(event.start_time), "yyyy-MM-dd");
-    if (!acc[dateKey]) acc[dateKey] = [];
-    acc[dateKey].push(event);
-    return acc;
-  }, {} as Record<string, PlannerEvent[]>);
+  const groupedEvents = useMemo(() => {
+    return events.reduce((acc, event) => {
+      const dateKey = format(parseISO(event.start_time), "yyyy-MM-dd");
+      if (!acc[dateKey]) acc[dateKey] = [];
+      acc[dateKey].push(event);
+      return acc;
+    }, {} as Record<string, PlannerEvent[]>);
+  }, [events]);
 
-  const sortedDates = Object.keys(groupedEvents).sort();
+  const sortedDates = useMemo(() => Object.keys(groupedEvents).sort(), [groupedEvents]);
 
   return (
     <div className="flex flex-col h-full w-full max-w-6xl mx-auto py-8 px-8 pb-32">
@@ -186,7 +198,7 @@ export function PlannerWorkspace() {
           </div>
         ) : events.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-center border border-dashed border-border/50 rounded-3xl bg-glass-surface">
-            <div className="w-20 h-20 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(79,70,229,0.15)]">
+            <div className="w-20 h-20 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(120,169,255,0.2)]">
               <CalendarIcon className="w-10 h-10 text-accent opacity-90" />
             </div>
             <h3 className="text-2xl font-bold mb-3 tracking-tight">Your planner is empty</h3>
@@ -198,7 +210,7 @@ export function PlannerWorkspace() {
                 setEditingEvent(null);
                 setIsCreateOpen(true);
               }} 
-              className="rounded-full px-8 h-12 shadow-[0_0_20px_rgba(79,70,229,0.25)] hover:shadow-[0_0_30px_rgba(79,70,229,0.4)] transition-all font-medium text-base"
+              className="rounded-full px-8 h-12 shadow-[0_0_20px_rgba(120,169,255,0.25)] hover:shadow-[0_0_30px_rgba(120,169,255,0.45)] transition-all font-bold text-base"
             >
               <Plus className="w-5 h-5 mr-2" />
               Schedule your first session
@@ -244,7 +256,7 @@ export function PlannerWorkspace() {
                                 setEditingEvent(event);
                                 setIsCreateOpen(true);
                               },
-                              onDelete: () => setDeletingEvent(event),
+                              onDelete: () => handleDeleteEvent(event),
                             }}
                             asChild
                           >
@@ -307,19 +319,18 @@ export function PlannerWorkspace() {
                                       <span className="sr-only">Open menu</span>
                                     </Button>
                                   </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end" className="w-56 bg-background border-glass-border p-1.5 shadow-2xl rounded-xl">
+                                  <DropdownMenuContent align="end" className="w-52">
                                     <DropdownMenuItem 
                                       onClick={() => handleToggleStatus(event)}
-                                      className="cursor-pointer"
                                     >
                                       {isCompleted ? (
                                         <>
-                                          <Circle className="w-4 h-4 text-muted-foreground" />
+                                          <Circle className="w-4 h-4 text-[#A4ADBB]" />
                                           <span>Mark as Pending</span>
                                         </>
                                       ) : (
                                         <>
-                                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                                           <span>Mark as Complete</span>
                                         </>
                                       )}
@@ -329,14 +340,13 @@ export function PlannerWorkspace() {
                                         setEditingEvent(event);
                                         setIsCreateOpen(true);
                                       }}
-                                      className="cursor-pointer"
                                     >
-                                      <Pencil className="w-4 h-4 text-muted-foreground" />
+                                      <Pencil className="w-4 h-4 text-[#A4ADBB]" />
                                       <span>Edit Event</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem 
-                                      onClick={() => setDeletingEvent(event)}
-                                      className="cursor-pointer text-red-500 focus:text-red-500 focus:bg-red-500/10"
+                                      variant="destructive"
+                                      onClick={() => handleDeleteEvent(event)}
                                     >
                                       <Trash2 className="w-4 h-4" />
                                       <span>Delete Event</span>
@@ -367,14 +377,6 @@ export function PlannerWorkspace() {
           setEditingEvent(null);
         }} 
         onSuccess={fetchEvents}
-      />
-
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmationDialog
-        isOpen={!!deletingEvent}
-        event={deletingEvent}
-        onClose={() => setDeletingEvent(null)}
-        onConfirm={handleDeleteConfirm}
       />
     </div>
   );

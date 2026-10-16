@@ -1,0 +1,242 @@
+{
+  "id": "phys-05-rotational-motion",
+  "title": "Rotational Motion",
+  "order": 5,
+  "unitNumber": 5,
+  "classLevel": "11",
+  "topics": [
+    "Centre of mass of a two-particle system and a rigid body",
+    "Motion of centre of mass",
+    "Basic concepts of rotational motion, moment of a force (torque)",
+    "Angular momentum, conservation of angular momentum and applications",
+    "Moment of inertia and radius of gyration",
+    "Values of moments of inertia for simple geometrical objects",
+    "Parallel and perpendicular axes theorems and their applications",
+    "Equilibrium of rigid bodies",
+    "Rigid body rotation, equations of rotational motion, rolling motion",
+    "Comparison of linear and rotational motions"
+  ],
+  "notes": "## 1. Centre of Mass (COM) of Discrete and Continuous Bodies\n* **Discrete System:** $\\vec{r}_{\\text{com}} = \\frac{\\sum m_i \\vec{r}_i}{\\sum m_i}$; **Continuous Body:** $\\vec{r}_{\\text{com}} = \\frac{1}{M}\\int \\vec{r}\\,dm$.\n* **Two-Particle System:** Distance of COM from $m_1$ is $r_1 = \\frac{m_2 d}{m_1 + m_2}$, and from $m_2$ is $r_2 = \\frac{m_1 d}{m_1 + m_2}$ (so $m_1 r_1 = m_2 r_2$).\n* **Standard Uniform Continuous COM Positions (measured from base/centre):**\n  * **Uniform Rod of length $L$:** $L/2$ from either end.\n  * **Semicircular Wire (Ring) of radius $R$:** $\\frac{2R}{\\pi}$ from centre.\n  * **Semicircular Disc (Lamina) of radius $R$:** $\\frac{4R}{3\\pi}$ from centre.\n  * **Circular Arc subtending angle $2\\alpha$:** $\\frac{R\\sin\\alpha}{\\alpha}$ from centre.\n  * **Hollow Hemisphere (Shell) of radius $R$:** $\\frac{R}{2}$ from base.\n  * **Solid Hemisphere of radius $R$:** $\\frac{3R}{8}$ from base.\n  * **Hollow Cone of height $h$:** $\\frac{h}{3}$ from base; **Solid Cone of height $h$:** $\\frac{h}{4}$ from base.\n* **Cavity (Subtraction) Method:** $\\vec{r}_{\\text{remaining}} = \\frac{A_1 \\vec{r}_1 - A_2 \\vec{r}_2}{A_1 - A_2}$ (for 2D laminae) or $\\frac{V_1 \\vec{r}_1 - V_2 \\vec{r}_2}{V_1 - V_2}$ (for 3D solids).\n\n## 2. Moment of Inertia ($I$) and Theorems\n* **Definition:** $I = \\sum m_i r_i^2 = \\int r^2\\,dm = M K^2$, where $r$ is the perpendicular distance from the axis of rotation and $K = \\sqrt{I/M}$ is the **radius of gyration**.\n* **Standard Moments of Inertia (about symmetry axis):**\n  * **Thin Ring / Hollow Cylinder ($M, R$):** $I_{\\text{axis}} = MR^2$, $I_{\\text{diameter}} = \\frac{1}{2}MR^2$.\n  * **Circular Disc / Solid Cylinder ($M, R$):** $I_{\\text{axis}} = \\frac{1}{2}MR^2$, $I_{\\text{diameter}} = \\frac{1}{4}MR^2$.\n  * **Thin Uniform Rod ($M, L$):** $I_{\\text{com},\\perp} = \\frac{1}{12}ML^2$, $I_{\\text{end},\\perp} = \\frac{1}{3}ML^2$.\n  * **Thin Rectangular Lamina ($M, a, b$):** $I_{\\text{com},\\perp} = \\frac{1}{12}M(a^2 + b^2)$.\n  * **Hollow Sphere (Thin Spherical Shell, $M, R$):** $I_{\\text{diameter}} = \\frac{2}{3}MR^2$.\n  * **Solid Sphere ($M, R$):** $I_{\\text{diameter}} = \\frac{2}{5}MR^2$.\n\n## 3. Torque, Angular Momentum, and Pure Rolling\n* **Torque:** $\\vec{\\tau} = \\vec{r} \\times \\vec{F} = I\\vec{\\alpha} = \\frac{d\\vec{L}}{dt}$.\n* **Angular Momentum of a Rigid Body in Combined Translation and Rotation:** About any stationary point $O$: $\\vec{L}_O = \\vec{r}_{\\text{com}} \\times (M\\vec{v}_{\\text{com}}) + I_{\\text{com}}\\vec{\\omega}$.\n* **Pure Rolling (Rolling without Slipping on a Stationary Surface):**\n  * Velocity condition: $v_{\\text{com}} = \\omega R$ (velocity of bottom contact point $v_P = v_{\\text{com}} - \\omega R = 0$; velocity of topmost point $= 2v_{\\text{com}}$).\n  * Acceleration condition: $a_{\\text{com}} = \\alpha R$.\n  * Total Kinetic Energy: $K_{\\text{total}} = \\frac{1}{2}Mv_{\\text{com}}^2 + \\frac{1}{2}I_{\\text{com}}\\omega^2 = \\frac{1}{2}Mv_{\\text{com}}^2\\left(1 + \\frac{K^2}{R^2}\\right) = \\frac{1}{2}I_{\\text{IAOR}}\\omega^2$.",
+  "formulas": [
+    {
+      "id": "phys-05-f01",
+      "title": "Motion of the Centre of Mass",
+      "latex": "\\vec{v}_{\\text{com}} = \\frac{\\sum m_i \\vec{v}_i}{M} = \\frac{\\vec{P}_{\\text{total}}}{M}, \\quad \\vec{a}_{\\text{com}} = \\frac{\\sum m_i \\vec{a}_i}{M} = \\frac{\\vec{F}_{\\text{ext, net}}}{M}",
+      "explanation": "The centre of mass of any multi-particle system moves as if the entire mass M were concentrated at the COM and acted upon solely by the net external force.",
+      "variables": [
+        {
+          "symbol": "M",
+          "name": "Total mass of the system",
+          "siUnit": "kg",
+          "dimension": "[M^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\vec{v}_{\\text{com}}, \\vec{a}_{\\text{com}}",
+          "name": "Velocity and acceleration of centre of mass",
+          "siUnit": "m s^-1, m s^-2",
+          "dimension": "[L^1 T^-1], [L^1 T^-2]",
+          "type": "vector"
+        },
+        {
+          "symbol": "\\vec{F}_{\\text{ext, net}}",
+          "name": "Net external force on the system",
+          "siUnit": "N",
+          "dimension": "[M^1 L^1 T^-2]",
+          "type": "vector"
+        }
+      ],
+      "siUnit": "m s^-1, m s^-2",
+      "dimensions": "[L^1 T^-1], [L^1 T^-2]",
+      "assumptions": "Internal forces obey Newton's third law and cancel in pairs.",
+      "validityConditions": "If F_ext,net = 0 and v_com(0) = 0, then Δr_com = 0 (i.e., ∑ m_i Δr_i = 0) regardless of internal explosions or person walking on a plank."
+    },
+    {
+      "id": "phys-05-f02",
+      "title": "Parallel and Perpendicular Axes Theorems",
+      "latex": "I = I_{\\text{com}} + Md^2 \\quad (\\text{3D/2D}), \\qquad I_z = I_x + I_y \\quad (\\text{2D planar lamina only})",
+      "explanation": "Parallel Axis Theorem relates moment of inertia about any axis to a parallel axis through the COM at perpendicular separation d; Perpendicular Axis Theorem relates a normal axis z to two mutually perpendicular in-plane axes x and y for a flat lamina.",
+      "variables": [
+        {
+          "symbol": "I_{\\text{com}}",
+          "name": "Moment of inertia about axis passing through COM",
+          "siUnit": "kg m^2",
+          "dimension": "[M^1 L^2 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "d",
+          "name": "Perpendicular distance between the two parallel axes",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "I_x, I_y, I_z",
+          "name": "Moments of inertia about concurrent axes x, y (in-plane) and z (perpendicular to lamina)",
+          "siUnit": "kg m^2",
+          "dimension": "[M^1 L^2 T^0]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "kg m^2",
+      "dimensions": "[M^1 L^2 T^0]",
+      "assumptions": "Rigid mass distribution.",
+      "validityConditions": "Parallel Axis Theorem applies to ALL 2D and 3D bodies, provided one axis passes strictly through the COM. Perpendicular Axis Theorem applies ONLY to planar 2D laminae (never to 3D spheres or cylinders)."
+    },
+    {
+      "id": "phys-05-f03",
+      "title": "Torque, Angular Acceleration, and Conservation of Angular Momentum",
+      "latex": "\\vec{\\tau}_{\\text{ext}} = \\vec{r} \\times \\vec{F} = \\frac{d\\vec{L}}{dt} = I\\vec{\\alpha}, \\quad \\vec{\\tau}_{\\text{ext}} = 0 \\implies \\vec{L} = I_1\\vec{\\omega}_1 = I_2\\vec{\\omega}_2 = \\text{constant}",
+      "explanation": "Rotational analogue of Newton's Second Law and Conservation of Momentum.",
+      "variables": [
+        {
+          "symbol": "\\vec{\\tau}_{\\text{ext}}",
+          "name": "Net external torque about chosen reference point/axis",
+          "siUnit": "N m",
+          "dimension": "[M^1 L^2 T^-2]",
+          "type": "vector"
+        },
+        {
+          "symbol": "\\vec{L}",
+          "name": "Angular momentum vector",
+          "siUnit": "kg m^2 s^-1 (or J s)",
+          "dimension": "[M^1 L^2 T^-1]",
+          "type": "vector"
+        },
+        {
+          "symbol": "I",
+          "name": "Moment of inertia about axis of rotation",
+          "siUnit": "kg m^2",
+          "dimension": "[M^1 L^2 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\vec{\\alpha}",
+          "name": "Angular acceleration vector",
+          "siUnit": "rad s^-2",
+          "dimension": "[T^-2]",
+          "type": "vector"
+        }
+      ],
+      "siUnit": "N m, kg m^2 s^-1",
+      "dimensions": "[M^1 L^2 T^-2], [M^1 L^2 T^-1]",
+      "assumptions": "Reference axis is either fixed in an inertial frame or passes through the centre of mass.",
+      "validityConditions": "Torque and angular momentum must be calculated about the exact same point or axis."
+    },
+    {
+      "id": "phys-05-f04",
+      "title": "Pure Rolling Down an Rough Inclined Plane",
+      "latex": "a_{\\text{com}} = \\frac{g\\sin\\theta}{1 + \\frac{K^2}{R^2}}, \\quad f_s = \\frac{Mg\\sin\\theta}{1 + \\frac{R^2}{K^2}}, \\quad \\mu_{s,\\min} = \\frac{\\tan\\theta}{1 + \\frac{R^2}{K^2}}, \\quad v_{\\text{bottom}} = \\sqrt{\\frac{2gh}{1 + \\frac{K^2}{R^2}}}",
+      "explanation": "Gives linear acceleration, static friction force, minimum friction coefficient for no slipping, and speed at bottom after descending vertical height h for a symmetrical body with shape factor β = K^2 / R^2.",
+      "variables": [
+        {
+          "symbol": "K^2 / R^2",
+          "name": "Dimensionless shape factor β (Ring = 1, Hollow Sphere = 2/3, Disc/Solid Cylinder = 1/2, Solid Sphere = 2/5)",
+          "siUnit": "Dimensionless",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\theta",
+          "name": "Inclination angle of plane",
+          "siUnit": "rad",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "f_s",
+          "name": "Upward static friction force acting at contact point",
+          "siUnit": "N",
+          "dimension": "[M^1 L^1 T^-2]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m s^-2, N, m s^-1",
+      "dimensions": "[L^1 T^-2], [M^1 L^1 T^-2], [L^1 T^-1]",
+      "assumptions": "Pure rolling without slipping (μ_s >= μ_s,min); zero rolling deformation loss.",
+      "validityConditions": "Smaller K^2/R^2 means higher acceleration and shorter time to reach the bottom: Solid Sphere (2/5) beats Disc (1/2) beats Hollow Sphere (2/3) beats Ring (1)."
+    }
+  ],
+  "derivations": [
+    {
+      "id": "phys-05-d01",
+      "title": "Acceleration and Minimum Friction for Pure Rolling on an Inclined Plane",
+      "context": "Deriving linear acceleration a_com and static friction f_s for a body of mass M, radius R, and moment of inertia I = M K^2 rolling without slipping down an incline θ.",
+      "steps": [
+        "Translational equation of motion along the incline: $$Mg\\sin\\theta - f_s = Ma_{\\text{com}}$$",
+        "Rotational equation of motion about the centre of mass (only static friction $f_s$ produces torque since $Mg$ and $N$ pass through COM): $$\\tau_{\\text{com}} = f_s R = I\\alpha = (MK^2)\\alpha$$",
+        "Impose the pure rolling constraint $a_{\\text{com}} = \\alpha R \\implies \\alpha = \\frac{a_{\\text{com}}}{R}$: $$f_s = M\\left(\\frac{K^2}{R^2}\\right)a_{\\text{com}}$$",
+        "Substitute $f_s$ into the translational equation: $$Mg\\sin\\theta = Ma_{\\text{com}}\\left(1 + \\frac{K^2}{R^2}\\right) \\implies a_{\\text{com}} = \\frac{g\\sin\\theta}{1 + \\frac{K^2}{R^2}}$$",
+        "Require $f_s \\le \\mu_s N = \\mu_s Mg\\cos\\theta$ for no slipping: $$\\frac{Mg\\sin\\theta}{1 + \\frac{R^2}{K^2}} \\le \\mu_s Mg\\cos\\theta \\implies \\mu_{s,\\min} = \\frac{\\tan\\theta}{1 + \\frac{R^2}{K^2}}$$"
+      ],
+      "finalResult": "a_{\\text{com}} = \\frac{g\\sin\\theta}{1 + K^2/R^2}, \\quad \\mu_{s,\\min} = \\frac{\\tan\\theta}{1 + R^2/K^2}"
+    },
+    {
+      "id": "phys-05-d02",
+      "title": "Moment of Inertia of a Uniform Thin Rod About Its Perpendicular Bisector",
+      "context": "Integrating dm = (M/L) dx over a rod of mass M and length L.",
+      "steps": [
+        "Place the rod along the $x$-axis from $x = -L/2$ to $x = +L/2$ with the rotation axis along the $y$-axis ($x = 0$).",
+        "Take a differential element of length $dx$ at distance $x$; its mass is $dm = \\frac{M}{L}\\,dx$.",
+        "Integrate $dI = x^2\\,dm$ over $[-L/2, +L/2]$: $$I_{\\text{com}} = \\int_{-L/2}^{+L/2} x^2 \\left(\\frac{M}{L}\\right)dx = \\frac{M}{L}\\left[\\frac{x^3}{3}\\right]_{-L/2}^{+L/2} = \\frac{M}{3L}\\left(\\frac{L^3}{8} - \\left(-\\frac{L^3}{8}\\right)\\right) = \\frac{1}{12}ML^2$$",
+        "By the Parallel Axis Theorem ($d = L/2$), about one end: $$I_{\\text{end}} = I_{\\text{com}} + M\\left(\\frac{L}{2}\\right)^2 = \\frac{1}{12}ML^2 + \\frac{1}{4}ML^2 = \\frac{1}{3}ML^2$$"
+      ],
+      "finalResult": "I_{\\text{com}} = \\frac{1}{12}ML^2, \\quad I_{\\text{end}} = \\frac{1}{3}ML^2"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "phys-05-g01",
+      "title": "Rotational Kinetic Energy (K_rot) vs Angular Momentum (L) at Constant I vs Constant ω",
+      "xAxis": "Angular Momentum (L)",
+      "yAxis": "Rotational Kinetic Energy (K_rot)",
+      "curveType": "Parabola for constant I (K = L^2 / 2I); Straight line for constant ω (K = Lω / 2)",
+      "equation": "K_{\\text{rot}} = \\frac{L^2}{2I} = \\frac{1}{2}L\\omega",
+      "slopeInterpretation": "At constant I, slope dK/dL = L/I = ω. At constant L (when I changes, e.g., skater pulling arms in), K_2 / K_1 = I_1 / I_2 = ω_2 / ω_1.",
+      "areaInterpretation": "Not physically significant.",
+      "physicalInterpretation": "When angular momentum L is conserved and moment of inertia I decreases by half, rotational kinetic energy doubles (work is done by internal muscular forces)."
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "phys-05-cm01",
+      "topic": "Applying Parallel Axis Theorem Between Two Non-COM Axes",
+      "mistake": "Writing I_2 = I_1 + M(d_12)^2 directly between two parallel axes when neither axis passes through the Centre of Mass.",
+      "correction": "Always step through the COM axis first: find I_com = I_1 - M d_1^2, and then compute I_2 = I_com + M d_2^2.",
+      "category": "formula-selection"
+    },
+    {
+      "id": "phys-05-cm02",
+      "topic": "Direction of Static Friction in Pure Rolling",
+      "mistake": "Assuming static friction in pure rolling always acts opposite to the direction of motion of the centre of mass.",
+      "correction": "Static friction opposes impending relative sliding of the lowest contact point P. When a wheel rolls up OR down a rough incline under gravity alone, friction acts UP the incline in both cases. On a level road at constant velocity, friction is zero. If driven by an axle torque τ, friction acts forward!",
+      "category": "sign-convention"
+    },
+    {
+      "id": "phys-05-cm03",
+      "topic": "Conservation of Angular Momentum About a Moving Point",
+      "mistake": "Conserving angular momentum only as I_com ω during a collision between a moving particle and a free rod on a smooth table.",
+      "correction": "Conserve total angular momentum L_O = r_particle × p_particle + r_com × (M v_com) + I_com ω about a fixed point in the inertial ground frame (commonly the initial position of the rod's COM).",
+      "category": "conceptual"
+    }
+  ],
+  "quickRevision": [
+    "Ratio of translational to rotational kinetic energy in pure rolling is K_trans : K_rot : K_total = 1 : (K^2/R^2) : (1 + K^2/R^2). For a solid sphere, K_trans is 5/7 of total K and K_rot is 2/7 of total K.",
+    "Instantaneous speed of any point on the rim of a pure rolling wheel at angle θ from the vertical top is v = 2 v_com cos(θ/2); at angle φ from the bottom contact point, v = 2 v_com sin(φ/2).",
+    "For a horizontal force F applied to a body of radius R on a rough horizontal floor at height h above the centre, static friction is zero (pure rolling without needing friction) when h = K^2 / R (the percussion height).",
+    "Toppling before sliding condition for a block of width b and height h pushed at the top on a rough floor: toppling occurs first if μ_s > b/h (or on an incline if tan θ > b/h)."
+  ],
+  "sources": [
+    {
+      "title": "NTA JEE Main Official Physics Syllabus — Unit 5: Rotational Motion",
+      "type": "Official Syllabus",
+      "url": "https://jeemain.nta.nic.in/"
+    },
+    {
+      "title": "NCERT Class 11 Physics Part 1 — Chapter 6: System of Particles and Rotational Motion",
+      "type": "Textbook",
+      "url": "https://ncert.nic.in/textbook.php?keph1=6-7"
+    }
+  ]
+}

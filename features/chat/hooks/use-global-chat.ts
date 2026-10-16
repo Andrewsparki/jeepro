@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { GlobalChatService } from "../services/chat.service";
 import { ChatMessage, ChatPresenceUser, ChatSystemStatus, ChatSender } from "../types/chat.types";
@@ -9,6 +9,7 @@ import { RealtimeChannel } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { dispatchInteractionSound } from "@/lib/sound-engine";
 import { adminDeleteChatMessage } from "@/features/admin/services/admin-chat-actions";
+import { globalPresence, type PresenceUser } from "../services/presence-service";
 
 export function useGlobalChat() {
   const { user, profile } = useAuth();
@@ -22,10 +23,8 @@ export function useGlobalChat() {
   const [onlineUsers, setOnlineUsers] = useState<ChatPresenceUser[]>([]);
   const [unreadCountBelow, setUnreadCountBelow] = useState(0);
 
-  // Profile cache to avoid redundant profile fetches during rapid realtime messaging
   const profileCache = useRef<Map<string, ChatSender>>(new Map());
   const isNearBottomRef = useRef(true);
-  const channelRef = useRef<RealtimeChannel | null>(null);
 
   // Keep ref to messages to avoid stale closures in realtime handlers
   const messagesRef = useRef<ChatMessage[]>([]);
@@ -62,46 +61,12 @@ export function useGlobalChat() {
   }, []);
 
   useEffect(() => {
-    let ignore = false;
-
-    const init = async () => {
-      if (!user) {
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const [status, result] = await Promise.all([
-          GlobalChatService.getChatStatus(),
-          GlobalChatService.getMessages(40),
-        ]);
-
-        if (!ignore) {
-          setChatStatus(status);
-          setMessages(result.messages);
-          setHasMore(result.hasMore);
-          result.messages.forEach((m) => {
-            if (m.sender) profileCache.current.set(m.sender_id, m.sender);
-          });
-        }
-      } catch (err: unknown) {
-        if (!ignore) {
-          console.error("Failed to load global chat:", err);
-          const msg = err instanceof Error ? err.message : "Failed to load messages. Please try again.";
-          setError(msg);
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    init();
-    return () => {
-      ignore = true;
-    };
-  }, [user]);
+    if (user) {
+      void loadInitialMessages();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user, loadInitialMessages]);
 
   // 2. Cursor pagination for loading older history
   const loadOlderMessages = useCallback(async () => {
@@ -131,7 +96,7 @@ export function useGlobalChat() {
     } finally {
       setIsLoadingOlder(false);
     }
-  }, [isLoadingOlder, hasMore, messages.length]);
+  }, [isLoadingOlder, hasMore, messages]);
 
   // 3. Send Message
   const sendMessage = useCallback(async (content: string): Promise<boolean> => {
@@ -169,11 +134,9 @@ export function useGlobalChat() {
   }, [isSending, chatStatus.enabled]);
 
   // 4. Delete Message (User's own or Admin moderation)
-  const isAdmin = profile?.is_admin === true;
-
   const deleteMessage = useCallback(async (messageId: string) => {
     try {
-      if (isAdmin) {
+      if (profile?.is_admin) {
         const res = await adminDeleteChatMessage(messageId);
         if (!res.success) throw new Error(res.error || "Failed to delete message.");
       } else {
@@ -185,7 +148,7 @@ export function useGlobalChat() {
       const msg = err instanceof Error ? err.message : "Failed to delete message.";
       toast.error(msg);
     }
-  }, [isAdmin]);
+  }, [profile]);
 
   // 5. Report Message
   const reportMessage = useCallback(async (messageId: string, reason: string, details?: string) => {
@@ -200,38 +163,25 @@ export function useGlobalChat() {
     }
   }, []);
 
-  // 6. Supabase Realtime Subscription + Presence
+  // 6. Supabase Realtime Subscription (postgres_changes only — presence handled separately)
   useEffect(() => {
     if (!user) return;
 
     const supabase = createClient();
 
-    // Clean up any existing local channel reference before registering a new one
-    if (channelRef.current) {
-      channelRef.current.unsubscribe();
-      supabase.removeChannel(channelRef.current);
-      channelRef.current = null;
-    }
+    // Dedicated channel for postgres_changes on chat_messages (NOT jee_global_chat)
+    const pgChannelName = `chat_messages_realtime_${user.id}`;
 
-    // Clean up any existing stale global chat channels from this client instance to prevent callback errors
+    // Clean up stale channels with the same topic
     const staleChannels = supabase
       .getChannels()
-      .filter((c: RealtimeChannel) => c.topic === "realtime:jee_global_chat");
+      .filter((c: RealtimeChannel) => c.topic === `realtime:${pgChannelName}`);
     staleChannels.forEach((c: RealtimeChannel) => {
       c.unsubscribe();
       supabase.removeChannel(c);
     });
 
-    // Single unified channel for postgres changes and presence
-    const channel = supabase.channel("jee_global_chat", {
-      config: {
-        presence: {
-          key: user.id,
-        },
-      },
-    });
-
-    channelRef.current = channel;
+    const channel = supabase.channel(pgChannelName);
 
     // A. Listen for new messages inserted
     channel.on(
@@ -323,41 +273,41 @@ export function useGlobalChat() {
       }
     );
 
-    // D. Supabase Presence Tracking
-    channel.on("presence", { event: "sync" }, () => {
-      const state = channel.presenceState();
-      const active: ChatPresenceUser[] = [];
-
-      Object.values(state).forEach((presences: unknown) => {
-        if (Array.isArray(presences)) {
-          presences.forEach((p: unknown) => {
-            const pres = p as ChatPresenceUser;
-            if (pres?.user_id && !active.some((u) => u.user_id === pres.user_id)) {
-              active.push(pres);
-            }
-          });
-        }
-      });
-
-      setOnlineUsers(active);
-    });
-
-    // Subscribe and track current student presence
-    channel.subscribe(async (status: string) => {
-      if (status === "SUBSCRIBED") {
-        await channel.track({
-          user_id: user.id,
-          full_name: profile?.full_name || user.email?.split("@")[0] || "Student",
-          avatar_url: profile?.avatar_url || null,
-          online_at: Date.now(),
-        });
-      }
-    });
+    channel.subscribe();
 
     return () => {
       channel.unsubscribe();
       supabase.removeChannel(channel);
-      channelRef.current = null;
+    };
+  }, [user, profile]);
+
+  // 6b. Shared Presence via consolidated service (no channel conflicts)
+  useEffect(() => {
+    if (!user) return;
+
+    // Track this user's presence
+    globalPresence.track({
+      user_id: user.id,
+      full_name: profile?.full_name || user.email?.split("@")[0] || "Student",
+      avatar_url: profile?.avatar_url || null,
+      online_at: Date.now(),
+    });
+
+    // Listen for presence changes
+    const unsubscribe = globalPresence.subscribe((users: PresenceUser[]) => {
+      const active: ChatPresenceUser[] = users.map((u) => ({
+        user_id: u.user_id,
+        full_name: u.full_name,
+        avatar_url: u.avatar_url,
+        online_at: u.online_at,
+      })) as ChatPresenceUser[];
+
+      setOnlineUsers(active);
+    });
+
+    return () => {
+      globalPresence.untrack();
+      unsubscribe();
     };
   }, [user, profile]);
 
@@ -368,28 +318,61 @@ export function useGlobalChat() {
     }
   }, []);
 
-  return {
-    messages,
-    isLoading,
-    isLoadingOlder,
-    hasMore,
-    isSending,
-    error,
-    chatStatus,
-    onlineUsers,
-    onlineCount: Math.max(1, onlineUsers.length),
-    unreadCountBelow,
-    sendMessage,
-    deleteMessage,
-    reportMessage,
-    loadOlderMessages,
-    refreshMessages: loadInitialMessages,
-    setNearBottom,
-    currentUserId: user?.id,
-    isAdmin: profile?.is_admin === true,
-    isMuted: profile?.is_muted === true,
-    isBanned: profile?.is_banned === true,
-    muteReason: profile?.mute_reason || null,
-    banReason: profile?.ban_reason || null,
-  };
+  const onlineCount = Math.max(1, onlineUsers.length);
+  const isAdmin = profile?.is_admin === true;
+  const isMuted = profile?.is_muted === true;
+  const isBanned = profile?.is_banned === true;
+  const muteReason = profile?.mute_reason || null;
+  const banReason = profile?.ban_reason || null;
+
+  return useMemo(
+    () => ({
+      messages,
+      isLoading,
+      isLoadingOlder,
+      hasMore,
+      isSending,
+      error,
+      chatStatus,
+      onlineUsers,
+      onlineCount,
+      unreadCountBelow,
+      sendMessage,
+      deleteMessage,
+      reportMessage,
+      loadOlderMessages,
+      refreshMessages: loadInitialMessages,
+      setNearBottom,
+      currentUserId: user?.id,
+      isAdmin,
+      isMuted,
+      isBanned,
+      muteReason,
+      banReason,
+    }),
+    [
+      messages,
+      isLoading,
+      isLoadingOlder,
+      hasMore,
+      isSending,
+      error,
+      chatStatus,
+      onlineUsers,
+      onlineCount,
+      unreadCountBelow,
+      sendMessage,
+      deleteMessage,
+      reportMessage,
+      loadOlderMessages,
+      loadInitialMessages,
+      setNearBottom,
+      user?.id,
+      isAdmin,
+      isMuted,
+      isBanned,
+      muteReason,
+      banReason,
+    ]
+  );
 }

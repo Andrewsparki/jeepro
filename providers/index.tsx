@@ -12,6 +12,26 @@ import { Toaster } from "@/components/ui/sonner";
 import { DialogProvider } from "@/providers/dialog-provider";
 import { ContextMenuProvider } from "@/features/context-menu";
 import { AppBootGuard, AppBootSequenceProvider } from "@/components/ui/cinematic-preloader";
+import { NavigationProgressBar } from "@/components/ui/navigation-progress-bar";
+
+import { BirthdayCheckGuard } from "@/features/birthday/components/birthday-check-guard";
+import { BirthdayModeProvider } from "@/features/birthday/context/birthday-mode-context";
+import {
+  BreakRoomProvider,
+  BreakRoomKeyboardListener,
+  BreakRoomModal,
+} from "@/features/break-room";
+import {
+  ConcertModeProvider,
+  ConcertKeyboardListener,
+  ConcertModal,
+} from "@/features/concert-mode";
+import {
+  CookieConsentProvider,
+  CookieConsentBanner,
+  CookiePreferencesModal,
+} from "@/features/privacy";
+import { AnalyticsTracker } from "@/features/analytics/components/analytics-tracker";
 
 // Lazy-load purely decorative components — they should not block initial render
 const BackgroundSystem = dynamic(
@@ -30,17 +50,36 @@ export function Providers({ children }: ProvidersProps) {
         <PerformanceProvider>
           <AppBootSequenceProvider>
             <AuthProvider>
-              <LightingProvider>
-                <DialogProvider>
-                  <ContextMenuProvider>
-                    <BackgroundSystem />
-                    <SmoothScrollProvider>
-                      <AppBootGuard>{children}</AppBootGuard>
-                    </SmoothScrollProvider>
-                    <Toaster position="bottom-right" />
-                  </ContextMenuProvider>
-                </DialogProvider>
-              </LightingProvider>
+              <CookieConsentProvider>
+                <CookieConsentBanner />
+                <CookiePreferencesModal />
+                <AnalyticsTracker />
+                <BirthdayModeProvider>
+                  <BirthdayCheckGuard />
+                  <BreakRoomProvider>
+                    <BreakRoomKeyboardListener />
+                    <BreakRoomModal />
+                    <ConcertModeProvider>
+                      <ConcertKeyboardListener />
+                      <ConcertModal />
+                      <LightingProvider>
+                      <DialogProvider>
+                        <ContextMenuProvider>
+                          <BackgroundSystem />
+                          <SmoothScrollProvider>
+                            <NavigationProgressBar />
+                            <AppBootGuard>
+                              {children}
+                            </AppBootGuard>
+                          </SmoothScrollProvider>
+                          <Toaster position="bottom-right" />
+                        </ContextMenuProvider>
+                      </DialogProvider>
+                    </LightingProvider>
+                    </ConcertModeProvider>
+                  </BreakRoomProvider>
+                </BirthdayModeProvider>
+              </CookieConsentProvider>
             </AuthProvider>
           </AppBootSequenceProvider>
         </PerformanceProvider>

@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // Subscribe to all Supabase Auth lifecycle events
+    // Subscribe to Supabase Auth lifecycle events (fires INITIAL_SESSION on mount)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
@@ -94,21 +94,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    // Initial check on mount
-    supabase.auth.getUser().then((res: { data: { user: User | null } }) => {
-      const initialUser = res.data.user;
-      if (isMounted && initialUser) {
-        syncAuthUser(initialUser);
-      } else if (isMounted && !initialUser) {
-        setIsLoading(false);
+    // Fallback check if onAuthStateChange doesn't settle within 100ms
+    const fallbackTimer = window.setTimeout(() => {
+      if (isMounted && loadedUserIdRef.current === null && fetchingUserIdRef.current === null) {
+        supabase.auth.getSession().then((res: { data: { session: Session | null } }) => {
+          if (!isMounted) return;
+          const session = res.data.session;
+          if (session?.user) {
+            syncAuthUser(session.user);
+          } else {
+            setIsLoading(false);
+          }
+        }).catch(() => {
+          if (isMounted) setIsLoading(false);
+        });
       }
-    }).catch((err: unknown) => {
-      console.error("Initial auth check error:", err);
-      if (isMounted) setIsLoading(false);
-    });
+    }, 100);
 
     return () => {
       isMounted = false;
+      window.clearTimeout(fallbackTimer);
       subscription.unsubscribe();
     };
   }, []);

@@ -10,6 +10,7 @@ import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { trackEvent } from "@/features/analytics/services/telemetry.service";
 
 interface FormulaCardProps {
   formula: Formula;
@@ -56,7 +57,16 @@ export function FormulaCard({ formula, onDelete }: FormulaCardProps) {
       {/* Header & Math Block (Always Visible) */}
       <div 
         className="p-5 cursor-pointer"
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => {
+          const next = !isExpanded;
+          setIsExpanded(next);
+          if (next) {
+            void trackEvent("formula_interact", "/study", {
+              feature: "Formula Sheet",
+              metadata: { formulaId: formula.id, title: formula.title },
+            });
+          }
+        }}
       >
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex flex-col gap-1.5">
@@ -157,7 +167,7 @@ export function FormulaCard({ formula, onDelete }: FormulaCardProps) {
                 <div className="space-y-3">
                   <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
                     <Layers className="w-3.5 h-3.5" />
-                    Variables
+                    Variables & Dimensions
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {formula.variables.map((v, idx) => (
@@ -165,9 +175,12 @@ export function FormulaCard({ formula, onDelete }: FormulaCardProps) {
                         <div className="w-8 h-8 shrink-0 rounded bg-muted flex items-center justify-center font-serif text-sm">
                           <InlineMath math={v.symbol || "?"} />
                         </div>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium">{v.name}</span>
-                          {v.unit && <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{v.unit}</span>}
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <span className="text-sm font-medium truncate">{v.name}</span>
+                          <div className="flex items-center gap-2 text-[10px] text-muted-foreground flex-wrap">
+                            {v.unit && <span className="uppercase tracking-wider text-[#78A9FF]">{v.unit}</span>}
+                            {v.description && <span>{v.description}</span>}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -176,14 +189,14 @@ export function FormulaCard({ formula, onDelete }: FormulaCardProps) {
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Memory Trick */}
+                {/* Memory Trick / Validity Conditions */}
                 {formula.memoryTrick && (
                   <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
-                    <h4 className="text-xs font-semibold text-amber-600 uppercase tracking-wider flex items-center gap-2 mb-2">
+                    <h4 className="text-xs font-semibold text-amber-500 uppercase tracking-wider flex items-center gap-2 mb-2">
                       <Lightbulb className="w-3.5 h-3.5" />
-                      Memory Trick
+                      Validity & Memory Notes
                     </h4>
-                    <p className="text-sm text-amber-600/90 leading-relaxed">
+                    <p className="text-sm text-[#F5F7FB]/90 leading-relaxed">
                       {formula.memoryTrick}
                     </p>
                   </div>
@@ -192,11 +205,11 @@ export function FormulaCard({ formula, onDelete }: FormulaCardProps) {
                 {/* Common Mistakes */}
                 {formula.commonMistakes && formula.commonMistakes.length > 0 && (
                   <div className="p-4 rounded-xl bg-rose-500/5 border border-rose-500/20">
-                    <h4 className="text-xs font-semibold text-rose-600 uppercase tracking-wider flex items-center gap-2 mb-2">
+                    <h4 className="text-xs font-semibold text-rose-500 uppercase tracking-wider flex items-center gap-2 mb-2">
                       <AlertTriangle className="w-3.5 h-3.5" />
                       Common Mistakes
                     </h4>
-                    <ul className="text-sm text-rose-600/90 leading-relaxed list-disc list-inside space-y-1">
+                    <ul className="text-sm text-[#F5F7FB]/90 leading-relaxed list-disc list-inside space-y-1">
                       {formula.commonMistakes.map((mistake, idx) => (
                         <li key={idx} className="leading-snug">{mistake}</li>
                       ))}

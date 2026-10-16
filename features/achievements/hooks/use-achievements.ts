@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useDeferredValue } from "react";
 import { AchievementsService } from "../services/achievements.service";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import {
@@ -9,16 +9,30 @@ import {
   AchievementStats,
 } from "../types/achievement.types";
 
-export function useAchievements() {
+export interface UseAchievementsOptions {
+  initialAchievements?: AchievementItem[];
+}
+
+export function useAchievements(options?: UseAchievementsOptions) {
   const { user, isLoading: isAuthLoading } = useAuth();
   const userId = user?.id;
 
-  const [achievements, setAchievements] = useState<AchievementItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [achievements, setAchievements] = useState<AchievementItem[]>(
+    options?.initialAchievements || []
+  );
+  const [isFetching, setIsFetching] = useState(
+    !options?.initialAchievements || options.initialAchievements.length === 0
+  );
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+
+  // Derive loading state: if initial data exists, show immediately without skeleton
+  const isLoading = Boolean(userId)
+    ? isFetching && achievements.length === 0
+    : isAuthLoading;
 
   const loadAchievements = useCallback(async (isRefresh = false) => {
     if (!userId) return;
@@ -26,8 +40,8 @@ export function useAchievements() {
       setIsRefreshing(true);
     }
     try {
-      await AchievementsService.evaluateAchievements(userId);
-      const items = await AchievementsService.getUserAchievements(userId);
+      // get_user_achievements RPC automatically evaluates achievements inside Postgres atomically
+      const items = await AchievementsService.getUserAchievements(userId, { forceRefresh: isRefresh });
       setAchievements(items);
       setError(null);
     } catch (err: unknown) {
@@ -36,26 +50,18 @@ export function useAchievements() {
         err instanceof Error ? err.message : "Failed to load achievements."
       );
     } finally {
-      setIsLoading(false);
+      setIsFetching(false);
       setIsRefreshing(false);
     }
   }, [userId]);
 
   useEffect(() => {
-    if (isAuthLoading) return;
+    if (isAuthLoading || !userId) return;
 
     let ignore = false;
     async function init() {
-      if (!userId) {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-        return;
-      }
-
       try {
-        await AchievementsService.evaluateAchievements(userId);
-        const items = await AchievementsService.getUserAchievements(userId);
+        const items = await AchievementsService.getUserAchievements(userId!);
         if (!ignore) {
           setAchievements(items);
           setError(null);
@@ -69,7 +75,7 @@ export function useAchievements() {
         }
       } finally {
         if (!ignore) {
-          setIsLoading(false);
+          setIsFetching(false);
         }
       }
     }
@@ -80,38 +86,55 @@ export function useAchievements() {
     };
   }, [userId, isAuthLoading]);
 
-  // Listen for realtime unlock events (e.g. from background session/topic completion)
+  // Listen for realtime unlock events, progress updates, and session completions
   useEffect(() => {
-    const handleUnlocked = () => {
+    const handleUpdate = () => {
+      if (userId) {
+        AchievementsService.invalidateCache(userId);
+      }
       loadAchievements(true);
     };
 
-    window.addEventListener("jee-pro:achievement-unlocked", handleUnlocked);
-    return () => {
-      window.removeEventListener("jee-pro:achievement-unlocked", handleUnlocked);
-    };
-  }, [loadAchievements]);
+    window.addEventListener("jee-pro:achievement-unlocked", handleUpdate);
+    window.addEventListener("jee-pro:achievement-progress-updated", handleUpdate);
+    window.addEventListener("jee-pro:study-session-completed", handleUpdate);
 
-  // Filtered achievements by Category and Search
+    return () => {
+      window.removeEventListener("jee-pro:achievement-unlocked", handleUpdate);
+      window.removeEventListener("jee-pro:achievement-progress-updated", handleUpdate);
+      window.removeEventListener("jee-pro:study-session-completed", handleUpdate);
+    };
+  }, [loadAchievements, userId]);
+
+  // Filtered achievements by Category and Search (O(N) single-pass)
   const filteredAchievements = useMemo(() => {
+    const trimmed = deferredSearchQuery.trim().toLowerCase();
     return achievements.filter((item) => {
       const matchesCategory =
         selectedCategory === "all" || item.category === selectedCategory;
-      const matchesSearch =
-        searchQuery.trim() === "" ||
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
+      if (!matchesCategory) return false;
+      if (!trimmed) return true;
+      return (
+        item.title.toLowerCase().includes(trimmed) ||
+        item.description.toLowerCase().includes(trimmed)
+      );
     });
-  }, [achievements, selectedCategory, searchQuery]);
+  }, [achievements, selectedCategory, deferredSearchQuery]);
 
-  // Summary statistics
+  // Summary statistics (O(N) cached single-pass)
   const stats: AchievementStats = useMemo(() => {
     const total = achievements.length;
-    const unlockedCount = achievements.filter((a) => a.unlocked).length;
-    const totalXpEarned = achievements
-      .filter((a) => a.unlocked)
-      .reduce((sum, a) => sum + a.xp_reward, 0);
+    let unlockedCount = 0;
+    let totalXpEarned = 0;
+
+    for (let i = 0; i < total; i++) {
+      const a = achievements[i];
+      if (a.unlocked) {
+        unlockedCount++;
+        totalXpEarned += a.xp_reward;
+      }
+    }
+
     const overallPercentage =
       total > 0 ? Math.round((unlockedCount / total) * 100) : 0;
 
@@ -122,10 +145,6 @@ export function useAchievements() {
       overallPercentage,
     };
   }, [achievements]);
-
-  const refresh = useCallback(async () => {
-    await loadAchievements(true);
-  }, [loadAchievements]);
 
   return {
     achievements,
@@ -138,6 +157,6 @@ export function useAchievements() {
     setSelectedCategory,
     searchQuery,
     setSearchQuery,
-    refresh,
+    refresh: () => loadAchievements(true),
   };
 }

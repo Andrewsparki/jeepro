@@ -86,6 +86,17 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     return () => clearTimeout(timer);
   }, [userId, fetchNotifications]);
 
+  const parseNotificationPayload = (raw: Record<string, unknown>): NotificationItem => ({
+    id: raw.id as string,
+    user_id: (raw.user_id || raw.target_user_id || userId) as string,
+    type: (raw.type || "info") as NotificationItem["type"],
+    title: raw.title as string,
+    message: raw.message as string,
+    metadata: (raw.metadata || {}) as Record<string, unknown>,
+    created_at: raw.created_at as string,
+    seen_at: (raw.seen_at ?? null) as string | null,
+  });
+
   // Realtime subscription setup with automatic unsubscribe on user change / unmount
   useEffect(() => {
     if (!userId) return;
@@ -113,16 +124,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
             if (!isForUser) return;
 
-            const newItem: NotificationItem = {
-              id: raw.id as string,
-              user_id: (raw.user_id || raw.target_user_id || userId) as string,
-              type: (raw.type || "info") as NotificationItem["type"],
-              title: raw.title as string,
-              message: raw.message as string,
-              metadata: (raw.metadata || {}) as Record<string, unknown>,
-              created_at: raw.created_at as string,
-              seen_at: (raw.seen_at ?? null) as string | null,
-            };
+            const newItem = parseNotificationPayload(raw);
 
             setNotifications((prev) => {
               if (prev.some((n) => n.id === newItem.id)) {
@@ -136,17 +138,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               playNotificationSound();
             }
           } else if (payload.eventType === "UPDATE") {
-            const raw = payload.new;
-            const updated: NotificationItem = {
-              id: raw.id as string,
-              user_id: (raw.user_id || raw.target_user_id || userId) as string,
-              type: (raw.type || "info") as NotificationItem["type"],
-              title: raw.title as string,
-              message: raw.message as string,
-              metadata: (raw.metadata || {}) as Record<string, unknown>,
-              created_at: raw.created_at as string,
-              seen_at: (raw.seen_at ?? null) as string | null,
-            };
+            const updated = parseNotificationPayload(payload.new);
 
             setNotifications((prev) => {
               const next = prev.map((n) => (n.id === updated.id ? updated : n));
@@ -272,22 +264,36 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     await NotificationService.clearAllNotifications(userId);
   }, [userId]);
 
+  const contextValue = React.useMemo(
+    () => ({
+      notifications,
+      unreadCount,
+      isLoading,
+      isOpen,
+      setIsOpen,
+      markAsRead,
+      markAllAsRead,
+      deleteNotification,
+      clearAll,
+      refresh: fetchNotifications,
+      playNotificationSound,
+    }),
+    [
+      notifications,
+      unreadCount,
+      isLoading,
+      isOpen,
+      markAsRead,
+      markAllAsRead,
+      deleteNotification,
+      clearAll,
+      fetchNotifications,
+      playNotificationSound,
+    ]
+  );
+
   return (
-    <NotificationContext.Provider
-      value={{
-        notifications,
-        unreadCount,
-        isLoading,
-        isOpen,
-        setIsOpen,
-        markAsRead,
-        markAllAsRead,
-        deleteNotification,
-        clearAll,
-        refresh: fetchNotifications,
-        playNotificationSound,
-      }}
-    >
+    <NotificationContext.Provider value={contextValue}>
       {children}
     </NotificationContext.Provider>
   );

@@ -51,7 +51,7 @@ const TIER_STYLES: Record<
     border: "border-amber-600/30 group-hover:border-amber-500/60",
     bg: "bg-amber-500/10",
     text: "text-amber-600 dark:text-amber-400",
-    glow: "shadow-[0_0_20px_rgba(217,119,6,0.15)]",
+    glow: "shadow-[0_0_15px_rgba(217,119,6,0.12)]",
     badge: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30",
     label: "Bronze",
   },
@@ -59,7 +59,7 @@ const TIER_STYLES: Record<
     border: "border-slate-400/30 group-hover:border-slate-300/60",
     bg: "bg-slate-400/10",
     text: "text-slate-700 dark:text-slate-200",
-    glow: "shadow-[0_0_20px_rgba(203,213,225,0.15)]",
+    glow: "shadow-[0_0_15px_rgba(203,213,225,0.12)]",
     badge: "bg-slate-400/15 text-slate-700 dark:text-slate-200 border-slate-400/30",
     label: "Silver",
   },
@@ -67,7 +67,7 @@ const TIER_STYLES: Record<
     border: "border-yellow-500/35 group-hover:border-yellow-400/70",
     bg: "bg-yellow-500/10",
     text: "text-amber-600 dark:text-yellow-400",
-    glow: "shadow-[0_0_25px_rgba(234,179,8,0.2)]",
+    glow: "shadow-[0_0_20px_rgba(234,179,8,0.15)]",
     badge: "bg-yellow-500/15 text-amber-700 dark:text-yellow-300 border-yellow-500/30",
     label: "Gold",
   },
@@ -75,7 +75,7 @@ const TIER_STYLES: Record<
     border: "border-purple-500/35 group-hover:border-purple-400/70",
     bg: "bg-purple-500/10",
     text: "text-purple-600 dark:text-purple-300",
-    glow: "shadow-[0_0_25px_rgba(168,85,247,0.25)]",
+    glow: "shadow-[0_0_20px_rgba(168,85,247,0.18)]",
     badge: "bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30",
     label: "Platinum",
   },
@@ -86,28 +86,31 @@ interface AchievementCardProps {
   onClick: (achievement: AchievementItem) => void;
 }
 
-export function AchievementCard({ achievement, onClick }: AchievementCardProps) {
+function formatProgressLabel(achievement: AchievementItem): string {
+  switch (achievement.requirement_type) {
+    case "session_count":
+      return `${achievement.current_progress} / ${achievement.requirement_value} sessions`;
+    case "study_hours":
+      return `${achievement.current_progress} / ${achievement.requirement_value} hrs`;
+    case "streak_days":
+      return `${achievement.current_progress} / ${achievement.requirement_value} days`;
+    case "topics_mastered":
+      return `${achievement.current_progress} / ${achievement.requirement_value} topics`;
+    case "chapters_mastered":
+      return `${achievement.current_progress} / ${achievement.requirement_value} chapters`;
+    case "total_xp":
+      return `${achievement.current_progress.toLocaleString()} / ${achievement.requirement_value.toLocaleString()} XP`;
+    default:
+      return `${achievement.current_progress} / ${achievement.requirement_value}`;
+  }
+}
+
+export const AchievementCard = React.memo(function AchievementCard({
+  achievement,
+  onClick,
+}: AchievementCardProps) {
   const IconComponent = ICON_MAP[achievement.icon] || Award;
   const tierStyle = TIER_STYLES[achievement.tier] || TIER_STYLES.bronze;
-
-  const formatProgressLabel = () => {
-    switch (achievement.requirement_type) {
-      case "session_count":
-        return `${achievement.current_progress} / ${achievement.requirement_value} sessions`;
-      case "study_hours":
-        return `${achievement.current_progress} / ${achievement.requirement_value} hrs`;
-      case "streak_days":
-        return `${achievement.current_progress} / ${achievement.requirement_value} days`;
-      case "topics_mastered":
-        return `${achievement.current_progress} / ${achievement.requirement_value} topics`;
-      case "chapters_mastered":
-        return `${achievement.current_progress} / ${achievement.requirement_value} chapters`;
-      case "total_xp":
-        return `${achievement.current_progress.toLocaleString()} / ${achievement.requirement_value.toLocaleString()} XP`;
-      default:
-        return `${achievement.current_progress} / ${achievement.requirement_value}`;
-    }
-  };
 
   return (
     <div
@@ -121,29 +124,19 @@ export function AchievementCard({ achievement, onClick }: AchievementCardProps) 
         }
       }}
       className={cn(
-        "group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl border transition-all duration-300 cursor-pointer select-none text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+        "group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl border transition-all duration-200 cursor-pointer select-none text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transform-gpu [content-visibility:auto] [contain-intrinsic-size:0_175px]",
         achievement.unlocked
-          ? cn("bg-surface/60 hover:bg-surface/90 hover:-translate-y-1 backdrop-blur-md", tierStyle.border, tierStyle.glow)
-          : "bg-surface/30 border-border/40 hover:border-border/70 hover:bg-surface/50 opacity-80 hover:opacity-100"
+          ? cn("bg-[#121722]/90 hover:bg-[#171D28] hover:-translate-y-0.5", tierStyle.border, tierStyle.glow)
+          : "bg-surface/30 border-border/40 hover:border-border/70 hover:bg-surface/50 opacity-80 hover:opacity-100 hover:-translate-y-0.5"
       )}
     >
-      {/* Ambient Radial Gradient Accent */}
-      {achievement.unlocked && (
-        <div
-          className={cn(
-            "absolute inset-0 rounded-2xl opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none -z-10",
-            tierStyle.bg
-          )}
-        />
-      )}
-
       {/* Top Row: Icon, Tier Badge, Status Badge */}
       <div>
         <div className="flex items-start justify-between gap-3 mb-3.5">
           {/* Icon Badge */}
           <div
             className={cn(
-              "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-300 group-hover:scale-105",
+              "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:scale-105 transform-gpu",
               achievement.unlocked
                 ? cn(tierStyle.bg, tierStyle.text, tierStyle.border)
                 : "bg-muted/40 text-muted-foreground border-border/40"
@@ -211,10 +204,10 @@ export function AchievementCard({ achievement, onClick }: AchievementCardProps) 
             progressPercentage={achievement.progress_percentage}
             currentProgress={achievement.current_progress}
             requirementValue={achievement.requirement_value}
-            label={formatProgressLabel()}
+            label={formatProgressLabel(achievement)}
           />
         )}
       </div>
     </div>
   );
-}
+});

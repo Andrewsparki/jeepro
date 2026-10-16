@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { updateChapterProgress } from "@/features/study/services/progress";
 import { useStudySession } from "@/features/study/context/study-session-context";
 import { toast } from "sonner";
-import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
 import { ContextMenuTrigger } from "@/features/context-menu";
 
@@ -67,13 +66,15 @@ export function ChapterRow({ chapter, subjectSlug, onUpdate }: ChapterRowProps) 
       const x = (rect.left + rect.width / 2) / window.innerWidth;
       const y = (rect.top + rect.height / 2) / window.innerHeight;
       
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { x, y },
-        colors: ['#22c55e', '#16a34a', '#86efac'],
-        disableForReducedMotion: true
-      });
+      import("canvas-confetti").then(({ default: confetti }) => {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { x, y },
+          colors: ['#22c55e', '#16a34a', '#86efac'],
+          disableForReducedMotion: true
+        });
+      }).catch(() => {});
       setShowXP(true);
       setTimeout(() => setShowXP(false), 2500);
     }

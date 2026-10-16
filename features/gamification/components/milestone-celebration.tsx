@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import confetti from "canvas-confetti";
 import { useSettings } from "@/providers/settings-provider";
 
 interface MilestoneCelebrationProps {
@@ -24,12 +23,15 @@ export function MilestoneCelebration({ streakDays }: MilestoneCelebrationProps) 
     }
     
     prevStreakRef.current = streakDays;
-  }, [streakDays]);
+  }, [streakDays, playSound]);
 
   return null; // Purely a behavior component, no UI
 }
 
-function triggerMilestoneConfetti(streak: number) {
+async function triggerMilestoneConfetti(streak: number) {
+  const mod = await import("canvas-confetti");
+  const confetti = mod.default || mod;
+
   const duration = 2000;
   const animationEnd = Date.now() + duration;
   const defaults = { startVelocity: 20, spread: 360, ticks: 60, zIndex: 100 };

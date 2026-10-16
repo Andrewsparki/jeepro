@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -94,7 +95,7 @@ export function InviteFriendsModal({
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className="h-9 w-9 rounded-full overflow-hidden border border-border/60 shrink-0 bg-muted flex items-center justify-center text-xs font-bold text-foreground">
                       {friend.avatar_url ? (
-                        <img src={friend.avatar_url} alt="" className="h-full w-full object-cover" />
+                        <Image src={friend.avatar_url} alt="" width={36} height={36} unoptimized className="h-full w-full object-cover" />
                       ) : (
                         <span>{initials}</span>
                       )}

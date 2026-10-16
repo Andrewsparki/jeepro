@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer-motion";
 import { useFocusStore, TimerMode } from "@/features/focus/store/focus-store";
@@ -20,6 +20,7 @@ import { useSettings } from "@/providers/settings-provider";
 import { ContextMenuTarget } from "@/features/context-menu";
 import { FixedPortal } from "@/components/ui/fixed-portal";
 import { cn } from "@/lib/utils";
+import { trackEvent } from "@/features/analytics/services/telemetry.service";
 
 const TIMER_MODES: { id: TimerMode; label: string }[] = [
   { id: "countdown", label: "Countdown" },
@@ -38,7 +39,7 @@ export default function FocusPage() {
     toggleImmersive
   } = useFocusStore();
 
-  const { triggerRefresh } = useStudySession();
+  const { triggerRefresh, isActive: isGlobalSessionActive, endSession: endGlobalSession } = useStudySession();
   const { playSound } = useSettings();
 
   // Local state for timer (absolute time)
@@ -51,6 +52,7 @@ export default function FocusPage() {
   const [phaseAccumulated, setPhaseAccumulated] = useState<number>(0);
   const [lastResumeTime, setLastResumeTime] = useState<number | null>(null);
   const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
+  const [totalCompletedSittingSeconds, setTotalCompletedSittingSeconds] = useState<number>(0);
   
   // Overall session start for saving
   const [initialStartTime, setInitialStartTime] = useState<Date | null>(null);
@@ -59,15 +61,48 @@ export default function FocusPage() {
   const { isPipSupported, isPipOpen, pipContainer, openPip, closePip } = usePipTimer();
   const [showFallbackFloat, setShowFallbackFloat] = useState(false);
 
-  // Helper functions for exact elapsed time
-  const getSessionElapsed = () => sessionAccumulated + (isActive && lastResumeTime ? (Date.now() - lastResumeTime) / 1000 : 0);
-  const getPhaseElapsed = () => phaseAccumulated + (isActive && lastResumeTime ? (Date.now() - lastResumeTime) / 1000 : 0);
+  // Helper functions for exact elapsed time:
+  // getSessionElapsed STRICTLY accumulates time only when in 'study' phase!
+  const getSessionElapsed = () =>
+    sessionAccumulated + (isActive && phase === "study" && lastResumeTime ? (Date.now() - lastResumeTime) / 1000 : 0);
+  const getPhaseElapsed = () =>
+    phaseAccumulated + (isActive && lastResumeTime ? (Date.now() - lastResumeTime) / 1000 : 0);
 
   const getTotalTime = () => {
     if (timerMode === 'stopwatch') return 0;
     if (phase === 'study') return defaultStudyTime;
     if (phase === 'shortBreak') return defaultBreakTime;
     return defaultBreakTime * 4;
+  };
+
+  const persistStudySession = async (durationSeconds: number, startTimeOverride?: Date) => {
+    const exactDuration = Math.floor(durationSeconds);
+    if (exactDuration < 60) return;
+
+    const endedAt = new Date();
+    const startedAt = startTimeOverride || initialStartTime || new Date(endedAt.getTime() - exactDuration * 1000);
+
+    try {
+      await SessionService.endSession({
+        durationSeconds: exactDuration,
+        startedAt: startedAt.toISOString(),
+        endedAt: endedAt.toISOString(),
+      });
+      toast.success("Study session saved successfully!");
+    } catch (e) {
+      console.error("Session sync failed:", e);
+      toast.warning("Network issue: Session saved offline", {
+        description: "We'll sync it automatically when you reconnect."
+      });
+    }
+
+    void trackEvent("focus_complete", "/dashboard/focus", {
+      feature: "Focus Mode",
+      durationSeconds: exactDuration,
+      metadata: { timerMode, phase },
+    });
+
+    triggerRefresh();
   };
 
   const handleRestart = (silent?: boolean) => {
@@ -78,55 +113,43 @@ export default function FocusPage() {
     setLastResumeTime(null);
     setInitialStartTime(null);
     setPhase("study");
+    setTotalCompletedSittingSeconds(0);
   };
 
   const handleEndSession = async (overrideSessionElapsed?: number) => {
     const finalElapsed = typeof overrideSessionElapsed === 'number' ? overrideSessionElapsed : getSessionElapsed();
-    
+    const totalSittingTime = totalCompletedSittingSeconds + (finalElapsed >= 60 ? finalElapsed : 0);
+
     setIsActive(false);
-    setSessionAccumulated(finalElapsed);
-    setPhaseAccumulated(getPhaseElapsed());
+    setSessionAccumulated(0);
+    setPhaseAccumulated(0);
     setLastResumeTime(null);
-    
-    if (finalElapsed < 10) {
+    setInitialStartTime(null);
+
+    if (finalElapsed < 10 && totalSittingTime === 0) {
       // Silently discard spam/accidental starts
       handleRestart();
-    } else if (finalElapsed < 60) {
+    } else if (finalElapsed < 60 && totalSittingTime === 0) {
       playSound("muted-error");
       toast("Session too short to record.");
       handleRestart(true);
     } else {
       playSound("chime");
-      const endedAt = new Date();
-      const startedAt = initialStartTime || new Date(endedAt.getTime() - finalElapsed * 1000);
-      const exactDuration = Math.floor(finalElapsed);
-      
-      try {
-        await SessionService.endSession({
-          durationSeconds: exactDuration,
-          startedAt: startedAt.toISOString(),
-          endedAt: endedAt.toISOString(),
-        });
-        toast.success("Study session saved successfully!");
-      } catch (e) {
-        console.error("Session sync failed:", e);
-        toast.warning("Network issue: Session saved offline", {
-          description: "We'll sync it automatically when you reconnect."
-        });
+      if (finalElapsed >= 60) {
+        await persistStudySession(finalElapsed);
       }
-      triggerRefresh();
+      setTotalCompletedSittingSeconds(totalSittingTime);
       setIsCompletionModalOpen(true);
     }
   };
 
   function handleTimerComplete() {
     playSound("chime");
-    const finalSession = getSessionElapsed();
+    const currentStudySeconds = getSessionElapsed();
     
     setIsActive(false);
     setLastResumeTime(null);
     setPhaseAccumulated(0); // Reset phase for next step
-    setSessionAccumulated(finalSession);
     
     toast("Time's up!");
     
@@ -134,6 +157,15 @@ export default function FocusPage() {
       if (phase === 'study') {
         const nextCount = pomodoroCount + 1;
         setPomodoroCount(nextCount);
+
+        // Auto-save the completed Pomodoro study session block so progress is never lost
+        if (currentStudySeconds >= 60) {
+          persistStudySession(currentStudySeconds);
+          setTotalCompletedSittingSeconds((prev) => prev + currentStudySeconds);
+        }
+        setSessionAccumulated(0);
+        setInitialStartTime(null);
+
         if (nextCount % pomodoroCycles === 0) {
           setPhase('longBreak');
         } else {
@@ -144,7 +176,7 @@ export default function FocusPage() {
       }
     } else {
       // Countdown ended
-      handleEndSession(finalSession);
+      handleEndSession(currentStudySeconds);
     }
   }
 
@@ -164,17 +196,32 @@ export default function FocusPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, timerMode, phase, sessionAccumulated, phaseAccumulated, lastResumeTime, defaultStudyTime, defaultBreakTime]);
 
-  const togglePlayPause = () => {
+  const togglePlayPause = async () => {
     if (!isActive) {
+      // Coordinate with global session: end outside session cleanly if running
+      if (isGlobalSessionActive) {
+        try {
+          await endGlobalSession();
+        } catch {
+          // ignore
+        }
+      }
       playSound("pop-up");
-      if (sessionAccumulated === 0) {
+      if (phase === "study" && sessionAccumulated === 0) {
         setInitialStartTime(new Date());
       }
       setLastResumeTime(Date.now());
       setIsActive(true);
+
+      void trackEvent("focus_start", "/dashboard/focus", {
+        feature: "Focus Mode",
+        metadata: { timerMode, phase },
+      });
     } else {
       playSound("pop-down");
-      setSessionAccumulated(getSessionElapsed());
+      if (phase === "study") {
+        setSessionAccumulated(getSessionElapsed());
+      }
       setPhaseAccumulated(getPhaseElapsed());
       setLastResumeTime(null);
       setIsActive(false);
@@ -184,11 +231,55 @@ export default function FocusPage() {
   const handleStartBreak = () => {
     playSound("pop-up");
     setIsActive(false);
-    setSessionAccumulated(getSessionElapsed());
+    if (phase === "study") {
+      setSessionAccumulated(getSessionElapsed());
+    }
     setPhaseAccumulated(0);
     setLastResumeTime(null);
     setPhase("shortBreak");
   };
+
+  // Safe unmount & beforeunload persistence so active focus study time is never lost
+  const sessionRef = useRef({
+    isActive,
+    phase,
+    sessionAccumulated,
+    lastResumeTime,
+    initialStartTime,
+  });
+
+  useEffect(() => {
+    sessionRef.current = {
+      isActive,
+      phase,
+      sessionAccumulated,
+      lastResumeTime,
+      initialStartTime,
+    };
+  }, [isActive, phase, sessionAccumulated, lastResumeTime, initialStartTime]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const { isActive: wasActive, phase: currentPhase, sessionAccumulated: acc, lastResumeTime: lrt, initialStartTime: ist } = sessionRef.current;
+      const activeSeconds =
+        acc + (wasActive && currentPhase === "study" && lrt ? (Date.now() - lrt) / 1000 : 0);
+      if (activeSeconds >= 60) {
+        const endedAt = new Date();
+        const startedAt = ist || new Date(endedAt.getTime() - activeSeconds * 1000);
+        SessionService.endSession({
+          durationSeconds: Math.floor(activeSeconds),
+          startedAt: startedAt.toISOString(),
+          endedAt: endedAt.toISOString(),
+        }).catch(() => {});
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      handleBeforeUnload();
+    };
+  }, []);
 
   useKeyboardShortcuts({
     onTogglePlayPause: togglePlayPause,
@@ -270,22 +361,22 @@ export default function FocusPage() {
           {/* Full-bleed atmospheric ambient radial gradient (covers 100% of viewport with zero clipping boundaries) */}
           <motion.div 
             animate={{
-              opacity: isActive ? (isImmersive ? 0.38 : 0.30) : 0.20,
+              opacity: isActive ? (isImmersive ? 0.35 : 0.25) : 0.15,
             }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className={cn(
               "absolute inset-0 transition-colors duration-1000",
-              phase === "study" && "bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,rgba(79,70,229,0.38)_0%,rgba(79,70,229,0.14)_45%,rgba(79,70,229,0)_75%)]",
-              phase === "shortBreak" && "bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,rgba(16,185,129,0.38)_0%,rgba(16,185,129,0.14)_45%,rgba(16,185,129,0)_75%)]",
-              phase === "longBreak" && "bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,rgba(56,189,248,0.38)_0%,rgba(56,189,248,0.14)_45%,rgba(56,189,248,0)_75%)]"
+              phase === "study" && "bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,rgba(16,185,129,0.22)_0%,rgba(16,185,129,0.06)_45%,transparent_75%)]",
+              phase === "shortBreak" && "bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,rgba(56,189,248,0.22)_0%,rgba(56,189,248,0.06)_45%,transparent_75%)]",
+              phase === "longBreak" && "bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,rgba(148,163,184,0.18)_0%,rgba(148,163,184,0.05)_45%,transparent_75%)]"
             )}
           />
 
           {/* Breathing focal core glow behind the timer */}
           <motion.div 
             animate={{
-              scale: isActive && !shouldReduceMotion ? [0.95, 1.08, 0.95] : 1,
-              opacity: isActive ? [0.24, 0.38, 0.24] : 0.16,
+              scale: isActive && !shouldReduceMotion ? [0.95, 1.05, 0.95] : 1,
+              opacity: isActive ? [0.18, 0.28, 0.18] : 0.12,
             }}
             transition={
               isActive && !shouldReduceMotion
@@ -294,9 +385,9 @@ export default function FocusPage() {
             }
             className={cn(
               "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(95vw,800px)] h-[min(95vw,800px)] rounded-full transition-colors duration-1000",
-              phase === "study" && "bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.5)_0%,rgba(79,70,229,0.18)_40%,transparent_70%)]",
-              phase === "shortBreak" && "bg-[radial-gradient(circle_at_50%_50%,rgba(52,211,153,0.5)_0%,rgba(16,185,129,0.18)_40%,transparent_70%)]",
-              phase === "longBreak" && "bg-[radial-gradient(circle_at_50%_50%,rgba(56,189,248,0.5)_0%,rgba(37,99,235,0.18)_40%,transparent_70%)]"
+              phase === "study" && "bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.30)_0%,rgba(16,185,129,0.08)_40%,transparent_70%)]",
+              phase === "shortBreak" && "bg-[radial-gradient(circle_at_50%_50%,rgba(56,189,248,0.30)_0%,rgba(56,189,248,0.08)_40%,transparent_70%)]",
+              phase === "longBreak" && "bg-[radial-gradient(circle_at_50%_50%,rgba(148,163,184,0.25)_0%,rgba(148,163,184,0.06)_40%,transparent_70%)]"
             )}
           />
 
@@ -447,8 +538,8 @@ export default function FocusPage() {
           setIsCompletionModalOpen(open);
           if (!open) handleRestart();
         }}
-        durationSeconds={sessionAccumulated}
-        xpEarned={calculateSessionXP(sessionAccumulated)}
+        durationSeconds={totalCompletedSittingSeconds}
+        xpEarned={calculateSessionXP(totalCompletedSittingSeconds)}
       />
 
       {/* Picture-in-Picture Portal */}

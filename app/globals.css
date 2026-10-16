@@ -41,85 +41,97 @@
   --destructive-foreground: #ffffff;
   --ring: var(--accent);
   --input: var(--surface);
-  --accent-foreground: #ffffff;
+  --accent-foreground: #0B0D12;
 }
 
-/* Midnight Theme (Default) */
+/* Midnight / Obsidian Theme (Default) */
 :root,
 .midnight,
 .dark {
-  --bg-primary: #0A0A0A;
-  --bg-secondary: #121212;
-  --bg-elevated: #1A1A1A;
+  --bg-primary: #0B0D12;
+  --bg-secondary: #121722;
+  --bg-elevated: #171D28;
 
-  --surface: rgba(255, 255, 255, 0.03);
-  --surface-hover: rgba(255, 255, 255, 0.06);
-  --surface-active: rgba(255, 255, 255, 0.09);
+  --surface: rgba(120, 169, 255, 0.04);
+  --surface-hover: rgba(120, 169, 255, 0.08);
+  --surface-active: rgba(120, 169, 255, 0.12);
 
-  --glass: rgba(10, 10, 10, 0.65);
-  --glass-strong: rgba(5, 5, 5, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass: rgba(11, 13, 18, 0.75);
+  --glass-strong: rgba(18, 23, 34, 0.94);
+  --glass-border: #2B3342;
 
-  --text-primary: #FAFAFA;
-  --text-secondary: #A1A1AA;
-  --text-muted: #71717A;
+  --text-primary: #F5F7FB;
+  --text-secondary: #A4ADBB;
+  --text-muted: #6B7588;
 
-  --accent: #4F46E5;
-  --accent-soft: rgba(79, 70, 229, 0.15);
-  --accent-glow: rgba(79, 70, 229, 0.4);
+  --accent: #78A9FF;
+  --accent-hover: #A8C5FF;
+  --accent-rgb: 120, 169, 255;
+  --accent-soft: rgba(120, 169, 255, 0.12);
+  --accent-glow: rgba(120, 169, 255, 0.28);
+  --accent-foreground: #0B0D12;
 
-  --success: #10B981;
-  --warning: #F59E0B;
-  --danger: #EF4444;
+  --secondary-accent: #A8C5FF;
+  --secondary-accent-soft: rgba(168, 197, 255, 0.12);
 
-  --shadow-soft: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 2px 8px rgba(0, 0, 0, 0.2);
-  --shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 12px 32px rgba(0, 0, 0, 0.25);
-  --shadow-medium: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-strong: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 16px 48px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 24px rgba(79, 70, 229, 0.3);
+  --success: #5DC98B;
+  --warning: #F1BE62;
+  --danger: #F17C7C;
 
-  --card-highlight-start: rgba(255, 255, 255, 0.03);
-  --card-highlight-end: rgba(255, 255, 255, 0);
+  --shadow-soft: 0 0 0 1px rgba(120, 169, 255, 0.04), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 0 0 1px rgba(120, 169, 255, 0.15), 0 12px 32px rgba(0, 0, 0, 0.4);
+  --shadow-medium: 0 0 0 1px rgba(43, 51, 66, 0.8), 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-strong: 0 0 0 1px rgba(43, 51, 66, 1), 0 16px 48px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 24px rgba(120, 169, 255, 0.2);
 
-  --muted: rgba(255, 255, 255, 0.07);
+  --card-highlight-start: rgba(120, 169, 255, 0.04);
+  --card-highlight-end: rgba(120, 169, 255, 0);
+
+  --muted: rgba(245, 247, 251, 0.06);
 }
 
 /* AMOLED Theme */
 .amoled {
   --bg-primary: #000000;
-  --bg-secondary: #0A0A0A;
-  --bg-elevated: #121212;
+  --bg-secondary: #0B0D12;
+  --bg-elevated: #121722;
 
-  --surface: rgba(255, 255, 255, 0.02);
-  --surface-hover: rgba(255, 255, 255, 0.05);
-  --surface-active: rgba(255, 255, 255, 0.08);
+  --surface: rgba(120, 169, 255, 0.02);
+  --surface-hover: rgba(120, 169, 255, 0.05);
+  --surface-active: rgba(120, 169, 255, 0.08);
 
-  --glass: rgba(0, 0, 0, 0.65);
-  --glass-strong: rgba(0, 0, 0, 0.9);
-  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass: rgba(0, 0, 0, 0.75);
+  --glass-strong: rgba(0, 0, 0, 0.95);
+  --glass-border: #1F2530;
 
-  --text-primary: #FFFFFF;
-  --text-secondary: #A1A1AA;
-  --text-muted: #71717A;
+  --text-primary: #F5F7FB;
+  --text-secondary: #A4ADBB;
+  --text-muted: #6B7588;
 
-  --accent: #4F46E5;
-  --accent-soft: rgba(79, 70, 229, 0.15);
-  --accent-glow: rgba(79, 70, 229, 0.4);
+  --accent: #78A9FF;
+  --accent-hover: #A8C5FF;
+  --accent-rgb: 120, 169, 255;
+  --accent-soft: rgba(120, 169, 255, 0.12);
+  --accent-glow: rgba(120, 169, 255, 0.25);
+  --accent-foreground: #0B0D12;
 
-  --success: #10B981;
-  --warning: #F59E0B;
-  --danger: #EF4444;
+  --secondary-accent: #A8C5FF;
+  --secondary-accent-soft: rgba(168, 197, 255, 0.12);
 
-  --shadow-soft: 0 0 0 1px rgba(255, 255, 255, 0.03), 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 12px 32px rgba(0, 0, 0, 0.4);
-  --shadow-medium: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-strong: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 16px 48px rgba(0, 0, 0, 0.7);
-  --shadow-glow: 0 0 24px rgba(79, 70, 229, 0.3);
+  --success: #5DC98B;
+  --warning: #F1BE62;
+  --danger: #F17C7C;
 
-  --card-highlight-start: rgba(255, 255, 255, 0.02);
-  --card-highlight-end: rgba(255, 255, 255, 0);
+  --shadow-soft: 0 0 0 1px rgba(120, 169, 255, 0.03), 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 0 0 1px rgba(120, 169, 255, 0.1), 0 12px 32px rgba(0, 0, 0, 0.6);
+  --shadow-medium: 0 0 0 1px rgba(31, 37, 48, 0.8), 0 8px 24px rgba(0, 0, 0, 0.65);
+  --shadow-strong: 0 0 0 1px rgba(31, 37, 48, 1), 0 16px 48px rgba(0, 0, 0, 0.85);
+  --shadow-glow: 0 0 24px rgba(120, 169, 255, 0.2);
 
-  --muted: rgba(255, 255, 255, 0.04);
+  --card-highlight-start: rgba(120, 169, 255, 0.02);
+  --card-highlight-end: rgba(120, 169, 255, 0);
+
+  --muted: rgba(245, 247, 251, 0.04);
 }
 
 /* Titanium Theme */
@@ -243,6 +255,8 @@
   --color-accent-soft: var(--accent-soft);
   --color-accent-glow: var(--accent-glow);
   --color-accent-foreground: var(--accent-foreground);
+  --color-secondary-accent: var(--secondary-accent);
+  --color-secondary-accent-soft: var(--secondary-accent-soft);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-ring: var(--ring);
@@ -356,29 +370,61 @@ pre,
   font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
-/* Delete all native browser scrollbars globally so Locomotive Scroll controls all scrolling */
-* {
+/* Delete all native browser scrollbars globally so Locomotive Scroll controls all scrolling,
+   while preserving explicit custom scrollbars for containers like the admin panel */
+*:not(.custom-scrollbar):not(.custom-scrollbar *) {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
 
-*::-webkit-scrollbar {
+*:not(.custom-scrollbar):not(.custom-scrollbar *)::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
 }
 
-/* Prevent Radix / react-remove-scroll from injecting phantom right-margin/padding on body,
-   as native scrollbars are removed globally and managed by Locomotive / custom scroll */
-body[data-scroll-locked] {
+/* Prevent Radix / react-remove-scroll / react-remove-scroll-bar from injecting phantom
+   margins, padding, or offsets on html, body, or fixed elements. All scrollbars in JEE Pro
+   are managed globally without layout shifts. */
+html[data-scroll-locked],
+body[data-scroll-locked],
+html.with-scroll-bars-hidden,
+body.with-scroll-bars-hidden {
   margin-right: 0px !important;
   padding-right: 0px !important;
+  margin-left: 0px !important;
+  padding-left: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+/* Crucial: Locomotive/Lenis applies `overflow: clip` to html when stopped (e.g. during select/popover/modal open).
+   In modern CSS standards, `overflow: clip` on <html> breaks `position: sticky` on child elements (like the sidebar
+   and topbar), collapsing their viewport-relative positioning and displacing them by the scroll offset.
+   We force overflow to remain visible/inherit on html when stopped. */
+html.lenis:not(.lenis-autoToggle).lenis-stopped,
+html.lenis.lenis-stopped,
+html[data-scroll-locked],
+html.with-scroll-bars-hidden {
+  overflow: visible !important;
+}
+
+body[data-scroll-locked],
+body.with-scroll-bars-hidden {
+  overflow: visible !important;
+}
+
+.right-scroll-bar-position {
+  right: 0px !important;
+}
+
+.width-before-scroll-bar {
+  margin-right: 0px !important;
 }
 
 /* Selection */
 ::selection {
   background: var(--accent);
-  color: white;
+  color: #0B0D12;
 }
 
 /* Focus Styles */
@@ -463,23 +509,304 @@ body[data-scroll-locked] {
   animation: shimmer 2s infinite linear;
 }
 
-/* Dashboard entry: a single, subtle page settle-in without staggered per-card motion */
-@keyframes dashboard-page-enter {
+/* Sheet & Side Panel Animations — GPU composited slide & fade (280ms cubic-bezier) */
+@keyframes sheet-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-slide-in-right {
+  from {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0.7;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-slide-out-right {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0.7;
+  }
+}
+
+@keyframes sheet-slide-in-left {
+  from {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0.7;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-slide-out-left {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0.7;
+  }
+}
+
+@keyframes sheet-slide-in-top {
+  from {
+    transform: translate3d(0, -100%, 0);
+    opacity: 0.7;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-slide-out-top {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(0, -100%, 0);
+    opacity: 0.7;
+  }
+}
+
+@keyframes sheet-slide-in-bottom {
+  from {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0.7;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes sheet-slide-out-bottom {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0.7;
+  }
+}
+
+.sheet-overlay[data-state="open"] {
+  animation: sheet-overlay-in 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sheet-overlay[data-state="closed"] {
+  animation: sheet-overlay-out 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sheet-panel-right[data-state="open"] {
+  animation: sheet-slide-in-right 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sheet-panel-right[data-state="closed"] {
+  animation: sheet-slide-out-right 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sheet-panel-left[data-state="open"] {
+  animation: sheet-slide-in-left 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sheet-panel-left[data-state="closed"] {
+  animation: sheet-slide-out-left 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sheet-panel-top[data-state="open"] {
+  animation: sheet-slide-in-top 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sheet-panel-top[data-state="closed"] {
+  animation: sheet-slide-out-top 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sheet-panel-bottom[data-state="open"] {
+  animation: sheet-slide-in-bottom 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sheet-panel-bottom[data-state="closed"] {
+  animation: sheet-slide-out-bottom 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Smooth High-End Dropdown Animations (Select, DropdownMenu, Popover) ── */
+@keyframes dropdown-enter-down {
   0% {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translate3d(0, -6px, 0) scale(0.96);
   }
-
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
-.dashboard-page-enter {
-  opacity: 0;
-  animation: dashboard-page-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+@keyframes dropdown-enter-up {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
 }
+
+@keyframes dropdown-exit {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -4px, 0) scale(0.97);
+  }
+}
+
+.dropdown-animated-content {
+  transform-origin: var(--radix-select-content-transform-origin, var(--radix-dropdown-menu-content-transform-origin, top center));
+  will-change: transform, opacity;
+}
+
+.dropdown-animated-content[data-state="open"] {
+  animation: dropdown-enter-down 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.dropdown-animated-content[data-state="open"][data-side="top"] {
+  animation: dropdown-enter-up 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.dropdown-animated-content[data-state="closed"] {
+  animation: dropdown-exit 160ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-animated-content[data-state="open"],
+  .dropdown-animated-content[data-state="closed"] {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-overlay[data-state="open"],
+  .sheet-overlay[data-state="closed"],
+  .sheet-panel-right[data-state="open"],
+  .sheet-panel-right[data-state="closed"],
+  .sheet-panel-left[data-state="open"],
+  .sheet-panel-left[data-state="closed"],
+  .sheet-panel-top[data-state="open"],
+  .sheet-panel-top[data-state="closed"],
+  .sheet-panel-bottom[data-state="open"],
+  .sheet-panel-bottom[data-state="closed"] {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* ── Smooth Cinematic Modal Dialog Animations ── */
+@keyframes modal-overlay-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-overlay-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-content-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes modal-content-out {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(0.98);
+  }
+}
+
+.modal-animated-overlay[data-state="open"] {
+  animation: modal-overlay-in 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-animated-overlay[data-state="closed"] {
+  animation: modal-overlay-out 160ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-animated-content {
+  margin: auto;
+  will-change: transform, opacity;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  backface-visibility: hidden;
+  isolation: isolate;
+}
+
+.modal-animated-content[data-state="open"] {
+  animation: modal-content-in 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-animated-content[data-state="closed"] {
+  animation: modal-content-out 160ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-animated-overlay[data-state="open"],
+  .modal-animated-overlay[data-state="closed"],
+  .modal-animated-content[data-state="open"],
+  .modal-animated-content[data-state="closed"] {
+    animation: none !important;
+  }
+}
+
+
 
 /* Custom Thin Scrollbar (Subtle translucent thumb, visible on hover/scroll) */
 .custom-scrollbar {
@@ -566,8 +893,7 @@ body[data-scroll-locked] {
 @media (prefers-reduced-motion: reduce) {
 
   .animate-sheen-sweep,
-  .animate-cta-pulse,
-  .dashboard-page-enter {
+  .animate-cta-pulse {
     animation: none !important;
   }
 }

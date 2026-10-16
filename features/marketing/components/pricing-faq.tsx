@@ -44,20 +44,20 @@ export function PricingFAQ() {
         
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16 sm:mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.1] bg-[#070E1E]/50 text-xs font-semibold text-[#38bdf8] mb-3 backdrop-blur-xl">
-            <HelpCircle className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.1] bg-white/[0.03] text-xs font-medium text-zinc-300 mb-3 backdrop-blur-xl">
+            <HelpCircle className="w-3.5 h-3.5 text-zinc-400" />
             <span>Frequently Asked Questions</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
             Questions, answered.
           </h2>
-          <p className="text-sm sm:text-base text-[#98A0B3] font-normal leading-relaxed">
-            Everything you need to know about plans, syllabus coverage, and future releases.
+          <p className="text-sm sm:text-base text-zinc-400 font-normal leading-relaxed">
+            Everything you need to know about plans, syllabus coverage, and platform access.
           </p>
         </div>
 
         {/* Accordion List */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
@@ -66,19 +66,19 @@ export function PricingFAQ() {
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.06 }}
-                className="relative rounded-2xl bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.1] hover:border-white/[0.2] shadow-[0_10px_30px_rgba(0,0,0,0.4)] transition-all overflow-hidden"
+                transition={{ duration: 0.5, delay: idx * 0.05 }}
+                className="relative rounded-xl bg-[#090C15] border border-white/[0.08] hover:border-white/[0.16] shadow-sm transition-all overflow-hidden"
               >
                 <button
                   type="button"
                   onClick={() => toggleFAQ(idx)}
-                  className="w-full p-6 sm:p-7 text-left flex items-center justify-between gap-4 cursor-pointer select-none"
+                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer select-none"
                 >
-                  <span className="text-base sm:text-lg font-bold text-white tracking-tight">
+                  <span className="text-base sm:text-lg font-semibold text-white tracking-tight">
                     {faq.q}
                   </span>
-                  <div className={`w-8 h-8 rounded-xl bg-white/[0.05] border border-white/[0.1] flex items-center justify-center text-slate-300 shrink-0 transition-transform duration-300 ${
-                    isOpen ? "rotate-180 text-cyan-400 bg-cyan-500/10 border-cyan-400/30" : ""
+                  <div className={`w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0 transition-transform duration-200 ${
+                    isOpen ? "rotate-180 text-white bg-white/10 border-white/20" : "text-zinc-400"
                   }`}>
                     <ChevronDown className="w-4 h-4" />
                   </div>
@@ -91,11 +91,11 @@ export function PricingFAQ() {
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ 
-                        height: { duration: 0.38, ease: [0.16, 1, 0.3, 1] },
-                        opacity: { duration: 0.28, ease: "easeOut" }
+                        height: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
+                        opacity: { duration: 0.2, ease: "easeOut" }
                       }}
                     >
-                      <div className="px-6 sm:px-7 pb-6 sm:pb-7 pt-1 text-xs sm:text-sm text-[#98A0B3] font-normal leading-relaxed border-t border-white/[0.06]">
+                      <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-1 text-xs sm:text-sm text-zinc-400 font-normal leading-relaxed border-t border-white/[0.06]">
                         {faq.a}
                       </div>
                     </motion.div>

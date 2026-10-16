@@ -6,7 +6,6 @@ import { Achievement, XPDetails } from "@/features/gamification/services/gamific
 import { Trophy, Star, CheckCircle2, Lock } from "lucide-react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { MilestoneProgressBar } from "@/features/achievements/components/milestone-progress-bar";
-import { motion } from "framer-motion";
 
 interface JourneyTrackerProps {
   xpDetails: XPDetails;
@@ -66,8 +65,12 @@ export const JourneyTracker = React.memo(function JourneyTracker({ xpDetails, ac
                 <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{nextUnlock.description}</p>
                 
                 <MilestoneProgressBar
-                  progressPercentage={xpDetails.progressPercentage}
-                  label="Progress"
+                  progressPercentage={nextUnlock.progress_percentage ?? 0}
+                  label={
+                    nextUnlock.requirement_value
+                      ? `${nextUnlock.current_progress ?? 0} / ${nextUnlock.requirement_value}`
+                      : "Progress"
+                  }
                   className="mt-4"
                 />
               </div>
@@ -81,7 +84,7 @@ export const JourneyTracker = React.memo(function JourneyTracker({ xpDetails, ac
         <div className="flex items-center justify-between">
           <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Achievements</h4>
           <Link
-            href="/achievements"
+            href="/dashboard/achievements"
             className="text-[11px] font-bold text-accent hover:underline flex items-center gap-1"
           >
             View All ({sortedAchievements.filter(a => a.unlocked).length}/{achievements.length}) &rarr;

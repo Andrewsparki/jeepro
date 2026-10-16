@@ -60,4 +60,3 @@ export function ThemeSwitcher({ className }: { className?: string }) {
     </button>
   );
 }
-

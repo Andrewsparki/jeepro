@@ -10,6 +10,7 @@ interface UserItem {
   full_name: string | null;
   avatar_url: string | null;
   target_exam: string | null;
+  role?: string;
   is_admin: boolean;
   created_at: string;
   study_sessions_count: number;
@@ -118,17 +119,28 @@ export default function AdminUsersPage() {
     {
       key: "is_admin",
       label: "Permissions",
-      render: (item: UserItem) => (
-        <span
-          className={
-            item.is_admin
-              ? "px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono"
-              : "px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/[0.04] text-zinc-400 border border-white/[0.06]"
-          }
-        >
-          {item.is_admin ? "Administrator" : "Student"}
-        </span>
-      ),
+      render: (item: UserItem) => {
+        const role = item.role || (item.is_admin ? "admin" : "user");
+        let badgeStyle = "bg-white/[0.04] text-zinc-400 border-white/[0.06]";
+        let label = "Student";
+
+        if (role === "superadmin") {
+          badgeStyle = "bg-amber-500/15 text-amber-300 border-amber-500/30 font-semibold";
+          label = "Superadmin";
+        } else if (role === "admin" || item.is_admin) {
+          badgeStyle = "bg-[#78A9FF]/15 text-[#78A9FF] border-[#78A9FF]/30 font-semibold";
+          label = "Admin";
+        } else if (role === "moderator") {
+          badgeStyle = "bg-purple-500/15 text-purple-300 border-purple-500/30 font-semibold";
+          label = "Moderator";
+        }
+
+        return (
+          <span className={`px-2 py-0.5 rounded-full text-[10px] border font-mono uppercase ${badgeStyle}`}>
+            {label}
+          </span>
+        );
+      },
     },
     {
       key: "created_at",

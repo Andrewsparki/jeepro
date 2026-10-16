@@ -31,12 +31,12 @@ export function PremiumSwitch({
         }
       }}
       className={cn(
-        "relative flex items-center h-7 w-12 shrink-0 cursor-pointer rounded-full p-[2px]",
-        "transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
+        "relative flex items-center h-6 w-11 shrink-0 cursor-pointer rounded-full p-[2px]",
+        "transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D12]",
         "disabled:cursor-not-allowed disabled:opacity-40 select-none",
         checked
-          ? "bg-[#34C759] shadow-[0_0_16px_rgba(52,199,89,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)]"
-          : "bg-muted border border-border hover:bg-muted/80 shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)] dark:bg-white/[0.12] dark:border-white/10 dark:hover:bg-white/[0.16] dark:shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)]"
+          ? "bg-[#78A9FF] shadow-[0_0_12px_rgba(120,169,255,0.35)]"
+          : "bg-[#171D28] border border-[#2B3342] hover:bg-[#1C2331]"
       )}
     >
       <motion.div
@@ -45,13 +45,14 @@ export function PremiumSwitch({
         }}
         transition={{
           type: "spring",
-          stiffness: 600,
-          damping: 35,
+          stiffness: 500,
+          damping: 32,
         }}
         className={cn(
-          "pointer-events-none inline-block h-6 w-6 rounded-full bg-white",
-          "shadow-[0_2px_6px_rgba(0,0,0,0.35),0_1px_1px_rgba(0,0,0,0.15)]",
-          "border border-black/[0.04]"
+          "pointer-events-none inline-block h-5 w-5 rounded-full transition-colors",
+          checked
+            ? "bg-[#0B0D12] shadow-sm"
+            : "bg-[#A4ADBB]"
         )}
       />
     </motion.button>

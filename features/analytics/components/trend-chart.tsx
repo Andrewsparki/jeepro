@@ -12,7 +12,7 @@ import {
   Tooltip,
   ResponsiveContainer
 } from "recharts";
-import { format, subDays, startOfDay, isSameDay } from "date-fns";
+import { format, subDays, startOfDay } from "date-fns";
 import { Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -59,7 +59,7 @@ export function TrendChart({ sessions }: TrendChartProps) {
     <GlassCard hoverTint="blue" className="flex flex-col h-[400px]">
       <div className="flex items-center justify-between mb-6 relative z-10 px-6 pt-6">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-accent/10 rounded-xl text-accent shadow-[0_0_15px_rgba(79,70,229,0.15)] border border-accent/20">
+          <div className="p-2.5 bg-accent/10 rounded-xl text-accent shadow-[0_0_15px_rgba(120,169,255,0.2)] border border-accent/20">
             <Activity className="w-5 h-5" />
           </div>
           <h3 className="font-bold text-xl tracking-tight text-foreground">Study Trend</h3>

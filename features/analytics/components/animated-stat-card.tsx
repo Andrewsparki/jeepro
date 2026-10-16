@@ -24,7 +24,7 @@ export function AnimatedStatCard({
   suffix = "",
   prefix = "",
   icon,
-  iconColorClass = "text-accent bg-accent/10 shadow-[0_0_15px_rgba(79,70,229,0.15)] border-accent/20",
+  iconColorClass = "text-accent bg-accent/10 shadow-[0_0_15px_rgba(120,169,255,0.2)] border-accent/20",
   className,
   hoverTint
 }: AnimatedStatCardProps) {

@@ -1,0 +1,340 @@
+{
+  "id": "phys-02-kinematics",
+  "title": "Kinematics",
+  "order": 2,
+  "unitNumber": 2,
+  "classLevel": "11",
+  "topics": [
+    "Frame of reference and motion in a straight line",
+    "Position-time and velocity-time graphs",
+    "Speed, velocity, uniform and non-uniform motion",
+    "Average speed and instantaneous velocity",
+    "Uniformly accelerated motion and kinematic relations",
+    "Scalars and vectors: addition, subtraction, dot and cross products, resolution",
+    "Relative velocity in 1D and 2D",
+    "Motion in a plane and projectile motion",
+    "Uniform circular motion (kinematic aspects)"
+  ],
+  "notes": "## 1. 1D Motion: Position, Displacement, Velocity, and Acceleration\n* **Displacement ($\\Delta \\vec{r}$):** Shortest directed vector from initial to final position ($\\Delta \\vec{r} = \\vec{r}_f - \\vec{r}_i$). Distance $\\ge |\\text{Displacement}|$, with equality holding **only** when the particle moves in a straight line without reversing direction.\n* **Differential Relations:**\n  $$v = \\frac{dx}{dt}, \\quad a = \\frac{dv}{dt} = \\frac{d^2x}{dt^2} = v\\frac{dv}{dx}$$\n* **Integral Relations:**\n  $$\\Delta x = \\int_{t_1}^{t_2} v\\,dt, \\quad \\text{Distance} = \\int_{t_1}^{t_2} |v|\\,dt, \\quad \\Delta v = \\int_{t_1}^{t_2} a\\,dt, \\quad \\frac{v^2 - u^2}{2} = \\int_{x_1}^{x_2} a\\,dx$$\n* **Speeding Up vs Slowing Down:** A particle speeds up when $\\vec{v} \\cdot \\vec{a} > 0$ (same sign in 1D) and slows down when $\\vec{v} \\cdot \\vec{a} < 0$ (opposite signs in 1D).\n\n## 2. Vectors in Physics\n* **Triangle/Parallelogram Law:** Resultant of $\\vec{A}$ and $\\vec{B}$ at angle $\\theta$: $R = \\sqrt{A^2 + B^2 + 2AB\\cos\\theta}$, angle with $\\vec{A}$ is $\\tan\\alpha = \\frac{B\\sin\\theta}{A + B\\cos\\theta}$.\n* **Subtraction:** $|\\vec{A} - \\vec{B}| = \\sqrt{A^2 + B^2 - 2AB\\cos\\theta}$.\n* **Dot Product:** $\\vec{A} \\cdot \\vec{B} = AB\\cos\\theta = A_x B_x + A_y B_y + A_z B_z$. Projection of $\\vec{A}$ on $\\vec{B}$ is $A\\cos\\theta = \\vec{A} \\cdot \\hat{B}$.\n* **Cross Product:** $\\vec{A} \\times \\vec{B} = (AB\\sin\\theta)\\hat{n}$. Magnitude equals the area of the parallelogram formed by $\\vec{A}$ and $\\vec{B}$.\n\n## 3. Projectile Motion\n* Ground-to-ground oblique projectile is a superposition of **uniform horizontal motion** ($a_x = 0$, $v_x = u\\cos\\theta$) and **uniformly accelerated vertical motion** ($a_y = -g$, $v_y = u\\sin\\theta - gt$).\n* Complementary launch angles $\\theta$ and $(90^\\circ - \\theta)$ with the same initial speed $u$ yield the **same horizontal range $R$**, with $\\frac{H_1}{H_2} = \\tan^2\\theta$, $T_1 T_2 = \\frac{2R}{g}$, and $R = 4\\sqrt{H_1 H_2}$.\n\n## 4. Relative Motion (River-Boat & Rain-Man)\n* **Relative Velocity:** $\\vec{v}_{AB} = \\vec{v}_A - \\vec{v}_B$.\n* **River Crossing (River width $d$, stream speed $u$, boat speed wrt water $v$):**\n  * **Shortest Time:** Head perpendicular to flow ($\\theta = 90^\\circ$ with river flow). $t_{\\min} = \\frac{d}{v}$, drift $x = u \\frac{d}{v}$.\n  * **Shortest Path (Zero Drift, when $v > u$):** Head upstream at angle $\\sin\\phi = \\frac{u}{v}$ with the normal to the bank. Crossing time $t = \\frac{d}{\\sqrt{v^2 - u^2}}$.\n\n## 5. Kinematics of Uniform Circular Motion\n* Angular velocity $\\omega = \\frac{d\\theta}{dt}$, linear speed $v = \\omega r$.\n* Even at constant speed $v$, velocity vector changes direction continuously, producing **centripetal (radial) acceleration** $a_c = \\frac{v^2}{r} = \\omega^2 r$ directed toward the centre.\n* In non-uniform circular motion, tangential acceleration $a_t = \\frac{d|\\vec{v}|}{dt} = \\alpha r$, and total acceleration $a_{\\text{net}} = \\sqrt{a_c^2 + a_t^2}$.",
+  "formulas": [
+    {
+      "id": "phys-02-f01",
+      "title": "Average Speed for Equal Distances vs Equal Time Intervals",
+      "latex": "v_{\\text{avg, equal dist}} = \\frac{2 v_1 v_2}{v_1 + v_2}, \\quad v_{\\text{avg, equal time}} = \\frac{v_1 + v_2}{2}",
+      "explanation": "Gives the harmonic mean of speeds when two equal distances are covered at v_1 and v_2, and the arithmetic mean when two equal time intervals are spent at v_1 and v_2.",
+      "variables": [
+        {
+          "symbol": "v_1, v_2",
+          "name": "Speeds in the two segments",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "v_{\\text{avg}}",
+          "name": "Average speed over entire journey",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m s^-1",
+      "dimensions": "[L^1 T^-1]",
+      "assumptions": "Motion within each individual segment occurs at constant speed.",
+      "validityConditions": "First formula requires s_1 = s_2; second formula requires t_1 = t_2."
+    },
+    {
+      "id": "phys-02-f02",
+      "title": "Equations of Uniformly Accelerated 1D Motion",
+      "latex": "v = u + at, \\quad s = ut + \\frac{1}{2}at^2 = \\left(\\frac{u+v}{2}\\right)t, \\quad v^2 = u^2 + 2as",
+      "explanation": "Relates initial velocity u, final velocity v, constant acceleration a, displacement s, and time t.",
+      "variables": [
+        {
+          "symbol": "u",
+          "name": "Initial velocity",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "vector"
+        },
+        {
+          "symbol": "v",
+          "name": "Final velocity at time t",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "vector"
+        },
+        {
+          "symbol": "a",
+          "name": "Constant acceleration",
+          "siUnit": "m s^-2",
+          "dimension": "[L^1 T^-2]",
+          "type": "vector"
+        },
+        {
+          "symbol": "s",
+          "name": "Net displacement (NOT distance if particle turns around)",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "vector"
+        },
+        {
+          "symbol": "t",
+          "name": "Time elapsed",
+          "siUnit": "s",
+          "dimension": "[T^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m, m s^-1, m s^-2",
+      "dimensions": "Consistent per equation",
+      "assumptions": "Acceleration vector a is strictly constant in both magnitude and direction.",
+      "validityConditions": "Invalid when acceleration varies with time or position; use calculus integration if a = f(t) or a = f(x)."
+    },
+    {
+      "id": "phys-02-f03",
+      "title": "Displacement in the n-th Second",
+      "latex": "s_n = u + \\frac{a}{2}(2n - 1)",
+      "explanation": "Gives the displacement of a uniformly accelerated particle during the 1-second interval between t = (n - 1) s and t = n s.",
+      "variables": [
+        {
+          "symbol": "s_n",
+          "name": "Displacement during the n-th second",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "vector"
+        },
+        {
+          "symbol": "u",
+          "name": "Initial velocity at t = 0",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "vector"
+        },
+        {
+          "symbol": "a",
+          "name": "Constant acceleration",
+          "siUnit": "m s^-2",
+          "dimension": "[L^1 T^-2]",
+          "type": "vector"
+        },
+        {
+          "symbol": "n",
+          "name": "Index of the 1-second interval",
+          "siUnit": "s",
+          "dimension": "[T^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m",
+      "dimensions": "[L^1]",
+      "assumptions": "Constant acceleration; hidden factor of Δt = 1 s ensures dimensional homogeneity.",
+      "validityConditions": "Gives net displacement in that second; if velocity changes sign inside the interval (n-1, n), distance covered is greater than |s_n|."
+    },
+    {
+      "id": "phys-02-f04",
+      "title": "Ground-to-Ground Projectile: Time of Flight, Maximum Height, and Range",
+      "latex": "T = \\frac{2u\\sin\\theta}{g}, \\quad H = \\frac{u^2\\sin^2\\theta}{2g}, \\quad R = \\frac{u^2\\sin(2\\theta)}{g}",
+      "explanation": "Standard parameters for a projectile launched at speed u and angle θ above a flat horizontal ground.",
+      "variables": [
+        {
+          "symbol": "u",
+          "name": "Launch speed",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\theta",
+          "name": "Launch angle with the horizontal",
+          "siUnit": "rad",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "g",
+          "name": "Acceleration due to gravity",
+          "siUnit": "m s^-2",
+          "dimension": "[L^1 T^-2]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "T, H, R",
+          "name": "Time of flight, Maximum height, Horizontal range",
+          "siUnit": "s, m, m",
+          "dimension": "[T^1], [L^1], [L^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "s, m",
+      "dimensions": "[T^1], [L^1]",
+      "assumptions": "Zero air resistance, flat horizontal ground (launch and landing at same elevation), uniform gravity g.",
+      "validityConditions": "Valid when H is much smaller than Earth's radius R_e and aerodynamic drag is negligible."
+    },
+    {
+      "id": "phys-02-f05",
+      "title": "Equation of Trajectory of a Projectile",
+      "latex": "y = x\\tan\\theta - \\frac{gx^2}{2u^2\\cos^2\\theta} = x\\tan\\theta\\left(1 - \\frac{x}{R}\\right)",
+      "explanation": "Relates vertical coordinate y directly to horizontal coordinate x by eliminating time t.",
+      "variables": [
+        {
+          "symbol": "x, y",
+          "name": "Horizontal and vertical coordinates from launch point",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\theta",
+          "name": "Launch angle with horizontal",
+          "siUnit": "rad",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "R",
+          "name": "Horizontal range on level ground",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m",
+      "dimensions": "[L^1]",
+      "assumptions": "Origin (0,0) is at the point of projection; x-axis is horizontal, y-axis is vertically upward.",
+      "validityConditions": "Uniform downward gravity g and no air resistance."
+    },
+    {
+      "id": "phys-02-f06",
+      "title": "Centripetal and Total Acceleration in Circular Motion",
+      "latex": "a_c = \\frac{v^2}{r} = \\omega^2 r, \\quad a_t = \\frac{dv}{dt} = \\alpha r, \\quad a_{\\text{net}} = \\sqrt{a_c^2 + a_t^2}",
+      "explanation": "Separates total acceleration of a particle on a circular path of radius r into radial (direction-changing) and tangential (speed-changing) components.",
+      "variables": [
+        {
+          "symbol": "a_c",
+          "name": "Centripetal (radial) acceleration",
+          "siUnit": "m s^-2",
+          "dimension": "[L^1 T^-2]",
+          "type": "vector"
+        },
+        {
+          "symbol": "a_t",
+          "name": "Tangential acceleration",
+          "siUnit": "m s^-2",
+          "dimension": "[L^1 T^-2]",
+          "type": "vector"
+        },
+        {
+          "symbol": "v, \\omega, \\alpha",
+          "name": "Linear speed, angular speed, angular acceleration",
+          "siUnit": "m s^-1, rad s^-1, rad s^-2",
+          "dimension": "[L^1 T^-1], [T^-1], [T^-2]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "r",
+          "name": "Radius of circular path (or radius of curvature)",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m s^-2",
+      "dimensions": "[L^1 T^-2]",
+      "assumptions": "Planar circular trajectory of constant radius r.",
+      "validityConditions": "For general curved paths (like a projectile), replace r with instantaneous radius of curvature R_c = v^2 / a_normal."
+    }
+  ],
+  "derivations": [
+    {
+      "id": "phys-02-d01",
+      "title": "Equation of Trajectory and Range of an Oblique Projectile",
+      "context": "Eliminating time parameter t from 2D kinematic equations to prove the parabolic path of a projectile.",
+      "steps": [
+        "Resolve initial velocity $\\vec{u}$ into horizontal and vertical components: $u_x = u\\cos\\theta$ and $u_y = u\\sin\\theta$.",
+        "Since horizontal acceleration $a_x = 0$, horizontal displacement at time $t$ is: $$x = (u\\cos\\theta)t \\implies t = \\frac{x}{u\\cos\\theta}$$",
+        "Since vertical acceleration $a_y = -g$, vertical position at time $t$ is: $$y = (u\\sin\\theta)t - \\frac{1}{2}gt^2$$",
+        "Substitute $t = \\frac{x}{u\\cos\\theta}$ into the $y(t)$ equation: $$y = x\\tan\\theta - \\frac{gx^2}{2u^2\\cos^2\\theta}$$",
+        "Factor out $x\\tan\\theta$ and substitute $R = \\frac{2u^2\\sin\\theta\\cos\\theta}{g}$: $$y = x\\tan\\theta\\left(1 - \\frac{x}{R}\\right)$$"
+      ],
+      "finalResult": "y = x\\tan\\theta - \\frac{gx^2}{2u^2\\cos^2\\theta} = x\\tan\\theta\\left(1 - \\frac{x}{R}\\right)"
+    },
+    {
+      "id": "phys-02-d02",
+      "title": "Velocity-Position Differential Equation (v dv/dx = a)",
+      "context": "Deriving the third kinematic equation and handling position-dependent acceleration a(x).",
+      "steps": [
+        "By definition, instantaneous acceleration is $a = \\frac{dv}{dt}$.",
+        "Apply the chain rule using position $x$: $$a = \\frac{dv}{dx} \\cdot \\frac{dx}{dt} = v\\frac{dv}{dx}$$",
+        "Separate variables and integrate from initial state $(x_0, u)$ to final state $(x, v)$: $$\\int_{u}^{v} v\\,dv = \\int_{x_0}^{x} a(x)\\,dx$$",
+        "For constant acceleration $a$ and displacement $s = x - x_0$: $$\\frac{v^2 - u^2}{2} = a s \\implies v^2 = u^2 + 2as$$"
+      ],
+      "finalResult": "v\\frac{dv}{dx} = a \\implies v^2 - u^2 = 2\\int_{x_0}^{x} a(x)\\,dx"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "phys-02-g01",
+      "title": "Velocity (v) vs Time (t) Graph",
+      "xAxis": "Time (t)",
+      "yAxis": "Velocity (v)",
+      "curveType": "General curve (Straight line for uniform acceleration)",
+      "equation": "v(t) = u + \\int_0^t a(t')\\,dt'",
+      "slopeInterpretation": "Instantaneous slope dv/dt equals instantaneous acceleration a(t); chord slope Δv/Δt equals average acceleration.",
+      "areaInterpretation": "Signed area ∫v dt equals net displacement Δx; absolute area ∫|v| dt equals total distance travelled.",
+      "physicalInterpretation": "Zero-crossings of v(t) indicate instants where the particle momentarily stops and reverses its direction of motion."
+    },
+    {
+      "id": "phys-02-g02",
+      "title": "Acceleration (a) vs Position (x) and VelocitySquared (v^2) vs Position (x)",
+      "xAxis": "Position (x)",
+      "yAxis": "Acceleration (a) or Velocity Squared (v^2)",
+      "curveType": "General function a(x) or linear v^2(x) for constant a",
+      "equation": "\\int_{x_1}^{x_2} a\\,dx = \\frac{v_2^2 - v_1^2}{2}",
+      "slopeInterpretation": "For a v^2 vs x graph, the slope d(v^2)/dx equals 2v(dv/dx) = 2a (twice the acceleration).",
+      "areaInterpretation": "Area under the a-x graph equals (v_f^2 - v_i^2)/2, NOT the change in velocity Δv.",
+      "physicalInterpretation": "Directly links spatial force/acceleration profiles to changes in kinetic energy per unit mass."
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "phys-02-cm01",
+      "topic": "Distance vs Displacement in the n-th Second",
+      "mistake": "Using s_n = u + (a/2)(2n - 1) to find distance travelled when a particle thrown upward reaches its peak at t = 2.5 s (inside the 3rd second).",
+      "correction": "When velocity reverses inside the interval (n-1, n), s_n gives net displacement (which is zero for symmetric rise and fall in the 3rd second). Split the interval at the turning point t_stop = -u/a to sum the magnitudes of both paths.",
+      "category": "conceptual"
+    },
+    {
+      "id": "phys-02-cm02",
+      "topic": "Slope of v-x Graph",
+      "mistake": "Taking the slope dv/dx of a velocity-vs-position graph as acceleration a.",
+      "correction": "Acceleration is a = v(dv/dx), which is the product of the ordinate v and the slope dv/dx.",
+      "category": "formula-selection"
+    },
+    {
+      "id": "phys-02-cm03",
+      "topic": "Average Acceleration in Uniform Circular Motion",
+      "mistake": "Saying average acceleration over a half-revolution is zero or equal to v^2/r.",
+      "correction": "Over a half-circle (θ = π), Δv = |v_f - v_i| = 2v and Δt = πr/v, so |a_avg| = Δv/Δt = 2v^2 / (πr).",
+      "category": "sign-convention"
+    }
+  ],
+  "quickRevision": [
+    "Stopping distance under constant braking retardation: d_stop = u^2 / (2a), so doubling initial speed quadruples stopping distance.",
+    "Galileo's Law of Odd Numbers: A body dropped from rest covers distances in successive equal time intervals in the ratio 1 : 3 : 5 : 7 : (2n - 1).",
+    "For a projectile, tan θ = 4H / R; therefore, when R = H, tan θ = 4, and at maximum range (θ = 45°), R_max = 4H.",
+    "Radius of curvature of a projectile at the highest point is R_c = u^2 cos^2 θ / g, and at any angle α with horizontal is R_c = u^2 cos^2 θ / (g cos^3 α).",
+    "Two projectiles collide in mid-air only if the relative velocity vector v_AB points directly along the initial line joining their positions r_BA."
+  ],
+  "sources": [
+    {
+      "title": "NTA JEE Main Official Physics Syllabus — Unit 2: Kinematics",
+      "type": "Official Syllabus",
+      "url": "https://jeemain.nta.nic.in/"
+    },
+    {
+      "title": "NCERT Class 11 Physics Part 1 — Chapters 2 & 3: Motion in a Straight Line & Motion in a Plane",
+      "type": "Textbook",
+      "url": "https://ncert.nic.in/textbook.php?keph1=2-7"
+    }
+  ]
+}

@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, ChevronUp } from "lucide-react";
-import confetti from "canvas-confetti";
 import { useSettings } from "@/providers/settings-provider";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import { NotificationService } from "@/features/notifications/services/notification.service";
@@ -38,11 +37,14 @@ export function LevelUpToast({ currentLevel }: LevelUpToastProps) {
       }
 
       // Minor confetti for level up
-      confetti({
-        particleCount: 40,
-        spread: 60,
-        origin: { y: 0.8 },
-        colors: ["#3B82F6", "#8B5CF6", "#F59E0B"]
+      import("canvas-confetti").then((mod) => {
+        const confetti = mod.default || mod;
+        confetti({
+          particleCount: 40,
+          spread: 60,
+          origin: { y: 0.8 },
+          colors: ["#3B82F6", "#8B5CF6", "#F59E0B"]
+        });
       });
 
       const timer = setTimeout(() => {

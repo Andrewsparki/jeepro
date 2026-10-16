@@ -14,21 +14,31 @@ interface WhatsNewTriggerProps {
   className?: string;
 }
 
+let cachedUpdates: { data: AppUpdate[]; timestamp: number } | null = null;
+const CACHE_TTL_MS = 60_000;
+
 export function WhatsNewTrigger({
   variant = "ghost",
   showLabel = true,
   className,
 }: WhatsNewTriggerProps) {
   const [open, setOpen] = useState(false);
-  const [updates, setUpdates] = useState<AppUpdate[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [updates, setUpdates] = useState<AppUpdate[]>(() => cachedUpdates?.data || []);
+  const [isLoading, setIsLoading] = useState(!cachedUpdates);
 
-  const fetchUpdates = useCallback(async () => {
+  const fetchUpdates = useCallback(async (force = false) => {
+    if (!force && cachedUpdates && Date.now() - cachedUpdates.timestamp < CACHE_TTL_MS) {
+      setUpdates(cachedUpdates.data);
+      setIsLoading(false);
+      return;
+    }
     try {
       const res = await fetch("/api/whats-new");
       if (res.ok) {
         const data = await res.json();
-        setUpdates(data.updates || []);
+        const fresh = (data.updates || []) as AppUpdate[];
+        cachedUpdates = { data: fresh, timestamp: Date.now() };
+        setUpdates(fresh);
       }
     } catch (error) {
       console.error("Failed to fetch What's New updates:", error);
@@ -98,33 +108,49 @@ export function WhatsNewTrigger({
         <button
           onClick={handleOpenModal}
           className={cn(
-            "w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition-colors hover:bg-accent text-muted-foreground hover:text-foreground relative group",
+            "relative flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] focus-visible:ring-offset-1 focus-visible:ring-offset-[#0B0D12] active:scale-[0.98] w-full group select-none cursor-pointer",
+            open
+              ? "text-white font-semibold"
+              : "text-[#A4ADBB] hover:text-[#F5F7FB] hover:bg-white/[0.04]",
             className
           )}
         >
-          <div className="relative p-1 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
-            <Sparkles className="w-4 h-4" />
+          {open && (
+            <div
+              className="absolute inset-0 rounded-lg bg-[#78A9FF]/10 border border-[#78A9FF]/20 shadow-[inset_0_1px_0_rgba(120,169,255,0.12)]"
+            />
+          )}
+          <div className="relative z-10 flex items-center justify-between w-full">
+            <div className="flex items-center gap-3">
+              <div
+                className={cn(
+                  "flex items-center justify-center transition-colors duration-200",
+                  open ? "text-[#78A9FF]" : "text-[#A4ADBB] group-hover:text-[#F5F7FB]"
+                )}
+              >
+                <Sparkles className="h-5 w-5" />
+              </div>
+              {showLabel && <span className="truncate">What&apos;s New</span>}
+            </div>
+
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-primary ring-2 ring-background animate-pulse" />
+              <span className="bg-[#78A9FF]/20 text-[#78A9FF] border border-[#78A9FF]/30 text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-5 text-center leading-none flex items-center justify-center shrink-0">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
             )}
           </div>
-          {showLabel && <span className="truncate">What&apos;s New</span>}
-
-          {unreadCount > 0 && (
-            <span className="ml-auto text-[11px] font-bold px-1.5 py-0.2 rounded-full bg-primary/20 text-primary">
-              {unreadCount}
-            </span>
-          )}
         </button>
 
-        <WhatsNewModal
-          open={open}
-          onOpenChange={setOpen}
-          updates={updates}
-          onMarkRead={handleMarkRead}
-          onMarkAllRead={handleMarkAllRead}
-          isLoading={isLoading}
-        />
+        {open && (
+          <WhatsNewModal
+            open={open}
+            onOpenChange={setOpen}
+            updates={updates}
+            onMarkRead={handleMarkRead}
+            onMarkAllRead={handleMarkAllRead}
+            isLoading={isLoading}
+          />
+        )}
       </>
     );
   }
@@ -147,14 +173,16 @@ export function WhatsNewTrigger({
         )}
       </Button>
 
-      <WhatsNewModal
-        open={open}
-        onOpenChange={setOpen}
-        updates={updates}
-        onMarkRead={handleMarkRead}
-        onMarkAllRead={handleMarkAllRead}
-        isLoading={isLoading}
-      />
+      {open && (
+        <WhatsNewModal
+          open={open}
+          onOpenChange={setOpen}
+          updates={updates}
+          onMarkRead={handleMarkRead}
+          onMarkAllRead={handleMarkAllRead}
+          isLoading={isLoading}
+        />
+      )}
     </>
   );
 }

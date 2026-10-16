@@ -2,44 +2,47 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { FixedPortal } from "@/components/ui/fixed-portal";
+import { FloatingParticles } from "@/components/ui/floating-particles";
+
+export interface AmbientBackgroundProps {
+  /**
+   * "obsidian": Restrained, zero-video, high-contrast dark graphite canvas (Apple/Linear grade).
+   * "default": Cinematic ambient video loop (legacy marketing/auth fallback).
+   */
+  variant?: "default" | "obsidian";
+}
 
 /**
- * AmbientBackground — Unified cinematic ambient video background for public & auth routes.
+ * AmbientBackground — Atmospheric background canvas for public routes.
  *
- * Layering (bottom to top):
- *   1. Solid dark base (#030712)
- *   2. Deep space radial gradient atmosphere
- *   3. Ambient video loop (jee-pro-ambient-loop-9s-unlimited-fps.webm)
- *   4. Micro-star grid mesh overlay
- *   5. Peripheral vignette
- *
- * Scoping:
- *   - Used across public landing, marketing (/pricing, /about), and auth (/login, /signup, etc.)
- *   - NEVER mounted on authenticated routes (/dashboard, /study, etc.)
- *   - Zero JS animation loops or requestAnimationFrame overhead
+ * In "obsidian" mode:
+ *   - Zero video decode overhead or battery drain
+ *   - Restrained neutral graphite & obsidian surfaces (#06080E)
+ *   - Compositor-only CSS radial lighting and micro-grid texture
  */
-export function AmbientBackground() {
+export function AmbientBackground({ variant = "obsidian" }: AmbientBackgroundProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoFailed, setVideoFailed] = useState(false);
 
+  const isObsidian = variant === "obsidian";
+
   useEffect(() => {
+    if (isObsidian) return;
+
     const video = videoRef.current;
     if (!video) return;
 
-    // Explicitly guarantee muted on the DOM node for strict browser autoplay policies
     video.defaultMuted = true;
     video.muted = true;
 
-    // Respect prefers-reduced-motion: pause the video, show static fallback
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     const applyMotionPref = () => {
       if (motionQuery.matches) {
         video.pause();
       } else {
-        // Attempt autoplay — browsers may block it, which is fine (static fallback shows)
         video.play().catch(() => {
-          // Autoplay blocked — not an error, static fallback remains visible
+          // Autoplay blocked — static fallback shows
         });
       }
     };
@@ -50,56 +53,80 @@ export function AmbientBackground() {
     return () => {
       motionQuery.removeEventListener("change", applyMotionPref);
     };
-  }, [videoFailed]);
+  }, [videoFailed, isObsidian]);
 
   return (
     <FixedPortal>
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#030712] select-none transform-gpu"
+        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#0B0D12] select-none transform-gpu"
         style={{ contain: "paint layout" }}
       >
-        {/* 1. Deep Space Base Atmosphere (always visible — serves as static fallback) */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_100%_at_50%_-10%,#0c142e_0%,#030712_70%,#010309_100%)]" />
+        {isObsidian ? (
+          <>
+            {/* 1. Neutral Obsidian & Subtle Electric Blue Atmospheric Gradients */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(120,169,255,0.035)_0%,rgba(11,13,18,0.95)_60%,#0B0D12_100%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_120%,rgba(168,197,255,0.02)_0%,transparent_70%)]" />
 
-        {/* 2. Ambient Video Loop (compositor-friendly media layer) */}
-        {!videoFailed && (
-          <video
-            ref={videoRef}
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            onError={() => setVideoFailed(true)}
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{
-              minWidth: "100%",
-              minHeight: "100%",
-            }}
-          >
-            <source
-              src="/videos/jee-pro-ambient-loop-9s-unlimited-fps.webm"
-              type="video/webm"
+            {/* 2. Microscopic Floating Particles Canvas */}
+            <FloatingParticles zIndexClass="z-0" />
+
+            {/* 3. Micro-Grid Dot Texture (Clean GPU Canvas) */}
+            <div
+              className="absolute inset-0 opacity-[0.035]"
+              style={{
+                backgroundImage: `radial-gradient(rgba(245, 247, 251, 0.6) 1px, transparent 1px)`,
+                backgroundSize: "32px 32px",
+              }}
             />
-          </video>
+
+            {/* 3. Subtle Peripheral Vignette */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,rgba(11,13,18,0.85)_100%)] pointer-events-none" />
+          </>
+        ) : (
+          <>
+            {/* Obsidian Base Atmosphere */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_100%_at_50%_-10%,#121722_0%,#0B0D12_70%,#06070A_100%)]" />
+
+            {/* Ambient Video Loop */}
+            {!videoFailed && (
+              <video
+                ref={videoRef}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                onError={() => setVideoFailed(true)}
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{
+                  minWidth: "100%",
+                  minHeight: "100%",
+                }}
+              >
+                <source
+                  src="/videos/jee-pro-ambient-loop-9s-unlimited-fps.webm"
+                  type="video/webm"
+                />
+              </video>
+            )}
+
+            {/* Micro-Star Grid Mesh */}
+            <div
+              className="absolute inset-0 opacity-[0.08]"
+              style={{
+                backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px)`,
+                backgroundSize: "36px 36px",
+              }}
+            />
+
+            {/* Peripheral Vignette */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(3,7,18,0.65)_100%)] pointer-events-none" />
+          </>
         )}
-
-        {/* 3. Micro-Star Grid Mesh (GPU Hardware Texture) */}
-        <div
-          className="absolute inset-0 opacity-[0.08]"
-          style={{
-            backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px)`,
-            backgroundSize: "36px 36px",
-          }}
-        />
-
-        {/* 4. Peripheral Vignette */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(3,7,18,0.65)_100%)] pointer-events-none" />
       </div>
     </FixedPortal>
   );
 }
 
-// Backward-compatible alias for existing imports
 export { AmbientBackground as LandingBackground };

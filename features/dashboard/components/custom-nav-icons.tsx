@@ -163,7 +163,7 @@ export function AnalyticsAnimatedIcon({
   if (shouldReduceMotion) {
     return (
       <svg className={cn("h-5 w-5", className)} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="m3 3 0 18 18 0" />
+        <path d="M3 3v18h18" />
         <path d="m19 9-5 5-4-4-3 3" />
       </svg>
     );
@@ -171,7 +171,7 @@ export function AnalyticsAnimatedIcon({
 
   return (
     <motion.svg
-      className={cn("h-5 w-5 overflow-visible", className)}
+      className={cn("h-5 w-5", className)}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -180,72 +180,15 @@ export function AnalyticsAnimatedIcon({
       strokeLinejoin="round"
       animate={
         isPressed
-          ? { scale: 0.88, y: 1.5 }
-          : { scale: 1, y: 0 }
+          ? { scale: 0.88, y: -0.5 }
+          : isHovered || isActive
+            ? { scale: 1.05, y: -1 }
+            : { scale: 1, y: 0 }
       }
       transition={{ type: "spring", stiffness: 550, damping: 14 }}
     >
-      {/* Chart axes */}
-      <path d="M3 3v18h18" strokeOpacity={isPressed ? 1 : isHovered ? 0.9 : 0.6} />
-
-      {/* Modern volume bars */}
-      <motion.rect
-        x="6.5"
-        width="2"
-        height="2"
-        y="18"
-        rx="0.75"
-        fill="currentColor"
-        fillOpacity={0.08}
-        stroke="none"
-        initial={false}
-        animate={
-          isPressed
-            ? { y: 12, height: 8, fillOpacity: 0.5 }
-            : isHovered
-              ? { y: 15, height: 5, fillOpacity: 0.25 }
-              : { y: 18, height: 2, fillOpacity: isActive ? 0.15 : 0.08 }
-        }
-        transition={{ type: "spring", stiffness: 500, damping: 16 }}
-      />
-      <motion.rect
-        x="11"
-        width="2"
-        height="3"
-        y="17"
-        rx="0.75"
-        fill="currentColor"
-        fillOpacity={0.08}
-        stroke="none"
-        initial={false}
-        animate={
-          isPressed
-            ? { y: 8, height: 12, fillOpacity: 0.6 }
-            : isHovered
-              ? { y: 11, height: 9, fillOpacity: 0.3 }
-              : { y: 17, height: 3, fillOpacity: isActive ? 0.15 : 0.08 }
-        }
-        transition={{ type: "spring", stiffness: 500, damping: 16 }}
-      />
-      <motion.rect
-        x="15.5"
-        width="2"
-        height="4"
-        y="16"
-        rx="0.75"
-        fill="currentColor"
-        fillOpacity={0.08}
-        stroke="none"
-        initial={false}
-        animate={
-          isPressed
-            ? { y: 5, height: 15, fillOpacity: 0.7 }
-            : isHovered
-              ? { y: 8, height: 12, fillOpacity: 0.35 }
-              : { y: 16, height: 4, fillOpacity: isActive ? 0.15 : 0.08 }
-        }
-        transition={{ type: "spring", stiffness: 500, damping: 16 }}
-      />
+      {/* Crisp Chart axes */}
+      <path d="M3 3v18h18" />
 
       {/* Upward trendline */}
       <motion.path
@@ -253,9 +196,9 @@ export function AnalyticsAnimatedIcon({
         initial={false}
         animate={
           isPressed
-            ? { strokeWidth: 2.8, y: -2 }
+            ? { strokeWidth: 2.5, y: -1 }
             : isHovered
-              ? { strokeWidth: 2.3, y: -1 }
+              ? { strokeWidth: 2.2, y: -0.5 }
               : { strokeWidth: 2, y: 0 }
         }
         transition={{ type: "spring", stiffness: 500, damping: 15 }}
@@ -270,9 +213,9 @@ export function AnalyticsAnimatedIcon({
         initial={false}
         animate={
           isPressed
-            ? { scale: 1.6, y: -2 }
+            ? { scale: 1.4, y: -1 }
             : isHovered
-              ? { scale: 1.3, y: -1 }
+              ? { scale: 1.2, y: -0.5 }
               : { scale: 1, y: 0 }
         }
         transition={{ type: "spring", stiffness: 550, damping: 13 }}

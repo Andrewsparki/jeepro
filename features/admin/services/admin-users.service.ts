@@ -1,6 +1,8 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import type { UserRole } from "../types/roles.types";
+import { normalizeUserRole } from "../types/roles.types";
 
 export interface AdminUserListItem {
   id: string;
@@ -9,6 +11,7 @@ export interface AdminUserListItem {
   avatar_url: string | null;
   target_exam: string | null;
   target_year: number | null;
+  role: UserRole;
   is_admin: boolean;
   created_at: string;
   study_sessions_count: number;
@@ -22,6 +25,7 @@ export interface AdminUserDetail {
   avatar_url: string | null;
   target_exam: string | null;
   target_year: number | null;
+  role: UserRole;
   is_admin: boolean;
   created_at: string;
   updated_at: string;
@@ -58,7 +62,7 @@ export async function getUsers(
   // Build base query
   let query = supabase
     .from("profiles")
-    .select("id, email, full_name, avatar_url, target_exam, target_year, is_admin, created_at", {
+    .select("id, email, full_name, avatar_url, target_exam, target_year, role, is_admin, created_at", {
       count: "exact",
     });
 
@@ -69,9 +73,27 @@ export async function getUsers(
   }
 
   // Apply pagination and ordering
-  const { data: profiles, count, error } = await query
+  let { data: profiles, count, error } = await query
     .order("created_at", { ascending: false })
     .range(offset, offset + pageSize - 1);
+
+  if (error && (error.code === "42703" || error.message?.includes("role"))) {
+    let fallbackQuery = supabase
+      .from("profiles")
+      .select("id, email, full_name, avatar_url, target_exam, target_year, is_admin, created_at", {
+        count: "exact",
+      });
+    if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`;
+      fallbackQuery = fallbackQuery.or(`email.ilike.${searchTerm},full_name.ilike.${searchTerm}`);
+    }
+    const fallbackRes = await fallbackQuery
+      .order("created_at", { ascending: false })
+      .range(offset, offset + pageSize - 1);
+    profiles = fallbackRes.data ? fallbackRes.data.map((p) => ({ ...p, role: p.is_admin ? "admin" : "user" })) : null;
+    count = fallbackRes.count;
+    error = fallbackRes.error;
+  }
 
   if (error) {
     console.error("Error fetching users:", error);
@@ -111,6 +133,7 @@ export async function getUsers(
 
   const users: AdminUserListItem[] = profiles.map((p) => ({
     ...p,
+    role: normalizeUserRole(p.role, p.is_admin),
     study_sessions_count: sessionCounts[p.id] || 0,
     topics_mastered_count: masteredCounts[p.id] || 0,
   }));
@@ -130,11 +153,21 @@ export async function getUserDetail(userId: string): Promise<AdminUserDetail | n
   const supabase = await createAdminClient();
 
   // Fetch profile
-  const { data: profile, error: profileError } = await supabase
+  let { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("id, email, full_name, avatar_url, target_exam, target_year, is_admin, created_at, updated_at")
+    .select("id, email, full_name, avatar_url, target_exam, target_year, role, is_admin, created_at, updated_at")
     .eq("id", userId)
     .single();
+
+  if (profileError && (profileError.code === "42703" || profileError.message?.includes("role"))) {
+    const fallback = await supabase
+      .from("profiles")
+      .select("id, email, full_name, avatar_url, target_exam, target_year, is_admin, created_at, updated_at")
+      .eq("id", userId)
+      .single();
+    profile = fallback.data ? { ...fallback.data, role: fallback.data.is_admin ? "admin" : "user" } : null;
+    profileError = fallback.error;
+  }
 
   if (profileError || !profile) {
     console.error("Error fetching user detail:", profileError);
@@ -174,6 +207,7 @@ export async function getUserDetail(userId: string): Promise<AdminUserDetail | n
 
   return {
     ...profile,
+    role: normalizeUserRole(profile.role, profile.is_admin),
     study_sessions_count: sessions.length,
     total_study_time_seconds: totalStudyTime,
     topics_mastered_count: masteredCount,

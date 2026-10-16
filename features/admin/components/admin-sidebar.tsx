@@ -13,6 +13,8 @@ import {
   Flag,
   LifeBuoy,
   Sparkles,
+  LineChart,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, LayoutGroup } from "framer-motion";
@@ -21,6 +23,8 @@ import { playHapticSound } from "@/lib/sound-effects";
 
 export const ADMIN_NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/analytics", label: "Analytics & Telemetry", icon: LineChart },
+  { href: "/admin/roles", label: "Role Management", icon: ShieldCheck },
   { href: "/admin/whats-new", label: "What's New", icon: Sparkles },
   { href: "/admin/reports", label: "Chat Moderation", icon: Flag },
   { href: "/admin/support", label: "Support Desk", icon: LifeBuoy },
@@ -34,9 +38,9 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex flex-col w-[260px] min-h-screen border-r border-white/[0.06] bg-[#0c0c0c] select-none">
+    <aside className="hidden lg:flex flex-col w-[260px] h-[100dvh] max-h-[100dvh] shrink-0 border-r border-white/[0.06] bg-[#0c0c0c] select-none sticky top-0 overflow-hidden">
       {/* Brand */}
-      <div className="flex items-center gap-3 px-6 py-5 border-b border-white/[0.06]">
+      <div className="flex items-center gap-3 px-6 py-5 border-b border-white/[0.06] shrink-0">
         <motion.div
           whileHover={{ scale: 1.05, rotate: 2 }}
           whileTap={{ scale: 0.95 }}
@@ -59,7 +63,7 @@ export function AdminSidebar() {
 
       {/* Navigation */}
       <LayoutGroup id="admin-sidebar-nav">
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav data-lenis-prevent className="flex-1 min-h-0 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar">
           {ADMIN_NAV_ITEMS.map((item) => {
             const isActive = item.exact
               ? pathname === item.href
@@ -104,7 +108,7 @@ export function AdminSidebar() {
       </LayoutGroup>
 
       {/* Footer */}
-      <div className="px-3 py-4 border-t border-white/[0.06]">
+      <div className="px-3 py-4 border-t border-white/[0.06] shrink-0">
         <motion.div whileTap={{ scale: 0.98 }}>
           <Link
             href="/dashboard"

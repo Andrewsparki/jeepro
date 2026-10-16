@@ -56,8 +56,8 @@ export default function SubjectChaptersPage() {
           <Skeleton className="h-10 w-1/4 rounded" />
           <Skeleton className="h-4 w-2/4 rounded" />
           <div className="space-y-4 mt-8">
-            <Skeleton className="h-32 w-full rounded-2xl border border-glass-border bg-glass" />
-            <Skeleton className="h-32 w-full rounded-2xl border border-glass-border bg-glass" />
+            <Skeleton className="h-32 w-full rounded-xl border border-white/[0.08] bg-[#090C15]" />
+            <Skeleton className="h-32 w-full rounded-xl border border-white/[0.08] bg-[#090C15]" />
           </div>
         </div>
       ) : subject ? (

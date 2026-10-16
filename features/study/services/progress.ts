@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { getChapterUuid, getTopicUuid } from "@/features/syllabus/services/mapping.service";
 import { NotificationService } from "@/features/notifications/services/notification.service";
+import { getLocalISTDateString, calculateStreakFromSessions } from "@/lib/date-utils";
 
 const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
@@ -99,17 +100,17 @@ export async function resetAccountProgress(): Promise<boolean> {
   }
 }
 
-export async function getUserProgress(): Promise<UserTopicProgress[]> {
+export async function getUserProgress(userId?: string): Promise<UserTopicProgress[]> {
   try {
     const supabase = createClient();
     
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return [];
+    const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
+    if (!resolvedUserId) return [];
     
     const { data: progress, error } = await supabase
       .from("user_topic_progress")
       .select("*")
-      .eq("user_id", user.id);
+      .eq("user_id", resolvedUserId);
       
     if (error) {
       console.error("Error fetching user progress:", error.message, error.details, error.hint);
@@ -316,15 +317,15 @@ export async function updateSubjectProgress(subjectSlug: string, status: Progres
   return (data || []) as UserTopicProgress[];
 }
 
-export async function getStudySessions(limit?: number): Promise<StudySession[]> {
+export async function getStudySessions(limit?: number, userId?: string): Promise<StudySession[]> {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
+  const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
+  if (!resolvedUserId) return [];
 
   let query = supabase
     .from("study_sessions")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", resolvedUserId)
     .order("started_at", { ascending: false });
 
   if (typeof limit === "number" && limit > 0) {
@@ -342,6 +343,7 @@ export async function getStudySessions(limit?: number): Promise<StudySession[]> 
 }
 
 import { updateMissionProgress } from "@/features/daily-missions/services/missions.service";
+import { calculateSessionXP, ActivityType } from "@/features/progress/config/xp-config";
 
 export async function saveStudySession({
   durationSeconds,
@@ -368,6 +370,8 @@ export async function saveStudySession({
   const chapterUuid = await getChapterUuid(chapterId);
   const topicUuid = await getTopicUuid(topicId);
 
+  const xpEarned = calculateSessionXP(durationSeconds, activityType as ActivityType | undefined);
+
   const { data, error } = await supabase
     .from("study_sessions")
     .insert({
@@ -377,7 +381,8 @@ export async function saveStudySession({
       ended_at: endedAt,
       chapter_id: chapterUuid && isUuid(chapterUuid) ? chapterUuid : null,
       topic_id: topicUuid && isUuid(topicUuid) ? topicUuid : null,
-      activity_type: activityType || null,
+      activity_type: activityType || "deep_work",
+      xp_earned: xpEarned,
     })
     .select()
     .single();
@@ -391,9 +396,9 @@ export async function saveStudySession({
   try {
     const durationMins = Math.floor(durationSeconds / 60);
     if (durationMins > 0) {
-      await updateMissionProgress("study_duration", durationMins);
+      await updateMissionProgress("study_duration", durationMins, user.id);
     }
-    await updateMissionProgress("focus_sessions", 1);
+    await updateMissionProgress("focus_sessions", 1, user.id);
   } catch (err) {
     console.error("Error updating mission progress for session:", err);
   }
@@ -406,128 +411,108 @@ export async function saveStudySession({
   return data as StudySession;
 }
 
-import { getSyllabus, getChapterBySlug, getSubjectBySlug } from "@/features/syllabus/services/syllabus";
+import { getSyllabus, getChapterBySlug, getSubjectBySlug, type Subject } from "@/features/syllabus/services/syllabus";
 import { calculateXPAndLevel, getAchievements, generateXPEvents } from "@/features/gamification/services/gamification";
 import { AchievementsService } from "@/features/achievements/services/achievements.service";
 import { getPlannerEvents } from "@/features/planner/services/planner.service";
 import { getTodayMissions, getAllCompletedMissions } from "@/features/daily-missions/services/missions.service";
 
-export async function getDashboardMetrics() {
-  const [progress, sessions, syllabus, allEvents, allCompletedMissions, realAchievements] = await Promise.all([
-    getUserProgress(),
-    getStudySessions(),
-    getSyllabus(),
-    getPlannerEvents(),
-    getAllCompletedMissions(),
-    AchievementsService.getUserAchievements().catch(() => [])
+export interface CriticalDashboardMetrics {
+  masteredTopics: number;
+  inProgressTopics: number;
+  studyTimeFormatted: string;
+  totalDurationSeconds: number;
+  sessionsCount: number;
+  todayStudyHours: number;
+  todayStudyMinutes: number;
+  todayStudyTimeFormatted: string;
+  topicsCompletedToday: number;
+  currentStreak: number;
+  lastActiveChapter: {
+    subjectSlug: string;
+    subjectName: string;
+    chapterSlug: string;
+    chapterTitle: string;
+  } | null;
+  weeklyStudyHours: number;
+  study_sessions: StudySession[];
+  progress: UserTopicProgress[];
+  syllabus: Subject[];
+}
+
+export interface SecondaryDashboardMetrics {
+  xpDetails: ReturnType<typeof calculateXPAndLevel>;
+  achievements: ReturnType<typeof getAchievements>;
+  todaysEvents: Awaited<ReturnType<typeof getPlannerEvents>>;
+  dailyMissions: Awaited<ReturnType<typeof getTodayMissions>>;
+  xpEvents: ReturnType<typeof generateXPEvents>;
+}
+
+export type CompleteDashboardMetrics = CriticalDashboardMetrics & SecondaryDashboardMetrics;
+
+/**
+ * Fast above-the-fold critical metrics loader.
+ * Queries only user_topic_progress and study_sessions and calculates streak/stats.
+ */
+export async function getCriticalDashboardMetrics(userId?: string): Promise<CriticalDashboardMetrics> {
+  const supabase = createClient();
+  const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
+
+  const [progress, sessions] = await Promise.all([
+    getUserProgress(resolvedUserId),
+    getStudySessions(undefined, resolvedUserId),
   ]);
 
-  // Reuse already-fetched sessions to avoid duplicate database query when daily missions are generated
-  const dailyMissions = await getTodayMissions(sessions);
+  const syllabus = await getSyllabus(progress);
 
-  const masteredCount = progress.filter(p => p.status === "Mastered").length;
-  const inProgressCount = progress.filter(p => p.status === "In Progress").length;
-  
+  const masteredCount = progress.filter((p) => p.status === "Mastered").length;
+  const inProgressCount = progress.filter((p) => p.status === "In Progress").length;
+
   // Overall totals
   const totalDurationSeconds = sessions.reduce((acc, s) => acc + s.duration_seconds, 0);
   const studyHours = Math.floor(totalDurationSeconds / 3600);
   const studyMinutes = Math.floor((totalDurationSeconds % 3600) / 60);
-  
-  // Today stats
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const todaySessions = sessions.filter(s => new Date(s.started_at) >= today);
+
+  // Today stats in consistent IST
+  const todayDateStr = getLocalISTDateString();
+  const todaySessions = sessions.filter((s) => getLocalISTDateString(s.started_at) === todayDateStr);
   const todayDurationSeconds = todaySessions.reduce((acc, s) => acc + s.duration_seconds, 0);
   const todayStudyHours = Math.floor(todayDurationSeconds / 3600);
   const todayStudyMinutes = Math.floor((todayDurationSeconds % 3600) / 60);
-  const todayStudyTimeFormatted = todayStudyHours > 0 
-    ? `${todayStudyHours}h ${todayStudyMinutes}m` 
-    : `${todayStudyMinutes}m`;
+  const todayStudyTimeFormatted =
+    todayStudyHours > 0 ? `${todayStudyHours}h ${todayStudyMinutes}m` : `${todayStudyMinutes}m`;
 
-  const topicsCompletedToday = progress.filter(p => p.status === "Mastered" && p.completed_at && new Date(p.completed_at) >= today).length;
+  const topicsCompletedToday = progress.filter(
+    (p) => p.status === "Mastered" && p.completed_at && getLocalISTDateString(p.completed_at) === todayDateStr
+  ).length;
 
-  // Streak Calculation
-  let currentStreak = 0;
-  const uniqueStudyDays = new Set(
-    sessions.map(s => {
-      const d = new Date(s.started_at);
-      return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-    })
-  );
-
-  const checkDate = new Date();
-  // If no session today, check if streak continued yesterday
-  const todayStr = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
-  if (!uniqueStudyDays.has(todayStr)) {
-    checkDate.setDate(checkDate.getDate() - 1);
-  }
-
-  while (true) {
-    const dateStr = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`;
-    if (uniqueStudyDays.has(dateStr)) {
-      currentStreak++;
-      checkDate.setDate(checkDate.getDate() - 1);
-    } else {
-      break;
-    }
-  }
-
-  // Gamification
-  const unlockedAchievementsList = realAchievements.filter(a => a.unlocked);
-  const achievementXP = unlockedAchievementsList.reduce((sum, a) => sum + (a.xp_reward || 0), 0);
-
-  const xpDetails = calculateXPAndLevel(sessions, progress, syllabus, allCompletedMissions, achievementXP);
-  const achievements = realAchievements.length > 0
-    ? realAchievements.map(a => ({
-        id: a.id,
-        title: a.title,
-        description: a.description,
-        icon: a.icon,
-        unlocked: a.unlocked,
-        unlockedAt: a.unlocked_at || undefined,
-      }))
-    : getAchievements(sessions, progress, syllabus, currentStreak);
-  const xpEvents = generateXPEvents(sessions, progress, syllabus, allCompletedMissions, unlockedAchievementsList);
+  // Streak Calculation in consistent IST
+  const currentStreak = calculateStreakFromSessions(sessions);
 
   // Last active chapter for Continue Learning
   let lastActiveChapter = null;
-  if (sessions.length > 0) {
-    const lastSessionWithChapter = sessions.find(s => s.chapter_id);
-    if (lastSessionWithChapter && lastSessionWithChapter.chapter_id) {
-      // Find the chapter in the syllabus
-      for (const sub of syllabus) {
-        const chap = sub.chapters.find(c => c.id === lastSessionWithChapter.chapter_id);
-        if (chap) {
-          lastActiveChapter = {
-            subjectSlug: sub.slug,
-            subjectName: sub.name,
-            chapterSlug: chap.slug,
-            chapterTitle: chap.title
-          };
-          break;
-        }
+  const lastChapterId = sessions.find((s) => s.chapter_id)?.chapter_id;
+  if (lastChapterId) {
+    for (const sub of syllabus) {
+      const chap = sub.chapters.find((c) => c.id === lastChapterId);
+      if (chap) {
+        lastActiveChapter = {
+          subjectSlug: sub.slug,
+          subjectName: sub.name,
+          chapterSlug: chap.slug,
+          chapterTitle: chap.title,
+        };
+        break;
       }
     }
   }
-
-  // Today's events
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const todayEnd = new Date();
-  todayEnd.setHours(23, 59, 59, 999);
-
-  const todaysEvents = allEvents.filter(e => {
-    const eventTime = new Date(e.start_time);
-    return eventTime >= todayStart && eventTime <= todayEnd;
-  });
 
   // Weekly stats
   const startOfWeek = new Date();
   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Sunday
   startOfWeek.setHours(0, 0, 0, 0);
 
-  const weeklySessions = sessions.filter(s => new Date(s.started_at) >= startOfWeek);
+  const weeklySessions = sessions.filter((s) => new Date(s.started_at) >= startOfWeek);
   const weeklyDurationSeconds = weeklySessions.reduce((acc, s) => acc + s.duration_seconds, 0);
   const weeklyStudyHours = Math.floor(weeklyDurationSeconds / 3600);
 
@@ -542,15 +527,104 @@ export async function getDashboardMetrics() {
     todayStudyTimeFormatted,
     topicsCompletedToday,
     currentStreak,
-    xpDetails,
-    achievements,
     lastActiveChapter,
     syllabus,
-    todaysEvents,
     weeklyStudyHours,
     study_sessions: sessions,
     progress,
+  };
+}
+
+/**
+ * Secondary background metrics loader (planner events, daily missions, achievements, xp details).
+ */
+export async function getSecondaryDashboardMetrics(
+  userId?: string,
+  preloadedSessions?: StudySession[],
+  preloadedProgress?: UserTopicProgress[],
+  preloadedSyllabus?: Subject[],
+  currentStreak: number = 0
+): Promise<SecondaryDashboardMetrics> {
+  const supabase = createClient();
+  const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
+
+  const sessions = preloadedSessions ?? (await getStudySessions(undefined, resolvedUserId));
+  const progress = preloadedProgress ?? (await getUserProgress(resolvedUserId));
+  const syllabus = preloadedSyllabus ?? (await getSyllabus(progress));
+
+  const [allEvents, allCompletedMissions, realAchievements, dailyMissions, rpcTotalXPRes] = await Promise.all([
+    getPlannerEvents(),
+    getAllCompletedMissions(resolvedUserId),
+    AchievementsService.getUserAchievements(resolvedUserId).catch(() => []),
+    getTodayMissions(sessions, resolvedUserId),
+    resolvedUserId ? supabase.rpc("calculate_user_total_xp", { p_user_id: resolvedUserId }) : Promise.resolve({ data: null, error: null }),
+  ]);
+
+  const canonicalTotalXP = typeof rpcTotalXPRes?.data === "number" ? Number(rpcTotalXPRes.data) : null;
+
+  // Gamification
+  const unlockedAchievementsList = realAchievements.filter((a) => a.unlocked);
+  const achievementXP = unlockedAchievementsList.reduce((sum, a) => sum + (a.xp_reward || 0), 0);
+
+  const xpDetails = calculateXPAndLevel(
+    sessions,
+    progress,
+    syllabus,
+    allCompletedMissions,
+    achievementXP,
+    canonicalTotalXP
+  );
+  const achievements =
+    realAchievements.length > 0
+      ? realAchievements.map((a) => ({
+          id: a.id,
+          title: a.title,
+          description: a.description,
+          icon: a.icon,
+          unlocked: a.unlocked,
+          unlockedAt: a.unlocked_at || undefined,
+          category: a.category,
+          current_progress: a.current_progress,
+          requirement_value: a.requirement_value,
+          progress_percentage: a.progress_percentage,
+          requirement_type: a.requirement_type,
+          xp_reward: a.xp_reward,
+        }))
+      : getAchievements(sessions, progress, syllabus, currentStreak);
+  const xpEvents = generateXPEvents(sessions, progress, syllabus, allCompletedMissions, unlockedAchievementsList);
+
+  // Today's events
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const todaysEvents = allEvents.filter((e) => {
+    const eventTime = new Date(e.start_time);
+    return eventTime >= todayStart && eventTime <= todayEnd;
+  });
+
+  return {
+    xpDetails,
+    achievements,
+    todaysEvents,
     dailyMissions,
     xpEvents,
+  };
+}
+
+export async function getDashboardMetrics(userId?: string): Promise<CompleteDashboardMetrics> {
+  const critical = await getCriticalDashboardMetrics(userId);
+  const secondary = await getSecondaryDashboardMetrics(
+    userId,
+    critical.study_sessions,
+    critical.progress,
+    critical.syllabus,
+    critical.currentStreak
+  );
+
+  return {
+    ...critical,
+    ...secondary,
   };
 }

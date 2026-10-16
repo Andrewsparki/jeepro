@@ -36,7 +36,7 @@ function HistorySkeleton() {
         {/* Sessions List Skeleton */}
         <div className="flex flex-col gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="rounded-2xl border border-glass-border bg-glass p-6">
+            <div key={i} className="rounded-xl border border-white/[0.08] bg-[#090C15] p-6">
               <div className="flex flex-col md:flex-row justify-between gap-4">
                 <div className="flex items-start gap-4">
                   <Skeleton className="h-12 w-12 rounded-xl shrink-0" />
@@ -332,7 +332,7 @@ export default function HistoryPage() {
                     : "You haven't recorded any study sessions yet. Start your first session to begin tracking your progress!"}
                 </p>
                 {!(searchQuery || timeFilter !== 'all' || subjectFilter !== 'all') && (
-                  <Button asChild className="rounded-full px-8 shadow-[0_0_20px_rgba(79,70,229,0.2)]">
+                  <Button asChild className="rounded-full px-8 shadow-[0_0_20px_rgba(120,169,255,0.25)] font-bold">
                     <a href="/dashboard/focus">Start Focus Session</a>
                   </Button>
                 )}

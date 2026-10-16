@@ -1,46 +1,281 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { DailyMission } from "../services/missions.service";
+import type { DailyMission } from "../types/mission.types";
+import { getTodayMissions, generateMissionsForToday } from "../services/missions.service";
 import { DashboardCard } from "@/features/dashboard/components/dashboard-card";
-import { CheckCircle2, Circle, Trophy } from "lucide-react";
+import { CheckCircle2, Circle, RotateCw, Sparkles, AlertCircle, ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { playHapticSound } from "@/lib/sound-effects";
+import { useOptionalDashboardData } from "@/features/dashboard/context/dashboard-data-context";
 
 interface DailyMissionsCardProps {
-  missions: DailyMission[];
+  missions?: DailyMission[];
   delay?: number;
+  isLoading?: boolean;
 }
 
-export function DailyMissionsCard({ missions, delay = 0 }: DailyMissionsCardProps) {
-  const completedCount = missions.filter(m => m.completed).length;
-  const allCompleted = missions.length > 0 && completedCount === missions.length;
+export function DailyMissionsCard({ missions: initialMissions, delay = 0, isLoading: propIsLoading = false }: DailyMissionsCardProps) {
+  const [localMissions, setLocalMissions] = useState<DailyMission[] | null>(null);
+  const [prevInitialMissions, setPrevInitialMissions] = useState(initialMissions);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showCompletedList, setShowCompletedList] = useState(false);
+
+  const dashboardData = useOptionalDashboardData();
+
+  // Synchronize local state when parent initialMissions change during render
+  if (initialMissions !== prevInitialMissions) {
+    setPrevInitialMissions(initialMissions);
+    setLocalMissions(null);
+  }
+
+  const missions = localMissions ?? initialMissions ?? [];
+
+  const refreshMissions = async (forceGenerate = false) => {
+    playHapticSound("click");
+    setIsRefreshing(true);
+    setErrorMessage(null);
+
+    try {
+      let freshMissions = forceGenerate ? null : await getTodayMissions();
+      if (!freshMissions || freshMissions.length === 0) {
+        freshMissions = await generateMissionsForToday();
+      }
+
+      if (freshMissions && freshMissions.length > 0) {
+        setLocalMissions(freshMissions);
+        playHapticSound("success");
+        dashboardData?.refreshMetrics().catch(() => {});
+      } else {
+        setErrorMessage(
+          forceGenerate
+            ? "Could not generate missions right now. Try again later."
+            : "Failed to refresh missions. Please try again."
+        );
+      }
+    } catch (err: unknown) {
+      console.error("[DailyMissions] Update error:", err);
+      setErrorMessage("An error occurred while updating missions.");
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const handleRefresh = () => refreshMissions(false);
+  const handleGenerate = () => refreshMissions(true);
+
+  const isLoading = propIsLoading || isRefreshing;
+  const completedCount = missions.filter((m) => m.completed).length;
+  const allCompleted = missions.length === 3 && completedCount === 3;
+  
+  // Verify if all 3 rewards have actually been awarded from real mission data
+  const allRewardsAwarded = allCompleted && missions.every((m) => m.reward_xp > 0 && m.completed);
+  const totalAwardedXP = allRewardsAwarded ? missions.reduce((sum, m) => sum + (m.reward_xp || 0), 0) : 0;
 
   return (
-    <DashboardCard delay={delay} className="flex flex-col h-full">
+    <DashboardCard delay={delay} className="flex flex-col">
+      {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
-            Daily Missions
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-semibold text-[#F5F7FB]">
+              {allCompleted ? "Daily Missions Complete" : "Daily Missions"}
+            </h3>
             {allCompleted && (
-              <span className="flex items-center gap-1 text-xs font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
-                <Trophy className="w-3.5 h-3.5" />
-                All Done!
+              <span className="flex items-center gap-1.5 text-[11px] font-medium text-[#78A9FF] bg-[#78A9FF]/10 px-2 py-0.5 rounded-full border border-[#78A9FF]/20">
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                  className="flex items-center justify-center w-3 h-3 rounded-full bg-[#78A9FF]/20 text-[#78A9FF]"
+                >
+                  <Check className="w-2.5 h-2.5 stroke-[2.5]" />
+                </motion.span>
+                Complete
               </span>
             )}
-          </h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {completedCount} of {missions.length} completed
+          </div>
+          <p className="text-xs text-[#A4ADBB] mt-0.5">
+            {missions.length > 0 ? `${completedCount} of ${missions.length} completed` : "Personalized daily goals"}
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={handleRefresh}
+          disabled={isLoading}
+          aria-label="Refresh daily missions"
+          className="p-1.5 rounded-lg text-[#A4ADBB] hover:text-[#F5F7FB] hover:bg-white/5 active:scale-95 transition-all disabled:opacity-40"
+        >
+          <RotateCw className={cn("w-4 h-4", isRefreshing && "animate-spin text-[#78A9FF]")} />
+        </button>
       </div>
 
-      <div className="flex-1 flex flex-col justify-start gap-3">
-        {missions.length === 0 ? (
-          <div className="py-8 text-center text-sm text-muted-foreground animate-pulse">
-            Generating your personalized missions...
+      {/* Main Content Area */}
+      <div className="space-y-3">
+        {/* Loading State */}
+        {isLoading && missions.length === 0 && (
+          <div className="space-y-2.5 py-1">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="flex items-center gap-3 p-3 rounded-xl border border-[#2B3342] bg-[#121722]/60 animate-pulse"
+              >
+                <div className="w-5 h-5 rounded-full bg-white/10 shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <div className="h-3.5 w-1/3 bg-white/10 rounded" />
+                    <div className="h-3 w-12 bg-white/10 rounded" />
+                  </div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full" />
+                </div>
+              </div>
+            ))}
           </div>
-        ) : (
+        )}
+
+        {/* Error State */}
+        {!isLoading && errorMessage && missions.length === 0 && (
+          <div className="p-4 rounded-xl border border-[#F17C7C]/30 bg-[#F17C7C]/5 text-center space-y-2">
+            <div className="flex items-center justify-center gap-2 text-sm text-[#F17C7C] font-medium">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleRefresh}
+              className="inline-flex items-center gap-1.5 text-xs text-[#78A9FF] hover:text-[#A8C5FF] font-medium transition-colors"
+            >
+              <RotateCw className="w-3.5 h-3.5" />
+              Try again
+            </button>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !errorMessage && missions.length === 0 && (
+          <div className="p-5 rounded-xl border border-[#2B3342] bg-[#121722]/50 text-center space-y-3">
+            <div className="w-9 h-9 rounded-full bg-[#78A9FF]/10 border border-[#78A9FF]/20 flex items-center justify-center mx-auto text-[#78A9FF]">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-sm font-medium text-[#F5F7FB]">No Active Missions Today</h4>
+              <p className="text-xs text-[#A4ADBB] max-w-sm mx-auto">
+                Generate tailored daily challenges based on your study rhythm to earn bonus XP.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleGenerate}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#78A9FF] hover:bg-[#A8C5FF] text-[#0B0D12] transition-colors shadow-sm"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              Generate Missions
+            </button>
+          </div>
+        )}
+
+        {/* Fully Completed Summary State */}
+        {allCompleted && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="p-4 rounded-xl border border-[#78A9FF]/25 bg-[#121722]/90 space-y-3.5"
+          >
+            {/* Top row: Status & Animated Checkmark */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <motion.div
+                  initial={{ scale: 0, rotate: -20 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 350, damping: 20 }}
+                  className="w-7 h-7 rounded-full bg-[#78A9FF]/15 border border-[#78A9FF]/30 flex items-center justify-center text-[#78A9FF]"
+                >
+                  <motion.svg
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <motion.path
+                      d="M20 6L9 17l-5-5"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.45, ease: "easeOut", delay: 0.1 }}
+                    />
+                  </motion.svg>
+                </motion.div>
+                <div>
+                  <h4 className="text-xs font-semibold text-[#F5F7FB]">All Goals Mastered</h4>
+                  <p className="text-[11px] text-[#A4ADBB]">3 of 3 completed today</p>
+                </div>
+              </div>
+
+              {allRewardsAwarded && (
+                <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#78A9FF]/10 border border-[#78A9FF]/20 text-[#78A9FF] text-xs font-semibold font-mono">
+                  <span>+{totalAwardedXP} XP</span>
+                  <span className="text-[10px] text-[#A4ADBB] font-sans font-normal ml-0.5">Awarded</span>
+                </div>
+              )}
+            </div>
+
+            {/* Overall Progress Track Animated to 100% */}
+            <div className="space-y-1">
+              <div className="relative h-1.5 w-full bg-[#171D28] rounded-full overflow-hidden border border-[#2B3342]/50">
+                <motion.div
+                  className="absolute top-0 left-0 bottom-0 rounded-full bg-[#78A9FF]"
+                  initial={{ width: "66%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                />
+              </div>
+              <div className="flex justify-between items-center text-[10px] text-[#A4ADBB]">
+                <span>Daily Target</span>
+                <span className="font-medium text-[#78A9FF]">100%</span>
+              </div>
+            </div>
+
+            {/* Collapsible / Reduced prominence completed missions */}
+            <div className="pt-1 border-t border-[#2B3342]/40">
+              <button
+                type="button"
+                onClick={() => {
+                  playHapticSound("click");
+                  setShowCompletedList((prev) => !prev);
+                }}
+                className="w-full flex items-center justify-between text-[11px] text-[#A4ADBB] hover:text-[#F5F7FB] py-1 transition-colors"
+              >
+                <span>{showCompletedList ? "Hide completed missions" : "Review completed missions (3)"}</span>
+                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", showCompletedList && "rotate-180")} />
+              </button>
+
+              <AnimatePresence>
+                {showCompletedList && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden space-y-2 pt-2"
+                  >
+                    {missions.map((mission, idx) => (
+                      <MissionItem key={mission.id} mission={mission} index={idx} isCompact={true} />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Standard Incomplete / Active Missions State */}
+        {!allCompleted && missions.length > 0 && (
           missions.map((mission, idx) => (
             <MissionItem key={mission.id} mission={mission} index={idx} />
           ))
@@ -50,16 +285,41 @@ export function DailyMissionsCard({ missions, delay = 0 }: DailyMissionsCardProp
   );
 }
 
-function MissionItem({ mission, index }: { mission: DailyMission; index: number }) {
+function getMissionUnitLabel(type: string, current: number, target: number, completed?: boolean) {
+  const boundedCurrent = completed ? target : Math.min(current, target);
+  switch (type) {
+    case "study_duration":
+      return `${boundedCurrent}/${target} min`;
+    case "focus_sessions":
+      return `${boundedCurrent}/${target} session${target > 1 ? "s" : ""}`;
+    case "chapter_completion":
+      return `${boundedCurrent}/${target} chapter${target > 1 ? "s" : ""}`;
+    default:
+      return `${boundedCurrent}/${target}`;
+  }
+}
 
-  const progressPercentage = Math.min(100, Math.max(0, (mission.current_value / mission.target_value) * 100));
+function MissionItem({ mission, index, isCompact = false }: { mission: DailyMission; index: number; isCompact?: boolean }) {
+  const progressPercentage = mission.completed
+    ? 100
+    : Math.min(
+        100,
+        Math.max(0, (mission.current_value / mission.target_value) * 100)
+      );
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 + (index * 0.1), duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative flex items-start gap-3 p-3 rounded-xl border border-transparent hover:border-glass-border hover:bg-white/5 transition-all"
+      transition={{ delay: 0.04 * index, duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      className={cn(
+        "group relative flex items-start gap-3 rounded-xl border transition-all",
+        isCompact ? "p-2.5 bg-[#121722]/30 border-[#2B3342]/40" : (
+          mission.completed
+            ? "p-3 border-[#2B3342]/60 bg-[#121722]/40"
+            : "p-3 border-[#2B3342] bg-[#121722]/80 hover:bg-[#171D28] hover:border-[#78A9FF]/30"
+        )
+      )}
     >
       {/* Icon Area */}
       <div className="mt-0.5 shrink-0 relative">
@@ -67,50 +327,67 @@ function MissionItem({ mission, index }: { mission: DailyMission; index: number 
           {mission.completed ? (
             <motion.div
               key="completed"
-              initial={{ scale: 0, opacity: 0 }}
+              initial={{ scale: 0.6, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
+              exit={{ scale: 0.6, opacity: 0 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
-              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              <CheckCircle2 className="w-4 h-4 text-[#78A9FF]" />
             </motion.div>
           ) : (
             <motion.div
               key="incomplete"
-              initial={{ scale: 0, opacity: 0 }}
+              initial={{ scale: 0.6, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
+              exit={{ scale: 0.6, opacity: 0 }}
             >
-              <Circle className="w-5 h-5 text-muted-foreground/30 group-hover:text-muted-foreground/50 transition-colors" />
+              <Circle className="w-4 h-4 text-[#A4ADBB]/40 group-hover:text-[#78A9FF] transition-colors" />
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-4 mb-2">
-          <h4 className={cn(
-            "text-sm font-medium transition-colors",
-            mission.completed ? "text-muted-foreground line-through opacity-70" : "text-foreground"
-          )}>
+        <div className="flex items-center justify-between gap-3 mb-1">
+          <h4
+            className={cn(
+              "text-xs font-medium transition-colors truncate",
+              mission.completed
+                ? "text-[#A4ADBB]/70 line-through"
+                : "text-[#F5F7FB]"
+            )}
+          >
             {mission.title}
           </h4>
-          <span className="text-xs font-medium text-emerald-500/80 bg-emerald-500/10 px-2 rounded-md whitespace-nowrap">
+          <span
+            className={cn(
+              "text-[10px] font-semibold px-1.5 py-0.5 rounded border whitespace-nowrap",
+              mission.completed
+                ? "text-[#78A9FF]/80 bg-[#78A9FF]/5 border-[#78A9FF]/15"
+                : "text-[#78A9FF] bg-[#78A9FF]/10 border-[#78A9FF]/20"
+            )}
+          >
             +{mission.reward_xp} XP
           </span>
         </div>
 
-        {/* Progress Bar Container */}
-        <div className="relative h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-          <motion.div
-            className={cn(
-              "absolute top-0 left-0 bottom-0 rounded-full transition-colors",
-              mission.completed ? "bg-emerald-500" : "bg-blue-500"
-            )}
-            initial={{ width: 0 }}
-            animate={{ width: `${progressPercentage}%` }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          />
+        {/* Progress Bar & Numerical Readout */}
+        <div className="space-y-1">
+          <div className="relative h-1.5 w-full bg-[#171D28] rounded-full overflow-hidden border border-[#2B3342]/40">
+            <motion.div
+              className={cn(
+                "absolute top-0 left-0 bottom-0 rounded-full transition-colors",
+                mission.completed ? "bg-[#78A9FF]" : "bg-[#78A9FF]"
+              )}
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPercentage}%` }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            />
+          </div>
+          <div className="flex justify-between items-center text-[10px] text-[#A4ADBB]">
+            <span>{getMissionUnitLabel(mission.mission_type, mission.current_value, mission.target_value, mission.completed)}</span>
+            <span>{Math.round(progressPercentage)}%</span>
+          </div>
         </div>
       </div>
     </motion.div>

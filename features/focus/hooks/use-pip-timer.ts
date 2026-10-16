@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, useSyncExternalStore } from "react";
+import { useState, useCallback, useRef, useEffect, useSyncExternalStore, useMemo } from "react";
 
 /**
  * Hook that manages the Document Picture-in-Picture window lifecycle.
@@ -21,6 +21,11 @@ export function usePipTimer() {
 
   /** The PiP Window reference */
   const pipWindowRef = useRef<Window | null>(null);
+  const pipContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    pipContainerRef.current = pipContainer;
+  }, [pipContainer]);
 
   const openPip = useCallback(async (): Promise<HTMLDivElement | null> => {
     if (!window.documentPictureInPicture) return null;
@@ -28,7 +33,7 @@ export function usePipTimer() {
     // If already open, just return the existing container
     if (pipWindowRef.current && !pipWindowRef.current.closed) {
       pipWindowRef.current.focus();
-      return pipContainer;
+      return pipContainerRef.current;
     }
 
     try {
@@ -112,11 +117,14 @@ export function usePipTimer() {
     };
   }, []);
 
-  return {
-    isPipSupported,
-    isPipOpen,
-    pipContainer,
-    openPip,
-    closePip,
-  };
+  return useMemo(
+    () => ({
+      isPipSupported,
+      isPipOpen,
+      pipContainer,
+      openPip,
+      closePip,
+    }),
+    [isPipSupported, isPipOpen, pipContainer, openPip, closePip]
+  );
 }

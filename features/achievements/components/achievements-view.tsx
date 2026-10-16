@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Trophy,
@@ -26,6 +26,7 @@ import { useSmoothScroll } from "@/components/ui/smooth-scroll-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { dispatchInteractionSound } from "@/lib/sound-engine";
 
 const CATEGORY_TABS: { id: AchievementCategory; label: string; icon: LucideIcon }[] = [
   { id: "all", label: "All", icon: Layers },
@@ -36,7 +37,11 @@ const CATEGORY_TABS: { id: AchievementCategory; label: string; icon: LucideIcon 
   { id: "xp", label: "XP", icon: Sparkles },
 ];
 
-export function AchievementsView() {
+export interface AchievementsViewProps {
+  initialAchievements?: AchievementItem[];
+}
+
+export function AchievementsView({ initialAchievements }: AchievementsViewProps = {}) {
   const {
     achievements,
     filteredAchievements,
@@ -49,23 +54,39 @@ export function AchievementsView() {
     searchQuery,
     setSearchQuery,
     refresh,
-  } = useAchievements();
+  } = useAchievements({ initialAchievements });
 
   const { resize } = useSmoothScroll();
 
   // Selected achievement for detail modal
   const [selectedAchievement, setSelectedAchievement] = useState<AchievementItem | null>(null);
 
-  // Synchronize Locomotive Scroll dimensions on dynamic changes
+  // Stable memoized callbacks to prevent child cards from re-rendering
+  const handleCardClick = useCallback((ach: AchievementItem) => {
+    setSelectedAchievement(ach);
+  }, []);
+
+  const handleModalClose = useCallback(() => {
+    setSelectedAchievement(null);
+  }, []);
+
+  // Debounce Locomotive Scroll resize to avoid layout thrashing during animations
   useEffect(() => {
-    resize();
+    const timer = setTimeout(() => {
+      resize();
+    }, 150);
+    return () => clearTimeout(timer);
   }, [selectedCategory, filteredAchievements.length, isLoading, resize]);
 
-  // Category counts
-  const getCategoryCount = (catId: AchievementCategory) => {
-    if (catId === "all") return achievements.length;
-    return achievements.filter((a) => a.category === catId).length;
-  };
+  // Pre-computed category counts (O(N) single-pass)
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: achievements.length };
+    for (let i = 0; i < achievements.length; i++) {
+      const cat = achievements[i].category;
+      counts[cat] = (counts[cat] || 0) + 1;
+    }
+    return counts;
+  }, [achievements]);
 
   return (
     <div className="w-full max-w-6xl mx-auto space-y-6 pb-24">
@@ -133,7 +154,10 @@ export function AchievementsView() {
 
             {/* Refresh Action */}
             <button
-              onClick={() => refresh()}
+              onClick={() => {
+                dispatchInteractionSound("ui.click");
+                refresh();
+              }}
               disabled={isLoading || isRefreshing}
               className="p-3 rounded-2xl bg-surface/60 border border-border/50 text-muted-foreground hover:text-foreground hover:bg-surface/90 transition-all self-stretch flex items-center justify-center cursor-pointer disabled:opacity-50"
               aria-label="Refresh achievements"
@@ -156,24 +180,27 @@ export function AchievementsView() {
         <div className="flex items-center gap-1 p-1 rounded-2xl bg-surface/50 border border-border/40 overflow-x-auto scrollbar-none relative">
           {CATEGORY_TABS.map((tab) => {
             const Icon = tab.icon;
-            const count = getCategoryCount(tab.id);
+            const count = categoryCounts[tab.id] ?? 0;
             const isActive = selectedCategory === tab.id;
 
             return (
               <button
                 key={tab.id}
-                onClick={() => setSelectedCategory(tab.id)}
+                onClick={() => {
+                  dispatchInteractionSound("ui.tab");
+                  setSelectedCategory(tab.id);
+                }}
                 className={cn(
                   "relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors duration-200 whitespace-nowrap cursor-pointer focus-visible:outline-none z-10 select-none",
                   isActive
-                    ? "text-white font-bold"
+                    ? "text-[#0B0D12] font-bold"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeAchievementCategory"
-                    className="absolute inset-0 bg-accent rounded-xl shadow-sm -z-10"
+                    className="absolute inset-0 bg-accent rounded-xl shadow-sm -z-10 transform-gpu"
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
                 )}
@@ -183,7 +210,7 @@ export function AchievementsView() {
                   className={cn(
                     "text-[10px] px-1.5 py-0.2 rounded-full font-bold",
                     isActive
-                      ? "bg-black/20 text-white"
+                      ? "bg-black/15 text-[#0B0D12]"
                       : "bg-muted text-muted-foreground"
                   )}
                 >
@@ -206,7 +233,10 @@ export function AchievementsView() {
           />
           {searchQuery && (
             <button
-              onClick={() => setSearchQuery("")}
+              onClick={() => {
+                dispatchInteractionSound("ui.click");
+                setSearchQuery("");
+              }}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground"
             >
               ×
@@ -269,13 +299,13 @@ export function AchievementsView() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 transform-gpu"
           >
             {filteredAchievements.map((achievement) => (
               <AchievementCard
                 key={achievement.id}
                 achievement={achievement}
-                onClick={(ach) => setSelectedAchievement(ach)}
+                onClick={handleCardClick}
               />
             ))}
           </motion.div>
@@ -286,7 +316,7 @@ export function AchievementsView() {
       <AchievementDetailModal
         achievement={selectedAchievement}
         isOpen={Boolean(selectedAchievement)}
-        onClose={() => setSelectedAchievement(null)}
+        onClose={handleModalClose}
       />
     </div>
   );

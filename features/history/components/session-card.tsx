@@ -35,6 +35,26 @@ interface SessionCardProps {
   onSelect: (id: string, selected: boolean) => void;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.06, delayChildren: 0.15 }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.25,
+      ease: [0.16, 1, 0.3, 1] as const,
+    }
+  }
+};
+
 export function SessionCard({
   session,
   subjectName,
@@ -43,10 +63,6 @@ export function SessionCard({
   onSelect
 }: SessionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { containerRef, contentRef } = useSubSmoothScroll<HTMLDivElement>({
-    enabled: isExpanded,
-    overscroll: true,
-  });
   
   const date = new Date(session.started_at);
   const durationMins = Math.floor(session.duration_seconds / 60);
@@ -57,19 +73,6 @@ export function SessionCard({
     ? session.xp_earned 
     : calculateSessionXP(session.duration_seconds, session.activity_type as ActivityType | undefined);
   const completionPercent = session.completion_percentage || 100; // Mock fallback
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.15 }
-    }
-  };
-  
-  const itemVariants = {
-    hidden: { opacity: 0, x: 30 },
-    show: { opacity: 1, x: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } }
-  };
 
   return (
     <ContextMenuTarget
@@ -143,34 +146,84 @@ export function SessionCard({
         </div>
       </div>
 
-      <Sheet open={isExpanded} onOpenChange={setIsExpanded}>
-        <SheetContent side="right" className="w-[400px] sm:w-[540px] border-l border-border/50 bg-background/60 backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)] p-0">
-          <div className="flex flex-col h-full relative overflow-hidden">
-            {/* Background Glows */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-[80px] -z-10 pointer-events-none" />
-            
-            <div className="p-6 border-b border-border/50">
-              <SheetHeader>
-                <SheetTitle className="text-2xl font-bold tracking-tight">Session Details</SheetTitle>
-                <SheetDescription>
-                  Review your performance and timeline for this study block.
-                </SheetDescription>
-              </SheetHeader>
-            </div>
+      <SessionDetailsSheet
+        isOpen={isExpanded}
+        onClose={() => setIsExpanded(false)}
+        session={session}
+        chapterTitle={chapterTitle}
+        subjectName={subjectName}
+        date={date}
+        durationMins={durationMins}
+        durationSecs={durationSecs}
+        xpEarned={xpEarned}
+        activityType={activityType}
+        completionPercent={completionPercent}
+      />
+    </motion.div>
+  </ContextMenuTarget>
+  );
+}
 
-            <div
-              ref={containerRef}
-              data-lenis-prevent="true"
-              className="flex-1 overflow-y-auto p-6 custom-scrollbar overscroll-contain"
+interface SessionDetailsSheetProps {
+  isOpen: boolean;
+  onClose: () => void;
+  session: StudySession;
+  chapterTitle: string;
+  subjectName: string;
+  date: Date;
+  durationMins: number;
+  durationSecs: number;
+  xpEarned: number;
+  activityType: string;
+  completionPercent: number;
+}
+
+function SessionDetailsSheet({
+  isOpen,
+  onClose,
+  session,
+  chapterTitle,
+  subjectName,
+  date,
+  durationMins,
+  durationSecs,
+  xpEarned,
+  activityType,
+  completionPercent,
+}: SessionDetailsSheetProps) {
+  const { containerRef, contentRef } = useSubSmoothScroll<HTMLDivElement>({
+    enabled: isOpen,
+    overscroll: true,
+  });
+
+  return (
+    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <SheetContent side="right" className="w-[400px] sm:w-[540px] border-l border-border/50 bg-background/60 backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)] p-0">
+        <div className="flex flex-col h-full relative overflow-hidden">
+          {/* Background Glows */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-[80px] -z-10 pointer-events-none" />
+          
+          <div className="p-6 border-b border-border/50">
+            <SheetHeader>
+              <SheetTitle className="text-2xl font-bold tracking-tight">Session Details</SheetTitle>
+              <SheetDescription>
+                Review your performance and timeline for this study block.
+              </SheetDescription>
+            </SheetHeader>
+          </div>
+
+          <div
+            ref={containerRef}
+            data-lenis-prevent="true"
+            className="flex-1 overflow-y-auto p-6 custom-scrollbar overscroll-contain"
+          >
+            <motion.div
+              ref={contentRef}
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+              className="space-y-8"
             >
-              <motion.div
-                ref={contentRef}
-                variants={containerVariants}
-                initial="hidden"
-                animate="show"
-                className="space-y-8"
-              >
-              
               {/* Header Info */}
               <motion.div variants={itemVariants} className="flex items-start gap-4">
                 <div className="w-14 h-14 rounded-2xl bg-accent/10 shadow-[0_0_15px_rgba(var(--accent-rgb),0.15)] text-accent flex items-center justify-center shrink-0 border border-accent/20">
@@ -237,13 +290,10 @@ export function SessionCard({
                   </div>
                 </div>
               </div>
-
-              </motion.div>
-            </div>
+            </motion.div>
           </div>
-        </SheetContent>
-      </Sheet>
-    </motion.div>
-  </ContextMenuTarget>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

@@ -2,43 +2,38 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Play, Calendar, Target, Layers, Sparkles } from "lucide-react";
+import { Play, Calendar, Target, Clock, LineChart } from "lucide-react";
 import { useStudySession } from "@/features/study/context/study-session-context";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 import { useSettings } from "@/providers/settings-provider";
 
 const actions = [
   {
-    label: "Start Session",
-    icon: <Play className="w-5 h-5" />,
-    href: "start", // Custom handler
-    color: "bg-accent/10 text-accent group-hover:bg-accent group-hover:text-white"
+    label: "Start Study Sprint",
+    icon: <Play className="w-4 h-4" />,
+    href: "start",
+    badge: "Active",
   },
   {
-    label: "Open Planner",
-    icon: <Calendar className="w-5 h-5" />,
+    label: "Focus Chamber",
+    icon: <Clock className="w-4 h-4" />,
+    href: "/dashboard/focus",
+  },
+  {
+    label: "90-Ch Syllabus",
+    icon: <Target className="w-4 h-4" />,
+    href: "/dashboard/syllabus",
+  },
+  {
+    label: "Study Planner",
+    icon: <Calendar className="w-4 h-4" />,
     href: "/dashboard/planner",
-    color: "bg-blue-500/10 text-blue-500 group-hover:bg-blue-500 group-hover:text-white"
   },
   {
-    label: "Practice PYQs",
-    icon: <Target className="w-5 h-5" />,
-    href: "/dashboard/practice",
-    color: "bg-orange-500/10 text-orange-500 group-hover:bg-orange-500 group-hover:text-white"
+    label: "Analytics Telemetry",
+    icon: <LineChart className="w-4 h-4" />,
+    href: "/dashboard/analytics",
   },
-  {
-    label: "Flashcards",
-    icon: <Layers className="w-5 h-5" />,
-    href: "/dashboard/study",
-    color: "bg-purple-500/10 text-purple-500 group-hover:bg-purple-500 group-hover:text-white"
-  },
-  {
-    label: "AI Tutor",
-    icon: <Sparkles className="w-5 h-5" />,
-    href: "/dashboard/tutor",
-    color: "bg-emerald-500/10 text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white"
-  }
 ];
 
 export const QuickActions = React.memo(function QuickActions() {
@@ -50,29 +45,46 @@ export const QuickActions = React.memo(function QuickActions() {
     playSound("soft-tap");
     if (href === "start") {
       startSession();
-    } else if (href === "/dashboard/practice" || href === "/dashboard/tutor") {
-      toast("Coming soon", { description: "This feature is not yet implemented." });
     } else {
       router.push(href);
     }
   };
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-      {actions.map((action, idx) => (
-        <button
-          key={idx}
-          onClick={() => handleAction(action.href)}
-          className="group flex flex-col items-center justify-center gap-3 p-4 rounded-2xl bg-card border border-border/40 hover:border-border transition-all duration-300 hover:shadow-sm active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-colors duration-300", action.color)}>
-            {action.icon}
-          </div>
-          <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-            {action.label}
-          </span>
-        </button>
-      ))}
+    <div className="rounded-2xl sm:rounded-3xl bg-[#090C15] border border-white/[0.08] p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-mono text-xs uppercase tracking-wider text-zinc-400">
+          Fast Command Actions
+        </h3>
+        <span className="font-mono text-[10px] text-zinc-400">
+          SHORTCUTS
+        </span>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {actions.map((action) => (
+          <button
+            key={action.label}
+            onClick={() => handleAction(action.href)}
+            className={cn(
+              "p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.14] hover:bg-white/[0.05] transition-all text-left flex flex-col justify-between gap-3 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            )}
+          >
+            <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-200 group-hover:text-white transition-colors">
+              {action.icon}
+            </div>
+
+            <div>
+              <span className="block text-xs font-semibold text-white tracking-tight">
+                {action.label}
+              </span>
+              <span className="font-mono text-[10px] text-zinc-400">
+                {action.href === "start" ? "Instant Timer" : "Open Route"}
+              </span>
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 });

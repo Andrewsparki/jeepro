@@ -8,8 +8,8 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen flex flex-col justify-between bg-transparent text-[#F5F7FF] selection:bg-cyan-500 selection:text-white">
-      <AmbientBackground />
+    <div className="relative min-h-screen flex flex-col justify-between bg-transparent text-[#F4F4F6] selection:bg-zinc-700 selection:text-white">
+      <AmbientBackground variant="obsidian" />
       <Navbar />
       <main className="flex-1 w-full flex flex-col">{children}</main>
       <Footer />

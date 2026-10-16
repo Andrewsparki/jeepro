@@ -89,39 +89,45 @@ export default function ChapterPage({ params }: ChapterPageProps) {
           <h3 className="text-xl font-semibold tracking-tight">Resources</h3>
           
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <div className="rounded-2xl border border-border/40 bg-card/20 p-6 flex flex-col gap-4 group cursor-pointer hover:bg-card/40 hover:border-border/60 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                <FileText className="w-5 h-5" />
+            <Link href={`/dashboard/study/${subject}/${chapterSlug}`}>
+              <div className="rounded-2xl border border-border/40 bg-card/20 p-6 flex flex-col gap-4 group cursor-pointer hover:bg-card/40 hover:border-[#78A9FF]/40 transition-all">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-[#78A9FF] flex items-center justify-center">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-lg group-hover:text-[#78A9FF] transition-colors">Study Workspace</h4>
+                  <p className="text-sm text-muted-foreground mt-1">Open comprehensive notes, interactive formulas, and derivations.</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-medium text-lg group-hover:text-blue-500 transition-colors">Study Notes</h4>
-                <p className="text-sm text-muted-foreground mt-1">Read the comprehensive summary notes for this chapter.</p>
-              </div>
-            </div>
+            </Link>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-            <div className="rounded-2xl border border-border/40 bg-card/20 p-6 flex flex-col gap-4 group cursor-pointer hover:bg-card/40 hover:border-border/60 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center">
-                <BrainCircuit className="w-5 h-5" />
+            <Link href={`/dashboard/study/${subject}/${chapterSlug}`}>
+              <div className="rounded-2xl border border-border/40 bg-card/20 p-6 flex flex-col gap-4 group cursor-pointer hover:bg-card/40 hover:border-amber-500/40 transition-all">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+                  <BrainCircuit className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-lg group-hover:text-amber-500 transition-colors">Formula Sheet & Revision</h4>
+                  <p className="text-sm text-muted-foreground mt-1">Master key formulas, derivations, and common JEE calculation traps.</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-medium text-lg group-hover:text-orange-500 transition-colors">PYQ Practice</h4>
-                <p className="text-sm text-muted-foreground mt-1">Solve previous year questions mapped to these modules.</p>
-              </div>
-            </div>
+            </Link>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-            <div className="rounded-2xl border border-accent/20 bg-accent/5 p-6 flex flex-col gap-4 group cursor-pointer hover:bg-accent/10 hover:border-accent/40 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-accent/20 text-accent flex items-center justify-center">
-                <BookOpen className="w-5 h-5" />
+            <Link href={`/dashboard/study/${subject}/${chapterSlug}`}>
+              <div className="rounded-2xl border border-accent/20 bg-accent/5 p-6 flex flex-col gap-4 group cursor-pointer hover:bg-accent/10 hover:border-accent/40 transition-all">
+                <div className="w-10 h-10 rounded-xl bg-accent/20 text-accent flex items-center justify-center">
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-lg text-accent">Launch Study Session</h4>
+                  <p className="text-sm text-muted-foreground mt-1">Enter focused full-screen study mode with live timer & tracker.</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-medium text-lg text-accent">Start Revision</h4>
-                <p className="text-sm text-muted-foreground mt-1">Take a quick 15-minute diagnostic test.</p>
-              </div>
-            </div>
+            </Link>
           </motion.div>
           
         </div>

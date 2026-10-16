@@ -117,7 +117,10 @@ export function LeaderboardView() {
             return (
               <button
                 key={s}
-                onClick={() => setScope(s)}
+                onClick={() => {
+                  dispatchInteractionSound("ui.tab");
+                  setScope(s);
+                }}
                 className={cn(
                   "relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-200 z-10 select-none",
                   isActive

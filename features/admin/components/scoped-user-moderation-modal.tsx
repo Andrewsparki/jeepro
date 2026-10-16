@@ -107,9 +107,7 @@ export function ScopedUserModerationModal({
       // This reset is intentionally tied to the modal open lifecycle.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setReason("");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDurationMins("0");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsLoadingSummary(true);
       void adminGetUserScopedModeration(targetUser.id).then((res) => {
         setIsLoadingSummary(false);

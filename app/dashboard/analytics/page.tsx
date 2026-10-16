@@ -152,7 +152,6 @@ export default function AnalyticsPage() {
     sessionsCount,
     currentStreak,
     xpDetails,
-    syllabus,
     study_sessions,
     progress,
     xpEvents,

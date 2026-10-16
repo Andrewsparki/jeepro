@@ -185,20 +185,20 @@ export const FocusTimer = React.memo(function FocusTimer({
 
   // Determine ring color based on phase
   let ringColorTheme = {
-    hex: "#4f46e5",
-    trackHex: "rgba(79, 70, 229, 0.15)", // Very dark accent for track
+    hex: "#78A9FF",
+    trackHex: "rgba(120, 169, 255, 0.12)", // Electric blue tint for track
     gradientId: "study-gradient",
-    glowClass: "drop-shadow-[0_0_15px_rgba(79,70,229,0.4)]",
-    ambientClass: "drop-shadow-[0_0_30px_rgba(79,70,229,0.2)]",
+    glowClass: "drop-shadow-[0_0_15px_rgba(120,169,255,0.4)]",
+    ambientClass: "drop-shadow-[0_0_30px_rgba(120,169,255,0.2)]",
   };
   
   if (phase === "shortBreak") {
     ringColorTheme = {
-      hex: "#10b981",
-      trackHex: "rgba(16, 185, 129, 0.15)",
+      hex: "#5DC98B",
+      trackHex: "rgba(93, 201, 139, 0.15)",
       gradientId: "shortBreak-gradient",
-      glowClass: "drop-shadow-[0_0_15px_rgba(16,185,129,0.4)]",
-      ambientClass: "drop-shadow-[0_0_30px_rgba(16,185,129,0.2)]",
+      glowClass: "drop-shadow-[0_0_15px_rgba(93,201,139,0.4)]",
+      ambientClass: "drop-shadow-[0_0_30px_rgba(93,201,139,0.2)]",
     };
   } else if (phase === "longBreak") {
     ringColorTheme = {
@@ -241,12 +241,12 @@ export const FocusTimer = React.memo(function FocusTimer({
             <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
           </filter>
           <linearGradient id="study-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#818cf8" />
-            <stop offset="100%" stopColor="#4f46e5" />
+            <stop offset="0%" stopColor="#78A9FF" />
+            <stop offset="100%" stopColor="#A8C5FF" />
           </linearGradient>
           <linearGradient id="shortBreak-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#34d399" />
-            <stop offset="100%" stopColor="#059669" />
+            <stop offset="0%" stopColor="#5DC98B" />
+            <stop offset="100%" stopColor="#48A770" />
           </linearGradient>
           <linearGradient id="longBreak-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#38bdf8" />
@@ -361,7 +361,7 @@ export const FocusTimer = React.memo(function FocusTimer({
           className={cn(
             "relative flex items-center justify-center font-medium tabular-nums leading-none tracking-tighter transition-all duration-500",
             isActive 
-              ? "drop-shadow-[0_0_24px_rgba(79,70,229,0.35)] text-white" 
+              ? "drop-shadow-[0_0_24px_rgba(120,169,255,0.3)] text-[#F5F7FB]" 
               : "drop-shadow-md text-foreground/95",
             hasHours
               ? "text-[2.65rem] xs:text-[3.2rem] sm:text-[3.9rem] md:text-[4.4rem]"

@@ -1,9 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Clock, Activity, Flame, X, Trophy } from "lucide-react";
+import { getDashboardMetrics } from "@/features/study/services/progress";
+import { useOptionalDashboardData } from "@/features/dashboard/context/dashboard-data-context";
 
 interface FocusCompletionModalProps {
   isOpen: boolean;
@@ -12,22 +15,24 @@ interface FocusCompletionModalProps {
   xpEarned: number;
 }
 
-import { useEffect, useState } from "react";
-import { getDashboardMetrics } from "@/features/study/services/progress";
-
 export function FocusCompletionModal({
   isOpen,
   onOpenChange,
   durationSeconds,
   xpEarned,
 }: FocusCompletionModalProps) {
-  const [metrics, setMetrics] = useState<Awaited<ReturnType<typeof getDashboardMetrics>> | null>(null);
+  const dashboardData = useOptionalDashboardData();
+  const [metrics, setMetrics] = useState(dashboardData?.metrics ?? null);
 
   useEffect(() => {
+    if (dashboardData?.metrics) {
+      setMetrics(dashboardData.metrics);
+      return;
+    }
     if (isOpen) {
       getDashboardMetrics().then(setMetrics).catch(console.error);
     }
-  }, [isOpen]);
+  }, [isOpen, dashboardData?.metrics]);
 
   const formatTime = (secs: number) => {
     const mins = Math.floor(secs / 60);

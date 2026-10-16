@@ -98,7 +98,7 @@ export function Modal({
             role="dialog"
             aria-modal="true"
             className={cn(
-              "relative z-[1000] w-full rounded-2xl border border-white/10 bg-background/80 shadow-2xl backdrop-blur-xl",
+              "relative z-[1000] w-full rounded-2xl border border-white/10 bg-background shadow-2xl",
               className
             )}
           >

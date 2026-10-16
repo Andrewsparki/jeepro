@@ -37,8 +37,8 @@ export class FriendsService {
   /**
    * Fetch all accepted friends for the current user
    */
-  static async getFriends(): Promise<FriendUser[]> {
-    const user = await this.getAuthUser();
+  static async getFriends(currentUserId?: string): Promise<FriendUser[]> {
+    const user = currentUserId ? { id: currentUserId } : await this.getAuthUser();
     const supabase = createClient();
 
     const { data: rawFriendships, error } = await supabase
@@ -86,8 +86,8 @@ export class FriendsService {
   /**
    * Fetch pending friend requests (received and sent)
    */
-  static async getPendingRequests(): Promise<{ received: FriendUser[]; sent: FriendUser[] }> {
-    const user = await this.getAuthUser();
+  static async getPendingRequests(currentUserId?: string): Promise<{ received: FriendUser[]; sent: FriendUser[] }> {
+    const user = currentUserId ? { id: currentUserId } : await this.getAuthUser();
     const supabase = createClient();
 
     const { data: rawFriendships, error } = await supabase

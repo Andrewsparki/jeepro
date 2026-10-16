@@ -93,14 +93,14 @@ export default function SyllabusPage() {
               <Skeleton className="h-8 w-24" />
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
-              <Skeleton className="h-24 w-full rounded-xl border border-glass-border bg-glass" />
-              <Skeleton className="h-24 w-full rounded-xl border border-glass-border bg-glass" />
-              <Skeleton className="h-24 w-full rounded-xl border border-glass-border bg-glass" />
+              <Skeleton className="h-24 w-full rounded-xl border border-white/[0.08] bg-[#090C15]" />
+              <Skeleton className="h-24 w-full rounded-xl border border-white/[0.08] bg-[#090C15]" />
+              <Skeleton className="h-24 w-full rounded-xl border border-white/[0.08] bg-[#090C15]" />
             </div>
             <div className="space-y-4 mt-4">
-              <Skeleton className="h-20 w-full rounded-2xl border border-glass-border bg-glass" />
-              <Skeleton className="h-20 w-full rounded-2xl border border-glass-border bg-glass" />
-              <Skeleton className="h-20 w-full rounded-2xl border border-glass-border bg-glass" />
+              <Skeleton className="h-20 w-full rounded-xl border border-white/[0.08] bg-[#090C15]" />
+              <Skeleton className="h-20 w-full rounded-xl border border-white/[0.08] bg-[#090C15]" />
+              <Skeleton className="h-20 w-full rounded-xl border border-white/[0.08] bg-[#090C15]" />
             </div>
           </div>
         ) : (

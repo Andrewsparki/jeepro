@@ -1,3 +1,5 @@
+import { CinematicPreloader } from "@/components/ui/cinematic-preloader";
+
 export default function Loading() {
-  return null;
+  return <CinematicPreloader visible={true} />;
 }

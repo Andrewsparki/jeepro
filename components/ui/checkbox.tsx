@@ -26,7 +26,7 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
           "w-5 h-5 flex items-center justify-center border transition-all duration-200 cursor-pointer shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
           variant === "circle" ? "rounded-full" : "rounded-lg",
           checked
-            ? "bg-accent border-accent text-white shadow-[0_0_12px_rgba(79,70,229,0.4)] scale-105"
+            ? "bg-accent border-accent text-[#0B0D12] shadow-[0_0_12px_rgba(120,169,255,0.35)] scale-105"
             : "bg-white/5 border-white/20 hover:border-white/40 text-transparent hover:bg-white/10",
           className
         )}

@@ -107,7 +107,7 @@ export function AddFormulaDialog({
         dispatchInteractionSound("ui.close");
         onClose();
       }}
-      className="sm:max-w-xl max-h-[85vh] overflow-y-auto p-6 bg-background/95 backdrop-blur-xl border border-glass-border shadow-2xl rounded-2xl relative"
+      className="sm:max-w-xl max-h-[85vh] overflow-y-auto p-6 bg-[#0B0D12] border border-glass-border shadow-2xl rounded-2xl relative"
     >
       {/* Close Button */}
       <button

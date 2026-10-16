@@ -31,6 +31,12 @@ export function useSubSmoothScroll<T extends HTMLElement = HTMLDivElement>(
   const lenisRef = useRef<Lenis | null>(null);
 
   const enabled = options?.enabled ?? true;
+  const lerp = options?.lerp ?? 0.1;
+  const duration = options?.duration ?? 1.1;
+  const wheelMultiplier = options?.wheelMultiplier ?? 1.0;
+  const touchMultiplier = options?.touchMultiplier ?? 1.5;
+  const orientation = options?.orientation ?? "vertical";
+  const overscroll = options?.overscroll ?? true;
 
   useEffect(() => {
     if (!enabled || typeof window === "undefined") return;
@@ -51,18 +57,18 @@ export function useSubSmoothScroll<T extends HTMLElement = HTMLDivElement>(
         wrapper,
         content,
         eventsTarget: wrapper,
-        lerp: options?.lerp ?? 0.1,
-        duration: options?.duration ?? 1.1,
+        lerp,
+        duration,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        orientation: options?.orientation ?? "vertical",
+        orientation,
         gestureOrientation: "vertical",
         smoothWheel: true,
         syncTouch: true,
-        wheelMultiplier: options?.wheelMultiplier ?? 1.0,
-        touchMultiplier: options?.touchMultiplier ?? 1.5,
+        wheelMultiplier,
+        touchMultiplier,
         autoResize: true,
         naiveDimensions: true,
-        overscroll: options?.overscroll ?? true,
+        overscroll,
         autoRaf: true,
       });
 
@@ -86,12 +92,12 @@ export function useSubSmoothScroll<T extends HTMLElement = HTMLDivElement>(
     }
   }, [
     enabled,
-    options?.lerp,
-    options?.duration,
-    options?.wheelMultiplier,
-    options?.touchMultiplier,
-    options?.orientation,
-    options?.overscroll,
+    lerp,
+    duration,
+    wheelMultiplier,
+    touchMultiplier,
+    orientation,
+    overscroll,
   ]);
 
   const resize = useCallback(() => {

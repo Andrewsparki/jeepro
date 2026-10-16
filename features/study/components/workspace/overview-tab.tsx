@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Chapter, Subject } from "@/features/syllabus/services/syllabus";
 import { XP_CONFIG } from "@/features/progress/config/xp-config";
 import { 
-  ArrowRight, CheckCircle2, Play, Calculator, Target, Calendar, 
+  ArrowRight, CheckCircle2, Play, Calculator, Calendar, 
   Brain, Flame, Activity, ListChecks, Pencil, FileText
 } from "lucide-react";
 import Link from "next/link";
@@ -14,7 +14,7 @@ import { CreateEventDialog } from "@/features/planner/components/create-event-di
 import { useStudySession } from "@/features/study/context/study-session-context";
 import { TopicsList } from "@/features/study/components/topics-list";
 import { getUserNotes, UserNote } from "@/features/study/services/notes.service";
-import { getFormulasByChapter, Formula } from "@/features/study/services/formulas";
+import { getFormulasByChapter } from "@/features/study/services/formulas";
 
 interface OverviewTabProps {
   chapter: Chapter;
@@ -23,7 +23,6 @@ interface OverviewTabProps {
 }
 
 export function OverviewTab({ chapter, subject, onSelectTab }: OverviewTabProps) {
-  console.log("[OverviewTab] Rendering OverviewTab for chapter:", chapter?.title, "Topics count:", chapter?.topics?.length);
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
   const { startSession, isActive } = useStudySession();
   const [recentNotes, setRecentNotes] = useState<UserNote[]>([]);

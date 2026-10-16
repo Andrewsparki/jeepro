@@ -1,91 +1,123 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ShieldCheck, Moon, Zap, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Check, X, ShieldCheck, Timer } from "lucide-react";
+
+const comparisons = [
+  {
+    topic: "Advertising & Trackers",
+    industry: "Banner ads, sponsored recommendations, and cookie retargeting",
+    jeePro: "100% ad-free forever. Zero surveillance trackers or sponsored links",
+  },
+  {
+    topic: "Social & Algorithmic Feeds",
+    industry: "Infinite video feeds, public comment arguments, and influencer drama",
+    jeePro: "Zero social feeds. Your screen is strictly dedicated to the syllabus",
+  },
+  {
+    topic: "Study Timer Architecture",
+    industry: "Browser-locked timers that stop working when you open a PDF",
+    jeePro: "Native Picture-in-Picture timer that floats over any desktop window",
+  },
+  {
+    topic: "Retention System",
+    industry: "Passive quiz streaks designed to boost Daily Active User (DAU) metrics",
+    jeePro: "Algorithmic Ebbinghaus spaced repetition targeting formula decay",
+  },
+  {
+    topic: "Offline Capability",
+    industry: "Full page reloads required on unstable hostel and mobile connections",
+    jeePro: "Client-cached taxonomy with sub-50ms transitions and offline state",
+  },
+];
 
 export function FocusSection() {
   return (
-    <section className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8">
-      {/* Background Ambient Glow */}
-      <div 
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[450px] rounded-full pointer-events-none -z-10 transform-gpu" 
-        style={{
-          background: "radial-gradient(ellipse at 50% 50%, rgba(168,85,247,0.15) 0%, rgba(6,182,212,0.12) 40%, transparent 70%)",
-        }}
-      />
+    <section className="relative py-24 sm:py-36 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Structural layout guides */}
+      <div className="absolute inset-0 max-w-7xl mx-auto pointer-events-none">
+        <div className="absolute left-4 sm:left-8 top-0 bottom-0 w-[1px] bg-white/[0.04]" />
+        <div className="absolute right-4 sm:right-8 top-0 bottom-0 w-[1px] bg-white/[0.04]" />
+      </div>
 
-      <div className="mx-auto max-w-5xl">
+      <div className="relative mx-auto max-w-6xl">
         
-        {/* Minimalist Serene Smoked Glass Focus Panel */}
-        <motion.div 
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative rounded-3xl sm:rounded-[40px] p-8 sm:p-14 lg:p-16 bg-gradient-to-b from-white/[0.08] via-white/[0.02] to-black/80 backdrop-blur-xl border border-white/15 shadow-[0_30px_90px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.25)] text-center overflow-hidden"
-        >
-          {/* Top Specular Glare Line */}
-          <div className="absolute top-0 left-1/3 right-1/3 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent pointer-events-none" />
+        {/* Section Header */}
+        <div className="mb-16 sm:mb-20 max-w-3xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.12] bg-white/[0.03] text-zinc-300 font-mono text-[11px] uppercase tracking-wider mb-6">
+            <ShieldCheck className="w-3.5 h-3.5 text-zinc-400" />
+            <span>Attention Architecture</span>
+          </div>
 
-          <div className="relative z-10 max-w-2xl mx-auto space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-950/40 text-xs font-bold text-cyan-300 backdrop-blur-xl shadow-[0_0_20px_rgba(6,182,212,0.25)]">
-              <Moon className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Calm Architecture</span>
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.08] mb-6">
+            A Platform That Respects <br />
+            Your Finite Attention.
+          </h2>
+
+          <p className="text-base sm:text-lg text-zinc-400 font-normal leading-relaxed max-w-2xl">
+            Consumer learning apps are designed to maximize ad views and screen time through algorithmic dopamine loops. 
+            JEE Pro was built with the opposite philosophy: zero distractions, pure study throughput, and complete cognitive focus.
+          </p>
+        </div>
+
+        {/* Concrete Architectural Comparison Table */}
+        <div className="rounded-2xl sm:rounded-3xl bg-[#090C15] border border-white/[0.08] overflow-hidden">
+          {/* Table Header */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 sm:px-8 py-5 border-b border-white/[0.08] bg-[#0B0F19] font-mono text-xs text-zinc-400 uppercase tracking-wider">
+            <div className="md:col-span-3">System Dimension</div>
+            <div className="md:col-span-4 text-zinc-400">Typical Consumer Platforms</div>
+            <div className="md:col-span-5 text-white font-semibold">The JEE Pro Standard</div>
+          </div>
+
+          {/* Comparison Rows */}
+          <div className="divide-y divide-white/[0.06]">
+            {comparisons.map((row) => (
+              <div 
+                key={row.topic} 
+                className="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 sm:px-8 py-5 items-center text-sm"
+              >
+                <div className="md:col-span-3 font-semibold text-white">
+                  {row.topic}
+                </div>
+
+                <div className="md:col-span-4 flex items-start gap-2.5 text-zinc-400 text-xs sm:text-sm">
+                  <X className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
+                  <span>{row.industry}</span>
+                </div>
+
+                <div className="md:col-span-5 flex items-start gap-2.5 text-zinc-200 text-xs sm:text-sm font-medium">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span>{row.jeePro}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Floating PiP Feature Highlight Strip */}
+        <div className="mt-8 p-6 sm:p-8 rounded-2xl bg-[#0B0F19] border border-white/[0.08] flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-white shrink-0">
+              <Timer className="w-5 h-5 text-zinc-200" />
             </div>
-
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
-              Less distraction. <br />
-              <span className="bg-gradient-to-r from-[#38bdf8] via-[#818cf8] to-[#c084fc] bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(56,189,248,0.4)]">
-                More progress.
-              </span>
-            </h2>
-
-            <p className="text-sm sm:text-base text-slate-300 font-normal leading-relaxed">
-              No ads, no algorithmic social feeds, no sensory overload. Just pure conceptual clarity, precision problem solving, and a focused environment engineered for top ranks.
-            </p>
-
-            <div className="pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
-              <motion.div 
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-emerald-500/30 transition-colors"
-              >
-                <ShieldCheck className="w-5 h-5 text-emerald-400 mb-2" />
-                <h4 className="text-xs font-bold text-white mb-1">Zero Clutter</h4>
-                <p className="text-[11px] text-slate-400">Only the syllabus and active problem sets.</p>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.18, ease: "easeOut" }}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-cyan-500/30 transition-colors"
-              >
-                <Zap className="w-5 h-5 text-cyan-400 mb-2" />
-                <h4 className="text-xs font-bold text-white mb-1">Ultra-Fast</h4>
-                <p className="text-[11px] text-slate-400">Instant load times with offline sync capability.</p>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.26, ease: "easeOut" }}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 hover:border-purple-500/30 transition-colors"
-              >
-                <Sparkles className="w-5 h-5 text-purple-400 mb-2" />
-                <h4 className="text-xs font-bold text-white mb-1">Deep State</h4>
-                <p className="text-[11px] text-slate-400">Enter flow state within seconds of opening.</p>
-              </motion.div>
+            <div>
+              <h3 className="text-base font-bold text-white tracking-tight">
+                Picture-in-Picture Floating Chamber
+              </h3>
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed mt-1">
+                Keep your countdown timer and target question counter visible over full-screen PDF question papers, Irodov problems, or online mock tests without opening additional tabs.
+              </p>
             </div>
           </div>
-        </motion.div>
+
+          <Link
+            href="/dashboard/focus"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          >
+            <span>Launch Focus Chamber</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
 
       </div>
     </section>

@@ -17,6 +17,9 @@ import { playHapticSound } from "@/lib/sound-effects";
 
 const BREADCRUMB_MAP: Record<string, string> = {
   "/admin": "Dashboard",
+  "/admin/analytics": "Analytics & Telemetry",
+  "/admin/roles": "Role Management",
+  "/admin/whats-new": "What's New",
   "/admin/reports": "Chat Moderation",
   "/admin/support": "Support Desk",
   "/admin/users": "Users",
@@ -52,7 +55,7 @@ export function AdminTopbar({ adminName, adminEmail }: AdminTopbarProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 flex items-center justify-between h-14 px-4 lg:px-6 border-b border-white/[0.06] bg-[#0c0c0c]/90 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 flex items-center justify-between h-14 px-4 lg:px-6 border-b border-white/[0.06] bg-[#0c0c0c]/90 backdrop-blur-xl shrink-0">
         {/* Mobile menu toggle */}
         <motion.button
           whileTap={{ scale: 0.92 }}

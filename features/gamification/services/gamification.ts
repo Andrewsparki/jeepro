@@ -8,6 +8,12 @@ export interface Achievement {
   icon: string; // lucide icon name
   unlocked: boolean;
   unlockedAt?: string;
+  category?: string;
+  current_progress?: number;
+  requirement_value?: number;
+  progress_percentage?: number;
+  requirement_type?: string;
+  xp_reward?: number;
 }
 
 export interface XPDetails {
@@ -34,6 +40,22 @@ export interface XPEvent {
   xp: number;
 }
 
+export function getSessionXP(session: StudySession): number {
+  return typeof session.xp_earned === "number" && session.xp_earned > 0
+    ? session.xp_earned
+    : calculateSessionXP(session.duration_seconds, session.activity_type as ActivityType | undefined);
+}
+
+function countMasteredChapters(syllabus: Subject[]): number {
+  let count = 0;
+  for (const subject of syllabus) {
+    for (const chapter of subject.chapters) {
+      if (chapter.completionPercentage === 100) count++;
+    }
+  }
+  return count;
+}
+
 export function generateXPEvents(
   sessions: StudySession[],
   progress: UserTopicProgress[],
@@ -45,13 +67,9 @@ export function generateXPEvents(
 
   // 1. Session XP
   for (const session of sessions) {
-    if (typeof session.xp_earned === 'number' && session.xp_earned > 0) {
-      events.push({ timestamp: session.started_at, xp: session.xp_earned });
-    } else {
-      const xp = calculateSessionXP(session.duration_seconds, session.activity_type as ActivityType | undefined);
-      if (xp > 0) {
-        events.push({ timestamp: session.started_at, xp });
-      }
+    const xp = getSessionXP(session);
+    if (xp > 0) {
+      events.push({ timestamp: session.started_at, xp });
     }
   }
 
@@ -118,47 +136,37 @@ export function calculateXPAndLevel(
   progress: UserTopicProgress[],
   syllabus: Subject[],
   completedMissions: { reward_xp?: number; bonus_xp_awarded?: boolean; date?: string }[] = [],
-  achievementXP: number = 0
+  achievementXP: number = 0,
+  canonicalTotalXP?: number | null
 ): XPDetails {
   let totalXP = 0;
 
-  // 1. Session XP
-  // If xp_earned is present and > 0, use it. If 0 or null (e.g. legacy row), calculate from duration + activity.
-  for (const session of sessions) {
-    if (typeof session.xp_earned === 'number' && session.xp_earned > 0) {
-      totalXP += session.xp_earned;
-    } else {
-      totalXP += calculateSessionXP(session.duration_seconds, session.activity_type as ActivityType | undefined);
+  if (typeof canonicalTotalXP === "number" && canonicalTotalXP > 0) {
+    totalXP = canonicalTotalXP;
+  } else {
+    // 1. Session XP
+    for (const session of sessions) {
+      totalXP += getSessionXP(session);
     }
-  }
 
   // 2. Topic Milestone XP
   const masteredTopics = progress.filter(p => p.status === "Mastered").length;
   totalXP += masteredTopics * XP_CONFIG.MILESTONES.TOPIC_COMPLETED;
 
   // 3. Chapter XP
-  let masteredChapters = 0;
-  for (const subject of syllabus) {
-    for (const chapter of subject.chapters) {
-      if (chapter.completionPercentage === 100) {
-        masteredChapters++;
-      }
-    }
-  }
-  totalXP += masteredChapters * XP_CONFIG.MILESTONES.CHAPTER_COMPLETED;
+  totalXP += countMasteredChapters(syllabus) * XP_CONFIG.MILESTONES.CHAPTER_COMPLETED;
 
   // 4. Daily Missions XP
   for (const mission of completedMissions) {
     totalXP += mission.reward_xp || 0;
-    // Add bonus XP once per unique date where all 3 missions were finished
-    // We assume the DB correctly flags bonus_xp_awarded only when the criteria is met
   }
   
   const datesWithBonus = new Set(completedMissions.filter(m => m.bonus_xp_awarded).map(m => m.date));
   totalXP += datesWithBonus.size * XP_CONFIG.MILESTONES.ALL_DAILY_MISSIONS_COMPLETED;
 
-  // 5. Achievement Rewards XP
-  totalXP += achievementXP;
+    // 5. Achievement Rewards XP
+    totalXP += achievementXP;
+  }
 
   // Calculate Level
   let currentLevel = 1;
@@ -175,7 +183,7 @@ export function calculateXPAndLevel(
 
   return {
     currentLevel,
-    currentXP: totalXP, // Using total accumulated XP (could also display relative XP)
+    currentXP: totalXP,
     totalXP,
     nextLevelXP: totalXP - xpRemaining + xpForNextLevel,
     progressPercentage
@@ -189,14 +197,12 @@ export function getAchievements(
   streakDays: number
 ): Achievement[] {
   const masteredTopics = progress.filter(p => p.status === "Mastered").length;
-  let masteredChapters = 0;
-  for (const subject of syllabus) {
-    for (const chapter of subject.chapters) {
-      if (chapter.completionPercentage === 100) {
-        masteredChapters++;
-      }
-    }
-  }
+  const masteredChapters = countMasteredChapters(syllabus);
+  const totalDurationSeconds = sessions.reduce((sum, s) => sum + (s.duration_seconds || 0), 0);
+  const studyHours = Math.floor(totalDurationSeconds / 3600);
+
+  const calculatePct = (current: number, target: number) =>
+    target <= 0 ? 0 : Math.min(100, Math.round((current / target) * 100));
 
   const achievements: Achievement[] = [
     {
@@ -204,42 +210,117 @@ export function getAchievements(
       title: "First Steps",
       description: "Complete your first study session",
       icon: "play",
+      category: "study",
+      requirement_type: "session_count",
+      requirement_value: 1,
+      xp_reward: 50,
+      current_progress: sessions.length,
+      progress_percentage: calculatePct(sessions.length, 1),
       unlocked: sessions.length >= 1
     },
     {
+      id: "session_10",
+      title: "Getting in the Rhythm",
+      description: "Complete 10 study sessions",
+      icon: "zap",
+      category: "study",
+      requirement_type: "session_count",
+      requirement_value: 10,
+      xp_reward: 100,
+      current_progress: sessions.length,
+      progress_percentage: calculatePct(sessions.length, 10),
+      unlocked: sessions.length >= 10
+    },
+    {
+      id: "session_50",
+      title: "Deep Focus Master",
+      description: "Complete 50 study sessions",
+      icon: "target",
+      category: "study",
+      requirement_type: "session_count",
+      requirement_value: 50,
+      xp_reward: 250,
+      current_progress: sessions.length,
+      progress_percentage: calculatePct(sessions.length, 50),
+      unlocked: sessions.length >= 50
+    },
+    {
+      id: "session_100",
+      title: "Centurion Scholar",
+      description: "Complete 100 study sessions",
+      icon: "award",
+      category: "study",
+      requirement_type: "session_count",
+      requirement_value: 100,
+      xp_reward: 500,
+      current_progress: sessions.length,
+      progress_percentage: calculatePct(sessions.length, 100),
+      unlocked: sessions.length >= 100
+    },
+    {
+      id: "hours_1",
+      title: "Hour of Power",
+      description: "Accumulate 1 hour of total study time",
+      icon: "clock",
+      category: "time",
+      requirement_type: "study_hours",
+      requirement_value: 1,
+      xp_reward: 50,
+      current_progress: studyHours,
+      progress_percentage: calculatePct(studyHours, 1),
+      unlocked: studyHours >= 1
+    },
+    {
       id: "first_topic",
-      title: "Knowledge Seeker",
+      title: "Concept Conqueror",
       description: "Master your first topic",
       icon: "book-open",
+      category: "progress",
+      requirement_type: "topics_mastered",
+      requirement_value: 1,
+      xp_reward: 50,
+      current_progress: masteredTopics,
+      progress_percentage: calculatePct(masteredTopics, 1),
       unlocked: masteredTopics >= 1
     },
     {
       id: "first_chapter",
-      title: "Chapter Conquered",
-      description: "Master all topics in a chapter",
+      title: "Chapter Champion",
+      description: "Master all topics in 1 full chapter",
       icon: "trophy",
+      category: "progress",
+      requirement_type: "chapters_mastered",
+      requirement_value: 1,
+      xp_reward: 100,
+      current_progress: masteredChapters,
+      progress_percentage: calculatePct(masteredChapters, 1),
       unlocked: masteredChapters >= 1
     },
     {
-      id: "streak_7",
-      title: "Consistent Scholar",
-      description: "Achieve a 7-day study streak",
+      id: "streak_3",
+      title: "Building Momentum",
+      description: "Maintain a 3-day study streak",
       icon: "flame",
+      category: "streak",
+      requirement_type: "streak_days",
+      requirement_value: 3,
+      xp_reward: 50,
+      current_progress: streakDays,
+      progress_percentage: calculatePct(streakDays, 3),
+      unlocked: streakDays >= 3
+    },
+    {
+      id: "streak_7",
+      title: "Unstoppable",
+      description: "Maintain a 7-day study streak",
+      icon: "flame",
+      category: "streak",
+      requirement_type: "streak_days",
+      requirement_value: 7,
+      xp_reward: 150,
+      current_progress: streakDays,
+      progress_percentage: calculatePct(streakDays, 7),
       unlocked: streakDays >= 7
-    },
-    {
-      id: "sessions_25",
-      title: "Dedicated Learner",
-      description: "Complete 25 study sessions",
-      icon: "clock",
-      unlocked: sessions.length >= 25
-    },
-    {
-      id: "topics_100",
-      title: "Century Master",
-      description: "Master 100 topics",
-      icon: "star",
-      unlocked: masteredTopics >= 100
     }
   ];
 

@@ -1,12 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles, ChevronDown } from "lucide-react";
+import { ChevronDown, Compass } from "lucide-react";
 
 export function AboutHero() {
   return (
-    <section className="relative pt-36 sm:pt-44 lg:pt-52 pb-20 sm:pb-28 overflow-visible flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl flex flex-col items-center">
+    <section className="relative pt-32 sm:pt-40 lg:pt-48 pb-16 sm:pb-24 overflow-visible flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl flex flex-col items-center">
         
         {/* Eyebrow Pill */}
         <motion.div
@@ -15,9 +15,9 @@ export function AboutHero() {
           transition={{ duration: 0.5 }}
           className="mb-8"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/[0.12] bg-[#070E1E]/60 text-xs font-semibold text-[#38bdf8] backdrop-blur-2xl shadow-lg">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span className="tracking-wider uppercase text-[11px]">THE IDEA BEHIND JEE PRO</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-white/[0.1] bg-white/[0.04] text-xs font-medium text-zinc-300 backdrop-blur-xl">
+            <Compass className="w-3.5 h-3.5 text-zinc-400" />
+            <span className="tracking-wide uppercase text-[11px]">The Philosophy of JEE Pro</span>
           </div>
         </motion.div>
 
@@ -25,34 +25,31 @@ export function AboutHero() {
         <motion.h1
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="mb-6 max-w-4xl text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.08]"
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="mb-6 max-w-3xl text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]"
         >
-          Built for students who want to{" "}
-          <span className="bg-gradient-to-r from-[#1EA7FF] via-[#7257FF] to-[#C958FF] bg-clip-text text-transparent drop-shadow-[0_0_35px_rgba(30,167,255,0.35)]">
-            prepare with purpose.
-          </span>
+          Built for students who prepare with purpose.
         </motion.h1>
 
         {/* Supporting Description */}
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="mb-14 max-w-2xl text-base sm:text-xl text-[#98A0B3] font-normal leading-relaxed"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-12 max-w-2xl text-base sm:text-lg text-zinc-400 font-normal leading-relaxed"
         >
-          JEE PRO is a focused study operating system designed to bring preparation, practice, revision, and progress into one distraction-free environment.
+          JEE Pro is a focused study operating system designed to bring syllabus tracking, adaptive practice, spaced revision, and telemetry into one distraction-free environment.
         </motion.p>
 
         {/* Subtle Scroll Indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="flex flex-col items-center gap-2 text-xs text-slate-400/80 font-medium"
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="flex flex-col items-center gap-2 text-xs text-zinc-500 font-medium"
         >
-          <span className="tracking-widest uppercase text-[10px]">The Story</span>
-          <ChevronDown className="w-4 h-4 text-[#38bdf8] animate-bounce" />
+          <span className="tracking-widest uppercase text-[10px]">The Architecture</span>
+          <ChevronDown className="w-4 h-4 text-zinc-400 animate-bounce" />
         </motion.div>
 
       </div>

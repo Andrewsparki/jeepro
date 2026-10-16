@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { GroupMember, GroupRole } from "../types/groups.types";
 import { Button } from "@/components/ui/button";
 import { Crown, ShieldCheck, UserMinus, Loader2 } from "lucide-react";
@@ -65,7 +66,7 @@ export function GroupMembersList({
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="h-8 w-8 rounded-full overflow-hidden border border-border/60 shrink-0 bg-muted flex items-center justify-center text-[11px] font-bold text-foreground">
                   {profile?.avatar_url ? (
-                    <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+                    <Image src={profile.avatar_url} alt="" width={32} height={32} unoptimized className="h-full w-full object-cover" />
                   ) : (
                     <span>{initials}</span>
                   )}

@@ -64,7 +64,7 @@ export const ContinueLearning = React.memo(function ContinueLearning({ lastActiv
       <div className="absolute top-0 right-0 w-48 h-48 bg-accent/5 rounded-full blur-[40px] -mr-16 -mt-16 pointer-events-none group-hover:bg-accent/15 transition-all duration-700" />
       
       <div className="flex items-start justify-between relative z-10 mb-4">
-        <div className="p-3 rounded-xl bg-accent/10 text-accent border border-accent/20 group-hover:bg-accent group-hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(79,70,229,0.1)] group-hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]">
+        <div className="p-3 rounded-xl bg-accent/10 text-accent border border-accent/20 group-hover:bg-accent group-hover:text-[#0B0D12] transition-all duration-300 shadow-[0_0_15px_rgba(120,169,255,0.15)] group-hover:shadow-[0_0_20px_rgba(120,169,255,0.35)]">
           <Play className="h-5 w-5 ml-0.5" fill="currentColor" />
         </div>
         <div className="text-[10px] font-bold px-3 py-1.5 rounded-full bg-surface border border-border/50 text-muted-foreground uppercase tracking-widest shadow-sm">

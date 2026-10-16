@@ -43,7 +43,7 @@ export default function StudyHomePage() {
         {loading ? (
           <div className="grid gap-6 md:grid-cols-3">
             {[1, 2, 3].map(i => (
-              <Skeleton key={i} className="rounded-xl border border-glass-border bg-glass p-6 h-48" />
+              <Skeleton key={i} className="rounded-xl border border-white/[0.08] bg-[#090C15] p-6 h-48" />
             ))}
           </div>
         ) : (
@@ -58,34 +58,34 @@ export default function StudyHomePage() {
                   key={subject.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.3 }}
+                  transition={{ delay: index * 0.08, duration: 0.3 }}
                 >
                   <Link href={`/dashboard/study/${subject.slug}`}>
-                    <div className="group relative overflow-hidden rounded-xl border border-border/40 bg-card/20 p-6 hover:border-accent/50 hover:bg-card/40 transition-all h-full flex flex-col">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 rounded-xl bg-accent/10 text-accent">
-                          <BookOpen className="w-6 h-6" />
+                    <div className="group relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#090C15] hover:border-white/[0.18] p-6 transition-all h-full flex flex-col shadow-sm">
+                      <div className="flex items-center justify-between mb-5">
+                        <div className="p-3 rounded-lg bg-[#78A9FF]/10 border border-[#78A9FF]/20 text-[#78A9FF]">
+                          <BookOpen className="w-5 h-5 text-[#78A9FF]" />
                         </div>
-                        <span className="text-xl font-bold text-accent">{progress}%</span>
+                        <span className="text-xl font-mono font-bold text-white">{progress}%</span>
                       </div>
                       
                       <div className="mb-6">
-                        <h3 className="text-xl font-semibold mb-2 group-hover:text-accent transition-colors">
+                        <h3 className="text-xl font-bold tracking-tight text-white mb-2 group-hover:text-zinc-200 transition-colors">
                           {subject.name}
                         </h3>
-                        <p className="text-sm text-muted-foreground flex items-center justify-between">
-                          <span>{masteredTopics} / {totalTopics} Topics</span>
-                          <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                        <p className="text-xs text-zinc-400 flex items-center justify-between">
+                          <span>{masteredTopics} / {totalTopics} Topics Mastered</span>
+                          <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-white" />
                         </p>
                       </div>
                       
                       <div className="mt-auto">
-                        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div className="h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
                           <motion.div 
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
-                            transition={{ duration: 1, ease: "easeOut" }}
-                            className="h-full bg-accent rounded-full"
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            className="h-full bg-[#78A9FF] rounded-full"
                           />
                         </div>
                       </div>

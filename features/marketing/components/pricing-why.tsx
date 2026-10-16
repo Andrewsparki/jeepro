@@ -1,8 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles, Layers, Target, Compass, CheckCircle2 } from "lucide-react";
-import { MagneticCard } from "@/components/ui/magnetic-card";
+import { Layers, Target, Compass, CheckCircle2 } from "lucide-react";
 
 const pillars = [
   {
@@ -12,9 +11,6 @@ const pillars = [
     description: "Say goodbye to scattered PDFs, unorganized notes, and confusing forums. Your entire 90-chapter syllabus, theory highlights, formula anchors, and active test records are unified in one physical workspace.",
     icon: Layers,
     badge: "Clarity",
-    badgeColor: "text-cyan-400 border-cyan-500/30 bg-cyan-500/10",
-    glowColor: "rgba(6, 182, 212, 0.22)",
-    accentColor: "from-cyan-500/20 via-blue-500/10 to-transparent",
     highlights: ["Unified 90-chapter curriculum", "Integrated formula reference", "Zero distracting advertisements"],
   },
   {
@@ -24,115 +20,93 @@ const pillars = [
     description: "Stop guessing your readiness. High-precision telemetry tracks your accuracy curves across question difficulties, monitors time spent per calculation, and pinpoints conceptual weak spots before test day.",
     icon: Target,
     badge: "Telemetry",
-    badgeColor: "text-purple-400 border-purple-500/30 bg-purple-500/10",
-    glowColor: "rgba(168, 85, 247, 0.22)",
-    accentColor: "from-purple-500/20 via-indigo-500/10 to-transparent",
-    highlights: ["Speed vs. Accuracy breakdown", "Weak-spot vulnerability alerts", "Chapter mastery scorecards"],
+    highlights: ["Speed vs. Accuracy breakdown", "Error classification diagnostics", "Chapter mastery scorecards"],
   },
   {
     id: "systematic",
     title: "Prepare with intent",
     tagline: "Track chapters, practice, revise and test yourself systematically.",
-    description: "Follow a structured, proven progression model. Advance each chapter across 5 mastery tiers, lock in formulas with spaced repetition, and simulate real NTA testing conditions with 3-hour mocks.",
+    description: "Follow a structured, proven progression model. Advance each chapter across 5 mastery tiers, lock in formulas with spaced repetition, and simulate real testing conditions.",
     icon: Compass,
     badge: "Execution",
-    badgeColor: "text-indigo-400 border-indigo-500/30 bg-indigo-500/10",
-    glowColor: "rgba(99, 102, 241, 0.22)",
-    accentColor: "from-indigo-500/20 via-cyan-500/10 to-transparent",
-    highlights: ["5-stage mastery tracking", "Spaced-repetition review triggers", "Full-length 3-hour NTA simulator"],
+    highlights: ["5-stage mastery tracking", "Spaced-repetition review triggers", "Timed problem sets"],
   },
 ];
 
 export function PricingWhy() {
   return (
     <section className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-6xl">
         
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
           className="text-center max-w-3xl mx-auto mb-16 sm:mb-20"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.1] bg-[#070E1E]/50 text-xs font-semibold text-[#c084fc] mb-3 backdrop-blur-xl">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Core Philosophy</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.12] bg-white/[0.03] text-xs font-mono text-zinc-300 mb-4">
+            <span>ENGINEERED FOR RIGOR</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
-            Built around your <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-[#1EA7FF] via-[#7257FF] to-[#C958FF] bg-clip-text text-transparent">
-              preparation.
-            </span>
+
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white mb-4">
+            Why Aspirants Build on JEE Pro.
           </h2>
-          <p className="text-sm sm:text-base text-[#98A0B3] font-normal leading-relaxed max-w-xl mx-auto">
-            Everything in JEE PRO is engineered to replace chaos with focus and turn daily effort into measurable percentile gains.
+
+          <p className="text-sm sm:text-base text-zinc-400 font-normal leading-relaxed max-w-xl mx-auto">
+            Three principles behind the preparation platform designed specifically for the cognitive demands of JEE Advanced.
           </p>
         </motion.div>
 
-        {/* 3 Value Pillars with Magnetic 3D Cursor Physics */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {pillars.map((item, idx) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.6, delay: idx * 0.12 }}
-            >
-              <MagneticCard
-                glowColor={item.glowColor}
-                tiltAmount={7}
-                className="p-8 sm:p-9 bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.12] hover:border-white/[0.22] shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.15)] flex flex-col justify-between h-full"
+        {/* 3 Value Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          {pillars.map((pillar, idx) => {
+            const Icon = pillar.icon;
+            return (
+              <motion.div
+                key={pillar.id}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="rounded-2xl sm:rounded-3xl bg-[#090C15] border border-white/[0.08] p-7 sm:p-8 flex flex-col justify-between"
               >
-                {/* Background ambient corner flare */}
-                <div 
-                  className="absolute top-0 right-0 w-56 h-56 rounded-full pointer-events-none transform-gpu" 
-                  style={{
-                    background: `radial-gradient(circle at 100% 0%, ${item.glowColor}, transparent 70%)`,
-                  }}
-                />
-
-                <div className="relative z-10 flex flex-col justify-between h-full">
-                  <div>
-                    {/* Header Icon & Badge */}
-                    <div className="flex items-center justify-between mb-8">
-                      <div className="w-12 h-12 rounded-2xl bg-white/[0.05] border border-white/[0.1] flex items-center justify-center text-cyan-400">
-                        <item.icon className="w-6 h-6" />
-                      </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${item.badgeColor}`}>
-                        {item.badge}
-                      </span>
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-200">
+                      <Icon className="w-5 h-5" />
                     </div>
 
-                    {/* Title & Tagline */}
-                    <h3 className="text-2xl font-bold tracking-tight text-white mb-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs font-semibold text-slate-300 mb-4 tracking-wide">
-                      {item.tagline}
-                    </p>
-
-                    {/* Body Text */}
-                    <p className="text-xs sm:text-sm text-[#98A0B3] font-normal leading-relaxed mb-8">
-                      {item.description}
-                    </p>
+                    <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-zinc-300 uppercase">
+                      {pillar.badge}
+                    </span>
                   </div>
 
-                  {/* Highlights Checklist */}
-                  <div className="pt-6 border-t border-white/[0.08] space-y-2.5">
-                    {item.highlights.map((hl) => (
-                      <div key={hl} className="flex items-center gap-2.5 text-xs text-slate-200">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                        <span className="font-medium">{hl}</span>
-                      </div>
-                    ))}
-                  </div>
+                  <h3 className="text-xl font-bold text-white tracking-tight mb-2">
+                    {pillar.title}
+                  </h3>
+
+                  <p className="text-xs font-mono text-zinc-400 mb-4">
+                    {pillar.tagline}
+                  </p>
+
+                  <p className="text-sm text-zinc-400 leading-relaxed mb-6 font-normal">
+                    {pillar.description}
+                  </p>
                 </div>
-              </MagneticCard>
-            </motion.div>
-          ))}
+
+                <div className="pt-4 border-t border-white/[0.06] space-y-2">
+                  {pillar.highlights.map((item) => (
+                    <div key={item} className="flex items-center gap-2 text-xs text-zinc-300">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
 
       </div>

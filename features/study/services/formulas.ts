@@ -151,13 +151,18 @@ function setLocalCustomFormulas(chapterId: string, formulas: Formula[]): void {
   }
 }
 
+import { getPhysicsChapterDataset, getDatasetFormulas } from "./physics-knowledge.service";
+
 export async function getFormulasByChapter(chapterId: string, topicId?: string): Promise<Formula[]> {
   const customLocal = getLocalCustomFormulas(chapterId);
+  const dataset = getPhysicsChapterDataset(chapterId);
+  const datasetFormulas = dataset ? getDatasetFormulas(dataset, chapterId) : [];
+
   const officialLocal = DEFAULT_OFFICIAL_FORMULAS.filter(
     (f) => f.chapterId === chapterId || chapterId.includes(f.chapterId)
   );
 
-  let allFormulas: Formula[] = [...officialLocal, ...customLocal];
+  let allFormulas: Formula[] = [...datasetFormulas, ...officialLocal, ...customLocal];
 
   try {
     const supabase = createClient();

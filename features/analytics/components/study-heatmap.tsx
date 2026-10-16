@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { StudySession } from "@/features/study/services/progress";
-import { subDays, format, isSameDay, startOfDay, getDay } from "date-fns";
+import { subDays, format, startOfDay, getDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Flame, Calendar, Clock } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,6 +12,14 @@ interface StudyHeatmapProps {
   sessions: StudySession[];
   weeksCount?: number;
 }
+
+const HEATMAP_LEVEL_CLASSES = [
+  "bg-slate-100 border-slate-200/80 hover:border-slate-300 dark:bg-white/[0.03] dark:border-white/[0.04] dark:hover:border-white/30",
+  "bg-blue-100 border-blue-200 text-blue-700 hover:border-blue-400 dark:bg-blue-950/80 dark:border-blue-500/30 dark:text-blue-400 hover:brightness-125",
+  "bg-blue-400 border-blue-300 text-white shadow-sm hover:border-blue-200 dark:bg-blue-600/70 dark:border-blue-400/40 dark:shadow-[0_0_8px_rgba(59,130,246,0.3)] hover:brightness-125",
+  "bg-blue-600 border-blue-500 text-white shadow-md hover:border-white dark:bg-blue-500 dark:border-blue-400 dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:brightness-125",
+  "bg-blue-700 border-blue-600 text-white shadow-md hover:border-white dark:bg-sky-400 dark:border-white dark:shadow-[0_0_16px_rgba(56,189,248,0.8)] hover:brightness-125",
+] as const;
 
 export function StudyHeatmap({ sessions, weeksCount = 12 }: StudyHeatmapProps) {
   const daysTotal = weeksCount * 7;
@@ -84,14 +92,7 @@ export function StudyHeatmap({ sessions, weeksCount = 12 }: StudyHeatmapProps) {
   }, [sessions, daysTotal]);
 
   const getColorClass = (level: number) => {
-    switch (level) {
-      case 0: return "bg-slate-100 border-slate-200/80 hover:border-slate-300 dark:bg-white/[0.03] dark:border-white/[0.04] dark:hover:border-white/30";
-      case 1: return "bg-blue-100 border-blue-200 text-blue-700 hover:border-blue-400 dark:bg-blue-950/80 dark:border-blue-500/30 dark:text-blue-400 hover:brightness-125";
-      case 2: return "bg-blue-400 border-blue-300 text-white shadow-sm hover:border-blue-200 dark:bg-blue-600/70 dark:border-blue-400/40 dark:shadow-[0_0_8px_rgba(59,130,246,0.3)] hover:brightness-125";
-      case 3: return "bg-blue-600 border-blue-500 text-white shadow-md hover:border-white dark:bg-blue-500 dark:border-blue-400 dark:shadow-[0_0_12px_rgba(59,130,246,0.5)] hover:brightness-125";
-      case 4: return "bg-blue-700 border-blue-600 text-white shadow-md hover:border-white dark:bg-sky-400 dark:border-white dark:shadow-[0_0_16px_rgba(56,189,248,0.8)] hover:brightness-125";
-      default: return "bg-slate-100 border-slate-200/80 dark:bg-white/[0.03] dark:border-white/[0.04]";
-    }
+    return HEATMAP_LEVEL_CLASSES[level] ?? HEATMAP_LEVEL_CLASSES[0];
   };
 
   const getTooltipText = (date: Date, duration: number) => {

@@ -58,16 +58,16 @@ export const SidebarItem = memo(function SidebarItem({
       onTouchEnd={() => setIsPressed(false)}
       onClick={() => playSound("liquid-glass")}
       className={cn(
-        "relative flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring w-full group select-none",
+        "relative flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] focus-visible:ring-offset-1 focus-visible:ring-offset-[#0B0D12] active:scale-[0.98] w-full group select-none",
         isActive
-          ? "text-foreground font-semibold"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+          ? "text-white font-semibold"
+          : "text-[#A4ADBB] hover:text-[#F5F7FB] hover:bg-white/[0.04]"
       )}
     >
       {isActive && (
         <motion.div
           layoutId={layoutId}
-          className="absolute inset-0 rounded-lg bg-accent/15 border border-accent/20"
+          className="absolute inset-0 rounded-lg bg-[#78A9FF]/10 border border-[#78A9FF]/20 shadow-[inset_0_1px_0_rgba(120,169,255,0.12)]"
           initial={false}
           transition={{
             type: "spring",
@@ -87,7 +87,7 @@ export const SidebarItem = memo(function SidebarItem({
             isActive={isActive}
             className={cn(
               "flex items-center justify-center transition-colors duration-200",
-              isActive ? "text-accent" : "text-muted-foreground group-hover:text-foreground"
+              isActive ? "text-[#78A9FF]" : "text-[#A4ADBB] group-hover:text-[#F5F7FB]"
             )}
           >
             {icon}

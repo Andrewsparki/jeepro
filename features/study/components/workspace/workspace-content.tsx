@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Chapter, Subject } from "@/features/syllabus/services/syllabus";
 import { cn } from "@/lib/utils";
@@ -10,27 +10,23 @@ import { NotesTab } from "./notes-tab";
 import { WorkspaceEmptyState } from "./components/workspace-empty-state";
 import { 
   BookOpen, Calculator, Pencil, Sparkles, 
-  TrendingUp, Clock, Target, Brain, LucideIcon, BookMarked, Play
+  TrendingUp, Clock, Target, Brain, LucideIcon, BookMarked, Play,
+  GitFork, LineChart, Zap
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useStudySession } from "@/features/study/context/study-session-context";
 import { dispatchInteractionSound } from "@/lib/sound-engine";
+import { getPhysicsChapterDataset } from "@/features/study/services/physics-knowledge.service";
+import { ChapterNotesViewer } from "./components/chapter-notes-viewer";
+import { ChapterDerivationsViewer } from "./components/chapter-derivations-viewer";
+import { ChapterGraphsViewer } from "./components/chapter-graphs-viewer";
+import { ChapterRevisionViewer } from "./components/chapter-revision-viewer";
 
 interface WorkspaceContentProps {
   chapter: Chapter;
   subject: Subject;
 }
-
-const TABS = [
-  { id: "overview", label: "Overview", icon: BookOpen },
-  { id: "notes", label: "Notes", icon: Pencil },
-  { id: "formulas", label: "Formula Sheet", icon: Calculator },
-  { id: "practice", label: "Practice", icon: Target },
-  { id: "pyqs", label: "PYQs", icon: BookMarked },
-  { id: "flashcards", label: "Flashcards", icon: Brain },
-  { id: "ai", label: "AI Tutor", icon: Sparkles },
-];
 
 export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
   console.log("[WorkspaceContent] Rendering WorkspaceContent for chapter:", chapter?.title);
@@ -38,7 +34,42 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const { startSession, endSession, isActive } = useStudySession();
 
-  const activeTabConfig = TABS.find(t => t.id === activeTab);
+  // Check if this chapter is one of our 6 rich Physics datasets
+  const dataset = useMemo(() => {
+    return getPhysicsChapterDataset(chapter.slug) || getPhysicsChapterDataset(chapter.id);
+  }, [chapter.slug, chapter.id]);
+
+  // Compute dynamic tabs: include Derivations, Graphs, and Revision when content exists
+  const tabs = useMemo(() => {
+    const list = [
+      { id: "overview", label: "Overview", icon: BookOpen },
+      { id: "notes", label: "Notes", icon: Pencil },
+      { id: "formulas", label: "Formula Sheet", icon: Calculator },
+    ];
+
+    if (dataset) {
+      if (dataset.derivations && dataset.derivations.length > 0) {
+        list.push({ id: "derivations", label: "Derivations", icon: GitFork });
+      }
+      if (dataset.graphs && dataset.graphs.length > 0) {
+        list.push({ id: "graphs", label: "Graphs", icon: LineChart });
+      }
+      if ((dataset.quickRevision && dataset.quickRevision.length > 0) || (dataset.commonMistakes && dataset.commonMistakes.length > 0)) {
+        list.push({ id: "revision", label: "Quick Revision", icon: Zap });
+      }
+    }
+
+    list.push(
+      { id: "practice", label: "Practice", icon: Target },
+      { id: "pyqs", label: "PYQs", icon: BookMarked },
+      { id: "flashcards", label: "Flashcards", icon: Brain },
+      { id: "ai", label: "AI Tutor", icon: Sparkles }
+    );
+
+    return list;
+  }, [dataset]);
+
+  const activeTabConfig = tabs.find(t => t.id === activeTab);
 
   const toggleBookmark = () => {
     setIsBookmarked(prev => {
@@ -60,6 +91,14 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
                 <span>{subject.name}</span>
                 <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
                 <span>Chapter {chapter.order_index}</span>
+                {dataset && (
+                  <>
+                    <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[#78A9FF]/15 text-[#78A9FF] border border-[#78A9FF]/30 font-bold">
+                      Complete Knowledge Base
+                    </span>
+                  </>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -96,7 +135,7 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
         </div>
 
         <nav role="tablist" className="flex space-x-2 overflow-x-auto custom-scrollbar no-scrollbar-arrows pb-px">
-          {TABS.map((tab) => {
+          {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <button
@@ -109,7 +148,7 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
                 }}
                 className={cn(
                   "relative px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap rounded-t-lg",
-                  isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground/80 hover:bg-surface-hover/50"
+                  isActive ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground/80 hover:bg-surface-hover/50"
                 )}
               >
                 {tab.label}
@@ -142,14 +181,27 @@ export function WorkspaceContent({ chapter, subject }: WorkspaceContentProps) {
             )}
 
             {activeTab === "notes" && (
-              <NotesTab chapter={chapter} subject={subject} />
+              dataset ? <ChapterNotesViewer dataset={dataset} /> : <NotesTab chapter={chapter} subject={subject} />
             )}
 
             {activeTab === "formulas" && (
               <FormulasTab chapter={chapter} subject={subject} />
             )}
 
-            {activeTab !== "overview" && activeTab !== "notes" && activeTab !== "formulas" && activeTabConfig && (
+            {activeTab === "derivations" && dataset && (
+              <ChapterDerivationsViewer dataset={dataset} />
+            )}
+
+            {activeTab === "graphs" && dataset && (
+              <ChapterGraphsViewer dataset={dataset} />
+            )}
+
+            {activeTab === "revision" && dataset && (
+              <ChapterRevisionViewer dataset={dataset} />
+            )}
+
+            {activeTab !== "overview" && activeTab !== "notes" && activeTab !== "formulas" && 
+             activeTab !== "derivations" && activeTab !== "graphs" && activeTab !== "revision" && activeTabConfig && (
               <WorkspaceEmptyState
                 icon={activeTabConfig.icon}
                 title={`${activeTabConfig.label} Content Incoming`}

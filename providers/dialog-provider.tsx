@@ -38,7 +38,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
   const [dialogState, setDialogState] = useState<DialogState | null>(null);
   const confirmRef = useRef<HTMLButtonElement>(null);
 
-  const alert = (options: Omit<DialogOptions, "variant" | "cancelLabel">) => {
+  const alert = useCallback((options: Omit<DialogOptions, "variant" | "cancelLabel">) => {
     return new Promise<void>((resolve) => {
       setDialogState({
         ...options,
@@ -48,9 +48,9 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         resolve: () => resolve(),
       });
     });
-  };
+  }, []);
 
-  const confirm = (options: DialogOptions) => {
+  const confirm = useCallback((options: DialogOptions) => {
     return new Promise<boolean>((resolve) => {
       setDialogState({
         ...options,
@@ -59,7 +59,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         resolve: (val) => resolve(Boolean(val)),
       });
     });
-  };
+  }, []);
 
   const handleClose = useCallback((value: boolean) => {
     if (!dialogState) return;
@@ -79,8 +79,10 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     setTimeout(() => confirmRef.current?.focus(), 50);
   }, [dialogState?.isOpen]);
 
+  const contextValue = React.useMemo(() => ({ alert, confirm }), [alert, confirm]);
+
   return (
-    <DialogContext.Provider value={{ alert, confirm }}>
+    <DialogContext.Provider value={contextValue}>
       {children}
       <Modal
         isOpen={Boolean(dialogState?.isOpen)}

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import Image from "next/image";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +18,6 @@ import {
   Flame,
   Star,
   ShieldCheck,
-  ExternalLink,
   CheckCheck,
   Filter,
   ArrowRight,
@@ -112,7 +112,7 @@ export function WhatsNewModal({
       case "Coming Soon":
         return (
           <Badge className="bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/30 flex items-center gap-1 font-medium">
-            <Rocket className="w-3 h-3 text-purple-500" />
+            <Rocket className="w-3 h-3 text-accent" />
             Coming Soon
           </Badge>
         );
@@ -124,7 +124,7 @@ export function WhatsNewModal({
   const getCategoryBadge = (category: AppUpdateCategory) => {
     const colors: Record<AppUpdateCategory, string> = {
       Feature: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
-      Improvement: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20",
+      Improvement: "bg-accent/10 text-accent border-accent/20",
       Fix: "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20",
       Announcement: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
     };
@@ -146,7 +146,7 @@ export function WhatsNewModal({
         dispatchInteractionSound("ui.close");
         onOpenChange(false);
       }}
-      className="sm:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-background/95 backdrop-blur-xl border border-border/60 shadow-2xl rounded-2xl"
+      className="sm:max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-[#0B0D12] border border-border/60 shadow-2xl rounded-2xl"
     >
       {/* Close Button */}
       <button
@@ -287,9 +287,12 @@ export function WhatsNewModal({
                     {/* Optional Image */}
                     {update.image_url && (
                       <div className="mt-3 rounded-lg overflow-hidden border border-border/50 bg-black/5">
-                        <img
+                        <Image
                           src={update.image_url}
                           alt={update.title}
+                          width={600}
+                          height={208}
+                          unoptimized
                           className="w-full max-h-52 object-cover"
                         />
                       </div>

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { dispatchInteractionSound } from "@/lib/sound-engine";
+import { trackEvent } from "@/features/analytics/services/telemetry.service";
 
 interface NotesTabProps {
   chapter: Chapter;
@@ -120,6 +121,10 @@ export function NotesTab({ chapter, subject }: NotesTabProps) {
       const res = await updateNote(activeNote.id, chapter.id, fields);
       if (res) {
         setSaveStatus("saved");
+        void trackEvent("notes_save", "/study", {
+          feature: "Personal Notes",
+          metadata: { noteId: activeNote.id, chapterId: chapter.id, subjectId: subject.id },
+        });
       } else {
         setSaveStatus("unsaved");
       }

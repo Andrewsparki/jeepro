@@ -3,7 +3,7 @@
 import React from "react";
 import { ChatMessage, ChatSender } from "../types/chat.types";
 import { cn } from "@/lib/utils";
-import { MoreVertical, Trash2, Flag, Copy, ShieldAlert, UserCheck } from "lucide-react";
+import { MoreVertical, Trash2, Flag, Copy, ShieldAlert } from "lucide-react";
 import { ContextMenuTrigger } from "@/features/context-menu";
 import { toast } from "sonner";
 import {
@@ -33,7 +33,7 @@ function formatTime(isoString: string): string {
   }
 }
 
-export function ChatMessageItem({
+function ChatMessageItemComponent({
   message,
   isCurrentUser,
   isGrouped,
@@ -46,13 +46,17 @@ export function ChatMessageItem({
   const initial = senderName.charAt(0).toUpperCase();
   const timeStr = formatTime(message.created_at);
 
-  const senderObj: ChatSender = message.sender || {
-    id: message.sender_id,
-    full_name: senderName,
-    avatar_url: null,
-  };
+  const senderObj: ChatSender = React.useMemo(() => {
+    return (
+      message.sender || {
+        id: message.sender_id,
+        full_name: senderName,
+        avatar_url: null,
+      }
+    );
+  }, [message.sender, message.sender_id, senderName]);
 
-  const chatMenuItems = [
+  const chatMenuItems = React.useMemo(() => [
     {
       id: "copy-chat-text",
       label: "Copy Text",
@@ -93,7 +97,7 @@ export function ChatMessageItem({
           },
         ]
       : []),
-  ];
+  ], [message, isCurrentUser, isAdmin, onDelete, onReport, onAdminModerateUser, senderName, senderObj]);
 
   return (
     <div
@@ -252,3 +256,5 @@ export function ChatMessageItem({
     </div>
   );
 }
+
+export const ChatMessageItem = React.memo(ChatMessageItemComponent);

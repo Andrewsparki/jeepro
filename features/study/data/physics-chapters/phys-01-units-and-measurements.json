@@ -1,0 +1,270 @@
+{
+  "id": "phys-01-units-and-measurements",
+  "title": "Units and Measurements",
+  "order": 1,
+  "unitNumber": 1,
+  "classLevel": "11",
+  "topics": [
+    "Units of measurements and System of units",
+    "SI Units, fundamental and derived units",
+    "Least count and significant figures",
+    "Errors in measurements and error propagation",
+    "Dimensions of physical quantities",
+    "Dimensional analysis and its applications"
+  ],
+  "notes": "## 1. Physical Quantities and SI Units\nA **physical quantity** $Q$ is expressed as the product of a numerical value $n$ and a unit $u$: $Q = n_1 u_1 = n_2 u_2$, implying $n \\propto \\frac{1}{u}$.\n\n### Seven Fundamental SI Quantities\n1. **Length ($L$):** metre ($\\text{m}$)\n2. **Mass ($M$):** kilogram ($\\text{kg}$)\n3. **Time ($T$):** second ($\\text{s}$)\n4. **Electric Current ($I$ or $A$):** ampere ($\\text{A}$)\n5. **Thermodynamic Temperature ($K$ or $\\Theta$):** kelvin ($\\text{K}$)\n6. **Amount of Substance ($\\text{mol}$):** mole ($\\text{mol}$)\n7. **Luminous Intensity ($\\text{cd}$):** candela ($\\text{cd}$)\n\n### Supplementary SI Quantities (Dimensionless)\n* **Plane Angle ($d\\theta = \\frac{ds}{r}$):** radian ($\\text{rad}$), where $\\pi\\text{ rad} = 180^\\circ$.\n* **Solid Angle ($d\\Omega = \\frac{dA}{r^2}$):** steradian ($\\text{sr}$), total solid angle subtended by a closed sphere is $4\\pi\\text{ sr}$.\n\n## 2. Significant Figures and Rounding Rules\n* All non-zero digits and zeros trapped between non-zero digits are significant.\n* Leading zeros (e.g., $0.0045$) are **never** significant.\n* Trailing zeros in a number with a decimal point (e.g., $2.400$) **are** significant.\n* In scientific notation $a \\times 10^b$, all digits in the mantissa $a$ are significant.\n* **Addition/Subtraction Rule:** Round the final result to the **least number of decimal places** present in the input values.\n* **Multiplication/Division Rule:** Round the final result to the **least number of total significant figures** present in the input values.\n* **Rounding:** If the dropped digit is $5$ followed by nothing or zeros, leave the preceding digit unchanged if it is **even**, and increment by $1$ if it is **odd**.\n\n## 3. Errors in Measurement\n* **Absolute Error:** $\\Delta a_i = |a_i - a_{\\text{mean}}|$, where $a_{\\text{mean}} = \\frac{1}{n}\\sum_{i=1}^n a_i$.\n* **Mean Absolute Error:** $\\Delta a_{\\text{mean}} = \\frac{1}{n}\\sum_{i=1}^n |\\Delta a_i|$.\n* **Relative Error:** $\\delta a = \\frac{\\Delta a_{\\text{mean}}}{a_{\\text{mean}}}$.\n* **Percentage Error:** $\\frac{\\Delta a_{\\text{mean}}}{a_{\\text{mean}}} \\times 100\\%$.\n\n## 4. Principle of Homogeneity and Dimensional Analysis\nEvery term added or subtracted on either side of a physically valid equation must have identical dimensions.\n* **Pure numbers, arguments of trigonometric ($\\sin\\theta$), logarithmic ($\\ln x$), and exponential ($e^x$) functions are strictly dimensionless** $[M^0 L^0 T^0]$.\n* **Key Dimensional Shortcuts for Electromagnetism & Mechanics:**\n  * Force $[F] = [M^1 L^1 T^{-2}]$\n  * Work / Energy / Torque $[W] = [M^1 L^2 T^{-2}]$\n  * Planck's Constant / Angular Momentum $[h] = [M^1 L^2 T^{-1}]$\n  * Gravitational Constant $[G] = [M^{-1} L^3 T^{-2}]$\n  * Coefficient of Viscosity $[\\eta] = [M^1 L^{-1} T^{-1}]$\n  * Permittivity of Free Space $[\\varepsilon_0] = [M^{-1} L^{-3} T^4 A^2]$\n  * Permeability of Free Space $[\\mu_0] = [M^1 L^1 T^{-2} A^{-2}]$\n  * Dimensionless Combinations: $\\frac{L}{R T}$, $RC T^{-1}$, $LC T^{-2}$, $\\sqrt{\\mu_0 \\varepsilon_0} c$.",
+  "formulas": [
+    {
+      "id": "phys-01-f01",
+      "title": "Unit Conversion Relation",
+      "latex": "n_2 = n_1 \\left(\\frac{M_1}{M_2}\\right)^a \\left(\\frac{L_1}{L_2}\\right)^b \\left(\\frac{T_1}{T_2}\\right)^c",
+      "explanation": "Converts the numerical value of a physical quantity from system 1 to system 2 based on its dimensional formula [M^a L^b T^c].",
+      "variables": [
+        {
+          "symbol": "n_1, n_2",
+          "name": "Numerical values in system 1 and system 2",
+          "siUnit": "Dimensionless",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "M_1, L_1, T_1",
+          "name": "Base units of mass, length, time in system 1",
+          "siUnit": "kg, m, s",
+          "dimension": "[M], [L], [T]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "a, b, c",
+          "name": "Dimensional exponents of mass, length, and time",
+          "siUnit": "Dimensionless",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "Dimensionless ratio",
+      "dimensions": "[M^0 L^0 T^0]",
+      "assumptions": "The physical quantity depends only on mass, length, and time.",
+      "validityConditions": "Both unit systems must measure the same physical quantity without additive offsets (not valid for Celsius to Fahrenheit)."
+    },
+    {
+      "id": "phys-01-f02",
+      "title": "Maximum Absolute Error in Sum or Difference",
+      "latex": "\\Delta Z = \\Delta A + \\Delta B",
+      "explanation": "Whether two measured quantities are added (Z = A + B) or subtracted (Z = A - B), their maximum possible absolute errors always add up.",
+      "variables": [
+        {
+          "symbol": "\\Delta Z",
+          "name": "Maximum absolute error in result Z",
+          "siUnit": "Same as A and B",
+          "dimension": "Same as A and B",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\Delta A, \\Delta B",
+          "name": "Absolute errors in measurements A and B",
+          "siUnit": "Same as A and B",
+          "dimension": "Same as A and B",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "Same as measured quantity",
+      "dimensions": "Same as A and B",
+      "assumptions": "Errors in A and B are independent worst-case bounds.",
+      "validityConditions": "Applies strictly to linear addition and subtraction Z = A ± B."
+    },
+    {
+      "id": "phys-01-f03",
+      "title": "Relative Error Propagation in Power-Law Products",
+      "latex": "\\frac{\\Delta Z}{Z} = |p|\\frac{\\Delta A}{A} + |q|\\frac{\\Delta B}{B} + |r|\\frac{\\Delta C}{C}",
+      "explanation": "Gives the maximum fractional/relative error in a derived quantity Z = (A^p B^q) / C^r for small errors.",
+      "variables": [
+        {
+          "symbol": "\\Delta Z / Z",
+          "name": "Maximum fractional error in Z",
+          "siUnit": "Dimensionless",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "p, q, r",
+          "name": "Power exponents of A, B, and C",
+          "siUnit": "Dimensionless",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\Delta A / A",
+          "name": "Fractional error in A",
+          "siUnit": "Dimensionless",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "Dimensionless",
+      "dimensions": "[M^0 L^0 T^0]",
+      "assumptions": "Differential approximation valid when fractional errors are small (typically less than 5%).",
+      "validityConditions": "For large percentage errors (e.g., 20%), exact algebraic calculation Z_new / Z_old must be used instead of differential error propagation."
+    },
+    {
+      "id": "phys-01-f04",
+      "title": "Vernier Calipers Least Count and Reading",
+      "latex": "\\text{LC} = 1\\text{ MSD} - 1\\text{ VSD} = \\left(1 - \\frac{m}{n}\\right)\\text{MSD}, \\quad R = \\text{MSR} + (k \\times \\text{LC}) - \\text{ZE}",
+      "explanation": "Calculates the least count when n Vernier Scale Divisions coincide with m Main Scale Divisions, and the corrected reading R.",
+      "variables": [
+        {
+          "symbol": "\\text{LC}",
+          "name": "Least Count",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\text{MSD}",
+          "name": "Value of 1 Main Scale Division",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\text{VSD}",
+          "name": "Value of 1 Vernier Scale Division",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "k",
+          "name": "Coinciding Vernier scale division index",
+          "siUnit": "Dimensionless",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\text{ZE}",
+          "name": "Zero Error (with proper algebraic sign)",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m",
+      "dimensions": "[L^1]",
+      "assumptions": "Standard forward Vernier where 1 VSD is smaller than 1 MSD.",
+      "validityConditions": "If 1 VSD is greater than 1 MSD (retrograde Vernier), LC = 1 VSD - 1 MSD."
+    },
+    {
+      "id": "phys-01-f05",
+      "title": "Screw Gauge Least Count and Reading",
+      "latex": "\\text{LC} = \\frac{\\text{Pitch}}{N_{\\text{CSD}}}, \\quad R = \\text{PSR} + (k \\times \\text{LC}) - \\text{ZE}",
+      "explanation": "Relates the pitch (linear distance moved per full rotation) and number of circular scale divisions to the least count and total thickness reading.",
+      "variables": [
+        {
+          "symbol": "\\text{Pitch}",
+          "name": "Linear distance travelled per complete rotation of screw",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "N_{\\text{CSD}}",
+          "name": "Total divisions on circular scale",
+          "siUnit": "Dimensionless",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\text{PSR}",
+          "name": "Pitch Scale Reading (main linear scale)",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m",
+      "dimensions": "[L^1]",
+      "assumptions": "Uniform screw thread without backlash error.",
+      "validityConditions": "Zero error (ZE) is positive if zero of circular scale lies below reference line when jaws touch, and is subtracted."
+    }
+  ],
+  "derivations": [
+    {
+      "id": "phys-01-d01",
+      "title": "Error Propagation in Products and Powers Using Logarithmic Differentiation",
+      "context": "Deriving the fractional error formula for a general monomial relation Z = A^p B^q C^{-r}.",
+      "steps": [
+        "Start with the functional relationship: $$Z = \\frac{A^p B^q}{C^r}$$",
+        "Take the natural logarithm on both sides: $$\\ln Z = p \\ln A + q \\ln B - r \\ln C$$",
+        "Differentiate both sides assuming small variations $\\Delta A, \\Delta B, \\Delta C$: $$\\frac{dZ}{Z} = p \\frac{dA}{A} + q \\frac{dB}{B} - r \\frac{dC}{C}$$",
+        "Since individual measurement errors can be positive or negative independently, take absolute values to obtain the maximum possible worst-case fractional error: $$\\left(\\frac{\\Delta Z}{Z}\\right)_{\\max} = |p|\\frac{\\Delta A}{A} + |q|\\frac{\\Delta B}{B} + |r|\\frac{\\Delta C}{C}$$"
+      ],
+      "finalResult": "\\left(\\frac{\\Delta Z}{Z}\\right)_{\\max} = |p|\\frac{\\Delta A}{A} + |q|\\frac{\\Delta B}{B} + |r|\\frac{\\Delta C}{C}"
+    },
+    {
+      "id": "phys-01-d02",
+      "title": "Error Propagation in Parallel Resistance or Focal Length Formula",
+      "context": "Finding absolute error ΔR in 1/R = 1/R_1 + 1/R_2 (or 1/f = 1/v - 1/u).",
+      "steps": [
+        "Given the reciprocal relation: $$\\frac{1}{R} = \\frac{1}{R_1} + \\frac{1}{R_2}$$",
+        "Differentiate both sides completely: $$-\\frac{dR}{R^2} = -\\frac{dR_1}{R_1^2} - \\frac{dR_2}{R_2^2}$$",
+        "Multiply by $-1$ and take maximum positive error bounds: $$\\frac{\\Delta R}{R^2} = \\frac{\\Delta R_1}{R_1^2} + \\frac{\\Delta R_2}{R_2^2}$$"
+      ],
+      "finalResult": "\\Delta R = R^2 \\left(\\frac{\\Delta R_1}{R_1^2} + \\frac{\\Delta R_2}{R_2^2}\\right)"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "phys-01-g01",
+      "title": "Numerical Value (n) vs Size of Unit (u)",
+      "xAxis": "Size of Unit (u)",
+      "yAxis": "Numerical Value (n)",
+      "curveType": "Rectangular Hyperbola",
+      "equation": "n \\cdot u = \\text{constant}",
+      "slopeInterpretation": "Slope dn/du = -n/u shows numerical value decreases rapidly as unit size increases.",
+      "areaInterpretation": "Area of any rectangle under a point (u, n) equals the constant magnitude of the physical quantity Q.",
+      "physicalInterpretation": "A larger unit yields a smaller numerical reading for the same physical measurement."
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "phys-01-cm01",
+      "topic": "Dimensional Analysis vs Physical Identity",
+      "mistake": "Assuming two quantities with identical dimensions represent the same physical concept (e.g., Torque and Work both have [M^1 L^2 T^-2]).",
+      "correction": "Dimensional equivalence is a necessary but not sufficient condition for physical equivalence; Torque is a pseudovector (r × F) measured in N·m, whereas Work is a scalar (F · d) measured in Joules.",
+      "category": "conceptual"
+    },
+    {
+      "id": "phys-01-cm02",
+      "topic": "Error in Reaction Time / Stop-Watch Pendulum Problems",
+      "mistake": "Using the least count of the stopwatch ΔT directly as the error in a single time period t = T/n without dividing by the number of oscillations n.",
+      "correction": "If total time T is measured for n oscillations with least count ΔT, then t = T/n implies Δt/t = ΔT/T, so the absolute error in one period is Δt = ΔT / n, while fractional error remains ΔT / T.",
+      "category": "formula-selection"
+    },
+    {
+      "id": "phys-01-cm03",
+      "topic": "Sign of Zero Error vs Zero Correction",
+      "mistake": "Adding a positive zero error to the observed reading.",
+      "correction": "Zero Error (ZE) is always subtracted from the observed reading: True Reading = Observed Reading - ZE. Zero Correction (ZC = -ZE) is added.",
+      "category": "sign-convention"
+    }
+  ],
+  "quickRevision": [
+    "Dimensions of RC, L/R, and √(LC) are all equal to Time [T^1].",
+    "Dimensions of 1/√(μ_0 ε_0) equal speed of light [L^1 T^-1], and (1/2)ε_0 E^2 and B^2/(2μ_0) both equal Energy Density [M^1 L^-1 T^-2].",
+    "In Van der Waals equation (P + a/V^2)(V - b) = RT, [a] = [M^1 L^5 T^-2] and [b] = [L^3] (for a fixed mole count).",
+    "Dimensional analysis cannot determine dimensionless constants (like 1/2 or 2π) and fails when a quantity depends on more than 3 independent variables in mechanics.",
+    "Pure numbers have infinite significant figures; changing units (e.g., 2.4 m = 240 cm = 2400 mm) never changes the number of significant figures (2 in this case)."
+  ],
+  "sources": [
+    {
+      "title": "NTA JEE Main Official Physics Syllabus — Unit 1: Units and Measurements",
+      "type": "Official Syllabus",
+      "url": "https://jeemain.nta.nic.in/"
+    },
+    {
+      "title": "NCERT Class 11 Physics Part 1 — Chapter 1: Units and Measurement",
+      "type": "Textbook",
+      "url": "https://ncert.nic.in/textbook.php?keph1=1-7"
+    }
+  ]
+}

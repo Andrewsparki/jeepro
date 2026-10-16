@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, UIEvent } from "react";
+import React, { useRef, useEffect, useCallback, UIEvent } from "react";
 import { ChatMessage, ChatSender } from "../types/chat.types";
 import { ChatMessageItem } from "./chat-message-item";
 import { ArrowDown, MessageSquare, Loader2, AlertCircle, RefreshCw } from "lucide-react";
@@ -47,6 +47,8 @@ function getDayLabel(isoString: string): string {
   }
 }
 
+const SUB_SCROLL_CONFIG = { overscroll: true };
+
 export function ChatMessageList({
   messages,
   isLoading,
@@ -63,9 +65,9 @@ export function ChatMessageList({
   onRefresh,
   setNearBottom,
 }: ChatMessageListProps) {
-  const { containerRef, contentRef, resize: resizeScroll } = useSubSmoothScroll<HTMLDivElement>({
-    overscroll: true,
-  });
+  const { containerRef, contentRef, resize: resizeScroll } = useSubSmoothScroll<HTMLDivElement>(
+    SUB_SCROLL_CONFIG
+  );
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
   const isInitialScrollDoneRef = useRef(false);
   const prevScrollHeightRef = useRef<number>(0);
@@ -75,13 +77,13 @@ export function ChatMessageList({
   }, [messages.length, resizeScroll]);
 
   // Scroll to bottom helper
-  const scrollToBottom = (smooth = true) => {
+  const scrollToBottom = useCallback((smooth = true) => {
     if (bottomAnchorRef.current) {
       bottomAnchorRef.current.scrollIntoView({
         behavior: smooth ? "smooth" : "auto",
       });
     }
-  };
+  }, []);
 
   // 1. Initial scroll to bottom once messages finish loading
   useEffect(() => {
@@ -89,7 +91,7 @@ export function ChatMessageList({
       scrollToBottom(false);
       isInitialScrollDoneRef.current = true;
     }
-  }, [isLoading, messages.length]);
+  }, [isLoading, messages.length, scrollToBottom]);
 
   // 2. Adjust scroll position after prepending older messages so user doesn't jump
   useEffect(() => {
@@ -98,7 +100,7 @@ export function ChatMessageList({
 
     // Capture height before update
     prevScrollHeightRef.current = container.scrollHeight;
-  }, [isLoadingOlder]);
+  }, [isLoadingOlder, containerRef]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -109,7 +111,7 @@ export function ChatMessageList({
       }
       prevScrollHeightRef.current = 0;
     }
-  }, [messages.length]);
+  }, [messages.length, containerRef]);
 
   // 3. Detect scroll proximity to bottom
   const handleScroll = (e: UIEvent<HTMLDivElement>) => {
@@ -128,7 +130,7 @@ export function ChatMessageList({
     if (distanceToBottom < 100) {
       scrollToBottom(true);
     }
-  }, [messages]);
+  }, [messages, containerRef, scrollToBottom]);
 
   if (isLoading) {
     return (
@@ -183,7 +185,7 @@ export function ChatMessageList({
         ref={containerRef}
         onScroll={handleScroll}
         data-lenis-prevent="true"
-        className="flex-1 overflow-y-auto px-1 sm:px-2 py-4 overscroll-contain"
+        className="flex-1 overflow-y-auto px-1 sm:px-2 py-4 overscroll-contain [content-visibility:auto] [contain-intrinsic-size:auto_500px]"
         role="log"
         aria-live="polite"
       >

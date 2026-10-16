@@ -22,21 +22,33 @@ export type SoundType =
   | "message-sent"
   | "message-received";
 
+let cachedSettings: { enabled: boolean; volume: number } | null = null;
+let lastCacheTime = 0;
+
 export function getGlobalSoundSettings(): { enabled: boolean; volume: number } {
   if (typeof window === "undefined") return { enabled: true, volume: 0.8 };
+  const now = Date.now();
+  if (cachedSettings && now - lastCacheTime < 1000) {
+    return cachedSettings;
+  }
   try {
     const stored = localStorage.getItem("jee-pro-user-settings");
     if (stored) {
       const parsed = JSON.parse(stored);
       const enabled = parsed.sounds !== undefined ? Boolean(parsed.sounds) : true;
       const volume = typeof parsed.soundVolume === "number" ? Math.max(0, Math.min(1, parsed.soundVolume)) : 0.8;
-      return { enabled, volume };
+      cachedSettings = { enabled, volume };
+      lastCacheTime = now;
+      return cachedSettings;
     }
   } catch {
     // Ignore storage read error
   }
-  return { enabled: true, volume: 0.8 };
+  cachedSettings = { enabled: true, volume: 0.8 };
+  lastCacheTime = now;
+  return cachedSettings;
 }
+let sharedAudioCtx: AudioContext | null = null;
 
 export function playHapticSound(
   type: SoundType = "click",
@@ -57,7 +69,10 @@ export function playHapticSound(
       (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (!AudioCtx) return;
 
-    const ctx = new AudioCtx();
+    if (!sharedAudioCtx) {
+      sharedAudioCtx = new AudioCtx();
+    }
+    const ctx = sharedAudioCtx;
     if (ctx.state === "suspended") {
       ctx.resume().catch(() => {});
     }

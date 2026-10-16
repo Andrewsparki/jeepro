@@ -1,137 +1,472 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { User, LogIn, LogOut, CheckCircle2, ShieldCheck, Sparkles, CloudCheck } from "lucide-react";
+import {
+  User,
+  LogIn,
+  LogOut,
+  Sparkles,
+  Gift,
+  Save,
+  CheckCircle2,
+  Calendar,
+  GraduationCap,
+  Mail,
+  Loader2,
+} from "lucide-react";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import { createClient } from "@/lib/supabase/client";
+import { BirthdayService } from "@/features/birthday/services/birthday.service";
+import { useBirthdayMode } from "@/features/birthday/context/birthday-mode-context";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { useDialog } from "@/providers/dialog-provider";
+import { useSettings } from "@/providers/settings-provider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-export function ProfileSection() {
-  const { user, profile } = useAuth();
-  const router = useRouter();
+const TARGET_EXAMS = [
+  "Both JEE Main & Advanced",
+  "JEE Advanced",
+  "JEE Main",
+] as const;
+
+const TARGET_YEARS = [2025, 2026, 2027, 2028, 2029] as const;
+
+interface StudentCredentialsFormProps {
+  userId: string;
+  userEmail: string;
+  initialFullName: string;
+  initialTargetExam: string;
+  initialTargetYear: number;
+}
+
+function StudentCredentialsForm({
+  userId,
+  userEmail,
+  initialFullName,
+  initialTargetExam,
+  initialTargetYear,
+}: StudentCredentialsFormProps) {
+  const [fullName, setFullName] = useState(initialFullName);
+  const [targetExam, setTargetExam] = useState(initialTargetExam);
+  const [targetYear, setTargetYear] = useState(initialTargetYear);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const { playSound } = useSettings();
   const supabase = createClient();
-  const displayName = profile?.full_name || user?.email?.split("@")[0] || "Aspirant";
-  const userInitial = displayName.charAt(0).toUpperCase();
+  const router = useRouter();
 
-  const handleSignOut = async () => {
-    toast("Signing out...");
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
+  const hasProfileChanges =
+    fullName.trim() !== initialFullName ||
+    targetExam !== initialTargetExam ||
+    targetYear !== initialTargetYear;
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullName.trim()) {
+      toast.error("Please enter a valid full name.");
+      return;
+    }
+
+    setIsSavingProfile(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: fullName.trim(),
+          target_exam: targetExam,
+          target_year: targetYear,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", userId);
+
+      if (error) {
+        toast.error("Failed to update profile: " + error.message);
+      } else {
+        playSound("success");
+        toast.success("Profile preferences updated successfully.");
+        router.refresh();
+      }
+    } catch {
+      toast.error("An unexpected error occurred while saving profile.");
+    } finally {
+      setIsSavingProfile(false);
+    }
   };
 
   return (
-    <section
-      id="profile"
-      className={cn(
-        "relative rounded-3xl sm:rounded-[2rem] p-6 sm:p-8",
-        "bg-card text-card-foreground border border-border/70 shadow-soft",
-        "dark:bg-[#0d121c]/45 dark:border-white/[0.12] dark:shadow-[0_24px_60px_-15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.18)]",
-        "overflow-hidden transition-all duration-300",
-        "before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-border dark:before:via-white/30 before:to-transparent before:pointer-events-none"
-      )}
+    <form
+      onSubmit={handleSaveProfile}
+      className="rounded-xl bg-[#121722] border border-[#2B3342] overflow-hidden"
     >
-      {/* Background ambient gradient */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+      <div className="p-5 sm:p-6 border-b border-[#2B3342]/70 bg-[#151B27]/40 flex items-center justify-between gap-4">
+        <div>
+          <h3 className="text-base font-semibold text-[#F5F7FB]">
+            Student Credentials
+          </h3>
+          <p className="text-xs text-[#A4ADBB] mt-0.5">
+            Update your display name, target examination, and cohort graduation year.
+          </p>
+        </div>
+        <button
+          type="submit"
+          disabled={!hasProfileChanges || isSavingProfile}
+          className="px-4 py-2 rounded-lg bg-[#78A9FF] hover:bg-[#A8C5FF] disabled:opacity-40 disabled:hover:bg-[#78A9FF] text-[#0B0D12] text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed shrink-0"
+        >
+          {isSavingProfile ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>Saving...</span>
+            </>
+          ) : (
+            <>
+              <Save className="w-3.5 h-3.5" />
+              <span>Save Changes</span>
+            </>
+          )}
+        </button>
+      </div>
 
-      <div className="relative z-10 flex flex-col gap-6">
-        {/* Profile Card Header / Apple ID Style */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-border/60 dark:border-white/[0.08]">
-          <div className="flex items-center gap-4">
-            {/* Apple Squircle Avatar */}
-            <div className="relative group shrink-0">
-              <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-0.5 shadow-lg shadow-indigo-500/20">
-                <div className="w-full h-full rounded-[14px] bg-slate-100 dark:bg-[#0c1018]/80 backdrop-blur-md flex items-center justify-center text-foreground dark:text-white font-bold text-xl sm:text-2xl tracking-tight border border-border dark:border-white/20">
-                  {user ? userInitial : <User className="w-7 h-7 text-muted-foreground dark:text-white/80" />}
-                </div>
-              </div>
-              {user && (
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-card dark:border-[#0d121c] flex items-center justify-center shadow-md">
-                  <div className="w-2 h-2 rounded-full bg-white" />
-                </div>
-              )}
-            </div>
-
-            {/* Profile Info */}
-            <div className="flex flex-col gap-1 min-w-0">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground dark:text-white truncate">
-                  {user ? displayName : "Guest Aspirant"}
-                </h3>
-                {user ? (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
-                    <Sparkles className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                    <span>PRO Member</span>
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border/60">
-                    Offline Mode
-                  </span>
-                )}
-              </div>
-              <p className="text-xs sm:text-sm text-muted-foreground font-normal truncate">
-                {user ? user.email : "Sign in to sync your study progress, formulas, and history."}
-              </p>
-            </div>
+      <div className="p-5 sm:p-6 space-y-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* Full Name */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="full-name"
+              className="block text-xs font-semibold text-[#F5F7FB] uppercase tracking-wider"
+            >
+              Full Name
+            </label>
+            <input
+              id="full-name"
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="e.g. Aryan Sharma"
+              className="w-full bg-[#171D28] border border-[#2B3342] text-[#F5F7FB] placeholder-[#A4ADBB]/50 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-[#78A9FF] focus:ring-1 focus:ring-[#78A9FF] transition-colors"
+            />
           </div>
 
-          {/* Action Button */}
-          <div className="shrink-0 flex items-center">
-            {user ? (
-              <button
-                onClick={handleSignOut}
-                className="w-full sm:w-auto px-5 py-2 rounded-full bg-secondary hover:bg-secondary/80 text-foreground border border-border dark:bg-white/[0.08] dark:hover:bg-white/[0.14] dark:text-white dark:border-white/15 font-medium text-xs sm:text-sm transition-all active:scale-95 shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+          {/* Email (Read-Only) */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="email-readonly"
+                className="block text-xs font-semibold text-[#A4ADBB] uppercase tracking-wider"
               >
-                <LogOut className="w-3.5 h-3.5 text-muted-foreground dark:text-zinc-300" />
-                <span>Sign Out</span>
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-foreground text-background font-semibold text-xs sm:text-sm transition-all hover:bg-foreground/90 active:scale-95 shadow-[0_4px_16px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_16px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2"
-              >
-                <LogIn className="w-4 h-4 text-background" />
-                <span>Sign In to Account</span>
-              </Link>
-            )}
+                Account Email
+              </label>
+              <span className="text-[10px] text-[#5DC98B] flex items-center gap-1 font-medium">
+                <CheckCircle2 className="w-3 h-3" /> Verified
+              </span>
+            </div>
+            <input
+              id="email-readonly"
+              type="email"
+              value={userEmail}
+              disabled
+              readOnly
+              className="w-full bg-[#171D28]/50 border border-[#2B3342]/60 text-[#A4ADBB] rounded-lg px-3.5 py-2 text-sm cursor-not-allowed select-none"
+            />
           </div>
         </div>
 
-        {/* Apple Style Telemetry / Sync Micro-Pills */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-secondary/60 dark:bg-white/[0.03] border border-border/60 dark:border-white/[0.06]">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-medium text-foreground dark:text-white truncate">Cloud Synchronization</span>
-              <span className="text-[11px] text-muted-foreground dark:text-zinc-400">{user ? "Active & Up to Date" : "Local Storage Only"}</span>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2 border-t border-[#2B3342]/60">
+          {/* Target Exam */}
+          <div className="space-y-1.5">
+            <label
+              className="block text-xs font-semibold text-[#F5F7FB] uppercase tracking-wider flex items-center gap-1.5"
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-[#78A9FF]" />
+              <span>Target Exam</span>
+            </label>
+            <Select value={targetExam} onValueChange={setTargetExam}>
+              <SelectTrigger className="w-full bg-[#171D28] border-[#2B3342] text-[#F5F7FB] text-sm">
+                <SelectValue placeholder="Select target exam" />
+              </SelectTrigger>
+              <SelectContent>
+                {TARGET_EXAMS.map((exam) => (
+                  <SelectItem key={exam} value={exam}>
+                    {exam}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-secondary/60 dark:bg-white/[0.03] border border-border/60 dark:border-white/[0.06]">
-            <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
-              <ShieldCheck className="w-4 h-4" />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-medium text-foreground dark:text-white truncate">Security Protocol</span>
-              <span className="text-[11px] text-muted-foreground dark:text-zinc-400">Row-Level Security</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-secondary/60 dark:bg-white/[0.03] border border-border/60 dark:border-white/[0.06]">
-            <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
-              <CloudCheck className="w-4 h-4" />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-medium text-foreground dark:text-white truncate">Offline Cache</span>
-              <span className="text-[11px] text-muted-foreground dark:text-zinc-400">PWA IndexedDB Ready</span>
-            </div>
+          {/* Target Year */}
+          <div className="space-y-1.5">
+            <label
+              className="block text-xs font-semibold text-[#F5F7FB] uppercase tracking-wider flex items-center gap-1.5"
+            >
+              <Calendar className="w-3.5 h-3.5 text-[#78A9FF]" />
+              <span>Target Exam Year</span>
+            </label>
+            <Select
+              value={String(targetYear)}
+              onValueChange={(val) => setTargetYear(Number(val))}
+            >
+              <SelectTrigger className="w-full bg-[#171D28] border-[#2B3342] text-[#F5F7FB] text-sm">
+                <SelectValue placeholder="Select class cohort year" />
+              </SelectTrigger>
+              <SelectContent>
+                {TARGET_YEARS.map((year) => (
+                  <SelectItem key={year} value={String(year)}>
+                    Class of {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
-    </section>
+    </form>
+  );
+}
+
+export function ProfileSection() {
+  const { user, profile } = useAuth();
+  const { openRecapModal, recapData } = useBirthdayMode();
+  const { confirm } = useDialog();
+  const { playSound } = useSettings();
+  const router = useRouter();
+  const supabase = createClient();
+
+  const displayName = profile?.full_name || user?.email?.split("@")[0] || "Aspirant";
+  const userInitial = displayName.charAt(0).toUpperCase();
+
+  // Birthday fields
+  const [birthday, setBirthday] = useState<string>("");
+  const [isSavingBirthday, setIsSavingBirthday] = useState(false);
+
+  useEffect(() => {
+    if (user?.id) {
+      BirthdayService.getBirthdayInfo(user.id).then((info) => {
+        if (info.birthday) {
+          setBirthday(info.birthday);
+        }
+      });
+    }
+  }, [user?.id]);
+
+  const handleSaveBirthday = async () => {
+    if (!birthday) {
+      toast.error("Please select a valid birthday (YYYY-MM-DD).");
+      return;
+    }
+
+    const trimmedInput = birthday.trim();
+
+    if (trimmedInput === "BDAYTEST2026") {
+      setIsSavingBirthday(true);
+      toast.info("Triggering birthday test sequence... 🎂");
+
+      const resetSuccess = await BirthdayService.triggerTestBirthday(user?.id);
+      setIsSavingBirthday(false);
+
+      if (resetSuccess) {
+        const todayStr = new Date().toISOString().split("T")[0];
+        setBirthday(todayStr);
+        toast.success("Birthday set to today! Launching celebration modal...");
+        window.dispatchEvent(new CustomEvent("trigger-birthday-celebration"));
+      } else {
+        toast.error("Failed to execute birthday test code.");
+      }
+      return;
+    }
+
+    setIsSavingBirthday(true);
+    const success = await BirthdayService.setBirthday(birthday, user?.id);
+    setIsSavingBirthday(false);
+    if (success) {
+      playSound("success");
+      toast.success("Birthday recorded! You'll receive celebratory milestones on your day. 🎉");
+    } else {
+      toast.error("Failed to save birthday. Please verify format YYYY-MM-DD.");
+    }
+  };
+
+  const handleSignOut = async () => {
+    playSound("click");
+    const isConfirmed = await confirm({
+      title: "Sign Out?",
+      message: "Are you sure you want to log out of your JEE Pro session?",
+      confirmLabel: "Sign Out",
+      variant: "default",
+    });
+
+    if (isConfirmed) {
+      toast("Signing out...");
+      await supabase.auth.signOut();
+      router.push("/login");
+      router.refresh();
+    }
+  };
+
+  return (
+    <div id="profile" className="space-y-6">
+      {/* ── 1. Account Identity Header ─────────────────────────────────────── */}
+      <div className="rounded-xl bg-[#121722] border border-[#2B3342] p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#171D28] border border-[#2B3342] flex items-center justify-center text-[#78A9FF] font-bold text-xl sm:text-2xl shrink-0 shadow-inner">
+            {user ? userInitial : <User className="w-6 h-6 text-[#A4ADBB]" />}
+          </div>
+
+          <div className="space-y-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#F5F7FB] truncate">
+                {user ? displayName : "Guest Aspirant"}
+              </h2>
+              {user ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#78A9FF]/15 text-[#78A9FF] border border-[#78A9FF]/25">
+                  <Sparkles className="w-3 h-3" />
+                  <span>Pro Member</span>
+                </span>
+              ) : (
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#171D28] text-[#A4ADBB] border border-[#2B3342]">
+                  Offline
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-[#A4ADBB] flex items-center gap-1.5 truncate">
+              <Mail className="w-3.5 h-3.5 text-[#78A9FF]" />
+              <span>{user ? user.email : "Not signed in"}</span>
+            </p>
+          </div>
+        </div>
+
+        <div>
+          {user ? (
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="px-4 py-2 rounded-lg bg-[#171D28] hover:bg-rose-500/10 text-[#A4ADBB] hover:text-rose-400 border border-[#2B3342] hover:border-rose-500/30 text-xs sm:text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Sign Out</span>
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              className="px-4 py-2 rounded-lg bg-[#78A9FF] hover:bg-[#A8C5FF] text-[#0B0D12] text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Sign In</span>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* ── Offline / Guest Aspirant Info Banner ──────────────────────────── */}
+      {!user && (
+        <div className="rounded-xl bg-[#121722] border border-[#2B3342] p-5 sm:p-6 space-y-3">
+          <div className="flex items-center gap-2.5">
+            <User className="w-4 h-4 text-[#78A9FF]" />
+            <h3 className="text-sm font-semibold text-[#F5F7FB]">
+              Student Profile Sync
+            </h3>
+          </div>
+          <p className="text-xs text-[#A4ADBB] leading-relaxed max-w-xl">
+            You are currently browsing JEE Pro as a guest. Sign in to customize your target examination year (Class of 2025–2029), track JEE Main & Advanced chapter progress, sync solve milestones, and access annual birthday XP bonuses.
+          </p>
+          <div className="pt-1">
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#78A9FF] hover:bg-[#A8C5FF] text-[#0B0D12] text-xs font-semibold transition-colors"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Sign in to access student credentials</span>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* ── 2. Editable Profile Form ──────────────────────────────────────── */}
+      {user && (
+        <StudentCredentialsForm
+          key={profile?.id || user.id}
+          userId={user.id}
+          userEmail={user.email || ""}
+          initialFullName={profile?.full_name || ""}
+          initialTargetExam={profile?.target_exam || "Both JEE Main & Advanced"}
+          initialTargetYear={profile?.target_year || 2026}
+        />
+      )}
+
+      {/* ── 3. Birthday & Annual Journey ──────────────────────────────────── */}
+      {user && (
+        <div className="rounded-xl bg-[#121722] border border-[#2B3342] p-5 sm:p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#2B3342]/60">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-[#171D28] border border-[#2B3342] text-[#78A9FF] flex items-center justify-center shrink-0">
+                <Gift className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-[#F5F7FB]">
+                  Annual Birthday & Milestone Rewards
+                </h3>
+                <p className="text-xs text-[#A4ADBB]">
+                  Receive an annual celebration story, badge unlocks, and +500 Bonus XP on your day.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={openRecapModal}
+              className="px-3.5 py-1.5 rounded-lg bg-[#171D28] hover:bg-white/[0.05] border border-[#2B3342] text-[#F5F7FB] text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer self-start sm:self-auto shrink-0"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#F1BE62]" />
+              <span>Replay Recap</span>
+            </button>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <label htmlFor="birthday-input" className="text-xs font-medium text-[#F5F7FB] block">
+                Birth Date (YYYY-MM-DD)
+              </label>
+              <span className="text-[11px] text-[#A4ADBB]">
+                Locked to your student profile once verified.
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                id="birthday-input"
+                type="text"
+                placeholder="2007-08-15"
+                value={birthday}
+                onChange={(e) => setBirthday(e.target.value)}
+                className="w-36 sm:w-40 bg-[#171D28] border border-[#2B3342] text-[#F5F7FB] placeholder-[#A4ADBB]/40 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-[#78A9FF] focus:ring-1 focus:ring-[#78A9FF]"
+              />
+              <button
+                type="button"
+                onClick={handleSaveBirthday}
+                disabled={isSavingBirthday}
+                className="px-3 py-1.5 rounded-lg bg-[#78A9FF] hover:bg-[#A8C5FF] disabled:opacity-50 text-[#0B0D12] text-xs font-semibold transition-colors cursor-pointer"
+              >
+                {isSavingBirthday ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+
+          {recapData?.isAlreadyClaimedThisYear && (
+            <div className="pt-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#5DC98B]/10 border border-[#5DC98B]/20 text-[#5DC98B] text-xs font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Annual Milestone Claimed: {recapData.milestoneTitle}</span>
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

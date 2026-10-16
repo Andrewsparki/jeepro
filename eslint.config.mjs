@@ -13,6 +13,7 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "scratch/**",
+    ".chrome*/**",
     "seed_syllabus.ts",
     "verify_slugs.ts",
     "generate_json.py",

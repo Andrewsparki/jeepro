@@ -192,7 +192,7 @@ function CreateEventFormContent({
                     className={cn(
                       "h-10 px-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all duration-200 border cursor-pointer",
                       isSelected
-                        ? "bg-accent/20 border-accent text-foreground shadow-[0_0_15px_rgba(79,70,229,0.3)] scale-[1.02]"
+                        ? "bg-accent/20 border-accent text-foreground shadow-[0_0_15px_rgba(120,169,255,0.25)] scale-[1.02]"
                         : "bg-white/[0.03] border-white/10 text-muted-foreground hover:bg-white/[0.06] hover:text-foreground hover:border-white/20"
                     )}
                   >
@@ -248,7 +248,7 @@ function CreateEventFormContent({
                     className={cn(
                       "h-9 rounded-xl text-xs font-semibold flex items-center justify-center transition-all duration-200 border cursor-pointer",
                       isSelected
-                        ? "bg-accent border-accent text-white shadow-[0_0_15px_rgba(79,70,229,0.4)] scale-[1.03]"
+                        ? "bg-accent border-accent text-[#0B0D12] font-bold shadow-[0_0_15px_rgba(120,169,255,0.35)] scale-[1.03]"
                         : "bg-white/[0.03] border-white/10 text-muted-foreground hover:bg-white/[0.06] hover:text-foreground hover:border-white/20"
                     )}
                   >

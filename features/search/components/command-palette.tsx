@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,16 +10,67 @@ import { useCommandPalette } from "../context/command-palette-context";
 import { useSearchData, SearchItem } from "../hooks/use-search-data";
 import { useStudySession } from "@/features/study/context/study-session-context";
 import { FixedPortal } from "@/components/ui/fixed-portal";
+import { useAuth } from "@/features/auth/components/auth-provider";
+import { trackSearchUsage, pseudonymiseUserId } from "@/features/analytics/services/telemetry.service";
+
+const ICON_MAP: Record<string, { icon: React.ComponentType<{ className?: string }> }> = {
+  "tool-notes": { icon: FileText },
+  "tool-formula": { icon: Calculator },
+  "tool-flashcards": { icon: BookType },
+  "tool-pyqs": { icon: Target },
+  "tool-tutor": { icon: Sparkles },
+  "tool-bookmarks": { icon: Bookmark },
+  "nav-settings": { icon: Settings },
+  "nav-dashboard": { icon: BookOpen },
+  "nav-chat": { icon: MessageSquare },
+  "nav-friends": { icon: Users },
+  "nav-achievements": { icon: Award },
+  "nav-planner": { icon: Calendar },
+  "nav-analytics": { icon: Target },
+};
+
+function ItemIcon({ type, id }: { type: string; id: string }) {
+  const config = ICON_MAP[id];
+  if (config) {
+    const IconComp = config.icon;
+    return <IconComp className="w-4 h-4 text-[#A4ADBB] transition-colors group-hover:text-[#78A9FF] group-aria-selected:text-[#78A9FF]" />;
+  }
+  if (type === "subject") return <Book className="w-4 h-4 text-[#A4ADBB] transition-colors group-hover:text-[#78A9FF] group-aria-selected:text-[#78A9FF]" />;
+  if (type === "chapter") return <FileText className="w-4 h-4 text-[#A4ADBB] transition-colors group-hover:text-[#78A9FF] group-aria-selected:text-[#78A9FF]" />;
+  return <ChevronRight className="w-4 h-4 text-[#A4ADBB] transition-colors group-hover:text-[#78A9FF] group-aria-selected:text-[#78A9FF]" />;
+}
 
 export function CommandPalette() {
   const { isOpen, setIsOpen } = useCommandPalette();
   const { items } = useSearchData(isOpen);
   const router = useRouter();
   const { startSession } = useStudySession();
+  const { user } = useAuth();
   
   const [search, setSearch] = useState("");
 
+  const userPseudonym = useMemo(
+    () => (user?.id ? pseudonymiseUserId(user.id) : undefined),
+    [user]
+  );
+
+  const { navAndToolItems, chapterItems } = useMemo(() => {
+    const navAndTools: SearchItem[] = [];
+    const chapters: SearchItem[] = [];
+    for (const item of items) {
+      if (item.type === "navigation" || item.type === "tool") {
+        navAndTools.push(item);
+      } else if (item.type === "chapter") {
+        chapters.push(item);
+      }
+    }
+    return { navAndToolItems: navAndTools, chapterItems: chapters };
+  }, [items]);
+
   const handleSelect = (item: SearchItem) => {
+    if (search.trim()) {
+      void trackSearchUsage(search.trim().length, items.length, item.type, userPseudonym);
+    }
     setIsOpen(false);
     setSearch("");
     if (item.href) {
@@ -32,6 +83,9 @@ export function CommandPalette() {
   };
 
   const executeAction = (action: "start-session" | "create-event" | "resume") => {
+    if (search.trim()) {
+      void trackSearchUsage(search.trim().length, items.length, "quick-action", userPseudonym);
+    }
     setIsOpen(false);
     setSearch("");
     if (action === "start-session") {
@@ -39,27 +93,6 @@ export function CommandPalette() {
     } else {
       toast("Coming soon");
     }
-  };
-
-  const getIcon = (type: string, id: string) => {
-    if (id === "tool-notes") return <FileText className="w-4 h-4 text-blue-400" />;
-    if (id === "tool-formula") return <Calculator className="w-4 h-4 text-emerald-400" />;
-    if (id === "tool-flashcards") return <BookType className="w-4 h-4 text-purple-400" />;
-    if (id === "tool-pyqs") return <Target className="w-4 h-4 text-orange-400" />;
-    if (id === "tool-tutor") return <Sparkles className="w-4 h-4 text-amber-400" />;
-    if (id === "tool-bookmarks") return <Bookmark className="w-4 h-4 text-rose-400" />;
-    if (id === "nav-settings") return <Settings className="w-4 h-4 text-slate-400" />;
-    if (id === "nav-dashboard") return <BookOpen className="w-4 h-4 text-indigo-400" />;
-    if (id === "nav-chat") return <MessageSquare className="w-4 h-4 text-emerald-400" />;
-    if (id === "nav-friends") return <Users className="w-4 h-4 text-purple-400" />;
-    if (id === "nav-achievements") return <Award className="w-4 h-4 text-amber-400" />;
-    if (id === "nav-planner") return <Calendar className="w-4 h-4 text-cyan-400" />;
-    if (id === "nav-analytics") return <Target className="w-4 h-4 text-pink-400" />;
-    
-    if (type === "subject") return <Book className="w-4 h-4 text-muted-foreground" />;
-    if (type === "chapter") return <FileText className="w-4 h-4 text-muted-foreground" />;
-    
-    return <ChevronRight className="w-4 h-4 text-muted-foreground" />;
   };
 
   return (
@@ -73,92 +106,118 @@ export function CommandPalette() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-[#0B0D12]/80 backdrop-blur-md"
             onClick={() => setIsOpen(false)}
           />
           
           {/* Modal */}
-          <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] pointer-events-none">
+          <div className="fixed inset-0 z-50 flex items-start justify-center pt-[14vh] px-4 pointer-events-none">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
+              initial={{ opacity: 0, scale: 0.96, y: -16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="w-full max-w-2xl px-4 pointer-events-auto"
+              exit={{ opacity: 0, scale: 0.96, y: -16 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-2xl pointer-events-auto"
             >
               <Command
-                className="overflow-hidden rounded-2xl border border-border/60 bg-popover/95 text-popover-foreground shadow-strong backdrop-blur-xl"
+                className="overflow-hidden rounded-2xl border border-[#2B3342] bg-[#0B0D12]/95 text-[#F5F7FB] shadow-[0_24px_60px_rgba(0,0,0,0.8),0_0_35px_rgba(120,169,255,0.08)] backdrop-blur-2xl ring-1 ring-[#78A9FF]/20"
                 shouldFilter={true}
               >
-                <div className="flex items-center border-b border-border/40 px-4">
-                  <Search className="mr-2 h-5 w-5 shrink-0 opacity-50" />
+                {/* Search Bar Header */}
+                <div className="group/search flex items-center border-b border-[#2B3342]/70 px-4 bg-[#121722]/60 focus-within:bg-[#121722]/90 focus-within:border-[#78A9FF]/40 transition-colors duration-200">
+                  <Search className="mr-3 h-5 w-5 shrink-0 text-[#78A9FF]/70 group-focus-within/search:text-[#78A9FF] transition-colors duration-200" />
                   <Command.Input
                     autoFocus
                     value={search}
                     onValueChange={setSearch}
-                    placeholder="Search for chapters, tools, or commands..."
-                    className="flex h-14 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Search chapters, tools, or navigation..."
+                    className="flex h-14 w-full bg-transparent py-3 text-sm font-medium text-[#F5F7FB] outline-none border-none focus:outline-none focus:border-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none [box-shadow:none!important] placeholder:text-[#A4ADBB]/60 disabled:cursor-not-allowed disabled:opacity-50"
                   />
-                  <div className="flex items-center gap-1">
-                    <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-border/60 bg-muted/60 px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                  <div className="flex items-center gap-1.5 ml-2">
+                    <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded-md border border-[#2B3342] bg-[#171D28] px-1.5 font-mono text-[10px] font-semibold text-[#A4ADBB]">
                       ESC
                     </kbd>
                   </div>
                 </div>
                 
-                <Command.List className="max-h-[350px] overflow-y-auto overflow-x-hidden p-2 cmdk-list">
-                  <Command.Empty className="py-10 text-center text-sm text-muted-foreground">
+                <Command.List className="max-h-[360px] overflow-y-auto overflow-x-hidden p-2 custom-scrollbar">
+                  <Command.Empty className="py-12 text-center text-sm text-[#A4ADBB]">
                     No results found.
                   </Command.Empty>
 
                   {!search && (
-                    <Command.Group heading="Suggestions" className="text-xs font-medium text-muted-foreground px-2 py-2">
+                    <Command.Group 
+                      heading="Suggestions" 
+                      className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#A4ADBB]/80 px-2.5 pt-3 pb-1 [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:pb-2 [&_[cmdk-group-heading]]:text-[#A4ADBB]/70"
+                    >
                       <Command.Item 
                         onSelect={() => executeAction("start-session")}
-                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 text-sm aria-selected:bg-accent/15 aria-selected:text-accent font-medium transition-colors mt-1"
+                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#F5F7FB] transition-colors duration-150 ease-out outline-none aria-selected:bg-[rgba(120,169,255,0.12)] aria-selected:text-[#F5F7FB] hover:bg-[rgba(120,169,255,0.08)]"
                       >
-                        <Play className="h-4 w-4" />
-                        <span>Start Study Session</span>
+                        <Play className="h-4 w-4 text-[#78A9FF] shrink-0" />
+                        <span className="font-semibold">Start Study Session</span>
                       </Command.Item>
                       <Command.Item 
                         onSelect={() => executeAction("resume")}
-                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-3 text-sm aria-selected:bg-accent/15 aria-selected:text-accent font-medium transition-colors mt-1"
+                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#F5F7FB] transition-colors duration-150 ease-out outline-none aria-selected:bg-[rgba(120,169,255,0.12)] aria-selected:text-[#F5F7FB] hover:bg-[rgba(120,169,255,0.08)]"
                       >
-                        <Clock className="h-4 w-4" />
+                        <Clock className="h-4 w-4 text-[#A4ADBB] group-aria-selected:text-[#78A9FF] shrink-0 transition-colors" />
                         <span>Resume Last Session</span>
                       </Command.Item>
                     </Command.Group>
                   )}
 
-                  <Command.Group heading="Navigation & Tools" className="text-xs font-medium text-muted-foreground px-2 py-2">
-                    {items.filter(i => i.type === "navigation" || i.type === "tool").map((item) => (
+                  <Command.Group 
+                    heading="Navigation & Tools" 
+                    className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#A4ADBB]/80 px-2.5 pt-3 pb-1 [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:pb-2 [&_[cmdk-group-heading]]:text-[#A4ADBB]/70"
+                  >
+                    {navAndToolItems.map((item) => (
                       <Command.Item
                         key={item.id}
                         value={`${item.title} ${item.keywords?.join(" ")}`}
                         onSelect={() => handleSelect(item)}
-                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm aria-selected:bg-accent/15 aria-selected:text-accent font-medium transition-colors mt-1"
+                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#F5F7FB] transition-colors duration-150 ease-out outline-none aria-selected:bg-[rgba(120,169,255,0.12)] aria-selected:text-[#F5F7FB] hover:bg-[rgba(120,169,255,0.08)]"
                       >
-                        {getIcon(item.type, item.id)}
-                        <span>{item.title}</span>
+                        <ItemIcon type={item.type} id={item.id} />
+                        <span className="truncate">{item.title}</span>
                       </Command.Item>
                     ))}
                   </Command.Group>
 
-                  <Command.Group heading="Syllabus Chapters" className="text-xs font-medium text-muted-foreground px-2 py-2">
-                    {items.filter(i => i.type === "chapter").map((item) => (
+                  <Command.Group 
+                    heading="Syllabus Chapters" 
+                    className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#A4ADBB]/80 px-2.5 pt-3 pb-1 [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:pb-2 [&_[cmdk-group-heading]]:text-[#A4ADBB]/70"
+                  >
+                    {chapterItems.map((item) => (
                       <Command.Item
                         key={item.id}
                         value={`${item.title} ${item.keywords?.join(" ")}`}
                         onSelect={() => handleSelect(item)}
-                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm aria-selected:bg-accent/15 aria-selected:text-accent font-medium transition-colors mt-1"
+                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#F5F7FB] transition-colors duration-150 ease-out outline-none aria-selected:bg-[rgba(120,169,255,0.12)] aria-selected:text-[#F5F7FB] hover:bg-[rgba(120,169,255,0.08)]"
                       >
-                        {getIcon(item.type, item.id)}
-                        <span>{item.title}</span>
+                        <ItemIcon type={item.type} id={item.id} />
+                        <span className="truncate">{item.title}</span>
                       </Command.Item>
                     ))}
                   </Command.Group>
 
                 </Command.List>
+
+                {/* Footer Bar */}
+                <div className="flex items-center justify-between border-t border-[#2B3342]/70 px-4 py-2.5 bg-[#121722]/50 text-[11px] font-mono text-[#A4ADBB]/80">
+                  <div className="flex items-center gap-3">
+                    <span className="flex items-center gap-1.5">
+                      <kbd className="rounded border border-[#2B3342] bg-[#171D28] px-1 py-0.5 text-[10px]">↑</kbd>
+                      <kbd className="rounded border border-[#2B3342] bg-[#171D28] px-1 py-0.5 text-[10px]">↓</kbd>
+                      Navigate
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <kbd className="rounded border border-[#2B3342] bg-[#171D28] px-1 py-0.5 text-[10px]">↵</kbd>
+                      Select
+                    </span>
+                  </div>
+                  <span className="text-[#78A9FF]/80 font-semibold tracking-wide">JEE PRO SEARCH</span>
+                </div>
               </Command>
             </motion.div>
           </div>

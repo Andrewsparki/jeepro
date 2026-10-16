@@ -1,0 +1,271 @@
+{
+  "id": "phys-03-laws-of-motion",
+  "title": "Laws of Motion",
+  "order": 3,
+  "unitNumber": 3,
+  "classLevel": "11",
+  "topics": [
+    "Force, inertia, and Newton's First Law of Motion",
+    "Linear momentum, Newton's Second Law, and Impulse",
+    "Newton's Third Law of Motion",
+    "Law of conservation of linear momentum and applications",
+    "Equilibrium of concurrent forces and Lami's theorem",
+    "Static and kinetic friction, laws of friction, rolling friction",
+    "Dynamics of uniform circular motion and centripetal force",
+    "Vehicle on a level circular road and vehicle on a banked road"
+  ],
+  "notes": "## 1. Newton's Laws and Inertial vs Non-Inertial Frames\n* **First Law (Law of Inertia):** Defines inertial frames of reference. A body remains at rest or in uniform rectilinear motion unless acted upon by a net external force ($\\sum \\vec{F}_{\\text{ext}} = 0 \\iff \\vec{a} = 0$).\n* **Second Law:** The rate of change of linear momentum $\\vec{p} = m\\vec{v}$ equals the net external force:\n  $$\\vec{F}_{\\text{net}} = \\frac{d\\vec{p}}{dt} = m\\frac{d\\vec{v}}{dt} + \\vec{v}\\frac{dm}{dt}$$\n  For constant mass, $\\vec{F}_{\\text{net}} = m\\vec{a}$.\n* **Third Law:** Action and reaction forces are equal in magnitude, opposite in direction ($\\vec{F}_{AB} = -\\vec{F}_{BA}$), have the **same physical nature**, act simultaneously, and **always act on two different bodies** (so they never cancel each other on a single Free Body Diagram).\n* **Pseudo Force in Non-Inertial Frames:** In a frame accelerating at $\\vec{a}_{\\text{frame}}$ relative to an inertial frame, attach a fictitious force $\\vec{F}_{\\text{pseudo}} = -m\\vec{a}_{\\text{frame}}$ acting at the centre of mass of the observed body.\n\n## 2. Constraint Relations for Strings, Pulleys, and Wedges\n* **Inextensible String Constraint:** Along any taut inextensible string segment, the component of velocity and acceleration of both ends along the string must be equal, or equivalently $\\sum \\vec{T} \\cdot \\vec{x}_i = 0 \\implies \\sum \\vec{T} \\cdot \\vec{v}_i = 0 \\implies \\sum \\vec{T} \\cdot \\vec{a}_i = 0$.\n* **Moving Pulley Relation:** If pulley $P$ moves with displacement/velocity/acceleration $a_P$ and the two ends of the string over it have $a_1$ and $a_2$ (all measured along the same axis), then:\n  $$a_P = \\frac{a_1 + a_2}{2}$$\n* **Wedge-Block Normal Constraint:** The components of velocity and acceleration perpendicular to the contact surface must be identical for both bodies in contact ($v_{1\\perp} = v_{2\\perp}$ and $a_{1\\perp} = a_{2\\perp}$).\n\n## 3. Friction: Static, Limiting, and Kinetic\n* **Static Friction ($f_s$):** Self-adjusting tangential contact force opposing **impending relative motion**: $0 \\le f_s \\le f_{s,\\max} = \\mu_s N$.\n* **Kinetic Friction ($f_k$):** Constant magnitude opposing **actual relative velocity** between surfaces: $f_k = \\mu_k N$ (typically $\\mu_k < \\mu_s$).\n* **Angle of Friction ($\\lambda$):** Angle made by the resultant contact force $R = \\sqrt{N^2 + f_{s,\\max}^2} = N\\sqrt{1 + \\mu_s^2}$ with the normal $N$; $\\tan\\lambda = \\mu_s$.\n* **Angle of Repose ($\\theta_r$):** Minimum incline angle at which a block begins to slide under gravity alone: $\\tan\\theta_r = \\mu_s$.\n* **Minimum Force to Pull a Block on a Rough Horizontal Surface:** $F_{\\min} = \\frac{\\mu_s mg}{\\sqrt{1 + \\mu_s^2}} = mg\\sin\\lambda$, applied at an upward angle $\\theta = \\lambda = \\tan^{-1}(\\mu_s)$.\n\n## 4. Circular Turning of Vehicles\n* Centripetal force is not a new fundamental force; it is the net radial inward force ($\\sum F_{\\text{radial}} = \\frac{mv^2}{r}$) provided by tension, normal reaction, friction, or gravity.",
+  "formulas": [
+    {
+      "id": "phys-03-f01",
+      "title": "Impulse-Momentum Theorem",
+      "latex": "\\vec{J} = \\int_{t_1}^{t_2} \\vec{F}\\,dt = \\vec{F}_{\\text{avg}}\\Delta t = \\Delta \\vec{p} = \\vec{p}_f - \\vec{p}_i",
+      "explanation": "States that the time integral of a force (impulse) equals the net vector change in linear momentum of the body.",
+      "variables": [
+        {
+          "symbol": "\\vec{J}",
+          "name": "Linear impulse vector",
+          "siUnit": "N s (or kg m s^-1)",
+          "dimension": "[M^1 L^1 T^-1]",
+          "type": "vector"
+        },
+        {
+          "symbol": "\\vec{F}",
+          "name": "Instantaneous net force",
+          "siUnit": "N",
+          "dimension": "[M^1 L^1 T^-2]",
+          "type": "vector"
+        },
+        {
+          "symbol": "\\Delta \\vec{p}",
+          "name": "Change in linear momentum",
+          "siUnit": "kg m s^-1",
+          "dimension": "[M^1 L^1 T^-1]",
+          "type": "vector"
+        }
+      ],
+      "siUnit": "N s",
+      "dimensions": "[M^1 L^1 T^-1]",
+      "assumptions": "Measured in an inertial reference frame.",
+      "validityConditions": "Always valid for both constant and time-varying forces."
+    },
+    {
+      "id": "phys-03-f02",
+      "title": "Atwood Machine Acceleration and String Tension",
+      "latex": "a = \\left(\\frac{m_1 - m_2}{m_1 + m_2}\\right)g, \\quad T = \\left(\\frac{2 m_1 m_2}{m_1 + m_2}\\right)g",
+      "explanation": "Gives the common magnitude of acceleration and tension for two masses m_1 and m_2 connected over an ideal massless, frictionless pulley.",
+      "variables": [
+        {
+          "symbol": "m_1, m_2",
+          "name": "Masses of the two hanging blocks (m_1 >= m_2)",
+          "siUnit": "kg",
+          "dimension": "[M^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "a",
+          "name": "Magnitude of acceleration of each block",
+          "siUnit": "m s^-2",
+          "dimension": "[L^1 T^-2]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "T",
+          "name": "Tension in the connecting string",
+          "siUnit": "N",
+          "dimension": "[M^1 L^1 T^-2]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m s^-2, N",
+      "dimensions": "[L^1 T^-2], [M^1 L^1 T^-2]",
+      "assumptions": "String is massless and inextensible; pulley is massless and has a frictionless axle.",
+      "validityConditions": "If the pulley lies in an elevator with upward acceleration a_0, replace g with g_eff = g + a_0."
+    },
+    {
+      "id": "phys-03-f03",
+      "title": "Lami's Theorem for Three Concurrent Coplanar Forces in Equilibrium",
+      "latex": "\\frac{F_1}{\\sin\\alpha} = \\frac{F_2}{\\sin\\beta} = \\frac{F_3}{\\sin\\gamma}",
+      "explanation": "For three coplanar concurrent forces in equilibrium (F_1 + F_2 + F_3 = 0), each force magnitude is proportional to the sine of the angle between the other two forces.",
+      "variables": [
+        {
+          "symbol": "F_1, F_2, F_3",
+          "name": "Magnitudes of the three concurrent forces",
+          "siUnit": "N",
+          "dimension": "[M^1 L^1 T^-2]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\alpha, \\beta, \\gamma",
+          "name": "Angles directly opposite to F_1, F_2, F_3 respectively",
+          "siUnit": "rad",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "N",
+      "dimensions": "[M^1 L^1 T^-2]",
+      "assumptions": "Forces are concurrent, coplanar, and in translational equilibrium (net force = 0).",
+      "validityConditions": "Strictly valid for exactly 3 forces where α + β + γ = 2π rad (360°)."
+    },
+    {
+      "id": "phys-03-f04",
+      "title": "Maximum Safe Speed on a Level Circular Road",
+      "latex": "v_{\\max} = \\sqrt{\\mu_s r g}",
+      "explanation": "Gives the maximum speed at which a vehicle can negotiate an unbanked flat circular turn of radius r without skidding outward.",
+      "variables": [
+        {
+          "symbol": "v_{\\max}",
+          "name": "Maximum safe speed without skidding",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\mu_s",
+          "name": "Coefficient of static friction between tyres and road",
+          "siUnit": "Dimensionless",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "r",
+          "name": "Radius of circular turn",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m s^-1",
+      "dimensions": "[L^1 T^-1]",
+      "assumptions": "Road is horizontal (unbanked); static friction alone provides radial inward centripetal force.",
+      "validityConditions": "Independent of the mass of the vehicle."
+    },
+    {
+      "id": "phys-03-f05",
+      "title": "Safe Speed Range on a Rough Banked Circular Road",
+      "latex": "v_0 = \\sqrt{rg\\tan\\theta}, \\quad v_{\\max} = \\sqrt{rg\\left(\\frac{\\tan\\theta + \\mu_s}{1 - \\mu_s\\tan\\theta}\\right)}, \\quad v_{\\min} = \\sqrt{rg\\left(\\frac{\\tan\\theta - \\mu_s}{1 + \\mu_s\\tan\\theta}\\right)}",
+      "explanation": "Gives the optimum zero-friction speed v_0, maximum safe speed before skidding up the incline v_max, and minimum speed before slipping down the incline v_min.",
+      "variables": [
+        {
+          "symbol": "\\theta",
+          "name": "Angle of banking of road with horizontal",
+          "siUnit": "rad",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\mu_s",
+          "name": "Coefficient of static friction",
+          "siUnit": "Dimensionless",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "v_0, v_{\\max}, v_{\\min}",
+          "name": "Optimum, maximum, and minimum safe speeds",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m s^-1",
+      "dimensions": "[L^1 T^-1]",
+      "assumptions": "Vehicle is treated as a point mass (not overturning).",
+      "validityConditions": "For v_min, if μ_s >= tan θ (i.e., θ <= angle of repose), then v_min = 0 and the vehicle can safely stop on the banked track."
+    }
+  ],
+  "derivations": [
+    {
+      "id": "phys-03-d01",
+      "title": "Maximum Safe Speed on a Banked Rough Circular Road",
+      "context": "Determining the upper speed limit v_max for a vehicle on a road banked at angle θ with static friction coefficient μ_s.",
+      "steps": [
+        "At maximum speed $v_{\\max}$, the vehicle tends to skid **up** the banked incline, so limiting static friction $f_{s,\\max} = \\mu_s N$ acts **down** the incline.",
+        "Resolve forces vertically (no vertical acceleration, $\\sum F_y = 0$): $$N\\cos\\theta - f_{s,\\max}\\sin\\theta = mg \\implies N(\\cos\\theta - \\mu_s\\sin\\theta) = mg$$",
+        "Resolve forces horizontally toward the centre of the circular turn ($\\sum F_r = \\frac{mv_{\\max}^2}{r}$): $$N\\sin\\theta + f_{s,\\max}\\cos\\theta = \\frac{mv_{\\max}^2}{r} \\implies N(\\sin\\theta + \\mu_s\\cos\\theta) = \\frac{mv_{\\max}^2}{r}$$",
+        "Divide the radial equation by the vertical equation and divide numerator and denominator by $\\cos\\theta$: $$\\frac{v_{\\max}^2}{rg} = \\frac{\\tan\\theta + \\mu_s}{1 - \\mu_s\\tan\\theta}$$"
+      ],
+      "finalResult": "v_{\\max} = \\sqrt{rg\\left(\\frac{\\tan\\theta + \\mu_s}{1 - \\mu_s\\tan\\theta}\\right)}"
+    },
+    {
+      "id": "phys-03-d02",
+      "title": "Two-Block System on a Horizontal Surface with Friction Between Blocks",
+      "context": "Criterion for whether two stacked blocks m_1 (top) and m_2 (bottom, on smooth ground) move together or slip when force F is applied to bottom block m_2.",
+      "steps": [
+        "Assume both blocks move together with common acceleration: $$a_c = \\frac{F}{m_1 + m_2}$$",
+        "The only horizontal force accelerating the top block $m_1$ is static friction $f_s = m_1 a_c = \\frac{m_1 F}{m_1 + m_2}$.",
+        "The maximum available static friction between the blocks is $f_{s,\\max} = \\mu_s m_1 g$.",
+        "For no slipping, require $f_s \\le f_{s,\\max}$: $$\\frac{m_1 F}{m_1 + m_2} \\le \\mu_s m_1 g \\implies F \\le \\mu_s(m_1 + m_2)g$$",
+        "If $F > \\mu_s(m_1 + m_2)g$, slipping occurs: $a_1 = \\mu_k g$ and $a_2 = \\frac{F - \\mu_k m_1 g}{m_2}$."
+      ],
+      "finalResult": "F_{\\max,\\text{together}} = \\mu_s(m_1 + m_2)g"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "phys-03-g01",
+      "title": "Friction Force (f) vs Applied Tangential Force (F_app)",
+      "xAxis": "Applied Force (F_app)",
+      "yAxis": "Frictional Force (f)",
+      "curveType": "Piecewise linear (45° line in static regime, slight drop at limiting threshold, horizontal line in kinetic regime)",
+      "equation": "f = \\begin{cases} F_{\\text{app}}, & F_{\\text{app}} \\le \\mu_s N \\\\ \\mu_k N, & F_{\\text{app}} > \\mu_s N \\end{cases}",
+      "slopeInterpretation": "Slope is +1 (tan 45°) during the static regime because static friction equals the applied force; slope is 0 in the kinetic regime.",
+      "areaInterpretation": "Not physically significant (force vs force plot).",
+      "physicalInterpretation": "Shows that static friction is self-adjusting up to a peak threshold μ_s N, after which sliding begins and friction drops slightly to constant μ_k N."
+    },
+    {
+      "id": "phys-03-g02",
+      "title": "Force (F) vs Time (t) Impulse Graph",
+      "xAxis": "Time (t)",
+      "yAxis": "Force (F)",
+      "curveType": "General time-varying curve",
+      "equation": "J = \\int_{t_1}^{t_2} F(t)\\,dt = \\Delta p",
+      "slopeInterpretation": "Slope dF/dt represents the rate of change of force (related to jerk da/dt = (1/m)dF/dt).",
+      "areaInterpretation": "Signed area under the F-t curve equals net linear impulse J = Δp = m(v_f - v_i).",
+      "physicalInterpretation": "Areas above the time axis increase momentum in the positive direction; areas below reduce it."
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "phys-03-cm01",
+      "topic": "Using f = μ_s N Blindly in Static Cases",
+      "mistake": "Setting static friction equal to μ_s N whenever a block is at rest.",
+      "correction": "μ_s N is only the maximum possible (limiting) static friction. When a block remains in equilibrium, static friction equals whatever tangential force is needed to prevent slipping (f_s <= μ_s N).",
+      "category": "formula-selection"
+    },
+    {
+      "id": "phys-03-cm02",
+      "topic": "Spring Cut vs String Cut Instantaneous Acceleration",
+      "mistake": "Assuming tensions in both strings and springs drop to zero instantaneously at the exact instant (t = 0+) another support is cut.",
+      "correction": "Ideal string tension changes instantaneously at t = 0+, whereas an ideal spring's tension T = kx cannot change instantaneously unless its length changes (unless the cut is made directly on the spring itself).",
+      "category": "conceptual"
+    },
+    {
+      "id": "phys-03-cm03",
+      "topic": "Centrifugal Force in Inertial Frame",
+      "mistake": "Drawing both an outward centrifugal force mv^2/r and equating inward forces to mv^2/r in the same Free Body Diagram.",
+      "correction": "In the ground (inertial) frame, never draw centrifugal force; simply set ∑F_inward = mv^2/r. Use outward centrifugal force mv^2/r only in the rotating frame where radial acceleration is zero.",
+      "category": "sign-convention"
+    }
+  ],
+  "quickRevision": [
+    "Apparent weight in a lift of mass m: N = m(g + a) when accelerating upward, N = m(g - a) when accelerating downward, and N = 0 in free fall.",
+    "Reading of a spring balance equals Tension T in its hook (in Newtons) or T/g (in kg-wt).",
+    "For a heavy uniform rope of mass M and length L pulled at one end by force F on a smooth horizontal floor, tension at distance x from the free rear end is T(x) = F(x/L).",
+    "Acceleration of a block sliding down a rough incline (θ > θ_repose) is a = g(sin θ - μ_k cos θ); when projected up the incline, retardation is a = g(sin θ + μ_k cos θ).",
+    "Rocket propulsion thrust force: F_thrust = -v_rel (dm/dt), and net equation of motion in gravity is m(dv/dt) = -v_rel(dm/dt) - mg."
+  ],
+  "sources": [
+    {
+      "title": "NTA JEE Main Official Physics Syllabus — Unit 3: Laws of Motion",
+      "type": "Official Syllabus",
+      "url": "https://jeemain.nta.nic.in/"
+    },
+    {
+      "title": "NCERT Class 11 Physics Part 1 — Chapter 4: Laws of Motion",
+      "type": "Textbook",
+      "url": "https://ncert.nic.in/textbook.php?keph1=4-7"
+    }
+  ]
+}

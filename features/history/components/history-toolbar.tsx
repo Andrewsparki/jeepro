@@ -13,6 +13,13 @@ import {
 import { Subject } from "@/features/syllabus/services/syllabus";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export type SortOption = "newest" | "oldest" | "longest" | "shortest";
 
@@ -78,46 +85,55 @@ export function HistoryToolbar({
         </motion.div>
         
         <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
-          <div className="relative group shrink-0">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
-            <select 
-              className="appearance-none pl-9 pr-8 py-2.5 bg-card border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 cursor-pointer hover:border-accent/30 transition-colors"
-              value={timeFilter}
-              onChange={(e) => onTimeFilterChange(e.target.value)}
-            >
-              <option value="all">All Time</option>
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-            </select>
+          <div className="shrink-0">
+            <Select value={timeFilter} onValueChange={onTimeFilterChange}>
+              <SelectTrigger 
+                className="w-[140px] bg-card border-border/50 rounded-xl text-sm"
+                icon={<Filter className="w-4 h-4 text-muted-foreground" />}
+              >
+                <SelectValue placeholder="Time" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Time</SelectItem>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
-          <div className="relative shrink-0 group">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
-            <select 
-              className="appearance-none pl-9 pr-8 py-2.5 bg-card border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 cursor-pointer hover:border-accent/30 transition-colors"
-              value={subjectFilter}
-              onChange={(e) => onSubjectFilterChange(e.target.value)}
-            >
-              <option value="all">All Subjects</option>
-              {syllabus.map(sub => (
-                <option key={sub.id} value={sub.name}>{sub.name}</option>
-              ))}
-            </select>
+          <div className="shrink-0">
+            <Select value={subjectFilter} onValueChange={onSubjectFilterChange}>
+              <SelectTrigger 
+                className="w-[155px] bg-card border-border/50 rounded-xl text-sm"
+                icon={<Filter className="w-4 h-4 text-muted-foreground" />}
+              >
+                <SelectValue placeholder="Subject" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Subjects</SelectItem>
+                {syllabus.map(sub => (
+                  <SelectItem key={sub.id} value={sub.name}>{sub.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="relative shrink-0 group">
-            <SortDesc className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
-            <select 
-              className="appearance-none pl-9 pr-8 py-2.5 bg-card border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 cursor-pointer hover:border-accent/30 transition-colors"
-              value={sortOption}
-              onChange={(e) => onSortChange(e.target.value as SortOption)}
-            >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="longest">Longest Duration</option>
-              <option value="shortest">Shortest Duration</option>
-            </select>
+          <div className="shrink-0">
+            <Select value={sortOption} onValueChange={(val) => onSortChange(val as SortOption)}>
+              <SelectTrigger 
+                className="w-[165px] bg-card border-border/50 rounded-xl text-sm"
+                icon={<SortDesc className="w-4 h-4 text-muted-foreground" />}
+              >
+                <SelectValue placeholder="Sort" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="longest">Longest Duration</SelectItem>
+                <SelectItem value="shortest">Shortest Duration</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>

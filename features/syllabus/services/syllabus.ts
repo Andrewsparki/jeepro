@@ -1,4 +1,4 @@
-import { getUserProgress, ProgressStatus } from "@/features/study/services/progress";
+import { getUserProgress, ProgressStatus, UserTopicProgress } from "@/features/study/services/progress";
 import { prefetchMapping, getTopicUuidSync } from "@/features/syllabus/services/mapping.service";
 
 import physicsData from "../data/jee-main/physics.json";
@@ -105,12 +105,12 @@ const ALL_SUBJECTS = [
   transformSubjectData(mathData as unknown as JsonSubject)
 ];
 
-export async function getSyllabus(): Promise<Subject[]> {
+export async function getSyllabus(initialProgress?: UserTopicProgress[]): Promise<Subject[]> {
   try {
     // Ensure UUID mapping cache is warm before resolving topic IDs
     await prefetchMapping();
 
-    const progress = await getUserProgress();
+    const progress = initialProgress ?? (await getUserProgress());
     // progress records are keyed by DB UUID (user_topic_progress.topic_id)
     const progressMap = new Map(progress.map(p => [p.topic_id, p.status]));
     
@@ -167,31 +167,44 @@ export async function getSubjectBySlug(slug: string): Promise<Subject | null> {
   const syllabus = await getSyllabus();
   if (!slug) return null;
   const normalized = decodeURIComponent(slug).toLowerCase().trim();
-  return syllabus.find(s => 
-    s.slug.toLowerCase() === normalized || 
-    s.id.toLowerCase() === normalized ||
-    s.name.toLowerCase() === normalized ||
-    (normalized === "math" && (s.slug === "mathematics" || s.slug === "math")) ||
-    (normalized === "mathematics" && (s.slug === "mathematics" || s.slug === "math"))
-  ) || null;
+  const isMath = normalized === "math" || normalized === "mathematics";
+
+  return (
+    syllabus.find((s) => {
+      const sSlug = s.slug.toLowerCase();
+      return (
+        sSlug === normalized ||
+        s.id.toLowerCase() === normalized ||
+        s.name.toLowerCase() === normalized ||
+        (isMath && (sSlug === "mathematics" || sSlug === "math"))
+      );
+    }) ?? null
+  );
 }
 
 export async function getChapterBySlug(subjectSlug: string, chapterSlug: string): Promise<Chapter | null> {
   const subject = await getSubjectBySlug(subjectSlug);
   if (!subject || !chapterSlug) return null;
-  const rawSlug = decodeURIComponent(chapterSlug).toLowerCase().trim();
-  const cleanSlug = rawSlug.replace(/[^a-z0-9]/g, '-');
-  return subject.chapters.find(ch => {
-    const chSlug = ch.slug.toLowerCase();
-    const chId = ch.id.toLowerCase();
-    const chClean = chSlug.replace(/[^a-z0-9]/g, '-');
-    const chIdClean = chId.replace(/[^a-z0-9]/g, '-');
-    return chSlug === rawSlug ||
-           chId === rawSlug ||
-           chClean === cleanSlug ||
-           chIdClean === cleanSlug ||
-           chIdClean === `${subject.slug}-${cleanSlug}` ||
-           chSlug.includes(cleanSlug) ||
-           cleanSlug.includes(chSlug);
-  }) || null;
+  const raw = decodeURIComponent(chapterSlug).toLowerCase().trim();
+  const clean = raw.replace(/[^a-z0-9]/g, "-");
+  const subjectPrefix = `${subject.slug}-${clean}`;
+
+  return (
+    subject.chapters.find((ch) => {
+      const slug = ch.slug.toLowerCase();
+      const id = ch.id.toLowerCase();
+      const slugClean = slug.replace(/[^a-z0-9]/g, "-");
+      const idClean = id.replace(/[^a-z0-9]/g, "-");
+
+      return (
+        slug === raw ||
+        id === raw ||
+        slugClean === clean ||
+        idClean === clean ||
+        idClean === subjectPrefix ||
+        slug.includes(clean) ||
+        clean.includes(slug)
+      );
+    }) ?? null
+  );
 }

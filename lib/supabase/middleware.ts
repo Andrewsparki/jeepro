@@ -117,15 +117,35 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url)
     }
 
-    // Check admin status — query the profiles table for is_admin
-    const { data: profile } = await supabase
+    // Check admin / moderator status — query the profiles table for is_admin and role
+    let { data: profile } = await supabase
       .from('profiles')
-      .select('is_admin')
+      .select('is_admin, role')
       .eq('id', user.id)
       .single()
 
-    if (!profile?.is_admin) {
-      // Non-admin authenticated users get redirected to dashboard
+    // Resilient fallback if the `role` column hasn't been added to the database yet
+    if (!profile) {
+      const { data: legacyProfile } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single()
+
+      if (legacyProfile) {
+        profile = {
+          is_admin: legacyProfile.is_admin,
+          role: legacyProfile.is_admin ? 'superadmin' : 'user',
+        }
+      }
+    }
+
+    const isModeratorRoute = request.nextUrl.pathname.startsWith('/admin/reports')
+    const hasAdminAccess = profile?.is_admin === true || profile?.role === 'admin' || profile?.role === 'superadmin'
+    const hasModeratorAccess = profile?.role === 'moderator' && isModeratorRoute
+
+    if (!hasAdminAccess && !hasModeratorAccess) {
+      // Unauthorized authenticated users get redirected to dashboard
       const url = request.nextUrl.clone()
       url.pathname = '/dashboard'
       return NextResponse.redirect(url)

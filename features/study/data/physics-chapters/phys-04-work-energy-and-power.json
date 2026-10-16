@@ -1,0 +1,290 @@
+{
+  "id": "phys-04-work-energy-and-power",
+  "title": "Work, Energy and Power",
+  "order": 4,
+  "unitNumber": 4,
+  "classLevel": "11",
+  "topics": [
+    "Work done by a constant force and a variable force",
+    "Kinetic and potential energies",
+    "Work-Energy Theorem",
+    "Instantaneous and average power",
+    "Potential energy of a spring",
+    "Conservative and non-conservative forces, conservation of mechanical energy",
+    "Motion in a vertical circle",
+    "Elastic and inelastic collisions in one and two dimensions"
+  ],
+  "notes": "## 1. Work Done by Constant and Variable Forces\n* **Constant Force:** $W = \\vec{F} \\cdot \\Delta \\vec{r} = F \\Delta r \\cos\\theta$.\n* **Variable Force:** $W = \\int_{\\vec{r}_i}^{\\vec{r}_f} \\vec{F} \\cdot d\\vec{r} = \\int_{x_i}^{x_f} F_x\\,dx + \\int_{y_i}^{y_f} F_y\\,dy + \\int_{z_i}^{z_f} F_z\\,dz$.\n* **Frame Dependence:** Because displacement $\\Delta \\vec{r}$ and velocity $\\vec{v}$ depend on the reference frame, both **work done** and **kinetic energy** are frame-dependent.\n* **Zero-Work Forces:**\n  1. Centripetal force in circular motion ($\\vec{F}_c \\perp d\\vec{r}$).\n  2. Magnetic Lorentz force on a moving charge ($\\vec{F}_B = q(\\vec{v} \\times \\vec{B}) \\perp d\\vec{r}$).\n  3. Static friction on a rolling wheel without slipping (instantaneous point of contact has $v = 0$).\n  4. Net internal work of an ideal inextensible taut string or rigid normal contact across the two-body system ($\\sum W_T = 0$, $\\sum W_N = 0$).\n\n## 2. Conservative Forces and Potential Energy\n* A force is **conservative** if work done by it depends only on initial and final positions (path-independent), or equivalently $\\oint \\vec{F}_c \\cdot d\\vec{r} = 0$ (e.g., gravity, electrostatic force, ideal spring force).\n* **Potential Energy Relation:**\n  $$\\Delta U = U_f - U_i = -W_{\\text{conservative}} = -\\int_{\\vec{r}_i}^{\\vec{r}_f} \\vec{F}_c \\cdot d\\vec{r}$$\n* **Force from Potential Energy Function $U(x, y, z)$:**\n  $$\\vec{F} = -\\nabla U = -\\left(\\frac{\\partial U}{\\partial x}\\hat{i} + \\frac{\\partial U}{\\partial y}\\hat{j} + \\frac{\\partial U}{\\partial z}\\hat{k}\\right)$$\n* **Equilibrium Classification ($F = -\\frac{dU}{dx} = 0$):**\n  * **Stable Equilibrium:** $\\frac{dU}{dx} = 0$ and $\\frac{d^2U}{dx^2} > 0$ (local minimum of $U$; restoring force for small displacement).\n  * **Unstable Equilibrium:** $\\frac{dU}{dx} = 0$ and $\\frac{d^2U}{dx^2} < 0$ (local maximum of $U$).\n  * **Neutral Equilibrium:** $\\frac{dU}{dx} = 0$ and $\\frac{d^2U}{dx^2} = 0$.\n\n## 3. Motion in a Vertical Circle\nLet a particle of mass $m$ move in a vertical circle of radius $R$ with speed $u$ at the lowest point $A$:\n* **Mass tied to a light string (or inner track):** String becomes slack ($T = 0$) before velocity reaches zero in the upper semicircle. Minimum speed at bottom to complete the full vertical circle is $u_{\\min} = \\sqrt{5gR}$ (giving $v_{\\text{top}} = \\sqrt{gR}$, $v_{\\text{horizontal}} = \\sqrt{3gR}$, and $T_{\\text{bottom}} - T_{\\text{top}} = 6mg$). If $u \\le \\sqrt{2gR}$, the bob oscillates in the lower semicircle. If $\\sqrt{2gR} < u < \\sqrt{5gR}$, the string goes slack in the upper semicircle and the bob enters parabolic projectile motion.\n* **Mass fixed to a light rigid rod (or bead in a circular tube):** Rod can support compression ($T$ can be negative). Minimum speed at bottom to reach the top is $u_{\\min} = \\sqrt{4gR}$ (giving $v_{\\text{top}} = 0$).\n\n## 4. Collisions and Coefficient of Restitution ($e$)\n* Linear momentum is **always conserved** in any collision (elastic, inelastic, or perfectly inelastic) along any direction with zero external impulse.\n* **Coefficient of Restitution:**\n  $$e = \\frac{\\text{Relative velocity of separation along line of impact}}{\\text{Relative velocity of approach along line of impact}} = \\frac{v_2 - v_1}{u_1 - u_2}$$\n  * Perfectly Elastic: $e = 1$ ($\\Delta K = 0$).\n  * Inelastic: $0 < e < 1$ ($\\Delta K < 0$).\n  * Perfectly Inelastic (bodies stick along line of impact): $e = 0$ (maximum kinetic energy loss).",
+  "formulas": [
+    {
+      "id": "phys-04-f01",
+      "title": "Work-Energy Theorem (All Forces)",
+      "latex": "W_{\\text{all}} = W_{\\text{conservative}} + W_{\\text{non-conservative}} + W_{\\text{external}} + W_{\\text{internal}} = \\Delta K = \\frac{1}{2}mv_f^2 - \\frac{1}{2}mv_i^2",
+      "explanation": "The total work done by all forces (conservative, non-conservative, internal, and external) on a system equals the change in its total kinetic energy.",
+      "variables": [
+        {
+          "symbol": "W_{\\text{all}}",
+          "name": "Total work done by all forces",
+          "siUnit": "J",
+          "dimension": "[M^1 L^2 T^-2]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\Delta K",
+          "name": "Change in kinetic energy",
+          "siUnit": "J",
+          "dimension": "[M^1 L^2 T^-2]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "m",
+          "name": "Mass of particle",
+          "siUnit": "kg",
+          "dimension": "[M^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "v_i, v_f",
+          "name": "Initial and final speeds",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "J",
+      "dimensions": "[M^1 L^2 T^-2]",
+      "assumptions": "Evaluated in a single reference frame (if non-inertial, include work of pseudo force).",
+      "validityConditions": "Universally valid for constant or variable forces, curved or straight paths, and rigid or deformable systems."
+    },
+    {
+      "id": "phys-04-f02",
+      "title": "Kinetic Energy and Linear Momentum Relation",
+      "latex": "K = \\frac{p^2}{2m} \\implies p = \\sqrt{2mK}",
+      "explanation": "Connects scalar kinetic energy K and magnitude of linear momentum p for a single particle of mass m.",
+      "variables": [
+        {
+          "symbol": "K",
+          "name": "Kinetic energy",
+          "siUnit": "J",
+          "dimension": "[M^1 L^2 T^-2]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "p",
+          "name": "Magnitude of linear momentum",
+          "siUnit": "kg m s^-1",
+          "dimension": "[M^1 L^1 T^-1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "m",
+          "name": "Mass of particle",
+          "siUnit": "kg",
+          "dimension": "[M^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "J",
+      "dimensions": "[M^1 L^2 T^-2]",
+      "assumptions": "Non-relativistic particle (v << c) of constant mass m.",
+      "validityConditions": "Applies to a single particle or a rigid body in pure translation; for a multi-particle system with relative motion, K_total >= P_total^2 / (2M)."
+    },
+    {
+      "id": "phys-04-f03",
+      "title": "Elastic Potential Energy of a Spring",
+      "latex": "U_s = \\frac{1}{2}kx^2, \\quad W_{\\text{spring}}(x_i \\to x_f) = \\frac{1}{2}k(x_i^2 - x_f^2)",
+      "explanation": "Gives stored elastic potential energy at deformation x from natural length and the work done by the restoring spring force F_s = -kx.",
+      "variables": [
+        {
+          "symbol": "U_s",
+          "name": "Elastic potential energy",
+          "siUnit": "J",
+          "dimension": "[M^1 L^2 T^-2]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "k",
+          "name": "Spring constant (stiffness)",
+          "siUnit": "N m^-1",
+          "dimension": "[M^1 L^0 T^-2]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "x, x_i, x_f",
+          "name": "Extension or compression measured from natural length",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "J",
+      "dimensions": "[M^1 L^2 T^-2]",
+      "assumptions": "Spring is massless and obeys Hooke's law; U_s = 0 is chosen at natural length x = 0.",
+      "validityConditions": "x must always be measured from the relaxed natural length, never from the equilibrium position of a hanging mass."
+    },
+    {
+      "id": "phys-04-f04",
+      "title": "Instantaneous and Average Power",
+      "latex": "P_{\\text{inst}} = \\frac{dW}{dt} = \\vec{F} \\cdot \\vec{v} = Fv\\cos\\theta, \\quad P_{\\text{avg}} = \\frac{\\Delta W}{\\Delta t}",
+      "explanation": "Defines instantaneous power as the dot product of force and instantaneous velocity, and average power as total work divided by total time.",
+      "variables": [
+        {
+          "symbol": "P_{\\text{inst}}, P_{\\text{avg}}",
+          "name": "Instantaneous and average power",
+          "siUnit": "W (J s^-1)",
+          "dimension": "[M^1 L^2 T^-3]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "\\vec{F}",
+          "name": "Applied force vector",
+          "siUnit": "N",
+          "dimension": "[M^1 L^1 T^-2]",
+          "type": "vector"
+        },
+        {
+          "symbol": "\\vec{v}",
+          "name": "Instantaneous velocity vector of the point of application",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "vector"
+        }
+      ],
+      "siUnit": "W",
+      "dimensions": "[M^1 L^2 T^-3]",
+      "assumptions": "Force acts at a point moving with velocity v.",
+      "validityConditions": "For a body accelerated from rest by constant power P_0, velocity varies as v = √(2 P_0 t / m) and position as x = √(8 P_0 / (9m)) t^(3/2)."
+    },
+    {
+      "id": "phys-04-f05",
+      "title": "1D Head-On Collision Final Velocities and Energy Loss",
+      "latex": "v_1 = \\frac{(m_1 - e m_2)u_1 + m_2(1 + e)u_2}{m_1 + m_2}, \\quad v_2 = \\frac{m_1(1 + e)u_1 + (m_2 - e m_1)u_2}{m_1 + m_2}, \\quad \\Delta K_{\\text{loss}} = \\frac{1}{2}\\left(\\frac{m_1 m_2}{m_1 + m_2}\\right)(1 - e^2)(u_1 - u_2)^2",
+      "explanation": "Gives exact post-collision velocities and kinetic energy dissipated for any 1D collision with restitution coefficient e.",
+      "variables": [
+        {
+          "symbol": "m_1, m_2",
+          "name": "Masses of colliding bodies",
+          "siUnit": "kg",
+          "dimension": "[M^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "u_1, u_2",
+          "name": "Signed initial velocities along collision line",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "vector"
+        },
+        {
+          "symbol": "v_1, v_2",
+          "name": "Signed final velocities along collision line",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "vector"
+        },
+        {
+          "symbol": "e",
+          "name": "Coefficient of restitution (0 <= e <= 1)",
+          "siUnit": "Dimensionless",
+          "dimension": "[M^0 L^0 T^0]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m s^-1, J",
+      "dimensions": "[L^1 T^-1], [M^1 L^2 T^-2]",
+      "assumptions": "No external horizontal impulse acts during the collision interval.",
+      "validityConditions": "u_1, u_2, v_1, v_2 must be substituted with algebraic signs (+ or -) along the chosen axis."
+    }
+  ],
+  "derivations": [
+    {
+      "id": "phys-04-d01",
+      "title": "Minimum Velocity to Complete a Vertical Circle Attached to a String",
+      "context": "Finding the critical speed u_min at the lowest point A so that a bob of mass m on a string of length R completes the loop without going slack.",
+      "steps": [
+        "At any angle $\\theta$ with the downward vertical, radial equation of motion toward the centre is: $$T - mg\\cos\\theta = \\frac{mv^2}{R}$$",
+        "At the highest point $B$ ($\\theta = 180^\\circ$, $\\cos 180^\\circ = -1$), this becomes: $$T_B + mg = \\frac{mv_B^2}{R}$$",
+        "For the string to just remain taut at the highest point, set $T_B \\ge 0$: $$\\frac{mv_B^2}{R} \\ge mg \\implies v_{B,\\min} = \\sqrt{gR}$$",
+        "Apply Conservation of Mechanical Energy between bottom $A$ ($h = 0, v_A = u_{\\min}$) and top $B$ ($h = 2R, v_B = \\sqrt{gR}$): $$\\frac{1}{2}mu_{\\min}^2 = \\frac{1}{2}mv_{B,\\min}^2 + mg(2R) = \\frac{1}{2}mgR + 2mgR = \\frac{5}{2}mgR$$",
+        "Solve for $u_{\\min}$: $$u_{\\min} = \\sqrt{5gR}$$"
+      ],
+      "finalResult": "u_{\\min} = \\sqrt{5gR}, \\quad v_{\\text{top},\\min} = \\sqrt{gR}, \\quad T_{\\text{bottom},\\min} = 6mg"
+    },
+    {
+      "id": "phys-04-d02",
+      "title": "Displacement and Velocity of a Body Driven by Constant Power",
+      "context": "Deriving v(t) and x(t) for a vehicle of mass m starting from rest under a constant engine power P_0.",
+      "steps": [
+        "Instantaneous power is $P_0 = Fv = m\\frac{dv}{dt}v = \\text{constant}$.",
+        "Separate variables and integrate from $(t = 0, v = 0)$ to $(t, v)$: $$\\int_0^v v\\,dv = \\int_0^t \\frac{P_0}{m}\\,dt \\implies \\frac{v^2}{2} = \\frac{P_0 t}{m} \\implies v(t) = \\sqrt{\\frac{2P_0}{m}}\\,t^{1/2}$$",
+        "Write $v = \\frac{dx}{dt}$ and integrate from $x = 0$ at $t = 0$: $$x(t) = \\int_0^t \\sqrt{\\frac{2P_0}{m}}\\,t^{1/2}\\,dt = \\frac{2}{3}\\sqrt{\\frac{2P_0}{m}}\\,t^{3/2} = \\sqrt{\\frac{8P_0}{9m}}\\,t^{3/2}$$"
+      ],
+      "finalResult": "v(t) \\propto t^{1/2}, \\quad x(t) \\propto t^{3/2}, \\quad a(t) \\propto t^{-1/2}"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "phys-04-g01",
+      "title": "Force (F) vs Position (x) Graph",
+      "xAxis": "Position (x)",
+      "yAxis": "Force Component (F_x)",
+      "curveType": "General curve (Straight line through origin with slope -k for spring)",
+      "equation": "W = \\int_{x_1}^{x_2} F_x\\,dx = \\Delta K",
+      "slopeInterpretation": "For a conservative force, slope dF_x/dx = -d^2U/dx^2; a negative slope at F_x = 0 indicates stable equilibrium.",
+      "areaInterpretation": "Signed area under the F-x curve gives total work done W = ΔK = -(U_f - U_i).",
+      "physicalInterpretation": "Areas above the x-axis represent positive work (increasing kinetic energy); areas below represent negative work."
+    },
+    {
+      "id": "phys-04-g02",
+      "title": "Potential Energy (U) vs Position (x) Energy Well Diagram",
+      "xAxis": "Position (x)",
+      "yAxis": "Potential Energy U(x) and Total Mechanical Energy E",
+      "curveType": "Smooth potential curve with horizontal total energy line E",
+      "equation": "K(x) = E - U(x) \\ge 0, \\quad F_x = -\\frac{dU}{dx}",
+      "slopeInterpretation": "Negative of the slope (-dU/dx) gives the conservative force component F_x.",
+      "areaInterpretation": "Vertical gap E - U(x) between the horizontal E line and U(x) curve equals kinetic energy K(x) at position x.",
+      "physicalInterpretation": "Points where U(x) = E are classical turning points (K = 0); regions where U(x) > E are classically forbidden."
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "phys-04-cm01",
+      "topic": "Double Counting Gravity in Work-Energy Theorem",
+      "mistake": "Writing W_gravity + W_other = ΔK + ΔU_gravity, which counts gravitational work twice.",
+      "correction": "Either use W_gravity + W_other = ΔK (treating gravity as a work-doing force) OR use W_non-conservative + W_ext = ΔK + ΔU_gravity (moving conservative work into ΔU = -W_c).",
+      "category": "formula-selection"
+    },
+    {
+      "id": "phys-04-cm02",
+      "topic": "Maximum Extension of a Spring with Sudden Release vs Gradual Lowering",
+      "mistake": "Equating forces kx_max = mg to find the maximum extension when a block is released suddenly from an unstretched vertical spring.",
+      "correction": "kx = mg gives the equilibrium extension (where speed is maximum). For sudden release from rest, use energy conservation: mg x_max = (1/2)k x_max^2, giving x_max = 2mg/k (twice the equilibrium extension).",
+      "category": "conceptual"
+    },
+    {
+      "id": "phys-04-cm03",
+      "topic": "Percentage Change in Kinetic Energy from Momentum Change",
+      "mistake": "Using the differential approximation ΔK/K = 2(Δp/p) when momentum increases by a large percentage like 50% or 100%.",
+      "correction": "For large changes, use exact algebra: if p' = 1.5p, then K'/K = (p'/p)^2 = (1.5)^2 = 2.25, which is a 125% increase (not 2 × 50% = 100%).",
+      "category": "formula-selection"
+    }
+  ],
+  "quickRevision": [
+    "In an elastic 1D head-on collision of two equal masses (m_1 = m_2, e = 1), the bodies simply exchange their velocities (v_1 = u_2, v_2 = u_1).",
+    "When a ball is dropped from height h_0 onto a floor with restitution coefficient e, height after n bounces is h_n = e^(2n) h_0, total distance before stopping is H_total = h_0 (1 + e^2)/(1 - e^2), and total time is T_total = √(2h_0/g) (1 + e)/(1 - e).",
+    "In an oblique elastic collision of two equal masses where the second mass is initially at rest (m_1 = m_2, u_2 = 0, e = 1), they move off at 90° to each other (θ_1 + θ_2 = π/2) provided the collision is not strictly head-on.",
+    "Work required to pull a hanging chain of mass M and length L (with 1/n-th of its length hanging over a smooth table edge) onto the table is W = MgL / (2n^2)."
+  ],
+  "sources": [
+    {
+      "title": "NTA JEE Main Official Physics Syllabus — Unit 4: Work, Energy and Power",
+      "type": "Official Syllabus",
+      "url": "https://jeemain.nta.nic.in/"
+    },
+    {
+      "title": "NCERT Class 11 Physics Part 1 — Chapter 5: Work, Energy and Power",
+      "type": "Textbook",
+      "url": "https://ncert.nic.in/textbook.php?keph1=5-7"
+    }
+  ]
+}

@@ -1,12 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles, Compass, Wrench, BarChart2, Moon } from "lucide-react";
+import { Compass, Wrench, BarChart2, Moon } from "lucide-react";
 import { DopamineCTAButton } from "@/components/ui/dopamine-cta-button";
 
 export function AboutMissionCTA() {
   return (
-    <div className="space-y-28 sm:space-y-36">
+    <div className="space-y-24 sm:space-y-32">
       
       {/* ========================================================================= */}
       {/* SECTION 8: MISSION                                                        */}
@@ -15,38 +15,24 @@ export function AboutMissionCTA() {
         <div className="mx-auto max-w-5xl">
           
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.8 }}
-            className="relative rounded-[36px] sm:rounded-[48px] p-8 sm:p-14 lg:p-16 bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.14] shadow-[0_30px_100px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.2)] text-center overflow-hidden transform-gpu"
+            transition={{ duration: 0.6 }}
+            className="relative rounded-2xl p-8 sm:p-14 lg:p-16 bg-[#090C15] border border-white/[0.08] text-center shadow-sm"
           >
-            {/* Top Specular Line */}
-            <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none" />
-
-            {/* Ambient Radial Flare */}
-            <div 
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full pointer-events-none transform-gpu" 
-              style={{
-                background: "radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.12) 0%, rgba(168, 85, 247, 0.08) 45%, transparent 70%)",
-              }}
-            />
-
-            <div className="relative z-10 max-w-2xl mx-auto space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.1] bg-white/[0.03] text-xs font-semibold text-cyan-400 backdrop-blur-xl">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>OUR MISSION</span>
+            <div className="relative z-10 max-w-2xl mx-auto space-y-5">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-white/[0.1] bg-white/[0.03] text-xs font-medium text-zinc-300 backdrop-blur-xl">
+                <Compass className="w-3.5 h-3.5 text-zinc-400" />
+                <span>Our Mission</span>
               </div>
 
-              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
-                Make serious preparation <br />
-                <span className="bg-gradient-to-r from-[#1EA7FF] via-[#7257FF] to-[#C958FF] bg-clip-text text-transparent">
-                  feel simpler.
-                </span>
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                Make serious preparation feel simpler.
               </h2>
 
-              <p className="text-base sm:text-lg text-[#98A0B3] font-normal leading-relaxed">
-                JEE preparation is already demanding enough. The platform should not add another layer of complexity.
+              <p className="text-base sm:text-lg text-zinc-400 font-normal leading-relaxed">
+                JEE preparation is already demanding enough. Your software environment should eliminate friction, not create it.
               </p>
             </div>
           </motion.div>
@@ -58,68 +44,68 @@ export function AboutMissionCTA() {
       {/* SECTION 9: FUTURE VISION (STILL BUILDING)                                 */}
       {/* ========================================================================= */}
       <section className="relative px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-6xl">
           
-          <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.1] bg-[#070E1E]/50 text-xs font-semibold text-[#38bdf8] mb-3 backdrop-blur-xl">
-              <Compass className="w-3.5 h-3.5" />
-              <span>Continuous Evolution</span>
+          <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/[0.1] bg-white/[0.03] text-xs font-medium text-zinc-300 mb-3 backdrop-blur-xl">
+              <Wrench className="w-3.5 h-3.5 text-zinc-400" />
+              <span>Continuous Engineering</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white mb-4">
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
               Still building.
             </h2>
-            <p className="text-sm sm:text-base text-[#98A0B3] font-normal leading-relaxed max-w-xl mx-auto">
-              JEE PRO is continuously evolving around the real day-to-day needs of serious aspirants.
+            <p className="text-sm sm:text-base text-zinc-400 font-normal leading-relaxed max-w-xl mx-auto">
+              JEE Pro is continuously evolving around the genuine day-to-day needs of serious aspirants.
             </p>
           </div>
 
-          {/* 3 Vision Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* 3 Vision Obsidian Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="p-8 rounded-[28px] bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.1] shadow-lg space-y-4"
+              transition={{ duration: 0.5, delay: 0.08 }}
+              className="p-7 sm:p-8 rounded-xl bg-[#090C15] border border-white/[0.08] hover:border-white/[0.16] shadow-sm space-y-4 transition-all"
             >
-              <div className="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300">
                 <Wrench className="w-5 h-5" />
               </div>
-              <h4 className="text-lg font-bold text-white tracking-tight">BETTER TOOLS</h4>
-              <p className="text-xs sm:text-sm text-[#98A0B3] leading-relaxed">
-                Smarter ways to practice, categorize past mistakes, and automate formula revision cycles.
+              <h4 className="text-base font-bold text-white tracking-tight">BETTER TOOLS</h4>
+              <p className="text-xs sm:text-sm text-zinc-400 font-normal leading-relaxed">
+                Refined ways to practice, categorize conceptual errors, and automate spaced repetition intervals.
               </p>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="p-8 rounded-[28px] bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.1] shadow-lg space-y-4"
+              transition={{ duration: 0.5, delay: 0.16 }}
+              className="p-7 sm:p-8 rounded-xl bg-[#090C15] border border-white/[0.08] hover:border-white/[0.16] shadow-sm space-y-4 transition-all"
             >
-              <div className="w-11 h-11 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+              <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300">
                 <BarChart2 className="w-5 h-5" />
               </div>
-              <h4 className="text-lg font-bold text-white tracking-tight">BETTER INSIGHT</h4>
-              <p className="text-xs sm:text-sm text-[#98A0B3] leading-relaxed">
-                More useful, actionable feedback from your mock exams and calculation velocity curves.
+              <h4 className="text-base font-bold text-white tracking-tight">BETTER TELEMETRY</h4>
+              <p className="text-xs sm:text-sm text-zinc-400 font-normal leading-relaxed">
+                Direct, actionable telemetry from practice sessions, accuracy splits, and problem resolution speed.
               </p>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="p-8 rounded-[28px] bg-[#070E1E]/75 backdrop-blur-xl border border-white/[0.1] shadow-lg space-y-4"
+              transition={{ duration: 0.5, delay: 0.24 }}
+              className="p-7 sm:p-8 rounded-xl bg-[#090C15] border border-white/[0.08] hover:border-white/[0.16] shadow-sm space-y-4 transition-all"
             >
-              <div className="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+              <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-zinc-300">
                 <Moon className="w-5 h-5" />
               </div>
-              <h4 className="text-lg font-bold text-white tracking-tight">BETTER FOCUS</h4>
-              <p className="text-xs sm:text-sm text-[#98A0B3] leading-relaxed">
-                A calmer, more serene study environment engineered to keep you in flow state longer.
+              <h4 className="text-base font-bold text-white tracking-tight">BETTER FOCUS</h4>
+              <p className="text-xs sm:text-sm text-zinc-400 font-normal leading-relaxed">
+                A serene, high-contrast dark environment engineered to support prolonged deep concentration.
               </p>
             </motion.div>
           </div>
@@ -130,56 +116,47 @@ export function AboutMissionCTA() {
       {/* ========================================================================= */}
       {/* SECTION 10: FINAL CTA                                                     */}
       {/* ========================================================================= */}
-      <section className="relative py-28 sm:py-36 px-4 sm:px-6 lg:px-8 text-center overflow-visible">
-        {/* Giant Ambient Glow Flare */}
-        <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] sm:w-[850px] h-[400px] rounded-full pointer-events-none transform-gpu -z-10" 
-          style={{
-            background: "radial-gradient(ellipse at 50% 50%, rgba(6,182,212,0.18) 0%, rgba(168,85,247,0.14) 45%, transparent 70%)",
-          }}
-        />
-
+      <section className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 text-center overflow-visible">
         <div className="relative mx-auto max-w-4xl flex flex-col items-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
+            transition={{ duration: 0.6 }}
             className="space-y-6"
           >
             {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/[0.12] bg-[#070E1E]/60 text-xs font-semibold text-cyan-400 backdrop-blur-xl shadow-lg">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Begin Your Journey</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-white/[0.1] bg-white/[0.04] text-xs font-medium text-zinc-300 backdrop-blur-xl">
+              <Compass className="w-3.5 h-3.5 text-zinc-400" />
+              <span>Begin Your Preparation</span>
             </div>
 
             {/* Heading */}
-            <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.08]">
-              Your preparation <br className="hidden sm:inline" />
-              deserves a <span className="bg-gradient-to-r from-[#1EA7FF] via-[#7257FF] to-[#C958FF] bg-clip-text text-transparent">system.</span>
+            <h2 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
+              Your preparation deserves a system.
             </h2>
 
             {/* Supporting Text */}
-            <p className="text-base sm:text-xl text-[#98A0B3] font-normal leading-relaxed max-w-xl mx-auto">
-              Start building better study habits with JEE PRO.
+            <p className="text-base sm:text-lg text-zinc-400 font-normal leading-relaxed max-w-xl mx-auto">
+              Start building structured study habits with JEE Pro today.
             </p>
 
-            {/* High Dopamine Buttons (Image 3) */}
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-5">
+            {/* High-Contrast Action Buttons */}
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <DopamineCTAButton
                 href="/signup"
-                variant="aurora"
+                variant="electric-white"
                 size="lg"
               >
                 Start for free
               </DopamineCTAButton>
               
               <DopamineCTAButton
-                href="/#features"
+                href="/#subjects"
                 variant="neon-glass"
                 size="lg"
               >
-                Explore features
+                Explore syllabus matrix
               </DopamineCTAButton>
             </div>
           </motion.div>

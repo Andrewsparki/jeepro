@@ -26,7 +26,7 @@ export default async function AdminLayout({
           adminEmail={profile.email}
         />
         <main className="flex-1 p-4 md:p-6 lg:p-8">
-          <AdminPageTransition>
+          <AdminPageTransition className="w-full">
             {children}
           </AdminPageTransition>
         </main>

@@ -1,0 +1,436 @@
+{
+  "datasetId": "jee-pro-physics-2027",
+  "title": "JEE Pro Complete Physics Knowledge Base (JEE Main 2027 Official Syllabus)",
+  "version": "1.0.0-batch-1",
+  "syllabusAuthority": "National Testing Agency (NTA) JEE Main Rationalized Syllabus & NCERT Class 11/12 Physics",
+  "totalChapters": 20,
+  "completedChapters": 6,
+  "remainingChapters": 14,
+  "schemaVersion": "1.0.0",
+  "batches": [
+    {
+      "batchNumber": 1,
+      "title": "Class 11 Mechanics (Units 1–6)",
+      "status": "completed",
+      "chapterIds": [
+        "phys-01-units-and-measurements",
+        "phys-02-kinematics",
+        "phys-03-laws-of-motion",
+        "phys-04-work-energy-and-power",
+        "phys-05-rotational-motion",
+        "phys-06-gravitation"
+      ]
+    },
+    {
+      "batchNumber": 2,
+      "title": "Bulk Matter, Thermal Physics & Waves (Units 7–10)",
+      "status": "pending",
+      "chapterIds": [
+        "phys-07-properties-of-solids-and-liquids",
+        "phys-08-thermodynamics",
+        "phys-09-kinetic-theory-of-gases",
+        "phys-10-oscillations-and-waves"
+      ]
+    },
+    {
+      "batchNumber": 3,
+      "title": "Electrodynamics & Electromagnetic Waves (Units 11–15)",
+      "status": "pending",
+      "chapterIds": [
+        "phys-11-electrostatics",
+        "phys-12-current-electricity",
+        "phys-13-magnetic-effects-of-current-and-magnetism",
+        "phys-14-electromagnetic-induction-and-alternating-currents",
+        "phys-15-electromagnetic-waves"
+      ]
+    },
+    {
+      "batchNumber": 4,
+      "title": "Optics, Modern Physics, Electronic Devices & Experimental Skills (Units 16–20)",
+      "status": "pending",
+      "chapterIds": [
+        "phys-16-optics",
+        "phys-17-dual-nature-of-matter-and-radiation",
+        "phys-18-atoms-and-nuclei",
+        "phys-19-electronic-devices",
+        "phys-20-experimental-skills"
+      ]
+    }
+  ],
+  "chapters": [
+    {
+      "id": "phys-01-units-and-measurements",
+      "unitNumber": 1,
+      "order": 1,
+      "classLevel": "11",
+      "title": "Units and Measurements",
+      "file": "content-drafts/physics/01-units-and-measurements.json",
+      "status": "completed",
+      "batch": 1,
+      "topics": [
+        "Units of measurements and System of units",
+        "SI Units, fundamental and derived units",
+        "Least count and significant figures",
+        "Errors in measurements and error propagation",
+        "Dimensions of physical quantities",
+        "Dimensional analysis and its applications"
+      ]
+    },
+    {
+      "id": "phys-02-kinematics",
+      "unitNumber": 2,
+      "order": 2,
+      "classLevel": "11",
+      "title": "Kinematics",
+      "file": "content-drafts/physics/02-kinematics.json",
+      "status": "completed",
+      "batch": 1,
+      "topics": [
+        "Frame of reference and motion in a straight line",
+        "Position-time and velocity-time graphs",
+        "Speed, velocity, uniform and non-uniform motion",
+        "Average speed and instantaneous velocity",
+        "Uniformly accelerated motion and kinematic relations",
+        "Scalars and vectors: addition, subtraction, dot and cross products, resolution",
+        "Relative velocity in 1D and 2D",
+        "Motion in a plane and projectile motion",
+        "Uniform circular motion (kinematic aspects)"
+      ]
+    },
+    {
+      "id": "phys-03-laws-of-motion",
+      "unitNumber": 3,
+      "order": 3,
+      "classLevel": "11",
+      "title": "Laws of Motion",
+      "file": "content-drafts/physics/03-laws-of-motion.json",
+      "status": "completed",
+      "batch": 1,
+      "topics": [
+        "Force, inertia, and Newton's First Law of Motion",
+        "Linear momentum, Newton's Second Law, and Impulse",
+        "Newton's Third Law of Motion",
+        "Law of conservation of linear momentum and applications",
+        "Equilibrium of concurrent forces and Lami's theorem",
+        "Static and kinetic friction, laws of friction, rolling friction",
+        "Dynamics of uniform circular motion and centripetal force",
+        "Vehicle on a level circular road and vehicle on a banked road"
+      ]
+    },
+    {
+      "id": "phys-04-work-energy-and-power",
+      "unitNumber": 4,
+      "order": 4,
+      "classLevel": "11",
+      "title": "Work, Energy and Power",
+      "file": "content-drafts/physics/04-work-energy-and-power.json",
+      "status": "completed",
+      "batch": 1,
+      "topics": [
+        "Work done by a constant force and a variable force",
+        "Kinetic and potential energies",
+        "Work-Energy Theorem",
+        "Instantaneous and average power",
+        "Potential energy of a spring",
+        "Conservative and non-conservative forces, conservation of mechanical energy",
+        "Motion in a vertical circle",
+        "Elastic and inelastic collisions in one and two dimensions"
+      ]
+    },
+    {
+      "id": "phys-05-rotational-motion",
+      "unitNumber": 5,
+      "order": 5,
+      "classLevel": "11",
+      "title": "Rotational Motion",
+      "file": "content-drafts/physics/05-rotational-motion.json",
+      "status": "completed",
+      "batch": 1,
+      "topics": [
+        "Centre of mass of a two-particle system and a rigid body",
+        "Motion of centre of mass",
+        "Basic concepts of rotational motion, moment of a force (torque)",
+        "Angular momentum, conservation of angular momentum and applications",
+        "Moment of inertia and radius of gyration",
+        "Values of moments of inertia for simple geometrical objects",
+        "Parallel and perpendicular axes theorems and their applications",
+        "Equilibrium of rigid bodies",
+        "Rigid body rotation, equations of rotational motion, rolling motion",
+        "Comparison of linear and rotational motions"
+      ]
+    },
+    {
+      "id": "phys-06-gravitation",
+      "unitNumber": 6,
+      "order": 6,
+      "classLevel": "11",
+      "title": "Gravitation",
+      "file": "content-drafts/physics/06-gravitation.json",
+      "status": "completed",
+      "batch": 1,
+      "topics": [
+        "Universal law of gravitation",
+        "Acceleration due to gravity and its variation with altitude, depth, and rotation",
+        "Kepler's laws of planetary motion",
+        "Gravitational potential energy and gravitational potential",
+        "Escape velocity",
+        "Motion of a satellite: orbital velocity, time period, and energy of satellite"
+      ]
+    },
+    {
+      "id": "phys-07-properties-of-solids-and-liquids",
+      "unitNumber": 7,
+      "order": 7,
+      "classLevel": "11",
+      "title": "Properties of Solids and Liquids",
+      "file": "content-drafts/physics/07-properties-of-solids-and-liquids.json",
+      "status": "pending",
+      "batch": 2,
+      "topics": [
+        "Elastic behaviour, stress-strain relationship, Hooke's Law",
+        "Young's modulus, bulk modulus, and modulus of rigidity",
+        "Pressure due to a fluid column, Pascal's law and applications",
+        "Viscosity, Stokes' law, terminal velocity, streamline and turbulent flow, critical velocity",
+        "Bernoulli's principle and applications",
+        "Surface energy, surface tension, angle of contact, excess pressure, capillary rise",
+        "Heat, temperature, thermal expansion, specific heat capacity, calorimetry, latent heat",
+        "Heat transfer: conduction, convection, and radiation"
+      ]
+    },
+    {
+      "id": "phys-08-thermodynamics",
+      "unitNumber": 8,
+      "order": 8,
+      "classLevel": "11",
+      "title": "Thermodynamics",
+      "file": "content-drafts/physics/08-thermodynamics.json",
+      "status": "pending",
+      "batch": 2,
+      "topics": [
+        "Thermal equilibrium, concept of temperature, Zeroth Law of Thermodynamics",
+        "Heat, work, and internal energy",
+        "First Law of Thermodynamics",
+        "Isothermal, adiabatic, isobaric, isochoric, and polytropic processes",
+        "Second Law of Thermodynamics: reversible and irreversible processes"
+      ]
+    },
+    {
+      "id": "phys-09-kinetic-theory-of-gases",
+      "unitNumber": 9,
+      "order": 9,
+      "classLevel": "11",
+      "title": "Kinetic Theory of Gases",
+      "file": "content-drafts/physics/09-kinetic-theory-of-gases.json",
+      "status": "pending",
+      "batch": 2,
+      "topics": [
+        "Equation of state of a perfect gas, work done on compressing a gas",
+        "Kinetic theory of gases: assumptions and concept of pressure",
+        "Kinetic interpretation of temperature, RMS, average, and most probable speeds",
+        "Degrees of freedom and Law of Equipartition of Energy",
+        "Applications to specific heat capacities of gases and gas mixtures",
+        "Mean free path and Avogadro's number"
+      ]
+    },
+    {
+      "id": "phys-10-oscillations-and-waves",
+      "unitNumber": 10,
+      "order": 10,
+      "classLevel": "11",
+      "title": "Oscillations and Waves",
+      "file": "content-drafts/physics/10-oscillations-and-waves.json",
+      "status": "pending",
+      "batch": 2,
+      "topics": [
+        "Periodic motion: period, frequency, displacement as a function of time",
+        "Simple Harmonic Motion (SHM) and its equation, phase",
+        "Oscillations of a loaded spring and simple pendulum",
+        "Kinetic and potential energies in SHM",
+        "Wave motion: longitudinal and transverse waves, speed of travelling wave",
+        "Displacement relation for a progressive wave",
+        "Principle of superposition of waves, reflection of waves",
+        "Standing waves in strings and organ pipes, fundamental mode and harmonics",
+        "Beats"
+      ]
+    },
+    {
+      "id": "phys-11-electrostatics",
+      "unitNumber": 11,
+      "order": 11,
+      "classLevel": "12",
+      "title": "Electrostatics",
+      "file": "content-drafts/physics/11-electrostatics.json",
+      "status": "pending",
+      "batch": 3,
+      "topics": [
+        "Electric charges: conservation and quantization, Coulomb's law, superposition",
+        "Continuous charge distribution, electric field, electric field lines",
+        "Electric dipole, field due to a dipole, torque on a dipole in uniform electric field",
+        "Electric flux, Gauss's law and applications (infinite wire, plane sheet, thin spherical shell)",
+        "Electric potential and potential difference, equipotential surfaces",
+        "Electrical potential energy of a system of two point charges and of electric dipoles",
+        "Conductors and insulators, dielectrics and electric polarization",
+        "Capacitors and capacitance, series and parallel combinations, parallel plate capacitor with and without dielectric, energy stored"
+      ]
+    },
+    {
+      "id": "phys-12-current-electricity",
+      "unitNumber": 12,
+      "order": 12,
+      "classLevel": "12",
+      "title": "Current Electricity",
+      "file": "content-drafts/physics/12-current-electricity.json",
+      "status": "pending",
+      "batch": 3,
+      "topics": [
+        "Electric current, drift velocity, mobility and relation with electric current",
+        "Ohm's law, electrical resistance, V-I characteristics of Ohmic and non-ohmic conductors",
+        "Electrical energy and power, electrical resistivity and conductivity",
+        "Series and parallel combinations of resistors, temperature dependence of resistance",
+        "Internal resistance, potential difference and emf of a cell, combination of cells",
+        "Kirchhoff's laws and applications, Wheatstone bridge, Metre Bridge"
+      ]
+    },
+    {
+      "id": "phys-13-magnetic-effects-of-current-and-magnetism",
+      "unitNumber": 13,
+      "order": 13,
+      "classLevel": "12",
+      "title": "Magnetic Effects of Current and Magnetism",
+      "file": "content-drafts/physics/13-magnetic-effects-of-current-and-magnetism.json",
+      "status": "pending",
+      "batch": 3,
+      "topics": [
+        "Biot-Savart law and application to current-carrying circular loop",
+        "Ampere's law and application to infinitely long straight wire and straight solenoid",
+        "Force on a moving charge in uniform magnetic and electric fields",
+        "Force on a current-carrying conductor in a uniform magnetic field, force between two parallel current-carrying conductors",
+        "Torque experienced by a current loop, moving coil galvanometer and its conversion to ammeter and voltmeter",
+        "Current loop as a magnetic dipole, bar magnet as an equivalent solenoid",
+        "Magnetic field lines, magnetic field due to a magnetic dipole along axis and perpendicular to axis",
+        "Para-, dia- and ferromagnetic substances, effect of temperature on magnetic properties"
+      ]
+    },
+    {
+      "id": "phys-14-electromagnetic-induction-and-alternating-currents",
+      "unitNumber": 14,
+      "order": 14,
+      "classLevel": "12",
+      "title": "Electromagnetic Induction and Alternating Currents",
+      "file": "content-drafts/physics/14-electromagnetic-induction-and-alternating-currents.json",
+      "status": "pending",
+      "batch": 3,
+      "topics": [
+        "Electromagnetic induction: Faraday's law, induced emf and current, Lenz's Law, eddy currents",
+        "Self and mutual inductance",
+        "Alternating currents, peak and RMS value of alternating current/voltage",
+        "Reactance and impedance, LCR series circuit, resonance",
+        "Power in AC circuits, wattless current",
+        "AC generator and transformer"
+      ]
+    },
+    {
+      "id": "phys-15-electromagnetic-waves",
+      "unitNumber": 15,
+      "order": 15,
+      "classLevel": "12",
+      "title": "Electromagnetic Waves",
+      "file": "content-drafts/physics/15-electromagnetic-waves.json",
+      "status": "pending",
+      "batch": 3,
+      "topics": [
+        "Displacement current",
+        "Electromagnetic waves and their characteristics, transverse nature",
+        "Electromagnetic spectrum (radio waves, microwaves, infrared, visible, ultraviolet, X-rays, gamma rays) and applications"
+      ]
+    },
+    {
+      "id": "phys-16-optics",
+      "unitNumber": 16,
+      "order": 16,
+      "classLevel": "12",
+      "title": "Optics",
+      "file": "content-drafts/physics/16-optics.json",
+      "status": "pending",
+      "batch": 4,
+      "topics": [
+        "Reflection of light, spherical mirrors, mirror formula",
+        "Refraction of light at plane and spherical surfaces, thin lens formula, lens maker formula",
+        "Total internal reflection and applications, magnification, power of a lens, combination of thin lenses",
+        "Refraction of light through a prism, Microscope and Astronomical Telescope",
+        "Wave optics: wavefront and Huygens' principle, laws of reflection and refraction using Huygens' principle",
+        "Interference, Young's double-slit experiment and fringe width, coherent sources",
+        "Diffraction due to a single slit, width of central maximum",
+        "Polarization, plane-polarized light, Brewster's law, Polaroids"
+      ]
+    },
+    {
+      "id": "phys-17-dual-nature-of-matter-and-radiation",
+      "unitNumber": 17,
+      "order": 17,
+      "classLevel": "12",
+      "title": "Dual Nature of Matter and Radiation",
+      "file": "content-drafts/physics/17-dual-nature-of-matter-and-radiation.json",
+      "status": "pending",
+      "batch": 4,
+      "topics": [
+        "Dual nature of radiation, Photoelectric effect, Hertz and Lenard's observations",
+        "Einstein's photoelectric equation, particle nature of light",
+        "Matter waves: wave nature of particle, de Broglie relation"
+      ]
+    },
+    {
+      "id": "phys-18-atoms-and-nuclei",
+      "unitNumber": 18,
+      "order": 18,
+      "classLevel": "12",
+      "title": "Atoms and Nuclei",
+      "file": "content-drafts/physics/18-atoms-and-nuclei.json",
+      "status": "pending",
+      "batch": 4,
+      "topics": [
+        "Alpha-particle scattering experiment, Rutherford's model of atom",
+        "Bohr model, energy levels, hydrogen spectrum",
+        "Composition and size of nucleus, atomic masses",
+        "Mass-energy relation, mass defect, binding energy per nucleon and variation with mass number",
+        "Nuclear fission and fusion"
+      ]
+    },
+    {
+      "id": "phys-19-electronic-devices",
+      "unitNumber": 19,
+      "order": 19,
+      "classLevel": "12",
+      "title": "Electronic Devices",
+      "file": "content-drafts/physics/19-electronic-devices.json",
+      "status": "pending",
+      "batch": 4,
+      "topics": [
+        "Semiconductors, semiconductor diode: I-V characteristics in forward and reverse bias",
+        "Diode as a half-wave and full-wave rectifier",
+        "I-V characteristics of LED, photodiode, solar cell, and Zener diode",
+        "Zener diode as a voltage regulator",
+        "Logic gates (OR, AND, NOT, NAND and NOR) and truth tables"
+      ]
+    },
+    {
+      "id": "phys-20-experimental-skills",
+      "unitNumber": 20,
+      "order": 20,
+      "classLevel": "11-12",
+      "title": "Experimental Skills",
+      "file": "content-drafts/physics/20-experimental-skills.json",
+      "status": "pending",
+      "batch": 4,
+      "topics": [
+        "Vernier calipers and Screw gauge",
+        "Simple pendulum energy dissipation and Metre scale moment of force",
+        "Young's modulus, surface tension by capillary rise, viscosity by terminal velocity",
+        "Speed of sound using resonance tube, specific heat capacity by method of mixtures",
+        "Metre bridge, Ohm's law wire resistance, galvanometer half-deflection method",
+        "Focal length of mirrors and lenses using parallax method, triangular prism deviation, travelling microscope slab refractive index",
+        "Characteristic curves of p-n junction diode and Zener diode, component identification"
+      ]
+    }
+  ]
+}

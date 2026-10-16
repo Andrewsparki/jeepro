@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { XPDetails } from "@/features/gamification/services/gamification";
 import { Trophy, Star } from "lucide-react";
 import { motion } from "framer-motion";

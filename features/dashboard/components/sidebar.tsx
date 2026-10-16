@@ -108,7 +108,7 @@ export function Sidebar() {
                   setIsSocialOpen(!isSocialOpen);
                   playSound("liquid-glass");
                 }}
-                className="flex w-full items-center justify-between px-3 py-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
+                className="flex w-full items-center justify-between px-3 py-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] rounded-md cursor-pointer"
               >
                 SOCIAL
                 {isSocialOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
@@ -138,25 +138,39 @@ export function Sidebar() {
           <SidebarItem href="/dashboard/support" label="Support" icon={<LifeBuoy className="h-5 w-5" />} />
           <SidebarItem href="/dashboard/settings" label="Settings" icon={<Settings className="h-5 w-5" />} />
 
-          <form action={logout} className="w-full mt-2">
-            <button
-              type="submit"
-              onClick={() => playSound("liquid-glass")}
-              className={cn(
-                "w-full relative flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors hover:bg-muted/30 text-muted-foreground hover:text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              )}>
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-accent/20 flex items-center justify-center border border-accent/30 text-accent font-semibold text-xs uppercase shrink-0">
-                  {initials}
-                </div>
-                <div className="flex flex-col items-start truncate max-w-[100px]">
-                  <span className="text-sm font-medium text-foreground leading-none mb-1 truncate w-full">{displayName}</span>
-                  <span className="text-xs text-muted-foreground leading-none">Pro Plan</span>
-                </div>
+          <div
+            className={cn(
+              "w-full relative flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium mt-2 transition-all duration-150 hover:bg-white/[0.03] text-[#A4ADBB]"
+            )}
+          >
+            <Link
+              href="/dashboard/settings?tab=profile"
+              className="flex items-center gap-3 min-w-0 flex-1 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] group"
+              title="View profile settings"
+            >
+              <div className="h-8 w-8 rounded-full bg-[#78A9FF]/15 flex items-center justify-center border border-[#78A9FF]/25 text-[#78A9FF] font-semibold text-xs uppercase shrink-0 transition-transform group-hover:scale-105">
+                {initials}
               </div>
-              <LogOut className="h-4 w-4 opacity-50 hover:opacity-100 transition-opacity flex-shrink-0" />
-            </button>
-          </form>
+              <div className="flex flex-col items-start truncate max-w-[110px]">
+                <span className="text-sm font-medium text-foreground leading-none mb-1 truncate w-full group-hover:text-[#F5F7FB] transition-colors">
+                  {displayName}
+                </span>
+                <span className="text-xs text-muted-foreground leading-none">Pro Plan</span>
+              </div>
+            </Link>
+
+            <form action={logout} className="shrink-0">
+              <button
+                type="submit"
+                onClick={() => playSound("liquid-glass")}
+                className="p-1.5 rounded-md text-[#A4ADBB] hover:text-[#F5F7FB] hover:bg-white/[0.08] transition-all outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] active:scale-90 cursor-pointer"
+                title="Log out"
+                aria-label="Log out"
+              >
+                <LogOut className="h-4 w-4 opacity-70 hover:opacity-100 transition-opacity" />
+              </button>
+            </form>
+          </div>
 
           <div className="mt-3 pt-2 text-[10px] text-center text-muted-foreground/40 tracking-widest uppercase font-medium flex items-center justify-center gap-1 select-none">
             Made with <span className="text-rose-500">❤️</span> by Andrew

@@ -1,19 +1,26 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { FriendUser } from "../types/friends.types";
 import { FriendsService } from "../services/friends.service";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import { toast } from "sonner";
 import { RealtimeChannel } from "@supabase/supabase-js";
+import { globalPresence } from "@/features/chat/services/presence-service";
 
-export function useFriends() {
+export interface UseFriendsOptions {
+  enabled?: boolean;
+}
+
+export function useFriends(options?: UseFriendsOptions) {
+  const enabled = options?.enabled ?? true;
   const { user } = useAuth();
+  const userId = user?.id;
   const [friends, setFriends] = useState<FriendUser[]>([]);
   const [pendingReceived, setPendingReceived] = useState<FriendUser[]>([]);
   const [pendingSent, setPendingSent] = useState<FriendUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(enabled);
   const [error, setError] = useState<string | null>(null);
 
   // Search state
@@ -25,16 +32,16 @@ export function useFriends() {
   const [onlineUserIds, setOnlineUserIds] = useState<Set<string>>(new Set());
 
   const friendshipsChannelRef = useRef<RealtimeChannel | null>(null);
-  const presenceChannelRef = useRef<RealtimeChannel | null>(null);
 
   // 1. Fetch initial friends and pending requests
   const loadFriendships = useCallback(async (silent = false) => {
+    if (!enabled) return;
     if (!silent) setIsLoading(true);
     setError(null);
     try {
       const [friendsList, pending] = await Promise.all([
-        FriendsService.getFriends(),
-        FriendsService.getPendingRequests(),
+        FriendsService.getFriends(userId),
+        FriendsService.getPendingRequests(userId),
       ]);
 
       setFriends(friendsList);
@@ -47,43 +54,16 @@ export function useFriends() {
     } finally {
       if (!silent) setIsLoading(false);
     }
-  }, []);
+  }, [enabled, userId]);
 
   useEffect(() => {
-    let ignore = false;
-
-    const init = async () => {
-      try {
-        const [friendsList, pending] = await Promise.all([
-          FriendsService.getFriends(),
-          FriendsService.getPendingRequests(),
-        ]);
-        if (!ignore) {
-          setFriends(friendsList);
-          setPendingReceived(pending.received);
-          setPendingSent(pending.sent);
-        }
-      } catch (err: unknown) {
-        if (!ignore) {
-          const msg = err instanceof Error ? err.message : "Failed to load friends.";
-          setError(msg);
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    init();
-    return () => {
-      ignore = true;
-    };
-  }, []);
+    if (!enabled) return;
+    loadFriendships();
+  }, [enabled, loadFriendships]);
 
   // 2. Realtime listener on friendships table
   useEffect(() => {
-    if (!user) return;
+    if (!enabled || !user) return;
     const supabase = createClient();
 
     // Clean up any existing local channel reference
@@ -128,59 +108,25 @@ export function useFriends() {
       supabase.removeChannel(channel);
       friendshipsChannelRef.current = null;
     };
-  }, [user, loadFriendships]);
+  }, [enabled, user, loadFriendships]);
 
-  // 3. Shared presence channel to track online friends
+  // 3. Shared presence tracker using globalPresence singleton
   useEffect(() => {
-    if (!user) return;
-    const supabase = createClient();
-
-    // Clean up any existing local presence channel reference
-    if (presenceChannelRef.current) {
-      presenceChannelRef.current.unsubscribe();
-      supabase.removeChannel(presenceChannelRef.current);
-      presenceChannelRef.current = null;
-    }
-
-    // Clean up any existing stale presence channels for jee_global_chat
-    const stalePresence = supabase
-      .getChannels()
-      .filter((c: RealtimeChannel) => c.topic === "realtime:jee_global_chat");
-    stalePresence.forEach((c: RealtimeChannel) => {
-      c.unsubscribe();
-      supabase.removeChannel(c);
-    });
-
-    // Connect to existing presence channel
-    const presenceChannel = supabase.channel("jee_global_chat");
-    presenceChannelRef.current = presenceChannel;
-
-    presenceChannel.on("presence", { event: "sync" }, () => {
-      const state = presenceChannel.presenceState();
+    if (!enabled || !user) return;
+    const unsub = globalPresence.subscribe((presences) => {
       const onlineIds = new Set<string>();
-
-      Object.values(state).forEach((presences: unknown) => {
-        if (Array.isArray(presences)) {
-          presences.forEach((p: unknown) => {
-            const pres = p as { user_id?: string };
-            if (pres?.user_id) {
-              onlineIds.add(pres.user_id);
-            }
-          });
+      presences.forEach((p) => {
+        if (p?.user_id) {
+          onlineIds.add(p.user_id);
         }
       });
-
       setOnlineUserIds(onlineIds);
     });
 
-    presenceChannel.subscribe();
-
     return () => {
-      presenceChannel.unsubscribe();
-      supabase.removeChannel(presenceChannel);
-      presenceChannelRef.current = null;
+      unsub();
     };
-  }, [user]);
+  }, [enabled, user]);
 
   // 4. Debounced user search
   useEffect(() => {
@@ -211,7 +157,7 @@ export function useFriends() {
   }, [searchQuery]);
 
   // 5. Actions with immediate optimistic updates
-  const sendFriendRequest = async (targetUserId: string) => {
+  const sendFriendRequest = useCallback(async (targetUserId: string) => {
     try {
       const sentItem = await FriendsService.sendFriendRequest(targetUserId);
       toast.success("Friend request sent!");
@@ -231,20 +177,21 @@ export function useFriends() {
       toast.error(msg);
       return false;
     }
-  };
+  }, []);
 
-  const acceptFriendRequest = async (friendshipId: string, friendId: string) => {
+  const acceptFriendRequest = useCallback(async (friendshipId: string, friendId: string) => {
     try {
       await FriendsService.acceptFriendRequest(friendshipId);
       toast.success("Friend request accepted!");
 
       // Optimistic update
-      const acceptedUser = pendingReceived.find((u) => u.id === friendId);
-      setPendingReceived((prev) => prev.filter((u) => u.id !== friendId));
-
-      if (acceptedUser) {
-        setFriends((prev) => [...prev, { ...acceptedUser, friendshipStatus: "accepted" }]);
-      }
+      setPendingReceived((prev) => {
+        const acceptedUser = prev.find((u) => u.id === friendId);
+        if (acceptedUser) {
+          setFriends((fPrev) => [...fPrev, { ...acceptedUser, friendshipStatus: "accepted" }]);
+        }
+        return prev.filter((u) => u.id !== friendId);
+      });
 
       setSearchResults((prev) =>
         prev.map((u) => (u.id === friendId ? { ...u, friendshipStatus: "accepted" } : u))
@@ -255,9 +202,9 @@ export function useFriends() {
       toast.error(msg);
       return false;
     }
-  };
+  }, []);
 
-  const declineFriendRequest = async (friendshipId: string, friendId: string) => {
+  const declineFriendRequest = useCallback(async (friendshipId: string, friendId: string) => {
     try {
       await FriendsService.declineFriendRequest(friendshipId);
       toast.info("Friend request declined");
@@ -272,9 +219,9 @@ export function useFriends() {
       toast.error(msg);
       return false;
     }
-  };
+  }, []);
 
-  const cancelFriendRequest = async (friendshipId: string, friendId: string) => {
+  const cancelFriendRequest = useCallback(async (friendshipId: string, friendId: string) => {
     try {
       await FriendsService.cancelFriendRequest(friendshipId);
       toast.info("Friend request cancelled");
@@ -289,9 +236,9 @@ export function useFriends() {
       toast.error(msg);
       return false;
     }
-  };
+  }, []);
 
-  const removeFriend = async (friendshipId: string, friendId: string) => {
+  const removeFriend = useCallback(async (friendshipId: string, friendId: string) => {
     try {
       await FriendsService.removeFriend(friendshipId);
       toast.info("Friend removed");
@@ -306,30 +253,54 @@ export function useFriends() {
       toast.error(msg);
       return false;
     }
-  };
+  }, []);
 
   // Annotate friends with live online status
-  const friendsWithOnline = friends.map((f) => ({
-    ...f,
-    isOnline: onlineUserIds.has(f.id),
-  }));
+  const friendsWithOnline = useMemo(
+    () =>
+      friends.map((f) => ({
+        ...f,
+        isOnline: onlineUserIds.has(f.id),
+      })),
+    [friends, onlineUserIds]
+  );
 
-  return {
-    friends: friendsWithOnline,
-    pendingReceived,
-    pendingSent,
-    pendingCount: pendingReceived.length,
-    isLoading,
-    error,
-    searchQuery,
-    setSearchQuery,
-    searchResults: searchQuery.trim() ? searchResults : [],
-    isSearching: searchQuery.trim() ? isSearching : false,
-    sendFriendRequest,
-    acceptFriendRequest,
-    declineFriendRequest,
-    cancelFriendRequest,
-    removeFriend,
-    refreshFriends: () => loadFriendships(false),
-  };
+  const refreshFriends = useCallback(() => loadFriendships(false), [loadFriendships]);
+
+  return useMemo(
+    () => ({
+      friends: friendsWithOnline,
+      pendingReceived,
+      pendingSent,
+      pendingCount: pendingReceived.length,
+      isLoading,
+      error,
+      searchQuery,
+      setSearchQuery,
+      searchResults: searchQuery.trim() ? searchResults : [],
+      isSearching: searchQuery.trim() ? isSearching : false,
+      sendFriendRequest,
+      acceptFriendRequest,
+      declineFriendRequest,
+      cancelFriendRequest,
+      removeFriend,
+      refreshFriends,
+    }),
+    [
+      friendsWithOnline,
+      pendingReceived,
+      pendingSent,
+      isLoading,
+      error,
+      searchQuery,
+      searchResults,
+      isSearching,
+      sendFriendRequest,
+      acceptFriendRequest,
+      declineFriendRequest,
+      cancelFriendRequest,
+      removeFriend,
+      refreshFriends,
+    ]
+  );
 }

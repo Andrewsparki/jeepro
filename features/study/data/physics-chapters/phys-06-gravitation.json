@@ -1,0 +1,248 @@
+{
+  "id": "phys-06-gravitation",
+  "title": "Gravitation",
+  "order": 6,
+  "unitNumber": 6,
+  "classLevel": "11",
+  "topics": [
+    "Universal law of gravitation",
+    "Acceleration due to gravity and its variation with altitude, depth, and rotation",
+    "Kepler's laws of planetary motion",
+    "Gravitational potential energy and gravitational potential",
+    "Escape velocity",
+    "Motion of a satellite: orbital velocity, time period, and energy of satellite"
+  ],
+  "notes": "## 1. Newton's Law of Gravitation and Shell Theorems\n* **Vector Form:** $\\vec{F}_{12} = -\\frac{Gm_1 m_2}{r^2}\\hat{r}_{21}$, where $G = 6.674 \\times 10^{-11}\\text{ N m}^2\\text{ kg}^{-2}$.\n* **Newton's Shell Theorems:**\n  1. A uniform spherical shell (or solid sphere) attracts any external particle ($r \\ge R$) as if its entire mass $M$ were concentrated at its centre.\n  2. Inside a uniform **hollow spherical shell** ($r < R$), the net gravitational field is **identically zero** ($E_g = 0$) and the gravitational potential is constant everywhere inside and equal to the surface value: $V_{\\text{inside}} = V_{\\text{surface}} = -\\frac{GM}{R}$.\n  3. Inside a uniform **solid sphere** ($r < R$), only the inner sphere of radius $r$ and mass $M' = M\\frac{r^3}{R^3}$ contributes to the field: $E_g(r) = \\frac{GMr}{R^3} \\propto r$, and potential is $V(r) = -\\frac{GM}{2R^3}(3R^2 - r^2)$ (so $V_{\\text{centre}} = \\frac{3}{2}V_{\\text{surface}} = -\\frac{3GM}{2R}$).\n\n## 2. Variation of Acceleration Due to Gravity ($g$)\nAt Earth's surface: $g = \\frac{GM}{R^2} = \\frac{4}{3}\\pi G \\rho R$.\n* **With Altitude $h$ above surface:**\n  * Exact (for any $h$): $g(h) = \\frac{g}{\\left(1 + \\frac{h}{R}\\right)^2}$.\n  * Binomial approximation (ONLY when $h \\ll R$, typically $h < 0.05R$): $g(h) \\approx g\\left(1 - \\frac{2h}{R}\\right)$.\n* **With Depth $d$ below surface (Exact for all $d \\le R$ assuming uniform density):**\n  $$g(d) = g\\left(1 - \\frac{d}{R}\\right)$$\n* **With Earth's Rotation at Latitude $\\lambda$ ($\\lambda = 0^\\circ$ at Equator, $\\lambda = 90^\\circ$ at Poles):**\n  $$g'(\\lambda) = g - \\omega^2 R \\cos^2\\lambda$$\n  At poles ($\\lambda = 90^\\circ$), $g_{\\text{pole}} = g$ (unaffected by rotation). At equator ($\\lambda = 0^\\circ$), $g_{\\text{eq}} = g - \\omega^2 R$. Apparent weight at equator becomes zero if $\\omega = \\sqrt{g/R}$ (time period $T \\approx 84.6\\text{ min}$).\n\n## 3. Kepler's Laws of Planetary Motion\n1. **First Law (Law of Orbits):** Every planet moves in an elliptical orbit with the Sun at one focus. Perihelion (closest) distance $r_{\\min} = a(1 - e)$ and Aphelion (farthest) distance $r_{\\max} = a(1 + e)$, so $a = \\frac{r_{\\min} + r_{\\max}}{2}$.\n2. **Second Law (Law of Areas):** Areal velocity $\\frac{dA}{dt} = \\frac{L}{2m} = \\text{constant}$. This is a direct consequence of **Conservation of Angular Momentum** under a central force ($\\vec{\\tau} = \\vec{r} \\times \\vec{F} = 0$). For perihelion and aphelion: $v_{\\max} r_{\\min} = v_{\\min} r_{\\max}$, and $\\frac{v_{\\max}}{v_{\\min}} = \\frac{1 + e}{1 - e}$.\n3. **Third Law (Law of Periods):** $T^2 = \\left(\\frac{4\\pi^2}{GM_S}\\right)a^3 \\implies T^2 \\propto a^3$.\n\n## 4. Satellites and Escape Velocity\n* **Escape Velocity from Earth's Surface:** $v_e = \\sqrt{\\frac{2GM}{R}} = \\sqrt{2gR} \\approx 11.2\\text{ km s}^{-1}$ (independent of projectile mass $m$ and launch angle!).\n* **Close-Earth Orbit ($r \\approx R$):** $v_o = \\sqrt{gR} = \\frac{v_e}{\\sqrt{2}} \\approx 7.92\\text{ km s}^{-1}$, $T = 2\\pi\\sqrt{\\frac{R}{g}} \\approx 84.6\\text{ min}$.\n* **Geostationary Satellite:** Equatorial plane, west-to-east, $T = 24\\text{ hours}$, orbital radius $r \\approx 42,200\\text{ km}$ (altitude $h \\approx 35,800\\text{ km} \\approx 5.6 R_e$).",
+  "formulas": [
+    {
+      "id": "phys-06-f01",
+      "title": "Gravitational Field and Potential Inside and Outside a Uniform Solid Sphere",
+      "latex": "E_g(r) = \\begin{cases} \\frac{GMr}{R^3}, & r < R \\\\ \\frac{GM}{r^2}, & r \\ge R \\end{cases}, \\qquad V(r) = \\begin{cases} -\\frac{GM}{2R^3}(3R^2 - r^2), & r < R \\\\ -\\frac{GM}{r}, & r \\ge R \\end{cases}",
+      "explanation": "Gives the magnitude of gravitational field intensity and value of gravitational potential (with V(∞) = 0) at distance r from the centre of a uniform solid sphere of mass M and radius R.",
+      "variables": [
+        {
+          "symbol": "E_g(r)",
+          "name": "Gravitational field intensity (force per unit mass)",
+          "siUnit": "N kg^-1 (or m s^-2)",
+          "dimension": "[L^1 T^-2]",
+          "type": "vector"
+        },
+        {
+          "symbol": "V(r)",
+          "name": "Gravitational potential (potential energy per unit mass)",
+          "siUnit": "J kg^-1 (or m^2 s^-2)",
+          "dimension": "[L^2 T^-2]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "r, R",
+          "name": "Radial distance from centre and radius of sphere",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "N kg^-1, J kg^-1",
+      "dimensions": "[L^1 T^-2], [L^2 T^-2]",
+      "assumptions": "Uniform mass density ρ throughout the sphere; reference potential V(∞) = 0.",
+      "validityConditions": "At the centre (r = 0), E_g(0) = 0 and V(0) = -1.5 GM/R = 1.5 V_surface."
+    },
+    {
+      "id": "phys-06-f02",
+      "title": "Maximum Height Reached by a Projectile Launched Vertically at High Speed",
+      "latex": "h_{\\max} = \\frac{R}{\\frac{2gR}{u^2} - 1} = \\frac{R}{\\left(\\frac{v_e}{u}\\right)^2 - 1}",
+      "explanation": "Calculates exact maximum altitude h_max above a planet's surface when launch speed u is a significant fraction of escape speed v_e = √(2gR), accounting for the inverse-square decrease of gravity.",
+      "variables": [
+        {
+          "symbol": "h_{\\max}",
+          "name": "Maximum altitude above planet surface",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "R",
+          "name": "Radius of planet",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "u, v_e",
+          "name": "Initial vertical launch speed and surface escape speed",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m",
+      "dimensions": "[L^1]",
+      "assumptions": "No atmospheric drag; planet is spherically symmetric and non-rotating.",
+      "validityConditions": "Valid for all u < v_e. For example, if u = √(gR) = v_e/√2, then h_max = R (whereas the constant-g formula u^2/2g would falsely give R/2)."
+    },
+    {
+      "id": "phys-06-f03",
+      "title": "Orbital Velocity, Time Period, and Energies of a Circular Satellite",
+      "latex": "v_o = \\sqrt{\\frac{GM}{r}}, \\quad T = 2\\pi\\sqrt{\\frac{r^3}{GM}}, \\quad K = \\frac{GMm}{2r}, \\quad U = -\\frac{GMm}{r}, \\quad E = -\\frac{GMm}{2r}",
+      "explanation": "Complete set of dynamical and energy equations for a satellite of mass m in a circular orbit of radius r = R + h around a planet of mass M.",
+      "variables": [
+        {
+          "symbol": "v_o",
+          "name": "Orbital speed",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "T",
+          "name": "Orbital time period",
+          "siUnit": "s",
+          "dimension": "[T^1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "K, U, E",
+          "name": "Kinetic, Gravitational Potential, and Total Mechanical Energy",
+          "siUnit": "J",
+          "dimension": "[M^1 L^2 T^-2]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "r",
+          "name": "Orbital radius measured from planet's centre (r = R + h)",
+          "siUnit": "m",
+          "dimension": "[L^1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m s^-1, s, J",
+      "dimensions": "[L^1 T^-1], [T^1], [M^1 L^2 T^-2]",
+      "assumptions": "Satellite mass m << planet mass M; circular orbit.",
+      "validityConditions": "Note the virial energy chain: E = -K = U/2, and Binding Energy BE = -E = +K = +GMm/(2r)."
+    },
+    {
+      "id": "phys-06-f04",
+      "title": "Interstellar Velocity Beyond Escape (u > v_e)",
+      "latex": "v_{\\infty} = \\sqrt{u^2 - v_e^2}",
+      "explanation": "Gives the residual speed of a body at infinity (far from the planet's gravitational pull) when launched from the surface with initial speed u greater than escape velocity v_e.",
+      "variables": [
+        {
+          "symbol": "v_{\\infty}",
+          "name": "Speed at infinite distance from planet",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "u",
+          "name": "Launch speed at surface",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "scalar"
+        },
+        {
+          "symbol": "v_e",
+          "name": "Surface escape velocity √(2GM/R)",
+          "siUnit": "m s^-1",
+          "dimension": "[L^1 T^-1]",
+          "type": "scalar"
+        }
+      ],
+      "siUnit": "m s^-1",
+      "dimensions": "[L^1 T^-1]",
+      "assumptions": "Conservation of mechanical energy in an isolated single-planet field.",
+      "validityConditions": "Valid only when u >= v_e."
+    }
+  ],
+  "derivations": [
+    {
+      "id": "phys-06-d01",
+      "title": "Kepler's Second Law (Areal Velocity) from Conservation of Angular Momentum",
+      "context": "Proving that the rate at which the radius vector sweeps out area equals L / (2m) for any central force.",
+      "steps": [
+        "Because gravitational force $\\vec{F} = -\\frac{GMm}{r^2}\\hat{r}$ acts radially along $\\vec{r}$, torque about the Sun is $\\vec{\\tau} = \\vec{r} \\times \\vec{F} = 0$, so angular momentum $\\vec{L} = \\vec{r} \\times (m\\vec{v})$ is constant.",
+        "In a small time interval $dt$, the planet undergoes displacement $d\\vec{r} = \\vec{v}\\,dt$.",
+        "The area of the infinitesimal triangle swept out by $\\vec{r}$ and $d\\vec{r}$ is: $$dA = \\frac{1}{2}|\\vec{r} \\times d\\vec{r}| = \\frac{1}{2}|\\vec{r} \\times \\vec{v}|\\,dt$$",
+        "Divide by $dt$ and substitute $|\\vec{L}| = m|\\vec{r} \\times \\vec{v}|$: $$\\frac{dA}{dt} = \\frac{|\\vec{r} \\times m\\vec{v}|}{2m} = \\frac{L}{2m} = \\text{constant}$$"
+      ],
+      "finalResult": "\\frac{dA}{dt} = \\frac{L}{2m} = \\text{constant}"
+    },
+    {
+      "id": "phys-06-d02",
+      "title": "Orbital Velocity, Time Period, and Total Mechanical Energy of a Satellite",
+      "context": "Deriving v_o, T, and E for a circular orbit of radius r around mass M.",
+      "steps": [
+        "Equate gravitational attraction to required centripetal force: $$\\frac{GMm}{r^2} = \\frac{mv_o^2}{r} \\implies v_o = \\sqrt{\\frac{GM}{r}}$$",
+        "Compute orbital period $T = \\frac{2\\pi r}{v_o}$: $$T = \\frac{2\\pi r}{\\sqrt{GM/r}} = 2\\pi\\sqrt{\\frac{r^3}{GM}} \\implies T^2 = \\left(\\frac{4\\pi^2}{GM}\\right)r^3$$",
+        "Compute Kinetic Energy $K$ and Potential Energy $U$: $$K = \\frac{1}{2}mv_o^2 = \\frac{GMm}{2r}, \\qquad U = -\\frac{GMm}{r}$$",
+        "Sum to obtain Total Mechanical Energy $E$: $$E = K + U = \\frac{GMm}{2r} - \\frac{GMm}{r} = -\\frac{GMm}{2r}$$"
+      ],
+      "finalResult": "E = -K = \\frac{U}{2} = -\\frac{GMm}{2r}"
+    }
+  ],
+  "graphs": [
+    {
+      "id": "phys-06-g01",
+      "title": "Gravitational Field Magnitude E_g(r) vs Distance r for a Uniform Solid Sphere",
+      "xAxis": "Distance from centre (r)",
+      "yAxis": "Gravitational Field Magnitude E_g(r)",
+      "curveType": "Piecewise: Linear through origin for r <= R, inverse-square decay (1/r^2) for r >= R",
+      "equation": "E_g(r) = \\frac{GMr}{R^3} \\text{ for } r \\le R; \\quad E_g(r) = \\frac{GM}{r^2} \\text{ for } r \\ge R",
+      "slopeInterpretation": "Inside the sphere (r < R), constant positive slope GM/R^3 = (4/3)πGρ shows field grows linearly with radius.",
+      "areaInterpretation": "Area ∫ E_g(r) dr between r_1 and r_2 equals the magnitude of gravitational potential difference |ΔV|.",
+      "physicalInterpretation": "Gravitational field is zero at the centre, reaches its absolute maximum GM/R^2 at the surface r = R, and falls off as 1/r^2 outside."
+    },
+    {
+      "id": "phys-06-g02",
+      "title": "Satellite Energies (K, U, E) vs Orbital Radius (r)",
+      "xAxis": "Orbital Radius (r)",
+      "yAxis": "Energy (K, U, E)",
+      "curveType": "Three rectangular hyperbolas: K > 0 in first quadrant; E < 0 and U < 0 in fourth quadrant with |U| = 2|E| = 2K",
+      "equation": "K(r) = +\\frac{GMm}{2r}, \\quad E(r) = -\\frac{GMm}{2r}, \\quad U(r) = -\\frac{GMm}{r}",
+      "slopeInterpretation": "Slope dU/dr = +GMm/r^2 gives the magnitude of gravitational attractive force.",
+      "areaInterpretation": "Not physically significant.",
+      "physicalInterpretation": "As orbital radius r increases, kinetic energy K decreases toward 0, while potential energy U and total energy E both increase (become less negative) toward 0."
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "phys-06-cm01",
+      "topic": "Using Binomial Altitude Approximation g' = g(1 - 2h/R) for Large Heights",
+      "mistake": "Applying g' = g(1 - 2h/R) when h = R/2 or h = R (which absurdly yields g' = 0 or g' = -g!).",
+      "correction": "Use g' = g(1 - 2h/R) ONLY when h << R (e.g., h <= 5% of R, such as 32 km). For h comparable to R (like R/2, R, 2R), always use the exact formula g' = g / (1 + h/R)^2.",
+      "category": "formula-selection"
+    },
+    {
+      "id": "phys-06-cm02",
+      "topic": "Confusing Altitude h with Orbital Radius r = R + h",
+      "mistake": "Writing T^2 ∝ h^3 or v_o ∝ 1/√h using altitude above the surface instead of distance from the planet's centre.",
+      "correction": "In all orbital and Kepler equations, r is measured from the centre of the planet: r = R + h. If a satellite moves from altitude R to altitude 3R, its orbital radius changes from 2R to 4R (a factor of 2, not 3).",
+      "category": "formula-selection"
+    },
+    {
+      "id": "phys-06-cm03",
+      "topic": "Effect of Atmospheric Drag on Satellite Speed",
+      "mistake": "Assuming that atmospheric friction slows down a low-Earth satellite.",
+      "correction": "Atmospheric drag dissipates total mechanical energy E = -GMm/(2r) (making E more negative), which causes the satellite to spiral to a smaller radius r where its kinetic energy K = -E = +GMm/(2r) and speed v_o ACTUALLY INCREASE!",
+      "category": "conceptual"
+    }
+  ],
+  "quickRevision": [
+    "Self-gravitational potential energy of a uniform spherical shell is U_self = -GM^2 / (2R), and of a uniform solid sphere is U_self = -3GM^2 / (5R).",
+    "Work required by an external agent to move a satellite of mass m from circular orbit r_1 to circular orbit r_2 is W_ext = E_2 - E_1 = (GMm/2)(1/r_1 - 1/r_2); work required to lift a stationary mass from surface R to stationary height h = nR is ΔU = n/(n+1) mgR.",
+    "For two stars of masses m_1 and m_2 revolving in circular orbits of total separation d around their common COM, both have the exact same angular velocity ω = √(G(m_1 + m_2)/d^3) and time period T = 2π √(d^3 / G(m_1 + m_2)).",
+    "Trajectory of a body projected horizontally at distance r from planet's centre with speed v: Circular if v = v_o; Elliptical if v < v_e (with v != v_o); Parabolic if v = v_e; Hyperbolic if v > v_e."
+  ],
+  "sources": [
+    {
+      "title": "NTA JEE Main Official Physics Syllabus — Unit 6: Gravitation",
+      "type": "Official Syllabus",
+      "url": "https://jeemain.nta.nic.in/"
+    },
+    {
+      "title": "NCERT Class 11 Physics Part 1 — Chapter 7: Gravitation",
+      "type": "Textbook",
+      "url": "https://ncert.nic.in/textbook.php?keph1=7-7"
+    }
+  ]
+}

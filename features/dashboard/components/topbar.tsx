@@ -8,7 +8,10 @@ import { useAuth } from "@/features/auth/components/auth-provider";
 import { useCommandPalette } from "@/features/search/context/command-palette-context";
 import { useFocusStore } from "@/features/focus/store/focus-store";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+
+import { useBirthdayMode } from "@/features/birthday/context/birthday-mode-context";
+import { Sparkles, Gift } from "lucide-react";
 
 interface TopbarProps {
   title?: string;
@@ -20,6 +23,7 @@ export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
   const { setIsOpen } = useCommandPalette();
   const pathname = usePathname();
   const { isImmersive } = useFocusStore();
+  const { isBirthdayModeActive, isBirthdayToday, openRecapModal } = useBirthdayMode();
   
   const displayName = profile?.full_name || user?.email?.split('@')[0] || "Student";
   const initials = displayName.substring(0, 1).toUpperCase();
@@ -47,10 +51,20 @@ export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
       <div className="w-full flex items-center justify-between gap-4 h-16 shrink-0">
         <div className="flex items-center gap-4">
           <MobileNav />
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-3">
             <h1 className="text-sm font-medium text-muted-foreground">
               {greeting}, <span className="text-foreground font-semibold">{displayName}</span>
             </h1>
+            {(isBirthdayModeActive || isBirthdayToday) && (
+              <button
+                onClick={openRecapModal}
+                className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-emerald-500/15 text-amber-600 dark:text-amber-300 border border-amber-500/30 shadow-[0_0_12px_rgba(245,158,11,0.2)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                title="Replay Your Birthday Year Recap"
+              >
+                <Sparkles className="w-3 h-3 text-amber-500 animate-pulse" />
+                <span>Birthday Scholar 🎂</span>
+              </button>
+            )}
           </div>
           {title && (
             <div className="md:hidden">
@@ -60,6 +74,15 @@ export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          {(isBirthdayModeActive || isBirthdayToday) && (
+            <button
+              onClick={openRecapModal}
+              className="md:hidden flex items-center justify-center p-2 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/30"
+              title="Birthday Recap"
+            >
+              <Gift className="w-4 h-4 text-amber-400" />
+            </button>
+          )}
           <Button 
             variant="ghost" 
             className="text-muted-foreground hover:bg-muted/50 hover:text-foreground hidden sm:flex items-center gap-2 rounded-full px-4"

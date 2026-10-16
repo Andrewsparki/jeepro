@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PrivateChatService } from "../services/private-chat.service";
 import { PrivateMessage, DirectUser } from "../types/private-chat.types";
@@ -9,6 +9,7 @@ import { RealtimeChannel } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { dispatchInteractionSound } from "@/lib/sound-engine";
 import { isModerationError } from "../utils/moderation";
+import { globalPresence } from "../services/presence-service";
 
 function formatErrorDetails(err: unknown) {
   let message = "An unexpected error occurred.";
@@ -68,7 +69,6 @@ export function usePrivateChat(otherUserId: string) {
 
   const isNearBottomRef = useRef(true);
   const channelRef = useRef<RealtimeChannel | null>(null);
-  const globalPresenceChannelRef = useRef<RealtimeChannel | null>(null);
   const messagesRef = useRef<PrivateMessage[]>([]);
   const otherUserRef = useRef<DirectUser | null>(null);
   const profileRef = useRef(profile);
@@ -130,19 +130,7 @@ export function usePrivateChat(otherUserId: string) {
 
   useEffect(() => {
     if (!user || !otherUserId) return;
-
-    let cancelled = false;
-
-    const loadConversation = async () => {
-      await initConversation();
-      if (cancelled) return;
-    };
-
-    void loadConversation();
-
-    return () => {
-      cancelled = true;
-    };
+    void initConversation();
   }, [user, otherUserId, initConversation]);
 
   // 2. Cursor pagination for loading older history
@@ -411,48 +399,14 @@ export function usePrivateChat(otherUserId: string) {
   useEffect(() => {
     if (!user?.id || !otherUserId) return;
 
-    const supabase = createClient();
-
-    if (globalPresenceChannelRef.current) {
-      globalPresenceChannelRef.current.unsubscribe();
-      supabase.removeChannel(globalPresenceChannelRef.current);
-      globalPresenceChannelRef.current = null;
-    }
-
-    // Clean up any existing active/joined channels for jee_global_chat before adding presence listeners
-    const stalePresence = supabase
-      .getChannels()
-      .filter((c: RealtimeChannel) => c.topic === "realtime:jee_global_chat");
-    stalePresence.forEach((c: RealtimeChannel) => {
-      c.unsubscribe();
-      supabase.removeChannel(c);
+    // Use the shared presence service instead of creating a competing channel
+    const unsubscribe = globalPresence.subscribe((users) => {
+      const isOnline = users.some((u) => u.user_id === otherUserId);
+      setIsOtherUserOnline((prev) => prev || isOnline);
     });
-
-    // Shared global presence channel where active students broadcast presence
-    const presenceChannel = supabase.channel("jee_global_chat");
-    globalPresenceChannelRef.current = presenceChannel;
-
-    presenceChannel.on("presence", { event: "sync" }, () => {
-      const state = presenceChannel.presenceState();
-      const onlineIds = new Set<string>();
-      Object.values(state).forEach((presences: unknown) => {
-        if (Array.isArray(presences)) {
-          presences.forEach((p: unknown) => {
-            const pres = p as { user_id?: string };
-            if (pres?.user_id) onlineIds.add(pres.user_id);
-          });
-        }
-      });
-
-      setIsOtherUserOnline((prev) => prev || onlineIds.has(otherUserId));
-    });
-
-    presenceChannel.subscribe();
 
     return () => {
-      presenceChannel.unsubscribe();
-      supabase.removeChannel(presenceChannel);
-      globalPresenceChannelRef.current = null;
+      unsubscribe();
     };
   }, [user?.id, otherUserId]);
 
@@ -467,23 +421,44 @@ export function usePrivateChat(otherUserId: string) {
     [conversationId]
   );
 
-  return {
-    conversationId,
-    otherUser,
-    friendshipStatus,
-    messages,
-    isLoading,
-    isLoadingOlder,
-    hasMore,
-    isSending,
-    error,
-    isOtherUserOnline,
-    unreadCountBelow,
-    sendMessage,
-    deleteMessage,
-    loadOlderMessages,
-    setNearBottom,
-    retry: initConversation,
-    currentUserId: user?.id,
-  };
+  return useMemo(
+    () => ({
+      conversationId,
+      otherUser,
+      friendshipStatus,
+      messages,
+      isLoading,
+      isLoadingOlder,
+      hasMore,
+      isSending,
+      error,
+      isOtherUserOnline,
+      unreadCountBelow,
+      sendMessage,
+      deleteMessage,
+      loadOlderMessages,
+      setNearBottom,
+      retry: initConversation,
+      currentUserId: user?.id,
+    }),
+    [
+      conversationId,
+      otherUser,
+      friendshipStatus,
+      messages,
+      isLoading,
+      isLoadingOlder,
+      hasMore,
+      isSending,
+      error,
+      isOtherUserOnline,
+      unreadCountBelow,
+      sendMessage,
+      deleteMessage,
+      loadOlderMessages,
+      setNearBottom,
+      initConversation,
+      user?.id,
+    ]
+  );
 }

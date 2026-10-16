@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { GroupMessage, GroupRole } from "../types/groups.types";
 import { Button } from "@/components/ui/button";
 import { Trash2, Loader2, MessageSquare } from "lucide-react";
@@ -123,7 +124,7 @@ export function GroupChatMessageList({
           >
             <div className="h-7 w-7 rounded-full overflow-hidden border border-border/60 shrink-0 mt-0.5 bg-muted flex items-center justify-center text-[10px] font-bold text-foreground">
               {sender?.avatar_url ? (
-                <img src={sender.avatar_url} alt="" className="h-full w-full object-cover" />
+                <Image src={sender.avatar_url} alt="" width={28} height={28} unoptimized className="h-full w-full object-cover" />
               ) : (
                 <span>{initials}</span>
               )}

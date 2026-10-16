@@ -4,9 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, Loader2, CheckCircle2, Mail, KeyRound, ShieldCheck } from "lucide-react";
+import { ArrowRight, Loader2, CheckCircle2, Mail, ShieldCheck } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 
 export function ForgotPasswordForm() {
@@ -38,19 +37,16 @@ export function ForgotPasswordForm() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex items-center justify-center">
-      <div className="relative w-full max-w-[420px] rounded-[32px] p-7 sm:p-9 bg-[#070E1E]/90 backdrop-blur-2xl border border-white/[0.12] shadow-[0_25px_80px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.15)] overflow-hidden space-y-6">
-        {/* Minimalist Top Specular Line */}
-        <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
-
+      <div className="relative w-full max-w-[430px] rounded-2xl sm:rounded-3xl p-7 sm:p-9 bg-[#121722]/90 border border-[#2B3342] shadow-[0_25px_80px_rgba(0,0,0,0.8)] overflow-hidden space-y-6">
         {isSuccess ? (
           <div className="text-center space-y-5 py-2">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_30px_rgba(85,230,165,0.25)] flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-7 h-7" />
+            <div className="w-12 h-12 rounded-xl bg-[#5DC98B]/15 text-[#5DC98B] border border-[#5DC98B]/30 flex items-center justify-center mx-auto shadow-[0_0_15px_rgba(93,201,139,0.25)]">
+              <CheckCircle2 className="w-6 h-6" />
             </div>
 
             <div className="space-y-1.5">
-              <h2 className="text-2xl font-bold tracking-tight text-white">Check your email</h2>
-              <p className="text-xs text-[#98A0B3] font-normal leading-relaxed">
+              <h2 className="text-2xl font-bold tracking-tight text-[#F5F7FB]">Check your email</h2>
+              <p className="text-xs text-[#A4ADBB] font-normal leading-relaxed">
                 We&apos;ve sent a secure password recovery link to your inbox.
               </p>
             </div>
@@ -58,7 +54,7 @@ export function ForgotPasswordForm() {
             <Link href="/login" className="block pt-2">
               <Button 
                 variant="outline" 
-                className="w-full h-11 text-xs sm:text-sm font-medium bg-white/[0.035] hover:bg-white/[0.07] border-white/10 text-slate-200 rounded-xl"
+                className="w-full h-11 text-xs sm:text-sm font-bold bg-[#78A9FF] hover:bg-[#A8C5FF] text-[#0B0D12] border-transparent rounded-xl transition-colors shadow-[0_2px_12px_rgba(120,169,255,0.3)]"
               >
                 Return to sign in
               </Button>
@@ -66,81 +62,63 @@ export function ForgotPasswordForm() {
           </div>
         ) : (
           <>
-            {/* Header with Icon */}
-            <div className="flex flex-col items-center text-center space-y-2">
-              <div className="relative w-13 h-13 rounded-2xl bg-white/[0.06] border border-white/15 shadow-[0_0_25px_rgba(114,87,255,0.25)] flex items-center justify-center p-1 backdrop-blur-md">
-                <div className="w-full h-full rounded-[14px] bg-[#081020]/90 flex items-center justify-center text-cyan-400">
-                  <KeyRound className="w-6 h-6 drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
-                </div>
-              </div>
-
-              <div className="pt-1.5 space-y-1">
-                <h2 className="text-2xl font-bold tracking-tight text-white">
-                  Reset password
-                </h2>
-                <p className="text-xs text-[#98A0B3] font-medium">
-                  We&apos;ll send a secure reset link to your email.
-                </p>
-              </div>
+            <div className="text-center space-y-1.5">
+              <h2 className="text-2xl font-bold tracking-tight text-white">Reset password</h2>
+              <p className="text-xs text-zinc-400 font-normal">
+                Enter your registered email address to receive recovery instructions.
+              </p>
             </div>
 
-            {/* Reset Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-xs font-medium text-slate-300">
-                  Email
+                <Label htmlFor="email" className="text-xs font-mono uppercase text-zinc-300">
+                  Email Address
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" />
                   <Input 
                     id="email" 
                     name="email"
                     type="email" 
                     placeholder="you@example.com" 
                     required 
-                    className="bg-black/25 hover:bg-black/35 border-white/10 focus:border-[#1EA7FF]/70 focus:bg-black/45 rounded-xl h-11 text-xs sm:text-sm text-white placeholder:text-slate-500 transition-all pl-10 pr-4 shadow-inner backdrop-blur-md"
+                    className="bg-black border border-white/[0.12] focus:border-white focus:ring-1 focus:ring-white rounded-xl h-11 text-xs sm:text-sm text-white placeholder:text-zinc-500 pl-10 pr-4"
                   />
                 </div>
               </div>
 
               {error && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-3 text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl"
-                >
+                <div className="p-3 text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl">
                   {error}
-                </motion.div>
+                </div>
               )}
 
               <Button 
                 type="submit" 
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-[#1EA7FF] via-[#5260FF] to-[#7257FF] hover:from-[#38bdf8] hover:to-[#818cf8] text-white font-semibold text-xs sm:text-sm shadow-[0_4px_25px_rgba(30,167,255,0.35)] hover:shadow-[0_6px_35px_rgba(114,87,255,0.5)] transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98] group" 
+                className="w-full h-11 rounded-xl bg-[#78A9FF] hover:bg-[#A8C5FF] text-[#0B0D12] font-bold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] shadow-[0_2px_14px_rgba(120,169,255,0.35)]" 
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-[#0B0D12]" />
                 ) : (
                   <>
-                    <span>Send Reset Link</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    <span>Send recovery link</span>
+                    <ArrowRight className="w-4 h-4 text-[#0B0D12] group-hover:translate-x-0.5 transition-transform" />
                   </>
                 )}
               </Button>
             </form>
 
-            {/* Back to sign in */}
-            <p className="text-center text-xs text-[#98A0B3]">
+            <p className="text-center text-xs text-[#A4ADBB]">
               Remember your password?{" "}
-              <Link href="/login" className="font-semibold text-[#7257FF] hover:text-[#C958FF] transition-colors">
+              <Link href="/login" className="font-semibold text-zinc-200 hover:text-white underline underline-offset-4 transition-colors">
                 Sign in
               </Link>
             </p>
 
-            {/* Security Indicator */}
-            <div className="pt-2.5 border-t border-white/[0.06] flex items-center justify-center gap-1.5 text-[11px] text-slate-400/80">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Secure. Private. Built for aspirants.</span>
+            <div className="pt-3 border-t border-white/[0.06] flex items-center justify-center gap-1.5 text-[11px] font-mono text-[#A4ADBB]">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#78A9FF]" />
+              <span>ENCRYPTED RECOVERY • NO SPAM</span>
             </div>
           </>
         )}

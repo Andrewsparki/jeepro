@@ -108,7 +108,6 @@ function checkIsScrollLocked(): boolean {
  */
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAdminRoute = pathname?.startsWith("/admin") ?? false;
 
   const locomotiveRef = useRef<LocomotiveScroll | null>(null);
   const isStoppedRef = useRef(false);
@@ -149,99 +148,105 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     thumbRef.current.style.height = `${thumbH}px`;
   }, []);
 
-  // Initialize Locomotive Scroll on mount
+  // Initialize Locomotive Scroll asynchronously after first painted frame
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Respect user reduced-motion preference
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    if (prefersReducedMotion) {
-      return;
-    }
-
-    const locomotive = new LocomotiveScroll({
-      lenisOptions: {
-        lerp: 0.1, // Locomotive's signature smooth inertia ratio
-        duration: 1.1,
-        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Clean exponential deceleration
-        orientation: "vertical",
-        gestureOrientation: "vertical",
-        smoothWheel: true,
-        wheelMultiplier: 1.0,
-        touchMultiplier: 1.5,
-        infinite: false,
-        autoResize: true,
-      },
-      autoStart: true,
-    });
-
-    locomotiveRef.current = locomotive;
-    isStoppedRef.current = false;
-
-    // Hook into Lenis scroll events for the floating scrollbar indicator
-    const lenis = locomotive.lenisInstance;
-    if (lenis) {
-      lenis.on("scroll", (e: { scroll: number; limit: number }) => {
-        updateThumbPosition(e.scroll, e.limit);
-      });
-    }
-
-    // Modal scroll lock synchronizer: pauses locomotive when dialogs/drawers lock body scroll,
-    // and reliably restarts locomotive when all locks are released.
-    const syncScrollLock = () => {
-      if (!locomotiveRef.current) return;
-      const locked = checkIsScrollLocked();
-
-      if (locked) {
-        if (!isStoppedRef.current) {
-          locomotiveRef.current.stop();
-          isStoppedRef.current = true;
-        }
-      } else {
-        if (isStoppedRef.current) {
-          locomotiveRef.current.start();
-          isStoppedRef.current = false;
-        }
-      }
-    };
-
-    const mutationObserver = new MutationObserver(() => {
-      syncScrollLock();
-    });
-
-    mutationObserver.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["style", "class", "data-scroll-locked"],
-    });
-
-    mutationObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["style", "data-scroll-locked"],
-    });
-
-    // Content resize observer: detects DOM height shifts (e.g. Leaderboard tab changes, data loading)
-    // and updates Locomotive dimensions immediately via requestAnimationFrame
+    let initTimer: ReturnType<typeof setTimeout> | null = null;
+    let locomotive: LocomotiveScroll | null = null;
+    let mutationObserver: MutationObserver | null = null;
+    let resizeObserver: ResizeObserver | null = null;
     let resizeRafId: number | null = null;
-    const resizeObserver = new ResizeObserver(() => {
-      if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
-      resizeRafId = requestAnimationFrame(() => {
-        resizeRafId = null;
-        if (locomotiveRef.current && !isStoppedRef.current) {
-          locomotiveRef.current.resize();
-        }
-      });
-    });
 
-    resizeObserver.observe(document.body);
+    initTimer = setTimeout(() => {
+      // Respect user reduced-motion preference
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      if (prefersReducedMotion) {
+        return;
+      }
+
+      locomotive = new LocomotiveScroll({
+        lenisOptions: {
+          lerp: 0.1, // Locomotive's signature smooth inertia ratio
+          duration: 1.1,
+          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Clean exponential deceleration
+          orientation: "vertical",
+          gestureOrientation: "vertical",
+          smoothWheel: true,
+          wheelMultiplier: 1.0,
+          touchMultiplier: 1.5,
+          infinite: false,
+          autoResize: true,
+        },
+        autoStart: true,
+      });
+
+      locomotiveRef.current = locomotive;
+      isStoppedRef.current = false;
+
+      // Hook into Lenis scroll events for the floating scrollbar indicator
+      const lenis = locomotive.lenisInstance;
+      if (lenis) {
+        lenis.on("scroll", (e: { scroll: number; limit: number }) => {
+          updateThumbPosition(e.scroll, e.limit);
+        });
+      }
+
+      // Modal scroll lock synchronizer
+      const syncScrollLock = () => {
+        if (!locomotiveRef.current) return;
+        const locked = checkIsScrollLocked();
+
+        if (locked) {
+          if (!isStoppedRef.current) {
+            locomotiveRef.current.stop();
+            isStoppedRef.current = true;
+          }
+        } else {
+          if (isStoppedRef.current) {
+            locomotiveRef.current.start();
+            isStoppedRef.current = false;
+          }
+        }
+      };
+
+      mutationObserver = new MutationObserver(() => {
+        syncScrollLock();
+      });
+
+      mutationObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["style", "class", "data-scroll-locked"],
+      });
+
+      mutationObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["style", "data-scroll-locked"],
+      });
+
+      // Content resize observer
+      resizeObserver = new ResizeObserver(() => {
+        if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
+        resizeRafId = requestAnimationFrame(() => {
+          resizeRafId = null;
+          if (locomotiveRef.current && !isStoppedRef.current) {
+            locomotiveRef.current.resize();
+          }
+        });
+      });
+
+      resizeObserver.observe(document.body);
+    }, 0);
 
     return () => {
-      mutationObserver.disconnect();
-      resizeObserver.disconnect();
+      if (initTimer) clearTimeout(initTimer);
+      if (mutationObserver) mutationObserver.disconnect();
+      if (resizeObserver) resizeObserver.disconnect();
       if (resizeRafId !== null) cancelAnimationFrame(resizeRafId);
-      locomotive.destroy();
+      if (locomotive) locomotive.destroy();
       locomotiveRef.current = null;
       isStoppedRef.current = false;
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
@@ -250,7 +255,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
 
   // Route change: immediately reset scroll, clear any orphaned locks, and recalculate heights
   useEffect(() => {
-    if (isAdminRoute || typeof window === "undefined") return;
+    if (typeof window === "undefined") return;
 
     // Clear any orphaned lock left by unmounted modals from the previous route
     const hasOpenDialog = Boolean(
@@ -384,10 +389,6 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
   };
-
-  if (isAdminRoute) {
-    return <>{children}</>;
-  }
 
   return (
     <SmoothScrollContext.Provider value={contextValue}>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, UIEvent } from "react";
+import React, { useRef, useEffect, useCallback, UIEvent } from "react";
 import Link from "next/link";
 import { PrivateMessage, DirectUser } from "../types/private-chat.types";
 import {
@@ -66,6 +66,8 @@ function formatTime(isoString: string): string {
   }
 }
 
+const SUB_SCROLL_CONFIG = { overscroll: true };
+
 export function PrivateChatMessageList({
   messages,
   otherUser,
@@ -81,9 +83,9 @@ export function PrivateChatMessageList({
   setNearBottom,
   onRetry,
 }: PrivateChatMessageListProps) {
-  const { containerRef, contentRef, resize: resizeScroll } = useSubSmoothScroll<HTMLDivElement>({
-    overscroll: true,
-  });
+  const { containerRef, contentRef, resize: resizeScroll } = useSubSmoothScroll<HTMLDivElement>(
+    SUB_SCROLL_CONFIG
+  );
   const bottomAnchorRef = useRef<HTMLDivElement>(null);
   const isInitialScrollDoneRef = useRef(false);
   const prevScrollHeightRef = useRef<number>(0);
@@ -92,13 +94,13 @@ export function PrivateChatMessageList({
     resizeScroll();
   }, [messages.length, resizeScroll]);
 
-  const scrollToBottom = (smooth = true) => {
+  const scrollToBottom = useCallback((smooth = true) => {
     if (bottomAnchorRef.current) {
       bottomAnchorRef.current.scrollIntoView({
         behavior: smooth ? "smooth" : "auto",
       });
     }
-  };
+  }, []);
 
   // 1. Initial scroll to bottom
   useEffect(() => {
@@ -106,14 +108,14 @@ export function PrivateChatMessageList({
       scrollToBottom(false);
       isInitialScrollDoneRef.current = true;
     }
-  }, [isLoading, messages.length]);
+  }, [isLoading, messages.length, scrollToBottom]);
 
   // 2. Adjust scroll offset after loading older messages
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !isLoadingOlder) return;
     prevScrollHeightRef.current = container.scrollHeight;
-  }, [isLoadingOlder]);
+  }, [isLoadingOlder, containerRef]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -124,7 +126,7 @@ export function PrivateChatMessageList({
       }
       prevScrollHeightRef.current = 0;
     }
-  }, [messages.length]);
+  }, [messages.length, containerRef]);
 
   // 3. Scroll proximity detection
   const handleScroll = (e: UIEvent<HTMLDivElement>) => {
@@ -144,7 +146,7 @@ export function PrivateChatMessageList({
     if (distanceToBottom < 100) {
       scrollToBottom(true);
     }
-  }, [messages]);
+  }, [messages, containerRef, scrollToBottom]);
 
   if (isLoading) {
     return (

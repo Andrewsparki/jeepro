@@ -11,7 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer
 } from "recharts";
-import { format, subDays, startOfDay, isSameDay } from "date-fns";
+import { format, subDays, startOfDay } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -29,25 +29,31 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
     const today = startOfDay(new Date());
     const days = timeRange === "7D" ? 7 : 30;
 
+    const dateMap = new Map<string, { date: Date; displayDate: string; count: number }>();
     const chartData: { date: Date; displayDate: string; count: number }[] = [];
 
-    // Generate dates
+    // Pre-populate time series
     for (let i = days - 1; i >= 0; i--) {
-      chartData.push({
-        date: subDays(today, i),
-        displayDate: format(subDays(today, i), timeRange === "7D" ? "EEE" : "MMM d"),
-        count: 0
-      });
+      const date = subDays(today, i);
+      const item = {
+        date,
+        displayDate: format(date, timeRange === "7D" ? "EEE" : "MMM d"),
+        count: 0,
+      };
+      dateMap.set(format(date, "yyyy-MM-dd"), item);
+      chartData.push(item);
     }
 
-    // Populate data
-    sessions.forEach(session => {
-      const sessionDate = startOfDay(new Date(session.started_at));
-      const dayData = chartData.find(d => isSameDay(d.date, sessionDate));
-      if (dayData) {
-        dayData.count += 1;
+    // Populate data with O(1) map indexing
+    for (const session of sessions) {
+      if (session.started_at) {
+        const key = format(new Date(session.started_at), "yyyy-MM-dd");
+        const entry = dateMap.get(key);
+        if (entry) {
+          entry.count += 1;
+        }
       }
-    });
+    }
 
     return chartData;
   }, [sessions, timeRange]);
@@ -55,10 +61,10 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
   const maxCount = Math.max(...data.map(d => d.count), 1);
 
   return (
-    <GlassCard hoverTint="purple" className="flex flex-col h-[400px]">
+    <GlassCard hoverTint="emerald" className="flex flex-col h-[400px]">
       <div className="flex items-center justify-between mb-6 relative z-10 px-6 pt-6">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-accent/10 rounded-xl text-accent shadow-[0_0_15px_rgba(79,70,229,0.15)] border border-accent/20">
+          <div className="p-2.5 bg-accent/10 rounded-xl text-accent shadow-[0_0_15px_rgba(120,169,255,0.2)] border border-accent/20">
             <CalendarDays className="w-5 h-5" />
           </div>
           <h3 className="font-bold text-xl tracking-tight text-foreground">Sessions Per Day</h3>

@@ -14,7 +14,7 @@ interface LeaderboardRowProps {
   isCinematic?: boolean;
 }
 
-export function LeaderboardRow({
+export const LeaderboardRow = React.memo(function LeaderboardRow({
   entry,
   onUserClick,
   index = 0,
@@ -166,4 +166,4 @@ export function LeaderboardRow({
     </motion.div>
   </ContextMenuTarget>
   );
-}
+});

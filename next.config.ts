@@ -15,6 +15,13 @@ const nextConfig: NextConfig = {
       "lucide-react",
       "recharts",
       "framer-motion",
+      "date-fns",
+      "canvas-confetti",
+      "zustand",
+      "@radix-ui/react-slot",
+      "cmdk",
+      "clsx",
+      "tailwind-merge",
     ],
   },
 };

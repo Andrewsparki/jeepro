@@ -1,8 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
-import { usePerformance } from "@/lib/performance-context";
+import React, { createContext, useContext, useRef, useState } from "react";
 
 interface LightingContextType {
   isTouch: boolean;
@@ -18,63 +16,26 @@ export function useLighting() {
   return useContext(LightingContext);
 }
 
-import { CustomCursor } from "@/components/ui/custom-cursor";
+function getIsTouchOrReducedMotion() {
+  if (typeof window === "undefined") return false;
+  return Boolean(
+    window.matchMedia("(pointer: coarse)").matches ||
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
 
 export function LightingProvider({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const mouse = useRef({ x: 0, y: 0 });
-  const [isTouch, setIsTouch] = useState(false);
-  const { enableMouseLighting } = usePerformance();
-  const isAdminRoute = pathname?.startsWith("/admin") ?? false;
-
-  useEffect(() => {
-    if (isAdminRoute) return;
-    const touch = window.matchMedia("(pointer: coarse)").matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (touch || isReducedMotion || !enableMouseLighting) {
-      const t = setTimeout(() => setIsTouch(true), 0);
-      return () => clearTimeout(t);
-    }
-
-    let cachedZoom = 1;
-    const updateZoom = () => {
-      const zoomStr = typeof window !== "undefined" ? window.getComputedStyle(document.documentElement).zoom : "";
-      let zoom = 1;
-      if (zoomStr) {
-        const val = parseFloat(zoomStr);
-        if (!isNaN(val)) {
-          zoom = zoomStr.includes("%") ? val / 100 : (val > 2 ? val / 100 : val);
-        }
-      }
-      cachedZoom = zoom;
-    };
-
-    updateZoom();
-    window.addEventListener("resize", updateZoom, { passive: true });
-
-    const onMouseMove = (e: MouseEvent) => {
-      mouse.current = { x: e.clientX / cachedZoom, y: e.clientY / cachedZoom };
-    };
-
-    window.addEventListener("mousemove", onMouseMove, { passive: true });
-
-    return () => {
-      window.removeEventListener("resize", updateZoom);
-      window.removeEventListener("mousemove", onMouseMove);
-    };
-  }, [enableMouseLighting]);
+  const [isTouch] = useState(getIsTouchOrReducedMotion);
 
   const contextValue = React.useMemo(() => ({ isTouch, mouseRef: mouse }), [isTouch]);
 
-  if (isAdminRoute) {
-    return <>{children}</>;
-  }
 
   return (
     <LightingContext.Provider value={contextValue}>
       <div className="min-h-screen w-full">
-        <CustomCursor />
         {children}
       </div>
     </LightingContext.Provider>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   LeaderboardScope,
   LeaderboardPeriod,
@@ -57,21 +57,27 @@ export function useLeaderboard() {
     };
   }, [scope, period]);
 
-  const handleScopeChange = (newScope: LeaderboardScope) => {
-    if (newScope !== scope) {
-      setScope(newScope);
-      setIsLoading(true);
-    }
-  };
+  const handleScopeChange = useCallback((newScope: LeaderboardScope) => {
+    setScope((prev) => {
+      if (prev !== newScope) {
+        setIsLoading(true);
+        return newScope;
+      }
+      return prev;
+    });
+  }, []);
 
-  const handlePeriodChange = (newPeriod: LeaderboardPeriod) => {
-    if (newPeriod !== period) {
-      setPeriod(newPeriod);
-      setIsLoading(true);
-    }
-  };
+  const handlePeriodChange = useCallback((newPeriod: LeaderboardPeriod) => {
+    setPeriod((prev) => {
+      if (prev !== newPeriod) {
+        setIsLoading(true);
+        return newPeriod;
+      }
+      return prev;
+    });
+  }, []);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setIsRefreshing(true);
     const fetchId = ++activeFetchIdRef.current;
     try {
@@ -94,12 +100,12 @@ export function useLeaderboard() {
         setIsRefreshing(false);
       }
     }
-  };
+  }, [scope, period]);
 
   const refreshRef = useRef(refresh);
   useEffect(() => {
     refreshRef.current = refresh;
-  });
+  }, [refresh]);
 
   // Realtime subscription for friendships when in 'friends' scope
   useEffect(() => {
@@ -126,16 +132,30 @@ export function useLeaderboard() {
     };
   }, [scope]);
 
-  return {
-    scope,
-    setScope: handleScopeChange,
-    period,
-    setPeriod: handlePeriodChange,
-    entries,
-    userRank,
-    isLoading,
-    isRefreshing,
-    error,
-    refresh,
-  };
+  return useMemo(
+    () => ({
+      scope,
+      setScope: handleScopeChange,
+      period,
+      setPeriod: handlePeriodChange,
+      entries,
+      userRank,
+      isLoading,
+      isRefreshing,
+      error,
+      refresh,
+    }),
+    [
+      scope,
+      handleScopeChange,
+      period,
+      handlePeriodChange,
+      entries,
+      userRank,
+      isLoading,
+      isRefreshing,
+      error,
+      refresh,
+    ]
+  );
 }

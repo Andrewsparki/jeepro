@@ -17,6 +17,7 @@ export interface UserSettings {
 
   // Appearance & Viewports
   activeTheme: "midnight" | "amoled" | "titanium" | "light";
+  ambientParticles: boolean;
   viewStyle: "carousel" | "grid";
   detailType: "page" | "modal";
   useFormulas: boolean;
@@ -32,6 +33,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   soundVolume: 0.8,
   breakReminder: true,
   activeTheme: "midnight",
+  ambientParticles: true,
   viewStyle: "carousel",
   detailType: "page",
   useFormulas: true,
@@ -73,6 +75,7 @@ const SETTING_LABELS: Record<keyof UserSettings, string> = {
   soundVolume: "Master Interaction Volume",
   breakReminder: "Pomodoro Reset Reminders",
   activeTheme: "Interface Theme",
+  ambientParticles: "Ambient Particles",
   viewStyle: "Study View Layout",
   detailType: "Detail View Presentation",
   useFormulas: "Formula Anchor Cards",
@@ -111,7 +114,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     dispatchInteractionSound(event, settings.sounds);
   }, [settings.sounds]);
 
-  const updateSetting = <K extends keyof UserSettings>(
+  const updateSetting = useCallback(<K extends keyof UserSettings>(
     key: K,
     value: UserSettings[K]
   ) => {
@@ -147,9 +150,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         toast.info(`${label} set to ${String(value)}`);
       }
     }
-  };
+  }, [setTheme, settings.sounds, settings.showNotifications]);
 
-  const resetSettings = () => {
+  const resetSettings = useCallback(() => {
     setSettings(DEFAULT_SETTINGS);
     try {
       localStorage.removeItem(SETTINGS_STORAGE_KEY);
@@ -159,18 +162,21 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     setTheme(DEFAULT_SETTINGS.activeTheme);
     playSound("danger");
     toast.success("Settings restored to defaults");
-  };
+  }, [setTheme, playSound]);
+
+  const contextValue = React.useMemo(
+    () => ({
+      settings: mounted ? settings : DEFAULT_SETTINGS,
+      updateSetting,
+      resetSettings,
+      playSound,
+      playInteractionSound,
+    }),
+    [mounted, settings, updateSetting, resetSettings, playSound, playInteractionSound]
+  );
 
   return (
-    <SettingsContext.Provider
-      value={{
-        settings: mounted ? settings : DEFAULT_SETTINGS,
-        updateSetting,
-        resetSettings,
-        playSound,
-        playInteractionSound,
-      }}
-    >
+    <SettingsContext.Provider value={contextValue}>
       {children}
     </SettingsContext.Provider>
   );

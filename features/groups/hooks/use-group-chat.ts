@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { GroupsService } from "../services/groups.service";
 import { GroupMessage } from "../types/groups.types";
@@ -8,6 +8,8 @@ import { useAuth } from "@/features/auth/components/auth-provider";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { dispatchInteractionSound } from "@/lib/sound-engine";
+
+const groupSenderProfileCache = new Map<string, { id: string; full_name: string | null; avatar_url: string | null }>();
 
 export function useGroupChat(groupId: string) {
   const { user, profile } = useAuth();
@@ -24,11 +26,24 @@ export function useGroupChat(groupId: string) {
 
   useEffect(() => {
     messagesRef.current = messages;
+    // Pre-populate cache from existing loaded messages
+    messages.forEach((m) => {
+      if (m.sender && m.sender.id) {
+        groupSenderProfileCache.set(m.sender.id, m.sender);
+      }
+    });
   }, [messages]);
 
   useEffect(() => {
     profileRef.current = profile;
-  }, [profile]);
+    if (user?.id && profile?.full_name) {
+      groupSenderProfileCache.set(user.id, {
+        id: user.id,
+        full_name: profile.full_name,
+        avatar_url: profile.avatar_url || null,
+      });
+    }
+  }, [profile, user]);
 
   // 1. Initial message batch load
   const loadInitialMessages = useCallback(async () => {
@@ -50,35 +65,12 @@ export function useGroupChat(groupId: string) {
   }, [user, groupId]);
 
   useEffect(() => {
-    let ignore = false;
-    async function init() {
-      if (!user || !groupId) {
-        setIsLoading(false);
-        return;
-      }
-      try {
-        const result = await GroupsService.getMessages(groupId, 30);
-        if (!ignore) {
-          setMessages(result.messages);
-          setHasMore(result.hasMore);
-        }
-      } catch (err: unknown) {
-        if (!ignore) {
-          console.error("[useGroupChat] Load messages error:", err);
-          const msg = err instanceof Error ? err.message : "Failed to load messages.";
-          setError(msg);
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
+    if (user && groupId) {
+      void loadInitialMessages();
+    } else {
+      setIsLoading(false);
     }
-    void init();
-    return () => {
-      ignore = true;
-    };
-  }, [user, groupId]);
+  }, [user, groupId, loadInitialMessages]);
 
   // 2. Cursor pagination for loading older history
   const loadOlderMessages = useCallback(async () => {
@@ -210,8 +202,10 @@ export function useGroupChat(groupId: string) {
             full_name: profileRef.current?.full_name || "You",
             avatar_url: profileRef.current?.avatar_url || null,
           };
+        } else if (groupSenderProfileCache.has(rawNew.sender_id)) {
+          sender = groupSenderProfileCache.get(rawNew.sender_id) || null;
         } else {
-          // Fetch sender profile if not current user
+          // Fetch sender profile if not cached
           const { data: senderProfile } = await supabase
             .from("profiles")
             .select("id, full_name, avatar_url")
@@ -220,6 +214,7 @@ export function useGroupChat(groupId: string) {
 
           if (senderProfile) {
             sender = senderProfile;
+            groupSenderProfileCache.set(rawNew.sender_id, senderProfile);
           }
         }
 
@@ -272,16 +267,30 @@ export function useGroupChat(groupId: string) {
     };
   }, [user, groupId]);
 
-  return {
-    messages,
-    isLoading,
-    isLoadingOlder,
-    hasMore,
-    isSending,
-    error,
-    sendMessage,
-    deleteMessage,
-    loadOlderMessages,
-    refresh: loadInitialMessages,
-  };
+  return useMemo(
+    () => ({
+      messages,
+      isLoading,
+      isLoadingOlder,
+      hasMore,
+      isSending,
+      error,
+      sendMessage,
+      deleteMessage,
+      loadOlderMessages,
+      refresh: loadInitialMessages,
+    }),
+    [
+      messages,
+      isLoading,
+      isLoadingOlder,
+      hasMore,
+      isSending,
+      error,
+      sendMessage,
+      deleteMessage,
+      loadOlderMessages,
+      loadInitialMessages,
+    ]
+  );
 }

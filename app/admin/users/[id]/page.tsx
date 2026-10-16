@@ -1,18 +1,39 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getUserDetail } from "@/features/admin/services/admin-users.service";
-import { ArrowLeft, Mail, Calendar, Clock, BookOpen, Target, Activity } from "lucide-react";
+import {
+  ArrowLeft,
+  Mail,
+  Calendar,
+  Clock,
+  BookOpen,
+  Target,
+  Activity,
+  ShieldCheck,
+  Zap,
+  Globe,
+  AlertTriangle,
+  CheckCircle2,
+  Lock,
+} from "lucide-react";
 import { AdminUserModerationTrigger } from "@/features/admin/components/admin-user-moderation-trigger";
 import {
   AdminStagger,
   AdminMotionItem,
 } from "@/features/admin/components/admin-motion-wrapper";
+import { getAuthUser } from "@/lib/supabase/server";
+import { logAuditEvent } from "@/features/admin/services/audit-log.service";
+import { pseudonymiseUserId } from "@/features/analytics/services/telemetry.service";
+import { getUserTelemetryInsight } from "@/features/analytics/services/server-analytics.service";
 
 function formatDuration(seconds: number): string {
+  if (!seconds || seconds <= 0) return "0s";
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
   if (hours > 0) return `${hours}h ${minutes}m`;
-  return `${minutes}m`;
+  if (minutes > 0) return `${minutes}m ${secs}s`;
+  return `${secs}s`;
 }
 
 function formatDate(dateStr: string): string {
@@ -45,6 +66,19 @@ export default async function AdminUserDetailPage({
     notFound();
   }
 
+  // Derive non-reversible pseudonym separating analytics from student identity
+  const userPseudonym = pseudonymiseUserId(user.id);
+  const telemetry = getUserTelemetryInsight(userPseudonym);
+
+  // Administrative audit logging: record access to individual user telemetry
+  const adminUser = await getAuthUser();
+  if (adminUser) {
+    await logAuditEvent(adminUser.id, "admin.view_user_telemetry", "profile", user.id, {
+      user_pseudonym: userPseudonym,
+      target_email: user.email,
+    });
+  }
+
   return (
     <div className="space-y-6 max-w-5xl">
       {/* Back link with micro-motion */}
@@ -68,11 +102,25 @@ export default async function AdminUserDetailPage({
             <h1 className="text-xl font-bold text-white tracking-tight truncate">
               {user.full_name || "Unnamed Student"}
             </h1>
-            {user.is_admin && (
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono shadow-[0_0_12px_rgba(245,158,11,0.1)]">
-                Security Admin
-              </span>
-            )}
+            <span
+              className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border font-mono uppercase tracking-wider ${
+                user.role === "superadmin"
+                  ? "bg-amber-500/15 text-amber-300 border-amber-500/30 shadow-[0_0_12px_rgba(245,158,11,0.15)]"
+                  : user.role === "admin" || user.is_admin
+                  ? "bg-[#78A9FF]/15 text-[#78A9FF] border-[#78A9FF]/30 shadow-[0_0_12px_rgba(120,169,255,0.1)]"
+                  : user.role === "moderator"
+                  ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
+                  : "bg-white/[0.06] text-zinc-400 border-white/[0.08]"
+              }`}
+            >
+              {user.role ? user.role.toUpperCase() : user.is_admin ? "ADMIN" : "STUDENT"}
+            </span>
+            <Link
+              href="/admin/roles"
+              className="text-[11px] font-medium text-amber-400 hover:text-amber-300 hover:underline transition-colors"
+            >
+              Manage Role →
+            </Link>
           </div>
           <div className="flex flex-wrap items-center gap-4 mt-2">
             <span className="flex items-center gap-1.5 text-xs text-zinc-400">
@@ -139,6 +187,169 @@ export default async function AdminUserDetailPage({
           </div>
         </AdminMotionItem>
       </AdminStagger>
+
+      {/* User Telemetry & Product Intelligence Section */}
+      <div className="rounded-xl border border-white/[0.08] bg-[#0c0c0c]/90 overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.3)] space-y-5 p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/[0.06]">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <Zap className="w-4 h-4 text-[#78A9FF]" />
+              <h2 className="text-base font-bold text-white tracking-tight">
+                Product Intelligence & Telemetry
+              </h2>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3" />
+                Audit-Logged Access
+              </span>
+            </div>
+            <p className="text-xs text-zinc-400">
+              Pseudonymous telemetry strictly separated from account records. Never shared with third parties.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 font-mono text-[11px] text-zinc-400 bg-white/[0.03] px-3 py-1.5 rounded-lg border border-white/[0.06]">
+            <Lock className="w-3.5 h-3.5 text-zinc-500" />
+            <span>Pseudonym:</span>
+            <span className="text-[#78A9FF] font-semibold">{telemetry.userPseudonym}</span>
+          </div>
+        </div>
+
+        {/* Telemetry Metric Chips */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+            <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">
+              Active Engagement
+            </span>
+            <span className="text-lg font-bold text-white font-mono">
+              {formatDuration(telemetry.totalEngagementSeconds)}
+            </span>
+            <span className="text-[10px] text-zinc-500 block mt-0.5">Paused on idle / tab blur</span>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+            <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">
+              Browser Sessions
+            </span>
+            <span className="text-lg font-bold text-white font-mono">
+              {telemetry.totalSessions}
+            </span>
+            <span className="text-[10px] text-zinc-500 block mt-0.5">Distinct browser visits</span>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+            <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">
+              Activity Window
+            </span>
+            <span className="text-xs font-semibold text-zinc-200 block truncate">
+              {formatDateTime(telemetry.lastSeen)}
+            </span>
+            <span className="text-[10px] text-zinc-500 block mt-0.5 font-mono">
+              First: {formatDate(telemetry.firstSeen)}
+            </span>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+            <span className="text-[10px] font-mono uppercase text-zinc-500 block mb-1">
+              Client Health
+            </span>
+            <div className="flex items-center gap-1.5">
+              {telemetry.errorsEncountered === 0 ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span className="text-sm font-bold text-emerald-400 font-mono">0 Errors</span>
+                </>
+              ) : (
+                <>
+                  <AlertTriangle className="w-4 h-4 text-amber-400" />
+                  <span className="text-sm font-bold text-amber-400 font-mono">
+                    {telemetry.errorsEncountered} Errors
+                  </span>
+                </>
+              )}
+            </div>
+            <span className="text-[10px] text-zinc-500 block mt-0.5">Browser runtime alerts</span>
+          </div>
+        </div>
+
+        {/* Breakdown & Recent Stream Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 pt-2">
+          {/* Top Features Breakdown */}
+          <div className="lg:col-span-5 space-y-3 p-4 rounded-xl bg-white/[0.015] border border-white/[0.04]">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-semibold text-white uppercase tracking-wider font-mono">
+                Top Features & Workflows
+              </h3>
+              <span className="text-[10px] text-zinc-500 font-mono">By Engagement Time</span>
+            </div>
+
+            {telemetry.topFeatures.length > 0 ? (
+              <div className="space-y-2.5">
+                {telemetry.topFeatures.slice(0, 5).map((f) => (
+                  <div key={f.feature} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-zinc-200 font-medium truncate">{f.feature}</span>
+                      <span className="font-mono text-[#78A9FF] text-[11px]">
+                        {formatDuration(f.durationSeconds)} ({f.count} hits)
+                      </span>
+                    </div>
+                    <div className="w-full h-1 rounded-full bg-white/[0.06] overflow-hidden">
+                      <div
+                        className="h-full bg-[#78A9FF] rounded-full"
+                        style={{
+                          width: `${Math.min(
+                            100,
+                            (f.durationSeconds / (telemetry.totalEngagementSeconds || 1)) * 100
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-zinc-500 py-4 text-center">No feature engagement logged yet.</p>
+            )}
+          </div>
+
+          {/* Recent Consented Activity Stream */}
+          <div className="lg:col-span-7 space-y-3 p-4 rounded-xl bg-white/[0.015] border border-white/[0.04]">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-semibold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-purple-400" />
+                <span>Recent Consented Activity Stream</span>
+              </h3>
+              <span className="text-[10px] text-zinc-500 font-mono">Last 10 Events</span>
+            </div>
+
+            {telemetry.recentActivity.length > 0 ? (
+              <div className="space-y-1.5 max-h-[220px] overflow-y-auto custom-scrollbar">
+                {telemetry.recentActivity.slice(0, 10).map((evt) => (
+                  <div
+                    key={evt.id}
+                    className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.03] flex items-center justify-between gap-3 text-xs"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="px-1.5 py-0.5 rounded font-mono text-[9px] bg-[#78A9FF]/10 text-[#78A9FF] border border-[#78A9FF]/20 uppercase">
+                        {evt.type}
+                      </span>
+                      <span className="font-mono text-zinc-300 truncate text-[11px]">
+                        {evt.path}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-zinc-500 font-mono shrink-0">
+                      {new Date(evt.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-zinc-500 py-4 text-center">
+                No activity stream available for this student.
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Recent Sessions */}
       <div className="rounded-xl border border-white/[0.06] bg-[#0c0c0c]/80 overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.25)]">

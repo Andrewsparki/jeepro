@@ -67,9 +67,10 @@ export function ContextMenuProvider({ children }: { children: ReactNode }) {
 
   // ── SINGLE GLOBAL CONTEXTMENU LISTENER ──
   useEffect(() => {
+    // 0. Only intercept on authenticated JEE Pro routes; preserve native context menu on public/marketing pages
+    if (!isAuthenticatedRoute(pathname)) return;
+
     const handleGlobalContextMenu = async (e: MouseEvent) => {
-      // 0. Only intercept on authenticated JEE Pro routes; preserve native context menu on public/marketing pages
-      if (!isAuthenticatedRoute(pathname)) return;
 
       // 1. Preserve browser context menu if Shift key is pressed
       if (e.shiftKey) return;
@@ -172,8 +173,13 @@ export function ContextMenuProvider({ children }: { children: ReactNode }) {
     };
   }, [state.isOpen, closeContextMenu]);
 
+  const contextValue = React.useMemo(
+    () => ({ openContextMenu, closeContextMenu, state }),
+    [openContextMenu, closeContextMenu, state]
+  );
+
   return (
-    <ContextMenuContext.Provider value={{ openContextMenu, closeContextMenu, state }}>
+    <ContextMenuContext.Provider value={contextValue}>
       {children}
       <ContextMenuModal />
     </ContextMenuContext.Provider>

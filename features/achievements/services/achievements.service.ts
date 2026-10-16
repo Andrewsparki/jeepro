@@ -1,18 +1,43 @@
 import { createClient } from "@/lib/supabase/client";
 import { AchievementItem } from "../types/achievement.types";
 import { toast } from "sonner";
+import { calculateStreakFromSessions } from "@/lib/date-utils";
 
 export class AchievementsService {
+  private static cache: {
+    userId: string;
+    items: AchievementItem[];
+    timestamp: number;
+  } | null = null;
+
+  private static CACHE_TTL_MS = 30000; // 30 seconds TTL
+
+  static invalidateCache(userId?: string) {
+    if (!userId || AchievementsService.cache?.userId === userId) {
+      AchievementsService.cache = null;
+    }
+  }
+
   /**
    * Fetches all achievements with user unlock status and real-time progress.
-   * Leverages server-side RPC get_user_achievements with an authoritative
-   * live-calculation fallback.
+   * Utilizes client-side TTL caching and server-side RPC get_user_achievements with
+   * an authoritative live-calculation fallback.
    */
-  static async getUserAchievements(userId?: string): Promise<AchievementItem[]> {
+  static async getUserAchievements(userId?: string, options?: { forceRefresh?: boolean }): Promise<AchievementItem[]> {
     try {
       const supabase = createClient();
       const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
       if (!resolvedUserId) return [];
+
+      // Serve from memory cache if fresh and not force-refreshing
+      if (
+        !options?.forceRefresh &&
+        AchievementsService.cache &&
+        AchievementsService.cache.userId === resolvedUserId &&
+        Date.now() - AchievementsService.cache.timestamp < AchievementsService.CACHE_TTL_MS
+      ) {
+        return AchievementsService.cache.items;
+      }
 
       const { data, error } = await supabase.rpc("get_user_achievements", {
         p_user_id: resolvedUserId,
@@ -23,7 +48,7 @@ export class AchievementsService {
         return await this.fallbackGetUserAchievements(resolvedUserId);
       }
 
-      return (data || []).map((item: Record<string, unknown>) => ({
+      const items: AchievementItem[] = (data || []).map((item: Record<string, unknown>) => ({
         id: item.id as string,
         key: item.key as string,
         title: item.title as string,
@@ -39,6 +64,15 @@ export class AchievementsService {
         current_progress: Number(item.current_progress || 0),
         progress_percentage: Number(item.progress_percentage || 0),
       }));
+
+      // Store in memory cache
+      AchievementsService.cache = {
+        userId: resolvedUserId,
+        items,
+        timestamp: Date.now(),
+      };
+
+      return items;
     } catch (err) {
       console.error("[AchievementsService] getUserAchievements exception:", err);
       const supabase = createClient();
@@ -49,6 +83,7 @@ export class AchievementsService {
       return [];
     }
   }
+
 
   /**
    * Evaluates user activity against all locked achievements and unlocks newly completed ones.
@@ -86,16 +121,27 @@ export class AchievementsService {
         progress_percentage: 100,
       }));
 
+      // Always invalidate cached achievements for this user since metrics or unlocks changed
+      AchievementsService.invalidateCache(resolvedUserId);
+
       // Broadcast custom event and show toast for newly unlocked achievements
-      if (typeof window !== "undefined" && newlyUnlocked.length > 0) {
-        newlyUnlocked.forEach((achievement: AchievementItem) => {
-          toast.success(`🏅 Achievement Unlocked: ${achievement.title}!`, {
-            description: `${achievement.description} (+${achievement.xp_reward} XP)`,
+      if (typeof window !== "undefined") {
+        if (newlyUnlocked.length > 0) {
+          newlyUnlocked.forEach((achievement: AchievementItem) => {
+            toast.success(`🏅 Achievement Unlocked: ${achievement.title}!`, {
+              description: `${achievement.description} (+${achievement.xp_reward} XP)`,
+            });
+            window.dispatchEvent(
+              new CustomEvent("jee-pro:achievement-unlocked", { detail: achievement })
+            );
           });
-          window.dispatchEvent(
-            new CustomEvent("jee-pro:achievement-unlocked", { detail: achievement })
-          );
-        });
+        }
+        // Always dispatch progress update event so all mounted components refresh immediately
+        window.dispatchEvent(
+          new CustomEvent("jee-pro:achievement-progress-updated", {
+            detail: { userId: resolvedUserId, newlyUnlocked },
+          })
+        );
       }
 
       return newlyUnlocked;
@@ -145,22 +191,7 @@ export class AchievementsService {
       // 2. Streak Metric (fallback date-based if RPC is null)
       let streakDays = Number(streakRes.data || 0);
       if (!streakDays && sessions.length > 0) {
-        const uniqueDays = new Set(
-          sessions.map((s: { started_at: string }) => {
-            const d = new Date(s.started_at);
-            return `${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`;
-          })
-        );
-        const today = new Date();
-        const check = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
-        const todayStr = `${check.getUTCFullYear()}-${check.getUTCMonth()}-${check.getUTCDate()}`;
-        if (!uniqueDays.has(todayStr)) {
-          check.setUTCDate(check.getUTCDate() - 1);
-        }
-        while (uniqueDays.has(`${check.getUTCFullYear()}-${check.getUTCMonth()}-${check.getUTCDate()}`)) {
-          streakDays++;
-          check.setUTCDate(check.getUTCDate() - 1);
-        }
+        streakDays = calculateStreakFromSessions(sessions);
       }
 
       // 3. Topics Mastered Metric

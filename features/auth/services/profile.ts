@@ -2,6 +2,8 @@ import { cache } from "react";
 import { createClient, getAuthUser } from "@/lib/supabase/server";
 import type { User } from "@supabase/supabase-js";
 
+export type UserRole = "user" | "moderator" | "admin" | "superadmin";
+
 export type UserProfile = {
   id: string;
   email: string;
@@ -10,11 +12,14 @@ export type UserProfile = {
   target_exam: string;
   target_year: number | null;
   theme: string;
+  role?: UserRole;
   is_admin?: boolean;
   is_muted?: boolean;
   is_banned?: boolean;
   mute_reason?: string | null;
   ban_reason?: string | null;
+  birthday?: string | null;
+  birthday_last_claimed_year?: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -41,5 +46,3 @@ export const getUserProfile = cache(async (): Promise<{ user: User | null; profi
 
   return { user, profile: profileData };
 });
-
-

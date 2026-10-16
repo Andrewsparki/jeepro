@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useFocusStore } from "@/features/focus/store/focus-store";
 import { cn } from "@/lib/utils";
 
 export function DashboardMainContent({ children }: { children: React.ReactNode }) {
