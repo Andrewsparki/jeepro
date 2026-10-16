@@ -5,11 +5,8 @@ import {
   Upload,
   Music,
   Trash2,
-  Check,
   Disc,
-  Play,
   FileAudio,
-  Plus,
 } from "lucide-react";
 import { TrackItem } from "../hooks/use-concert-audio";
 import { ThemeConfig } from "../types/themes";
@@ -152,7 +149,10 @@ export function TrackSelectorDrawer({
         </div>
 
         {/* Track List */}
-        <div className="p-4 overflow-y-auto space-y-2 flex-1">
+        <div
+          data-lenis-prevent
+          className="p-4 overflow-y-auto space-y-2 flex-1 min-h-0 overscroll-contain custom-scrollbar"
+        >
           {tracks.map((track) => {
             const isActive = track.id === activeTrackId;
             return (
