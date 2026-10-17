@@ -35,7 +35,12 @@ export const DashboardHero = React.memo(function DashboardHero({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-[#090C15] border border-white/[0.08] p-7 sm:p-10 shadow-[0_16px_40px_rgba(0,0,0,0.4)] flex items-center group">
+    <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-[#090C15] border border-white/[0.08] p-7 sm:p-10 shadow-[0_16px_40px_rgba(0,0,0,0.4)] flex items-center group transition-all duration-300">
+      {/* Obsidian + Electric Blue Ambient Lighting Elements */}
+      <div className="pointer-events-none absolute -top-20 -left-20 w-80 h-80 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(67,120,255,0.13),transparent_70%)] blur-2xl transform-gpu" />
+      <div className="pointer-events-none absolute -bottom-20 -right-20 w-72 h-72 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(120,169,255,0.08),transparent_70%)] blur-2xl transform-gpu" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#78A9FF]/30 to-transparent" />
+
       <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center justify-between w-full">
         
         {/* Left Side: Greeting & Mission */}

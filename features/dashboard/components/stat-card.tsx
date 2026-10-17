@@ -39,6 +39,7 @@ export const StatCard = React.memo(function StatCard({ title, value, icon, iconC
       data-context-title={title}
       data-context-data={JSON.stringify({ widget: widgetId })}
     >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent z-10" />
       <div className="flex items-start justify-between gap-2.5 relative z-10 min-h-[40px]">
         <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-400 line-clamp-2 leading-snug">
           {title}

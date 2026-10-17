@@ -433,6 +433,15 @@ body.with-scroll-bars-hidden {
   box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--accent);
 }
 
+/* Strip harsh rectangular focus ring from command palette search input */
+[cmdk-input],
+[cmdk-input]:focus,
+[cmdk-input]:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
 @theme {
   --animate-marquee: marquee 30s linear infinite;
 

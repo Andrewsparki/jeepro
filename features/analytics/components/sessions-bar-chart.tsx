@@ -12,9 +12,10 @@ import {
   ResponsiveContainer
 } from "recharts";
 import { format, subDays, startOfDay } from "date-fns";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GlassCard } from "@/components/ui/glass-card";
+import { useReducedMotion } from "framer-motion";
 
 interface SessionsBarChartProps {
   sessions: StudySession[];
@@ -58,16 +59,31 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
     return chartData;
   }, [sessions, timeRange]);
 
+  const shouldReduceMotion = useReducedMotion();
   const maxCount = Math.max(...data.map(d => d.count), 1);
+  const peakDay = useMemo(() => {
+    return data.reduce((peak, d) => (d.count > peak.count ? d : peak), { displayDate: "", count: 0 });
+  }, [data]);
 
   return (
-    <GlassCard hoverTint="emerald" className="flex flex-col h-[400px]">
-      <div className="flex items-center justify-between mb-6 relative z-10 px-6 pt-6">
+    <GlassCard hoverTint="emerald" className="flex flex-col h-[420px] relative overflow-hidden border-t border-t-emerald-500/20 shadow-sm">
+      <div className="flex items-center justify-between mb-4 relative z-10 px-6 pt-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-accent/10 rounded-xl text-accent shadow-[0_0_15px_rgba(120,169,255,0.2)] border border-accent/20">
             <CalendarDays className="w-5 h-5" />
           </div>
-          <h3 className="font-bold text-xl tracking-tight text-foreground">Sessions Per Day</h3>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-xl tracking-tight text-foreground">Sessions Per Day</h3>
+              {peakDay.count > 0 && (
+                <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <Sparkles className="w-3 h-3 text-emerald-400" />
+                  Peak: {peakDay.count} sessions
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground font-mono">Daily study session velocity</p>
+          </div>
         </div>
 
         {/* Time Range Selector */}
@@ -77,7 +93,7 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
               key={range}
               onClick={() => setTimeRange(range)}
               className={cn(
-                "px-4 py-1.5 text-xs font-bold rounded-lg transition-all duration-300 tracking-wider",
+                "px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all duration-300 tracking-wider font-mono",
                 timeRange === range
                   ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm scale-100"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -122,8 +138,8 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   return (
-                    <div className="bg-popover/95 border border-border/70 text-popover-foreground p-3 rounded-xl shadow-strong z-50 min-w-[120px]">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                    <div className="bg-popover/95 border border-border/70 text-popover-foreground p-3 rounded-xl shadow-strong z-50 min-w-[130px] backdrop-blur-md">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2 font-mono">
                         {payload[0].payload.displayDate}
                       </p>
                       <div className="flex items-center justify-between gap-4">
@@ -131,7 +147,7 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
                           <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
                           <span className="text-xs font-semibold text-foreground">Sessions</span>
                         </div>
-                        <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{payload[0]?.value}</span>
+                        <span className="text-xs font-bold font-mono" style={{ color: 'var(--accent)' }}>{payload[0]?.value}</span>
                       </div>
                     </div>
                   );
@@ -143,8 +159,10 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
               dataKey="count"
               fill="url(#colorSessions)"
               radius={[6, 6, 0, 0]}
-              barSize={timeRange === "7D" ? 40 : 12}
-              isAnimationActive={false}
+              barSize={timeRange === "7D" ? 38 : 12}
+              isAnimationActive={!shouldReduceMotion}
+              animationDuration={850}
+              animationEasing="ease-out"
               style={{ filter: 'url(#neonGlowBar)' }}
             />
           </BarChart>

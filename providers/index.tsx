@@ -39,6 +39,16 @@ const BackgroundSystem = dynamic(
   { ssr: false }
 );
 
+import { AiAssistantProvider } from "@/features/ai-assistant/context/ai-assistant-context";
+
+const AiStudyAssistantModal = dynamic(
+  () =>
+    import("@/features/ai-assistant/components/ai-study-assistant-modal").then(
+      (mod) => mod.AiStudyAssistantModal
+    ),
+  { ssr: false }
+);
+
 interface ProvidersProps {
   children: ReactNode;
 }
@@ -62,20 +72,23 @@ export function Providers({ children }: ProvidersProps) {
                     <ConcertModeProvider>
                       <ConcertKeyboardListener />
                       <ConcertModal />
-                      <LightingProvider>
-                      <DialogProvider>
-                        <ContextMenuProvider>
-                          <BackgroundSystem />
-                          <SmoothScrollProvider>
-                            <NavigationProgressBar />
-                            <AppBootGuard>
-                              {children}
-                            </AppBootGuard>
-                          </SmoothScrollProvider>
-                          <Toaster position="bottom-right" />
-                        </ContextMenuProvider>
-                      </DialogProvider>
-                    </LightingProvider>
+                      <AiAssistantProvider>
+                        <LightingProvider>
+                          <DialogProvider>
+                            <ContextMenuProvider>
+                              <BackgroundSystem />
+                              <SmoothScrollProvider>
+                                <NavigationProgressBar />
+                                <AppBootGuard>
+                                  {children}
+                                </AppBootGuard>
+                              </SmoothScrollProvider>
+                              <AiStudyAssistantModal />
+                              <Toaster position="bottom-right" />
+                            </ContextMenuProvider>
+                          </DialogProvider>
+                        </LightingProvider>
+                      </AiAssistantProvider>
                     </ConcertModeProvider>
                   </BreakRoomProvider>
                 </BirthdayModeProvider>

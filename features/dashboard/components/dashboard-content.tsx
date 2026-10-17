@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { motion, useAnimation, Variants } from "framer-motion";
 import { DashboardShell } from "@/features/dashboard/components/dashboard-shell";
 import { StatCard } from "@/features/dashboard/components/stat-card";
 import { DashboardCard } from "@/features/dashboard/components/dashboard-card";
@@ -20,10 +21,75 @@ import { QuickActions } from "@/features/dashboard/components/quick-actions";
 import { TodaysTimeline } from "@/features/dashboard/components/todays-timeline";
 import { ContinueLearning } from "@/features/dashboard/components/continue-learning";
 import { MotivationalQuotes } from "@/features/dashboard/components/motivational-quotes";
+import { WeeklyProgress } from "@/features/dashboard/components/weekly-progress";
 
 // Below-the-fold components
-const WeeklyProgress = dynamic(() => import("@/features/dashboard/components/weekly-progress").then(mod => mod.WeeklyProgress));
-const JourneyTracker = dynamic(() => import("@/features/dashboard/components/journey-tracker").then(mod => mod.JourneyTracker));
+const JourneyTracker = dynamic(
+  () => import("@/features/dashboard/components/journey-tracker").then((mod) => mod.JourneyTracker),
+  {
+    loading: () => (
+      <div className="space-y-4 py-4">
+        <Skeleton className="h-20 w-full rounded-2xl" />
+        <Skeleton className="h-16 w-full rounded-xl" />
+        <Skeleton className="h-24 w-full rounded-xl" />
+      </div>
+    ),
+  }
+);
+
+// Module-level guard to prevent replaying entrance sequence on client-side route transitions
+let hasSessionEntrancePlayed = false;
+
+// Coordinated cinematic entrance easing & variants
+const EASE_LUXURY = [0.16, 1, 0.3, 1] as const;
+
+const heroVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.55,
+      ease: EASE_LUXURY,
+    },
+  },
+};
+
+const statsContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.06,
+    },
+  },
+};
+
+const statCardVariants: Variants = {
+  hidden: { opacity: 0, y: 14, scale: 0.985 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.45,
+      ease: EASE_LUXURY,
+    },
+  },
+};
+
+const sectionVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: EASE_LUXURY,
+    },
+  },
+};
 
 function DashboardSkeleton() {
   return (
@@ -95,13 +161,32 @@ export function DashboardContent() {
   const { criticalMetrics, secondaryMetrics, isCriticalLoading } = useDashboardData();
   const { profile, user } = useAuth();
 
+  const controls = useAnimation();
+  const [shouldAnimate, setShouldAnimate] = useState<boolean>(false);
+
+  // Initialize browser-dependent entrance effects only after hydration
+  useEffect(() => {
+    if (hasSessionEntrancePlayed) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    try {
+      const stored = sessionStorage.getItem("jee_dashboard_entrance_played");
+      if (stored === "true") return;
+      hasSessionEntrancePlayed = true;
+      sessionStorage.setItem("jee_dashboard_entrance_played", "true");
+      setShouldAnimate(true);
+      controls.set("hidden");
+      controls.start("visible");
+    } catch {
+      // Ignore storage access errors
+    }
+  }, [controls]);
+
   if (isCriticalLoading || !criticalMetrics) {
     return <DashboardSkeleton />;
   }
 
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "Student";
   const firstName = displayName.split(" ")[0];
-
   const currentLevel = secondaryMetrics?.xpDetails?.currentLevel ?? 1;
 
   return (
@@ -112,65 +197,104 @@ export function DashboardContent() {
           <MilestoneCelebration streakDays={criticalMetrics.currentStreak} />
         </>
       )}
-      <div className="flex flex-col gap-6 md:gap-8 pb-10 max-w-7xl mx-auto">
-        {/* ROW 1: Hero & Stats — Rendered Instantly with Critical Metrics */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
-          <div className="xl:col-span-8">
-            <DashboardHero userName={firstName} lastActiveChapter={criticalMetrics.lastActiveChapter} />
-          </div>
 
-          <div className="xl:col-span-4 grid grid-cols-2 grid-rows-2 auto-rows-fr gap-4">
-            <StatCard
-              title="Today's Study Time"
-              value={
-                <div className="flex items-baseline gap-1">
-                  {criticalMetrics.todayStudyHours > 0 && (
-                    <>
-                      <AnimatedNumber value={criticalMetrics.todayStudyHours} />
-                      <span className="text-xl font-normal text-muted-foreground/80 -ml-0.5">h</span>
-                    </>
-                  )}
-                  <AnimatedNumber value={criticalMetrics.todayStudyMinutes} />
-                  <span className="text-xl font-normal text-muted-foreground/80 -ml-0.5">m</span>
-                </div>
-              }
-              icon={<Clock className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
-              iconContainerClassName="bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400 dark:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
-              hoverTint="blue"
-            />
-            <StatCard
-              title="Topics Mastered"
-              value={<AnimatedNumber value={criticalMetrics.masteredTopics} />}
-              icon={<Target className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
-              iconContainerClassName="bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 dark:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-              hoverTint="emerald"
-            />
-            <StatCard
-              title="Current Streak"
-              value={
-                <>
-                  <AnimatedNumber value={criticalMetrics.currentStreak} /> <span className="text-xl">d</span>
-                </>
-              }
-              icon={<Flame className="h-4 w-4 text-orange-600 dark:text-orange-400" />}
-              iconContainerClassName="bg-orange-500/10 border-orange-500/20 text-orange-600 dark:text-orange-400 dark:shadow-[0_0_15px_rgba(249,115,22,0.2)]"
-              hoverTint="orange"
-            />
-            <StatCard
-              title="Level"
-              value={<AnimatedNumber value={currentLevel} />}
-              icon={<Trophy className="h-4 w-4 text-amber-700 dark:text-amber-400" />}
-              iconContainerClassName="bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-400 dark:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
-              hoverTint="amber"
-            />
-          </div>
+      <div className="relative flex flex-col gap-6 md:gap-8 pb-10 max-w-7xl mx-auto">
+        {/* Subtle Obsidian + Electric Blue Atmospheric Background Lighting */}
+        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] -z-10 overflow-hidden select-none">
+          <div className="absolute -top-[100px] left-[15%] w-[480px] h-[300px] bg-[radial-gradient(ellipse_at_center,rgba(67,120,255,0.08),transparent_70%)] blur-[70px] transform-gpu" />
+          <div className="absolute top-[30px] right-[18%] w-[420px] h-[260px] bg-[radial-gradient(ellipse_at_center,rgba(120,169,255,0.05),transparent_70%)] blur-[80px] transform-gpu" />
+        </div>
+
+        {/* ROW 1: Hero & Metric Cards */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+          <motion.div
+            variants={heroVariants}
+            initial={false}
+            animate={controls}
+            className="xl:col-span-8 flex flex-col"
+          >
+            <DashboardHero userName={firstName} lastActiveChapter={criticalMetrics.lastActiveChapter} />
+          </motion.div>
+
+          <motion.div
+            variants={statsContainerVariants}
+            initial={false}
+            animate={controls}
+            className="xl:col-span-4 grid grid-cols-2 grid-rows-2 auto-rows-fr gap-4"
+          >
+            <motion.div variants={statCardVariants} className="h-full">
+              <StatCard
+                title="Today's Study Time"
+                value={
+                  <div className="flex items-baseline gap-1">
+                    {criticalMetrics.todayStudyHours > 0 && (
+                      <>
+                        <AnimatedNumber value={criticalMetrics.todayStudyHours} />
+                        <span className="text-xl font-normal text-muted-foreground/80 -ml-0.5">h</span>
+                      </>
+                    )}
+                    <AnimatedNumber value={criticalMetrics.todayStudyMinutes} />
+                    <span className="text-xl font-normal text-muted-foreground/80 -ml-0.5">m</span>
+                  </div>
+                }
+                icon={<Clock className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
+                iconContainerClassName="bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400 dark:shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+                hoverTint="blue"
+              />
+            </motion.div>
+
+            <motion.div variants={statCardVariants} className="h-full">
+              <StatCard
+                title="Topics Mastered"
+                value={<AnimatedNumber value={criticalMetrics.masteredTopics} />}
+                icon={<Target className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
+                iconContainerClassName="bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 dark:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                hoverTint="emerald"
+              />
+            </motion.div>
+
+            <motion.div variants={statCardVariants} className="h-full">
+              <StatCard
+                title="Current Streak"
+                value={
+                  <>
+                    <AnimatedNumber value={criticalMetrics.currentStreak} /> <span className="text-xl">d</span>
+                  </>
+                }
+                icon={<Flame className="h-4 w-4 text-orange-600 dark:text-orange-400" />}
+                iconContainerClassName="bg-orange-500/10 border-orange-500/20 text-orange-600 dark:text-orange-400 dark:shadow-[0_0_15px_rgba(249,115,22,0.2)]"
+                hoverTint="orange"
+              />
+            </motion.div>
+
+            <motion.div variants={statCardVariants} className="h-full">
+              <StatCard
+                title="Level"
+                value={<AnimatedNumber value={currentLevel} />}
+                icon={<Trophy className="h-4 w-4 text-amber-700 dark:text-amber-400" />}
+                iconContainerClassName="bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-400 dark:shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                hoverTint="amber"
+              />
+            </motion.div>
+          </motion.div>
         </div>
 
         {/* Motivational Quotes Banner */}
-        <MotivationalQuotes />
+        <motion.div
+          variants={sectionVariants}
+          initial={false}
+          animate={controls}
+        >
+          <MotivationalQuotes />
+        </motion.div>
 
         {/* ROW 2: Timeline, Continue Learning & Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <motion.div
+          variants={sectionVariants}
+          initial={false}
+          animate={controls}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-6"
+        >
           <DashboardCard
             className="lg:col-span-4 min-h-[320px]"
             data-context-target="dashboard-widget"
@@ -224,16 +348,22 @@ export function DashboardContent() {
                 <WeeklyProgress
                   hoursCompleted={criticalMetrics.weeklyStudyHours}
                   sessions={criticalMetrics.study_sessions}
+                  animate={shouldAnimate}
                 />
               </DashboardCard>
             </div>
 
             <QuickActions />
           </div>
-        </div>
+        </motion.div>
 
         {/* ROW 3: Journey & Bottom content */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <motion.div
+          variants={sectionVariants}
+          initial={false}
+          animate={controls}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
+        >
           <DashboardCard
             className="lg:col-span-5"
             data-context-target="dashboard-widget"
@@ -272,7 +402,7 @@ export function DashboardContent() {
               <DailyMissionsCard isLoading={true} />
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
     </DashboardShell>
   );

@@ -126,18 +126,19 @@ export function CommandPalette() {
               className="w-full max-w-2xl pointer-events-auto"
             >
               <Command
-                className="overflow-hidden rounded-2xl border border-[#2B3342] bg-[#0B0D12]/95 text-[#F5F7FB] shadow-[0_24px_60px_rgba(0,0,0,0.8),0_0_35px_rgba(120,169,255,0.08)] backdrop-blur-2xl ring-1 ring-[#78A9FF]/20"
+                className="overflow-hidden rounded-2xl border border-[#2B3342] bg-[#0B0D12]/95 text-[#F5F7FB] shadow-[0_24px_60px_rgba(0,0,0,0.8),0_0_30px_rgba(120,169,255,0.06)] backdrop-blur-2xl ring-1 ring-[#78A9FF]/15 focus-within:border-[#78A9FF]/40 focus-within:ring-1 focus-within:ring-[#78A9FF]/30 focus-within:shadow-[0_24px_70px_rgba(0,0,0,0.85),0_0_40px_rgba(120,169,255,0.18),0_0_15px_rgba(120,169,255,0.10)] transition-all duration-300 ease-out"
                 shouldFilter={true}
               >
                 {/* Search Bar Header */}
-                <div className="group/search flex items-center border-b border-[#2B3342]/70 px-4 bg-[#121722]/60 focus-within:bg-[#121722]/90 focus-within:border-[#78A9FF]/40 transition-colors duration-200">
-                  <Search className="mr-3 h-5 w-5 shrink-0 text-[#78A9FF]/70 group-focus-within/search:text-[#78A9FF] transition-colors duration-200" />
+                <div className="group/search flex items-center border-b border-[#2B3342]/70 px-4 bg-[#121722]/50 focus-within:bg-[#121722]/80 focus-within:border-[#78A9FF]/30 transition-colors duration-300">
+                  <Search className="mr-3 h-5 w-5 shrink-0 text-[#78A9FF]/60 group-focus-within/search:text-[#78A9FF] transition-colors duration-300" />
                   <Command.Input
                     autoFocus
                     value={search}
                     onValueChange={setSearch}
                     placeholder="Search chapters, tools, or navigation..."
-                    className="flex h-14 w-full bg-transparent py-3 text-sm font-medium text-[#F5F7FB] outline-none border-none focus:outline-none focus:border-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none [box-shadow:none!important] placeholder:text-[#A4ADBB]/60 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-14 w-full bg-transparent py-3 text-sm font-medium text-[#F5F7FB] outline-none border-none ring-0 shadow-none focus:outline-none focus:border-none focus:ring-0 focus:shadow-none focus-visible:outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:shadow-none !outline-none !shadow-none !border-none !ring-0 placeholder:text-[#A4ADBB]/60 disabled:cursor-not-allowed disabled:opacity-50"
+                    style={{ outline: "none", boxShadow: "none" }}
                   />
                   <div className="flex items-center gap-1.5 ml-2">
                     <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded-md border border-[#2B3342] bg-[#171D28] px-1.5 font-mono text-[10px] font-semibold text-[#A4ADBB]">

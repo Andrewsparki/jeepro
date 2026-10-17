@@ -151,7 +151,7 @@ export function NotificationCenter() {
   } = useNotifications();
   const { settings, updateSetting, playSound } = useSettings();
 
-  // Unified Locomotive (Lenis) inertia scroll engine for notifications
+  // Dedicated Locomotive-style momentum inertia scroll engine for notifications
   const {
     containerRef: scrollWrapperRef,
     contentRef: scrollContentRef,
@@ -159,6 +159,8 @@ export function NotificationCenter() {
   } = useSubSmoothScroll<HTMLDivElement>({
     enabled: isOpen,
     overscroll: true,
+    lerp: 0.11,
+    wheelMultiplier: 1.05,
   });
 
   // Recalculate dimensions dynamically when notifications list changes
@@ -257,10 +259,13 @@ export function NotificationCenter() {
                 animate="visible"
                 exit="hidden"
                 data-lenis-prevent="true"
-                className="w-[360px] max-w-[calc(100vw-24px)] p-0 rounded-2xl border border-border/60 bg-popover/95 backdrop-blur-2xl shadow-strong overflow-hidden text-popover-foreground"
+                data-lenis-prevent-wheel="true"
+                data-lenis-prevent-touch="true"
+                onWheel={(e) => e.stopPropagation()}
+                className="w-[360px] max-w-[calc(100vw-24px)] p-0 rounded-2xl border border-border/60 bg-popover/95 backdrop-blur-2xl shadow-strong overflow-hidden text-popover-foreground flex flex-col"
               >
-                {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 bg-surface/50 select-none">
+                {/* Header (Stationary, Fixed shrink-0) */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 bg-surface/50 select-none shrink-0">
                   <div className="flex items-center gap-2">
                     <h2 className="text-sm font-semibold text-foreground tracking-tight">
                       Notifications
@@ -341,11 +346,20 @@ export function NotificationCenter() {
                   </div>
                 </div>
 
-                {/* Notification History List with Dedicated Locomotive / Lenis Scroll */}
+                {/* Notification History List with Dedicated Locomotive Momentum Scroll */}
                 <div 
                   ref={scrollWrapperRef}
                   data-lenis-prevent="true"
-                  className="max-h-[360px] sm:max-h-[400px] overflow-y-auto overscroll-contain touch-pan-y divide-y divide-border/30 pointer-events-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/15 [&::-webkit-scrollbar-thumb]:hover:bg-accent/50 [&::-webkit-scrollbar-thumb]:rounded-full transition-colors"
+                  data-lenis-prevent-wheel="true"
+                  data-lenis-prevent-touch="true"
+                  tabIndex={0}
+                  role="region"
+                  aria-label="Notifications list"
+                  style={{
+                    WebkitOverflowScrolling: "touch",
+                    overscrollBehavior: "contain",
+                  }}
+                  className="max-h-[360px] sm:max-h-[400px] overflow-y-auto overscroll-contain touch-pan-y divide-y divide-border/30 pointer-events-auto outline-none focus-visible:ring-1 focus-visible:ring-accent/40 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-foreground/15 [&::-webkit-scrollbar-thumb]:hover:bg-accent/50 [&::-webkit-scrollbar-thumb]:rounded-full transition-colors"
                 >
                   <div ref={scrollContentRef}>
                     {isLoading && notifications.length === 0 ? (

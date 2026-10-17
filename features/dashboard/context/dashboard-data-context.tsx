@@ -26,9 +26,56 @@ interface DashboardDataContextType {
   isLoading: boolean;
   refreshMetrics: () => Promise<void>;
   refreshCritical: () => Promise<CriticalDashboardMetrics | null | undefined>;
+  seedMetrics: (metrics: CompleteDashboardMetrics) => void;
 }
 
 const DashboardDataContext = createContext<DashboardDataContextType | undefined>(undefined);
+
+const SESSION_CACHE_KEY_PREFIX = "jee_dashboard_metrics_cache_";
+
+function readSessionCache(userId?: string): CompleteDashboardMetrics | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const key = userId ? `${SESSION_CACHE_KEY_PREFIX}${userId}` : null;
+    if (key) {
+      const raw = sessionStorage.getItem(key);
+      if (raw) {
+        const entry = JSON.parse(raw);
+        if (Date.now() - (entry.timestamp || 0) < 5 * 60 * 1000) {
+          return entry.data as CompleteDashboardMetrics;
+        }
+      }
+    }
+    // Fallback: search for any recent valid dashboard cache entry
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const k = sessionStorage.key(i);
+      if (k?.startsWith(SESSION_CACHE_KEY_PREFIX)) {
+        const raw = sessionStorage.getItem(k);
+        if (raw) {
+          const entry = JSON.parse(raw);
+          if (Date.now() - (entry.timestamp || 0) < 5 * 60 * 1000) {
+            return entry.data as CompleteDashboardMetrics;
+          }
+        }
+      }
+    }
+  } catch {
+    // Ignore storage parse errors
+  }
+  return null;
+}
+
+function writeSessionCache(userId: string, data: CompleteDashboardMetrics): void {
+  if (typeof window === "undefined" || !userId) return;
+  try {
+    sessionStorage.setItem(
+      `${SESSION_CACHE_KEY_PREFIX}${userId}`,
+      JSON.stringify({ data, timestamp: Date.now() })
+    );
+  } catch {
+    // Ignore storage quota errors
+  }
+}
 
 export function DashboardDataProvider({
   children,
@@ -39,40 +86,72 @@ export function DashboardDataProvider({
 }) {
   const { refreshKey } = useStudySession();
   const { user, isLoading: isAuthLoading } = useAuth();
+  const userId = user?.id;
 
-  // Seed from props or client-side memory cache to eliminate loading states during tab re-entry
+  // Instant zero-delay hydration: check initialMetrics -> in-memory cache -> sessionStorage
   const [criticalMetrics, setCriticalMetrics] = useState<CriticalDashboardMetrics | null>(() => {
     if (initialMetrics) return initialMetrics;
-    if (user?.id) {
-      return getCachedCriticalMetrics(user.id) || getCachedDashboardMetrics(user.id);
+    const sessionCached = readSessionCache(userId);
+    if (sessionCached) return sessionCached;
+    if (userId) {
+      return getCachedCriticalMetrics(userId) || getCachedDashboardMetrics(userId);
     }
     return null;
   });
 
   const [secondaryMetrics, setSecondaryMetrics] = useState<SecondaryDashboardMetrics | null>(() => {
     if (initialMetrics) return initialMetrics;
-    if (user?.id) {
-      return getCachedDashboardMetrics(user.id);
+    const sessionCached = readSessionCache(userId);
+    if (sessionCached) return sessionCached;
+    if (userId) {
+      return getCachedDashboardMetrics(userId);
     }
     return null;
   });
 
   const [isCriticalLoading, setIsCriticalLoading] = useState<boolean>(() => {
     if (initialMetrics) return false;
-    if (user?.id && (getCachedCriticalMetrics(user.id) || getCachedDashboardMetrics(user.id))) return false;
+    if (readSessionCache(userId)) return false;
+    if (userId && (getCachedCriticalMetrics(userId) || getCachedDashboardMetrics(userId))) return false;
     return true;
   });
 
   const [isSecondaryLoading, setIsSecondaryLoading] = useState<boolean>(() => {
     if (initialMetrics) return false;
-    if (user?.id && getCachedDashboardMetrics(user.id)) return false;
+    if (readSessionCache(userId)) return false;
+    if (userId && getCachedDashboardMetrics(userId)) return false;
     return true;
   });
 
+  // Adjust state during render if initialMetrics prop updates (React recommended prop-sync pattern)
+  const [prevInitial, setPrevInitial] = useState(initialMetrics);
+  if (initialMetrics && initialMetrics !== prevInitial) {
+    setPrevInitial(initialMetrics);
+    setCriticalMetrics(initialMetrics);
+    setSecondaryMetrics(initialMetrics);
+    setIsCriticalLoading(false);
+    setIsSecondaryLoading(false);
+  }
+
+  // Synchronous seeder for server-provided initialMetrics: eliminates loading states & skeleton flash
+  const seedMetrics = useCallback(
+    (metrics: CompleteDashboardMetrics) => {
+      setCriticalMetrics(metrics);
+      setSecondaryMetrics(metrics);
+      setIsCriticalLoading(false);
+      setIsSecondaryLoading(false);
+
+      if (userId) {
+        writeSessionCache(userId, metrics);
+      }
+    },
+    [userId]
+  );
+
   const fetchCriticalOnly = useCallback(async () => {
-    if (isAuthLoading || !user?.id) return null;
+    if (isAuthLoading || !userId) return null;
     try {
-      const crit = await getCriticalDashboardMetrics(user.id);
+      const crit = await getCriticalDashboardMetrics(userId);
       setCriticalMetrics(crit);
       return crit;
     } catch (err) {
@@ -81,76 +160,89 @@ export function DashboardDataProvider({
     } finally {
       setIsCriticalLoading(false);
     }
-  }, [user?.id, isAuthLoading]);
+  }, [userId, isAuthLoading]);
+
+  // Request deduplication mutex ref to prevent duplicate Supabase queries
+  const inFlightPromiseRef = useRef<Promise<CriticalDashboardMetrics | null> | null>(null);
 
   const loadMetrics = useCallback(
     async (options?: { silent?: boolean }) => {
-      if (isAuthLoading || !user?.id) return null;
-      if (!options?.silent) {
-        setIsCriticalLoading(true);
-        setIsSecondaryLoading(true);
-      }
-      try {
-        const crit = await getCriticalDashboardMetrics(user.id);
-        setCriticalMetrics(crit);
-        setIsCriticalLoading(false);
+      if (isAuthLoading || !userId) return null;
 
-        try {
-          const sec = await getSecondaryDashboardMetrics(
-            user.id,
-            crit.study_sessions,
-            crit.progress,
-            crit.syllabus,
-            crit.currentStreak
-          );
-          setSecondaryMetrics(sec);
-        } catch (secErr) {
-          console.error("Secondary metrics error:", secErr);
-        } finally {
-          setIsSecondaryLoading(false);
-        }
-        return crit;
-      } catch (critErr) {
-        console.error("Critical metrics error:", critErr);
-        setIsCriticalLoading(false);
-        setIsSecondaryLoading(false);
-        return null;
+      // Reuse in-flight request if already loading
+      if (inFlightPromiseRef.current) {
+        return inFlightPromiseRef.current;
       }
+
+      // Only show skeleton if we have NO existing metrics rendered
+      if (!options?.silent) {
+        setCriticalMetrics((prev) => {
+          if (!prev) setIsCriticalLoading(true);
+          return prev;
+        });
+        setSecondaryMetrics((prev) => {
+          if (!prev) setIsSecondaryLoading(true);
+          return prev;
+        });
+      }
+
+      const fetchPromise = (async () => {
+        try {
+          const crit = await getCriticalDashboardMetrics(userId);
+          setCriticalMetrics(crit);
+          setIsCriticalLoading(false);
+
+          try {
+            const sec = await getSecondaryDashboardMetrics(
+              userId,
+              crit.study_sessions,
+              crit.progress,
+              crit.syllabus,
+              crit.currentStreak
+            );
+            setSecondaryMetrics(sec);
+
+            // Update session cache with complete combined data
+            const completeData: CompleteDashboardMetrics = {
+              ...crit,
+              ...sec,
+            };
+            writeSessionCache(userId, completeData);
+          } catch (secErr) {
+            console.error("Secondary metrics error:", secErr);
+          } finally {
+            setIsSecondaryLoading(false);
+          }
+          return crit;
+        } catch (critErr) {
+          console.error("Critical metrics error:", critErr);
+          setIsCriticalLoading(false);
+          setIsSecondaryLoading(false);
+          return null;
+        } finally {
+          inFlightPromiseRef.current = null;
+        }
+      })();
+
+      inFlightPromiseRef.current = fetchPromise;
+      return fetchPromise;
     },
-    [user?.id, isAuthLoading]
+    [userId, isAuthLoading]
   );
 
   const refreshMetrics = useCallback(async () => {
-    if (user?.id) {
-      invalidateDashboardMetricsCache(user.id);
+    if (userId) {
+      invalidateDashboardMetricsCache(userId);
     }
     await loadMetrics({ silent: false });
-  }, [loadMetrics, user?.id]);
+  }, [loadMetrics, userId]);
 
-  // Synchronize when initialMetrics change or user logs in
+  // Listen for real-time study session and achievement completion events to refresh seamlessly in background
   useEffect(() => {
-    if (initialMetrics) {
-      setCriticalMetrics(initialMetrics);
-      setSecondaryMetrics(initialMetrics);
-      setIsCriticalLoading(false);
-      setIsSecondaryLoading(false);
-    } else if (user?.id && !criticalMetrics) {
-      const cached = getCachedDashboardMetrics(user.id);
-      if (cached) {
-        setCriticalMetrics(cached);
-        setSecondaryMetrics(cached);
-        setIsCriticalLoading(false);
-        setIsSecondaryLoading(false);
-      }
-    }
-  }, [initialMetrics, user?.id, criticalMetrics]);
-
-  // Listen for real-time study session and achievement completion events to refresh seamlessly
-  useEffect(() => {
-    if (!user?.id) return;
+    if (!userId) return;
 
     const handleDataChange = () => {
-      loadMetrics({ silent: true });
+      void loadMetrics({ silent: true });
     };
 
     window.addEventListener("jee-pro:study-session-completed", handleDataChange);
@@ -162,38 +254,38 @@ export function DashboardDataProvider({
       window.removeEventListener("jee-pro:achievement-unlocked", handleDataChange);
       window.removeEventListener("jee-pro:achievement-progress-updated", handleDataChange);
     };
-  }, [user?.id, loadMetrics]);
+  }, [userId, loadMetrics]);
 
   // Handle client-side session ends triggered via refreshKey
   const lastRefreshKeyRef = useRef(refreshKey);
   useEffect(() => {
-    if (refreshKey > lastRefreshKeyRef.current && user?.id) {
+    if (refreshKey > lastRefreshKeyRef.current && userId) {
       lastRefreshKeyRef.current = refreshKey;
-      loadMetrics({ silent: true });
+      void loadMetrics({ silent: true });
     }
-  }, [refreshKey, user?.id, loadMetrics]);
+  }, [refreshKey, userId, loadMetrics]);
 
-  // Cold start initialization: if no cached or initial metrics, fetch; otherwise revalidate quietly
+  // Cold start initialization: if metrics exist, revalidate quietly in background (stale-while-revalidate)
   const hasInitializedRef = useRef(false);
   useEffect(() => {
-    if (isAuthLoading || !user?.id || hasInitializedRef.current) return;
+    if (isAuthLoading || !userId || hasInitializedRef.current) return;
     hasInitializedRef.current = true;
 
-    if (!criticalMetrics) {
-      loadMetrics();
-    } else {
-      // Revalidate in background without blocking UI
-      loadMetrics({ silent: true });
-    }
-  }, [isAuthLoading, user?.id, criticalMetrics, loadMetrics]);
+    const init = async () => {
+      await loadMetrics(criticalMetrics ? { silent: true } : undefined);
+    };
+    void init();
+  }, [isAuthLoading, userId, criticalMetrics, loadMetrics]);
 
-  // If daily missions are missing, fetch/generate in background
+  // If daily missions are missing, fetch/generate once in background
+  const dailyMissionsCheckedRef = useRef(false);
   useEffect(() => {
-    if (user?.id && !isAuthLoading && secondaryMetrics) {
+    if (userId && !isAuthLoading && secondaryMetrics && !dailyMissionsCheckedRef.current) {
       if (!secondaryMetrics.dailyMissions || secondaryMetrics.dailyMissions.length === 0) {
+        dailyMissionsCheckedRef.current = true;
         let isMounted = true;
         import("@/features/daily-missions/services/missions.service")
-          .then(({ getTodayMissions }) => getTodayMissions(undefined, user.id))
+          .then(({ getTodayMissions }) => getTodayMissions(undefined, userId))
           .then((missions) => {
             if (isMounted && missions && missions.length > 0) {
               setSecondaryMetrics((prev) => (prev ? { ...prev, dailyMissions: missions } : null));
@@ -206,7 +298,7 @@ export function DashboardDataProvider({
         };
       }
     }
-  }, [user?.id, isAuthLoading, secondaryMetrics]);
+  }, [userId, isAuthLoading, secondaryMetrics]);
 
   const compositeMetrics: CompleteDashboardMetrics | null = useMemo(() => {
     if (!criticalMetrics) return null;
@@ -236,6 +328,7 @@ export function DashboardDataProvider({
       isLoading: isCriticalLoading,
       refreshMetrics,
       refreshCritical: fetchCriticalOnly,
+      seedMetrics,
     }),
     [
       criticalMetrics,
@@ -245,6 +338,7 @@ export function DashboardDataProvider({
       isSecondaryLoading,
       refreshMetrics,
       fetchCriticalOnly,
+      seedMetrics,
     ]
   );
 

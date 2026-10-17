@@ -13,6 +13,7 @@ interface WeeklyProgressProps {
   hoursCompleted: number;
   weeklyGoalHours?: number;
   sessions?: StudySession[];
+  animate?: boolean;
 }
 
 const DEFAULT_SUGGESTED_GOAL = 20;
@@ -20,7 +21,8 @@ const DEFAULT_SUGGESTED_GOAL = 20;
 export const WeeklyProgress = React.memo(function WeeklyProgress({
   hoursCompleted,
   weeklyGoalHours: propsWeeklyGoalHours,
-  sessions = []
+  sessions = [],
+  animate = true,
 }: WeeklyProgressProps) {
   const { settings, updateSetting, playSound } = useSettings();
 
@@ -327,14 +329,18 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
               dataKey="target"
               stroke="none"
               fill="url(#gradPurple)"
-              isAnimationActive={false}
+              isAnimationActive={animate}
+              animationDuration={850}
+              animationEasing="ease-out"
             />
             <Area
               type="monotone"
               dataKey="actual"
               stroke="none"
               fill="url(#gradCyan)"
-              isAnimationActive={false}
+              isAnimationActive={animate}
+              animationDuration={1000}
+              animationEasing="ease-out"
             />
 
             <Line
@@ -345,7 +351,9 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
               strokeWidth={2}
               dot={false}
               activeDot={false}
-              isAnimationActive={false}
+              isAnimationActive={animate}
+              animationDuration={850}
+              animationEasing="ease-out"
             />
 
             <Line
@@ -356,7 +364,9 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
               strokeWidth={2.5}
               dot={{ r: 3, fill: '#0f172a', strokeWidth: 1.5, stroke: '#38bdf8' }}
               activeDot={{ r: 5, fill: '#fff', stroke: '#38bdf8', strokeWidth: 2 }}
-              isAnimationActive={false}
+              isAnimationActive={animate}
+              animationDuration={1050}
+              animationEasing="ease-out"
             />
           </ComposedChart>
         </ResponsiveContainer>
