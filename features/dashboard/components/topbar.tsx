@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 
 import { useBirthdayMode } from "@/features/birthday/context/birthday-mode-context";
+import { useAiAssistant } from "@/features/ai-assistant/context/ai-assistant-context";
 import { Sparkles, Gift } from "lucide-react";
 
 interface TopbarProps {
@@ -21,6 +22,7 @@ interface TopbarProps {
 export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
   const { profile, user } = useAuth();
   const { setIsOpen } = useCommandPalette();
+  const { setIsOpen: setIsAiOpen } = useAiAssistant();
   const pathname = usePathname();
   const { isImmersive } = useFocusStore();
   const { isBirthdayModeActive, isBirthdayToday, openRecapModal } = useBirthdayMode();
@@ -83,6 +85,16 @@ export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
               <Gift className="w-4 h-4 text-amber-400" />
             </button>
           )}
+          <Button
+            variant="ghost"
+            className="text-muted-foreground hover:bg-accent/15 hover:text-[#78A9FF] flex items-center gap-2 rounded-full px-3 text-xs font-medium border border-border/40 bg-background/50 hover:border-[#78A9FF]/30 transition-colors"
+            onClick={() => setIsAiOpen(true)}
+            title="Open JEE Pro AI Study Assistant"
+          >
+            <Sparkles className="h-3.5 w-3.5 text-[#78A9FF]" />
+            <span className="hidden sm:inline">AI Tutor</span>
+          </Button>
+
           <Button 
             variant="ghost" 
             className="text-muted-foreground hover:bg-muted/50 hover:text-foreground hidden sm:flex items-center gap-2 rounded-full px-4"

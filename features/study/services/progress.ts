@@ -47,6 +47,7 @@ export async function deleteStudySessions(sessionIds: string[]): Promise<boolean
     console.error("Error deleting study sessions:", error.message);
     return false;
   }
+  invalidateDashboardMetricsCache(user.id);
   return true;
 }
 
@@ -64,6 +65,7 @@ export async function clearAllStudySessions(): Promise<boolean> {
     console.error("Error clearing study sessions:", error.message);
     return false;
   }
+  invalidateDashboardMetricsCache(user.id);
   return true;
 }
 
@@ -93,6 +95,7 @@ export async function resetAccountProgress(): Promise<boolean> {
       ]);
     }
 
+    invalidateDashboardMetricsCache(user.id);
     return true;
   } catch (err) {
     console.error("resetAccountProgress error:", err);
@@ -158,6 +161,8 @@ export async function updateTopicProgress(topicId: string, status: ProgressStatu
     return null;
   }
   
+  invalidateDashboardMetricsCache(user.id);
+
   if (status === "Mastered") {
     import("@/features/achievements/services/achievements.service")
       .then(({ AchievementsService }) => AchievementsService.evaluateAchievements(user.id))
@@ -218,6 +223,8 @@ export async function updateChapterProgress(subjectSlug: string, chapterSlug: st
     console.error("Error updating chapter progress:", error.message, error.details, error.hint);
     return null;
   }
+
+  invalidateDashboardMetricsCache(user.id);
 
   if (isNewlyMastered) {
     try {
@@ -299,6 +306,8 @@ export async function updateSubjectProgress(subjectSlug: string, status: Progres
     console.error("Error updating subject progress:", error.message, error.details, error.hint);
     return null;
   }
+
+  invalidateDashboardMetricsCache(user.id);
 
   if (status === "Mastered" && newlyMasteredChaptersCount > 0) {
     try {
@@ -391,6 +400,8 @@ export async function saveStudySession({
     console.error("Error saving study session:", error.message, error.details, error.hint);
     return null;
   }
+
+  invalidateDashboardMetricsCache(user.id);
 
   // Hook into Daily Missions
   try {
@@ -613,18 +624,73 @@ export async function getSecondaryDashboardMetrics(
   };
 }
 
-export async function getDashboardMetrics(userId?: string): Promise<CompleteDashboardMetrics> {
-  const critical = await getCriticalDashboardMetrics(userId);
+// ── Dashboard Metrics Caching Layer (Fast Re-Entry & SWR) ───────────
+interface CachedMetricsEntry {
+  data: CompleteDashboardMetrics;
+  critical: CriticalDashboardMetrics;
+  secondary: SecondaryDashboardMetrics;
+  timestamp: number;
+}
+
+const metricsMemoryCache = new Map<string, CachedMetricsEntry>();
+const CACHE_TTL_MS = 60 * 1000; // 60s freshness before background revalidation
+
+export function invalidateDashboardMetricsCache(userId?: string): void {
+  if (userId) {
+    metricsMemoryCache.delete(userId);
+  } else {
+    metricsMemoryCache.clear();
+  }
+}
+
+export function getCachedDashboardMetrics(userId?: string): CompleteDashboardMetrics | null {
+  if (!userId) return null;
+  const entry = metricsMemoryCache.get(userId);
+  if (!entry) return null;
+  return entry.data;
+}
+
+export function getCachedCriticalMetrics(userId?: string): CriticalDashboardMetrics | null {
+  if (!userId) return null;
+  const entry = metricsMemoryCache.get(userId);
+  if (!entry) return null;
+  return entry.critical;
+}
+
+export async function getDashboardMetrics(userId?: string, options?: { forceFresh?: boolean }): Promise<CompleteDashboardMetrics> {
+  const resolvedUserId = userId || (await createClient().auth.getUser()).data.user?.id;
+  const now = Date.now();
+
+  if (resolvedUserId && !options?.forceFresh) {
+    const cached = metricsMemoryCache.get(resolvedUserId);
+    if (cached && now - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data;
+    }
+  }
+
+  const critical = await getCriticalDashboardMetrics(resolvedUserId);
   const secondary = await getSecondaryDashboardMetrics(
-    userId,
+    resolvedUserId,
     critical.study_sessions,
     critical.progress,
     critical.syllabus,
     critical.currentStreak
   );
 
-  return {
+  const completeData: CompleteDashboardMetrics = {
     ...critical,
     ...secondary,
   };
+
+  if (resolvedUserId) {
+    metricsMemoryCache.set(resolvedUserId, {
+      data: completeData,
+      critical,
+      secondary,
+      timestamp: now,
+    });
+  }
+
+  return completeData;
 }
+

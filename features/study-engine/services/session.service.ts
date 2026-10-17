@@ -142,6 +142,10 @@ export class SessionService {
 
       // Hook into Achievements evaluation and notify clients of session completion
       if (typeof window !== "undefined") {
+        import("@/features/study/services/progress").then(({ invalidateDashboardMetricsCache }) => {
+          invalidateDashboardMetricsCache(user.id);
+        }).catch(() => {});
+
         window.dispatchEvent(
           new CustomEvent("jee-pro:study-session-completed", {
             detail: { userId: user.id, durationSeconds: sessionData.durationSeconds, xpEarned },

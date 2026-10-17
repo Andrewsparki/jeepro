@@ -88,7 +88,7 @@ export function Sidebar() {
     >
       <div className="w-[260px] h-full flex flex-col justify-between overflow-hidden shrink-0">
         <div className="flex h-16 items-center justify-between px-4 border-b border-border/40 shrink-0">
-          <Link href="/dashboard" className="outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-md">
+          <Link href="/dashboard" prefetch={true} className="outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-md">
             <BrandLogo size="md" />
           </Link>
           <ThemeSwitcher className="shrink-0" />

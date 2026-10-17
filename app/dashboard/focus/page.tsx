@@ -18,7 +18,6 @@ import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 import { useSettings } from "@/providers/settings-provider";
 import { ContextMenuTarget } from "@/features/context-menu";
-import { FixedPortal } from "@/components/ui/fixed-portal";
 import { cn } from "@/lib/utils";
 import { trackEvent } from "@/features/analytics/services/telemetry.service";
 
@@ -355,46 +354,56 @@ export default function FocusPage() {
       animate="visible"
       className="h-full w-full flex-1 flex flex-col justify-between items-center relative overflow-hidden pt-3 pb-8 sm:pt-6 sm:pb-12 md:pb-14 px-4 sm:px-8 select-none"
     >
-      {/* ── Seamless Full-Viewport Ambient Environment (Teleported to document.body) ── */}
-      <FixedPortal>
-        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden select-none w-screen h-screen">
-          {/* Full-bleed atmospheric ambient radial gradient (covers 100% of viewport with zero clipping boundaries) */}
-          <motion.div 
-            animate={{
-              opacity: isActive ? (isImmersive ? 0.35 : 0.25) : 0.15,
-            }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className={cn(
-              "absolute inset-0 transition-colors duration-1000",
-              phase === "study" && "bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,rgba(16,185,129,0.22)_0%,rgba(16,185,129,0.06)_45%,transparent_75%)]",
-              phase === "shortBreak" && "bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,rgba(56,189,248,0.22)_0%,rgba(56,189,248,0.06)_45%,transparent_75%)]",
-              phase === "longBreak" && "bg-[radial-gradient(ellipse_120%_120%_at_50%_50%,rgba(148,163,184,0.18)_0%,rgba(148,163,184,0.05)_45%,transparent_75%)]"
-            )}
-          />
+      {/* ── Ambient Lighting Environment (Positioned relative to the actual Focus workspace container) ── */}
+      <div 
+        aria-hidden="true" 
+        className="absolute inset-0 pointer-events-none -z-10 overflow-hidden select-none"
+      >
+        {/* Soft atmospheric ambient wash across the workspace */}
+        <motion.div 
+          animate={{
+            opacity: isActive ? (isImmersive ? 0.32 : 0.22) : 0.12,
+          }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className={cn(
+            "absolute inset-0 transition-all duration-1000",
+            // Study / Deep Focus: Electric-Blue + Cool-Indigo (#78A9FF / rgba(99,102,241))
+            (timerMode !== "pomodoro" || phase === "study") &&
+              "bg-[radial-gradient(ellipse_100%_100%_at_50%_48%,rgba(120,169,255,0.18)_0%,rgba(99,102,241,0.08)_40%,transparent_75%)]",
+            // Short Break in Pomodoro: Refreshing Teal/Mint (#5DC98B / #38BDF8)
+            timerMode === "pomodoro" && phase === "shortBreak" &&
+              "bg-[radial-gradient(ellipse_100%_100%_at_50%_48%,rgba(93,201,139,0.18)_0%,rgba(56,189,248,0.08)_40%,transparent_75%)]",
+            // Long Break in Pomodoro: Serene Sky/Slate
+            timerMode === "pomodoro" && phase === "longBreak" &&
+              "bg-[radial-gradient(ellipse_100%_100%_at_50%_48%,rgba(56,189,248,0.18)_0%,rgba(148,163,184,0.06)_40%,transparent_75%)]"
+          )}
+        />
 
-          {/* Breathing focal core glow behind the timer */}
-          <motion.div 
-            animate={{
-              scale: isActive && !shouldReduceMotion ? [0.95, 1.05, 0.95] : 1,
-              opacity: isActive ? [0.18, 0.28, 0.18] : 0.12,
-            }}
-            transition={
-              isActive && !shouldReduceMotion
-                ? { duration: 5, repeat: Infinity, ease: "easeInOut" }
-                : { duration: 0.8, ease: "easeOut" }
-            }
-            className={cn(
-              "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(95vw,800px)] h-[min(95vw,800px)] rounded-full transition-colors duration-1000",
-              phase === "study" && "bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.30)_0%,rgba(16,185,129,0.08)_40%,transparent_70%)]",
-              phase === "shortBreak" && "bg-[radial-gradient(circle_at_50%_50%,rgba(56,189,248,0.30)_0%,rgba(56,189,248,0.08)_40%,transparent_70%)]",
-              phase === "longBreak" && "bg-[radial-gradient(circle_at_50%_50%,rgba(148,163,184,0.25)_0%,rgba(148,163,184,0.06)_40%,transparent_70%)]"
-            )}
-          />
+        {/* Breathing focal core glow centered behind the timer and controls */}
+        <motion.div 
+          animate={{
+            scale: isActive && !shouldReduceMotion ? [0.96, 1.04, 0.96] : 1,
+            opacity: isActive ? [0.22, 0.32, 0.22] : 0.14,
+          }}
+          transition={
+            isActive && !shouldReduceMotion
+              ? { duration: 5.5, repeat: Infinity, ease: "easeInOut" }
+              : { duration: 0.8, ease: "easeOut" }
+          }
+          className={cn(
+            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(90vw,720px)] h-[min(90vw,720px)] rounded-full transition-all duration-1000",
+            (timerMode !== "pomodoro" || phase === "study") &&
+              "bg-[radial-gradient(circle_at_50%_50%,rgba(120,169,255,0.24)_0%,rgba(99,102,241,0.10)_38%,transparent_70%)]",
+            timerMode === "pomodoro" && phase === "shortBreak" &&
+              "bg-[radial-gradient(circle_at_50%_50%,rgba(93,201,139,0.22)_0%,rgba(56,189,248,0.08)_38%,transparent_70%)]",
+            timerMode === "pomodoro" && phase === "longBreak" &&
+              "bg-[radial-gradient(circle_at_50%_50%,rgba(56,189,248,0.22)_0%,rgba(148,163,184,0.06)_38%,transparent_70%)]"
+          )}
+        />
 
-          {/* Smooth full-screen dark vignette for depth */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_95%_95%_at_50%_50%,transparent_40%,rgba(0,0,0,0.55)_100%)]" />
-        </div>
-      </FixedPortal>
+        {/* Smooth workspace perimeter vignette for visual depth */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_95%_95%_at_50%_50%,transparent_45%,rgba(11,13,18,0.65)_100%)] pointer-events-none" />
+      </div>
 
       {/* ── 1. Top Section: Calm Context & Mode Selector ── */}
       <motion.header 

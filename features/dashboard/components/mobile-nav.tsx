@@ -51,6 +51,7 @@ function MobileNavItem({
   return (
     <Link
       href={href}
+      prefetch={true}
       onTouchStart={() => setIsPressed(true)}
       onTouchEnd={() => setIsPressed(false)}
       onMouseDown={() => setIsPressed(true)}

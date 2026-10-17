@@ -6,6 +6,9 @@ import { StudyTimer } from "@/features/study/components/study-timer";
 import { CommandPaletteProvider } from "@/features/search/context/command-palette-context";
 import { DashboardMainContent } from "@/features/dashboard/components/dashboard-main-content";
 import { NotificationProvider } from "@/features/notifications/context/notification-context";
+import { DashboardDataProvider } from "@/features/dashboard/context/dashboard-data-context";
+import { AiAssistantProvider } from "@/features/ai-assistant/context/ai-assistant-context";
+import { AiStudyAssistantModal } from "@/features/ai-assistant/components/ai-study-assistant-modal";
 
 // Lazy-load CommandPalette to defer cmdk and 95KB syllabus JSON from initial dashboard route chunks
 const CommandPalette = dynamic(
@@ -23,19 +26,24 @@ export default function DashboardLayout({
   return (
     <NotificationProvider>
       <CommandPaletteProvider>
-        <StudySessionProvider>
-          <div className="flex min-h-screen w-full bg-transparent">
-            <Sidebar />
-            <DashboardMainContent>
-              <Topbar />
-              <main className="flex-1 p-4 md:p-6 lg:p-8 relative">
-                {children}
-              </main>
-            </DashboardMainContent>
-          </div>
-          <StudyTimer />
-          <CommandPalette />
-        </StudySessionProvider>
+        <AiAssistantProvider>
+          <StudySessionProvider>
+            <DashboardDataProvider>
+              <div className="flex min-h-screen w-full bg-transparent">
+                <Sidebar />
+                <DashboardMainContent>
+                  <Topbar />
+                  <main className="flex-1 p-4 md:p-6 lg:p-8 relative">
+                    {children}
+                  </main>
+                </DashboardMainContent>
+              </div>
+              <StudyTimer />
+              <CommandPalette />
+              <AiStudyAssistantModal />
+            </DashboardDataProvider>
+          </StudySessionProvider>
+        </AiAssistantProvider>
       </CommandPaletteProvider>
     </NotificationProvider>
   );

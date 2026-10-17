@@ -47,6 +47,7 @@ export const SidebarItem = memo(function SidebarItem({
   return (
     <Link
       href={href}
+      prefetch={true}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);

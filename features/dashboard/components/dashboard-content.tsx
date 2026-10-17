@@ -223,7 +223,6 @@ export function DashboardContent() {
               >
                 <WeeklyProgress
                   hoursCompleted={criticalMetrics.weeklyStudyHours}
-                  weeklyGoalHours={20}
                   sessions={criticalMetrics.study_sessions}
                 />
               </DashboardCard>

@@ -12,6 +12,7 @@ import { useStudySession } from "@/features/study/context/study-session-context"
 import { FixedPortal } from "@/components/ui/fixed-portal";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import { trackSearchUsage, pseudonymiseUserId } from "@/features/analytics/services/telemetry.service";
+import { useAiAssistant } from "@/features/ai-assistant/context/ai-assistant-context";
 
 const ICON_MAP: Record<string, { icon: React.ComponentType<{ className?: string }> }> = {
   "tool-notes": { icon: FileText },
@@ -46,6 +47,7 @@ export function CommandPalette() {
   const router = useRouter();
   const { startSession } = useStudySession();
   const { user } = useAuth();
+  const { setIsOpen: setIsAiOpen } = useAiAssistant();
   
   const [search, setSearch] = useState("");
 
@@ -73,6 +75,10 @@ export function CommandPalette() {
     }
     setIsOpen(false);
     setSearch("");
+    if (item.id === "tool-tutor") {
+      setIsAiOpen(true);
+      return;
+    }
     if (item.href) {
       router.push(item.href);
     } else if (item.action) {

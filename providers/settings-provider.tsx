@@ -23,6 +23,10 @@ export interface UserSettings {
   useFormulas: boolean;
   autoAudio: boolean;
   showNotifications: boolean;
+
+  // Goals & Targets
+  weeklyGoalHours: number;
+  isCustomWeeklyGoal: boolean;
 }
 
 const DEFAULT_SETTINGS: UserSettings = {
@@ -39,6 +43,8 @@ const DEFAULT_SETTINGS: UserSettings = {
   useFormulas: true,
   autoAudio: true,
   showNotifications: true,
+  weeklyGoalHours: 20,
+  isCustomWeeklyGoal: false,
 };
 
 const SETTINGS_STORAGE_KEY = "jee-pro-user-settings";
@@ -81,6 +87,8 @@ const SETTING_LABELS: Record<keyof UserSettings, string> = {
   useFormulas: "Formula Anchor Cards",
   autoAudio: "Interactive Video Previews",
   showNotifications: "System Notifications",
+  weeklyGoalHours: "Weekly Study Target",
+  isCustomWeeklyGoal: "Custom Weekly Target",
 };
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {

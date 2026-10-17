@@ -1,9 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, ReactNode } from "react";
 import {
   getCriticalDashboardMetrics,
   getSecondaryDashboardMetrics,
+  getCachedDashboardMetrics,
+  getCachedCriticalMetrics,
+  invalidateDashboardMetricsCache,
   CriticalDashboardMetrics,
   SecondaryDashboardMetrics,
   CompleteDashboardMetrics,
@@ -37,10 +40,34 @@ export function DashboardDataProvider({
   const { refreshKey } = useStudySession();
   const { user, isLoading: isAuthLoading } = useAuth();
 
-  const [criticalMetrics, setCriticalMetrics] = useState<CriticalDashboardMetrics | null>(initialMetrics);
-  const [secondaryMetrics, setSecondaryMetrics] = useState<SecondaryDashboardMetrics | null>(initialMetrics);
-  const [isCriticalLoading, setIsCriticalLoading] = useState<boolean>(!initialMetrics);
-  const [isSecondaryLoading, setIsSecondaryLoading] = useState<boolean>(!initialMetrics);
+  // Seed from props or client-side memory cache to eliminate loading states during tab re-entry
+  const [criticalMetrics, setCriticalMetrics] = useState<CriticalDashboardMetrics | null>(() => {
+    if (initialMetrics) return initialMetrics;
+    if (user?.id) {
+      return getCachedCriticalMetrics(user.id) || getCachedDashboardMetrics(user.id);
+    }
+    return null;
+  });
+
+  const [secondaryMetrics, setSecondaryMetrics] = useState<SecondaryDashboardMetrics | null>(() => {
+    if (initialMetrics) return initialMetrics;
+    if (user?.id) {
+      return getCachedDashboardMetrics(user.id);
+    }
+    return null;
+  });
+
+  const [isCriticalLoading, setIsCriticalLoading] = useState<boolean>(() => {
+    if (initialMetrics) return false;
+    if (user?.id && (getCachedCriticalMetrics(user.id) || getCachedDashboardMetrics(user.id))) return false;
+    return true;
+  });
+
+  const [isSecondaryLoading, setIsSecondaryLoading] = useState<boolean>(() => {
+    if (initialMetrics) return false;
+    if (user?.id && getCachedDashboardMetrics(user.id)) return false;
+    return true;
+  });
 
   const fetchCriticalOnly = useCallback(async () => {
     if (isAuthLoading || !user?.id) return null;
@@ -94,27 +121,76 @@ export function DashboardDataProvider({
   );
 
   const refreshMetrics = useCallback(async () => {
+    if (user?.id) {
+      invalidateDashboardMetricsCache(user.id);
+    }
     await loadMetrics({ silent: false });
-  }, [loadMetrics]);
+  }, [loadMetrics, user?.id]);
 
-  // Handle client-side session ends: refresh critical metrics instantly and update stats silently in background
+  // Synchronize when initialMetrics change or user logs in
   useEffect(() => {
-    if (refreshKey > 0 && user?.id) {
+    if (initialMetrics) {
+      setCriticalMetrics(initialMetrics);
+      setSecondaryMetrics(initialMetrics);
+      setIsCriticalLoading(false);
+      setIsSecondaryLoading(false);
+    } else if (user?.id && !criticalMetrics) {
+      const cached = getCachedDashboardMetrics(user.id);
+      if (cached) {
+        setCriticalMetrics(cached);
+        setSecondaryMetrics(cached);
+        setIsCriticalLoading(false);
+        setIsSecondaryLoading(false);
+      }
+    }
+  }, [initialMetrics, user?.id, criticalMetrics]);
+
+  // Listen for real-time study session and achievement completion events to refresh seamlessly
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const handleDataChange = () => {
+      loadMetrics({ silent: true });
+    };
+
+    window.addEventListener("jee-pro:study-session-completed", handleDataChange);
+    window.addEventListener("jee-pro:achievement-unlocked", handleDataChange);
+    window.addEventListener("jee-pro:achievement-progress-updated", handleDataChange);
+
+    return () => {
+      window.removeEventListener("jee-pro:study-session-completed", handleDataChange);
+      window.removeEventListener("jee-pro:achievement-unlocked", handleDataChange);
+      window.removeEventListener("jee-pro:achievement-progress-updated", handleDataChange);
+    };
+  }, [user?.id, loadMetrics]);
+
+  // Handle client-side session ends triggered via refreshKey
+  const lastRefreshKeyRef = useRef(refreshKey);
+  useEffect(() => {
+    if (refreshKey > lastRefreshKeyRef.current && user?.id) {
+      lastRefreshKeyRef.current = refreshKey;
       loadMetrics({ silent: true });
     }
   }, [refreshKey, user?.id, loadMetrics]);
 
-  // Cold start (if no initialMetrics SSR data): load critical metrics then secondary metrics progressively
+  // Cold start initialization: if no cached or initial metrics, fetch; otherwise revalidate quietly
+  const hasInitializedRef = useRef(false);
   useEffect(() => {
-    if (!initialMetrics && !isAuthLoading && user?.id) {
-      loadMetrics();
-    }
-  }, [initialMetrics, isAuthLoading, user?.id, loadMetrics]);
+    if (isAuthLoading || !user?.id || hasInitializedRef.current) return;
+    hasInitializedRef.current = true;
 
-  // If SSR provided metrics but daily missions were empty, fetch/generate in background
+    if (!criticalMetrics) {
+      loadMetrics();
+    } else {
+      // Revalidate in background without blocking UI
+      loadMetrics({ silent: true });
+    }
+  }, [isAuthLoading, user?.id, criticalMetrics, loadMetrics]);
+
+  // If daily missions are missing, fetch/generate in background
   useEffect(() => {
-    if (initialMetrics && user?.id && !isAuthLoading) {
-      if (!secondaryMetrics?.dailyMissions || secondaryMetrics.dailyMissions.length === 0) {
+    if (user?.id && !isAuthLoading && secondaryMetrics) {
+      if (!secondaryMetrics.dailyMissions || secondaryMetrics.dailyMissions.length === 0) {
         let isMounted = true;
         import("@/features/daily-missions/services/missions.service")
           .then(({ getTodayMissions }) => getTodayMissions(undefined, user.id))
@@ -130,7 +206,7 @@ export function DashboardDataProvider({
         };
       }
     }
-  }, [initialMetrics, user?.id, isAuthLoading, secondaryMetrics?.dailyMissions]);
+  }, [user?.id, isAuthLoading, secondaryMetrics]);
 
   const compositeMetrics: CompleteDashboardMetrics | null = useMemo(() => {
     if (!criticalMetrics) return null;

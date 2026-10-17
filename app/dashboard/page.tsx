@@ -1,7 +1,6 @@
 import { getAuthUser } from "@/lib/supabase/server";
 import { getDashboardMetrics } from "@/features/study/services/progress";
-import { DashboardDataProvider } from "@/features/dashboard/context/dashboard-data-context";
-import { DashboardContent } from "@/features/dashboard/components/dashboard-content";
+import { DashboardPageBridge } from "@/features/dashboard/components/dashboard-page-bridge";
 
 export default async function DashboardPage() {
   const user = await getAuthUser();
@@ -15,9 +14,5 @@ export default async function DashboardPage() {
     }
   }
 
-  return (
-    <DashboardDataProvider initialMetrics={initialMetrics}>
-      <DashboardContent />
-    </DashboardDataProvider>
-  );
+  return <DashboardPageBridge initialMetrics={initialMetrics} />;
 }
