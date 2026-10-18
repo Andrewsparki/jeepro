@@ -20,7 +20,7 @@ export function DashboardPageBridge({ initialMetrics }: DashboardPageBridgeProps
   // Fallback for standalone/isolated renders
   return (
     <DashboardDataProvider initialMetrics={initialMetrics}>
-      <DashboardContent />
+      <DashboardContent initialMetrics={initialMetrics} />
     </DashboardDataProvider>
   );
 }
@@ -37,5 +37,5 @@ function DashboardPageSync({ initialMetrics }: { initialMetrics: CompleteDashboa
     }
   }, [initialMetrics, criticalMetrics, seedMetrics]);
 
-  return <DashboardContent />;
+  return <DashboardContent initialMetrics={initialMetrics} />;
 }

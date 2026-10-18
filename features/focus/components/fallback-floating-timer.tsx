@@ -133,7 +133,14 @@ export function FallbackFloatingTimer({
       ? "#10b981"
       : phase === "longBreak"
       ? "#3b82f6"
-      : "#818cf8";
+      : "var(--accent)";
+
+  const accentGlow =
+    phase === "shortBreak"
+      ? "rgba(16, 185, 129, 0.2)"
+      : phase === "longBreak"
+      ? "rgba(59, 130, 246, 0.2)"
+      : "var(--accent-glow)";
 
   const phaseLabel =
     phase === "study"
@@ -168,7 +175,7 @@ export function FallbackFloatingTimer({
               "bg-[#0a0a0f]/95"
             )}
             style={{
-              boxShadow: `0 0 40px ${accent}15, 0 20px 60px rgba(0,0,0,0.5)`,
+              boxShadow: `0 0 40px ${accentGlow}, 0 20px 60px rgba(0,0,0,0.5)`,
             }}
           >
             {/* Drag handle + close */}
@@ -220,7 +227,7 @@ export function FallbackFloatingTimer({
                         fontFamily:
                           "var(--font-mono), monospace",
                         letterSpacing: "-0.02em",
-                        textShadow: `0 0 30px ${accent}33`,
+                        textShadow: `0 0 30px ${accentGlow}`,
                       }}
                     >
                       00:00

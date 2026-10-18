@@ -87,11 +87,11 @@ export function Topbar({ title, greeting = "Good morning" }: TopbarProps) {
           )}
           <Button
             variant="ghost"
-            className="text-muted-foreground hover:bg-accent/15 hover:text-[#78A9FF] flex items-center gap-2 rounded-full px-3 text-xs font-medium border border-border/40 bg-background/50 hover:border-[#78A9FF]/30 transition-colors"
+            className="text-muted-foreground hover:bg-accent/15 hover:text-accent flex items-center gap-2 rounded-full px-3 text-xs font-medium border border-border/40 bg-background/50 hover:border-accent/30 transition-colors"
             onClick={() => setIsAiOpen(true)}
             title="Open JEE Pro AI Study Assistant"
           >
-            <Sparkles className="h-3.5 w-3.5 text-[#78A9FF]" />
+            <Sparkles className="h-3.5 w-3.5 text-accent" />
             <span className="hidden sm:inline">AI Tutor</span>
           </Button>
 

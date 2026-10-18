@@ -10,10 +10,12 @@ import {
 } from "../hooks/use-concert-audio";
 import { SpectrumCanvas } from "./spectrum-canvas";
 import { ConcertStageLights } from "./concert-stage-lights";
+import { ConcertSpotlights } from "./concert-spotlights";
 import { ConcertControls } from "./concert-controls";
 import { TrackSelectorDrawer } from "./track-selector-drawer";
 import { VisualThemeId, VISUAL_THEMES } from "../types/themes";
 import { usePerformance } from "@/lib/performance-context";
+import { useSettings } from "@/providers/settings-provider";
 import {
   getAllTracksFromDB,
   saveTrackToDB,
@@ -37,8 +39,9 @@ function isEditableTarget(target: EventTarget | null): boolean {
 
 export function ConcertModal() {
   const { isOpen, closeConcert } = useConcertMode();
+  const { settings, updateSetting } = useSettings();
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [currentThemeId, setCurrentThemeId] = useState<VisualThemeId>("obsidian");
+  const currentThemeId = (settings.activeTheme as VisualThemeId) || "obsidian";
   const [tracks, setTracks] = useState<TrackItem[]>(DEFAULT_TRACKS);
   const [activeTrack, setActiveTrack] = useState<TrackItem | null>(DEFAULT_TRACKS[0]);
   const [isTrackDrawerOpen, setIsTrackDrawerOpen] = useState(false);
@@ -346,7 +349,13 @@ export function ConcertModal() {
           className="fixed inset-0 z-[99999] overflow-hidden select-none"
           style={{ backgroundColor: currentTheme.bgBase }}
         >
-          {/* Audio reactive stage lights and laser beams */}
+          {/* Cinematic EDM stage spotlights shining down and slowly sweeping across the background */}
+          <ConcertSpotlights
+            theme={currentTheme}
+            reducedMotion={effectiveReducedMotion}
+          />
+
+          {/* Independent ambient floating starlight particles */}
           <ConcertStageLights
             getFrequencySnapshot={getFrequencySnapshot}
             isPlaying={isPlaying}
@@ -376,7 +385,7 @@ export function ConcertModal() {
             activeTrack={activeTrack}
             onOpenTrackSelector={() => setIsTrackDrawerOpen(true)}
             currentTheme={currentTheme}
-            onSelectTheme={(id) => setCurrentThemeId(id)}
+            onSelectTheme={(id) => updateSetting("activeTheme", id)}
             onNextTrack={handleNextTrack}
             onPrevTrack={handlePrevTrack}
             hasNextTrack={hasNextTrack}

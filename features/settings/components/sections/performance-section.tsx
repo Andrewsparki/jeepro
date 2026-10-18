@@ -104,7 +104,7 @@ export function PerformanceSection() {
                 dispatchInteractionSound("ui.tab");
                 resetToPreset("balanced");
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg bg-[#1A2232] text-[#78A9FF] border border-[#78A9FF]/30 hover:bg-[#78A9FF]/10 transition-colors cursor-pointer select-none"
+              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg bg-surface text-accent border border-accent/30 hover:bg-accent/10 transition-colors cursor-pointer select-none"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset to Balanced</span>
@@ -123,10 +123,10 @@ export function PerformanceSection() {
                 type="button"
                 onClick={() => handleSelectPreset(p.id)}
                 className={cn(
-                  "relative flex flex-col justify-between text-left p-4 rounded-xl border transition-all duration-200 select-none cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] group",
+                  "relative flex flex-col justify-between text-left p-4 rounded-xl border transition-all duration-200 select-none cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-accent group",
                   isSelected
-                    ? "bg-[#172030] border-[#78A9FF]/60 shadow-[0_0_20px_rgba(120,169,255,0.15)] ring-1 ring-[#78A9FF]/30"
-                    : "bg-[#141923]/60 border-[#2B3342]/80 hover:bg-[#161D2B] hover:border-[#2B3342]"
+                    ? "bg-surface-active border-accent/60 shadow-[0_0_20px_var(--accent-glow)] ring-1 ring-accent/30"
+                    : "bg-surface/60 border-border hover:bg-surface-hover hover:border-border"
                 )}
               >
                 <div>
@@ -135,8 +135,8 @@ export function PerformanceSection() {
                       className={cn(
                         "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border transition-colors",
                         isSelected
-                          ? "bg-[#78A9FF]/20 border-[#78A9FF]/40 text-[#78A9FF]"
-                          : "bg-[#171D28] border-[#2B3342] text-[#A4ADBB] group-hover:text-[#F5F7FB]"
+                          ? "bg-accent/20 border-accent/40 text-accent"
+                          : "bg-surface border-border text-muted-foreground group-hover:text-foreground"
                       )}
                     >
                       <Icon className="w-4 h-4" />
@@ -146,36 +146,36 @@ export function PerformanceSection() {
                       className={cn(
                         "text-[10px] font-semibold px-2 py-0.5 rounded-full border",
                         isSelected
-                          ? "bg-[#78A9FF]/15 text-[#78A9FF] border-[#78A9FF]/30 font-bold"
-                          : "bg-[#121722] text-[#A4ADBB]/80 border-[#2B3342]/60"
+                          ? "bg-accent/15 text-accent border-accent/30 font-bold"
+                          : "bg-surface text-muted-foreground/80 border-border"
                       )}
                     >
                       {p.badge}
                     </span>
                   </div>
 
-                  <h4 className="text-sm font-semibold text-[#F5F7FB] flex items-center gap-1.5">
+                  <h4 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                     {p.label}
                     {isSelected && (
-                      <Check className="w-3.5 h-3.5 text-[#78A9FF] stroke-[3]" />
+                      <Check className="w-3.5 h-3.5 text-accent stroke-[3]" />
                     )}
                   </h4>
 
-                  <p className="text-xs text-[#A4ADBB] mt-1.5 leading-relaxed font-normal">
+                  <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed font-normal">
                     {p.description}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-[#2B3342]/40 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-[#A4ADBB]/70">
+                <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-muted-foreground/70">
                     {isSelected ? "Active Preset" : "Click to apply"}
                   </span>
                   <div
                     className={cn(
                       "w-2 h-2 rounded-full",
                       isSelected
-                        ? "bg-[#78A9FF] shadow-[0_0_8px_#78A9FF]"
-                        : "bg-[#2B3342]"
+                        ? "bg-accent shadow-[0_0_8px_var(--accent)]"
+                        : "bg-border"
                     )}
                   />
                 </div>
@@ -185,14 +185,14 @@ export function PerformanceSection() {
         </div>
 
         {preset === "custom" && (
-          <div className="mx-4 sm:mx-6 mb-5 px-3.5 py-2.5 rounded-xl bg-[#171D28] border border-[#78A9FF]/25 flex items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2 text-[#78A9FF]">
+          <div className="mx-4 sm:mx-6 mb-5 px-3.5 py-2.5 rounded-xl bg-surface border border-accent/25 flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 text-accent">
               <Sliders className="w-4 h-4 shrink-0" />
-              <span className="font-medium text-[#F5F7FB]">
+              <span className="font-medium text-foreground">
                 Custom Configuration active. Individual overrides applied below.
               </span>
             </div>
-            <span className="text-[11px] font-mono text-[#A4ADBB]">User Custom</span>
+            <span className="text-[11px] font-mono text-muted-foreground">User Custom</span>
           </div>
         )}
       </GlassSection>

@@ -80,16 +80,16 @@ export function DailyMissionsCard({ missions: initialMissions, delay = 0, isLoad
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-[#F5F7FB]">
+            <h3 className="text-base font-semibold text-foreground">
               {allCompleted ? "Daily Missions Complete" : "Daily Missions"}
             </h3>
             {allCompleted && (
-              <span className="flex items-center gap-1.5 text-[11px] font-medium text-[#78A9FF] bg-[#78A9FF]/10 px-2 py-0.5 rounded-full border border-[#78A9FF]/20">
+              <span className="flex items-center gap-1.5 text-[11px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full border border-accent/20">
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 500, damping: 25 }}
-                  className="flex items-center justify-center w-3 h-3 rounded-full bg-[#78A9FF]/20 text-[#78A9FF]"
+                  className="flex items-center justify-center w-3 h-3 rounded-full bg-accent/20 text-accent"
                 >
                   <Check className="w-2.5 h-2.5 stroke-[2.5]" />
                 </motion.span>
@@ -97,7 +97,7 @@ export function DailyMissionsCard({ missions: initialMissions, delay = 0, isLoad
               </span>
             )}
           </div>
-          <p className="text-xs text-[#A4ADBB] mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             {missions.length > 0 ? `${completedCount} of ${missions.length} completed` : "Personalized daily goals"}
           </p>
         </div>
@@ -107,9 +107,9 @@ export function DailyMissionsCard({ missions: initialMissions, delay = 0, isLoad
           onClick={handleRefresh}
           disabled={isLoading}
           aria-label="Refresh daily missions"
-          className="p-1.5 rounded-lg text-[#A4ADBB] hover:text-[#F5F7FB] hover:bg-white/5 active:scale-95 transition-all disabled:opacity-40"
+          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-hover/30 active:scale-95 transition-all disabled:opacity-40"
         >
-          <RotateCw className={cn("w-4 h-4", isRefreshing && "animate-spin text-[#78A9FF]")} />
+          <RotateCw className={cn("w-4 h-4", isRefreshing && "animate-spin text-accent")} />
         </button>
       </div>
 
@@ -121,7 +121,7 @@ export function DailyMissionsCard({ missions: initialMissions, delay = 0, isLoad
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 p-3 rounded-xl border border-[#2B3342] bg-[#121722]/60 animate-pulse"
+                className="flex items-center gap-3 p-3 rounded-xl border border-border bg-secondary/60 animate-pulse"
               >
                 <div className="w-5 h-5 rounded-full bg-white/10 shrink-0" />
                 <div className="flex-1 space-y-2">
@@ -138,15 +138,15 @@ export function DailyMissionsCard({ missions: initialMissions, delay = 0, isLoad
 
         {/* Error State */}
         {!isLoading && errorMessage && missions.length === 0 && (
-          <div className="p-4 rounded-xl border border-[#F17C7C]/30 bg-[#F17C7C]/5 text-center space-y-2">
-            <div className="flex items-center justify-center gap-2 text-sm text-[#F17C7C] font-medium">
+          <div className="p-4 rounded-xl border border-danger/30 bg-danger/5 text-center space-y-2">
+            <div className="flex items-center justify-center gap-2 text-sm text-danger font-medium">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
             <button
               type="button"
               onClick={handleRefresh}
-              className="inline-flex items-center gap-1.5 text-xs text-[#78A9FF] hover:text-[#A8C5FF] font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs text-accent hover:text-accent-hover font-medium transition-colors"
             >
               <RotateCw className="w-3.5 h-3.5" />
               Try again
@@ -156,20 +156,20 @@ export function DailyMissionsCard({ missions: initialMissions, delay = 0, isLoad
 
         {/* Empty State */}
         {!isLoading && !errorMessage && missions.length === 0 && (
-          <div className="p-5 rounded-xl border border-[#2B3342] bg-[#121722]/50 text-center space-y-3">
-            <div className="w-9 h-9 rounded-full bg-[#78A9FF]/10 border border-[#78A9FF]/20 flex items-center justify-center mx-auto text-[#78A9FF]">
+          <div className="p-5 rounded-xl border border-border bg-secondary/50 text-center space-y-3">
+            <div className="w-9 h-9 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto text-accent">
               <Sparkles className="w-4 h-4" />
             </div>
             <div className="space-y-1">
-              <h4 className="text-sm font-medium text-[#F5F7FB]">No Active Missions Today</h4>
-              <p className="text-xs text-[#A4ADBB] max-w-sm mx-auto">
+              <h4 className="text-sm font-medium text-foreground">No Active Missions Today</h4>
+              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
                 Generate tailored daily challenges based on your study rhythm to earn bonus XP.
               </p>
             </div>
             <button
               type="button"
               onClick={handleGenerate}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#78A9FF] hover:bg-[#A8C5FF] text-[#0B0D12] transition-colors shadow-sm"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-accent hover:bg-accent-hover text-accent-foreground transition-colors shadow-sm"
             >
               <Sparkles className="w-3.5 h-3.5" />
               Generate Missions
@@ -183,7 +183,7 @@ export function DailyMissionsCard({ missions: initialMissions, delay = 0, isLoad
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="p-4 rounded-xl border border-[#78A9FF]/25 bg-[#121722]/90 space-y-3.5"
+            className="p-4 rounded-xl border border-accent/25 bg-secondary/90 space-y-3.5"
           >
             {/* Top row: Status & Animated Checkmark */}
             <div className="flex items-center justify-between">
@@ -192,7 +192,7 @@ export function DailyMissionsCard({ missions: initialMissions, delay = 0, isLoad
                   initial={{ scale: 0, rotate: -20 }}
                   animate={{ scale: 1, rotate: 0 }}
                   transition={{ type: "spring", stiffness: 350, damping: 20 }}
-                  className="w-7 h-7 rounded-full bg-[#78A9FF]/15 border border-[#78A9FF]/30 flex items-center justify-center text-[#78A9FF]"
+                  className="w-7 h-7 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center text-accent"
                 >
                   <motion.svg
                     className="w-4 h-4"
@@ -212,44 +212,44 @@ export function DailyMissionsCard({ missions: initialMissions, delay = 0, isLoad
                   </motion.svg>
                 </motion.div>
                 <div>
-                  <h4 className="text-xs font-semibold text-[#F5F7FB]">All Goals Mastered</h4>
-                  <p className="text-[11px] text-[#A4ADBB]">3 of 3 completed today</p>
+                  <h4 className="text-xs font-semibold text-foreground">All Goals Mastered</h4>
+                  <p className="text-[11px] text-muted-foreground">3 of 3 completed today</p>
                 </div>
               </div>
 
               {allRewardsAwarded && (
-                <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#78A9FF]/10 border border-[#78A9FF]/20 text-[#78A9FF] text-xs font-semibold font-mono">
+                <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-accent/10 border border-accent/20 text-accent text-xs font-semibold font-mono">
                   <span>+{totalAwardedXP} XP</span>
-                  <span className="text-[10px] text-[#A4ADBB] font-sans font-normal ml-0.5">Awarded</span>
+                  <span className="text-[10px] text-muted-foreground font-sans font-normal ml-0.5">Awarded</span>
                 </div>
               )}
             </div>
 
             {/* Overall Progress Track Animated to 100% */}
             <div className="space-y-1">
-              <div className="relative h-1.5 w-full bg-[#171D28] rounded-full overflow-hidden border border-[#2B3342]/50">
+              <div className="relative h-1.5 w-full bg-surface rounded-full overflow-hidden border border-border/50">
                 <motion.div
-                  className="absolute top-0 left-0 bottom-0 rounded-full bg-[#78A9FF]"
+                  className="absolute top-0 left-0 bottom-0 rounded-full bg-accent"
                   initial={{ width: "66%" }}
                   animate={{ width: "100%" }}
                   transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 />
               </div>
-              <div className="flex justify-between items-center text-[10px] text-[#A4ADBB]">
+              <div className="flex justify-between items-center text-[10px] text-muted-foreground">
                 <span>Daily Target</span>
-                <span className="font-medium text-[#78A9FF]">100%</span>
+                <span className="font-medium text-accent">100%</span>
               </div>
             </div>
 
             {/* Collapsible / Reduced prominence completed missions */}
-            <div className="pt-1 border-t border-[#2B3342]/40">
+            <div className="pt-1 border-t border-border/40">
               <button
                 type="button"
                 onClick={() => {
                   playHapticSound("click");
                   setShowCompletedList((prev) => !prev);
                 }}
-                className="w-full flex items-center justify-between text-[11px] text-[#A4ADBB] hover:text-[#F5F7FB] py-1 transition-colors"
+                className="w-full flex items-center justify-between text-[11px] text-muted-foreground hover:text-foreground py-1 transition-colors"
               >
                 <span>{showCompletedList ? "Hide completed missions" : "Review completed missions (3)"}</span>
                 <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", showCompletedList && "rotate-180")} />
@@ -314,10 +314,10 @@ function MissionItem({ mission, index, isCompact = false }: { mission: DailyMiss
       transition={{ delay: 0.04 * index, duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "group relative flex items-start gap-3 rounded-xl border transition-all",
-        isCompact ? "p-2.5 bg-[#121722]/30 border-[#2B3342]/40" : (
+        isCompact ? "p-2.5 bg-secondary/30 border-border/40" : (
           mission.completed
-            ? "p-3 border-[#2B3342]/60 bg-[#121722]/40"
-            : "p-3 border-[#2B3342] bg-[#121722]/80 hover:bg-[#171D28] hover:border-[#78A9FF]/30"
+            ? "p-3 border-border/60 bg-secondary/40"
+            : "p-3 border-border bg-secondary/80 hover:bg-surface-hover hover:border-accent/30"
         )
       )}
     >
@@ -332,7 +332,7 @@ function MissionItem({ mission, index, isCompact = false }: { mission: DailyMiss
               exit={{ scale: 0.6, opacity: 0 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
-              <CheckCircle2 className="w-4 h-4 text-[#78A9FF]" />
+              <CheckCircle2 className="w-4 h-4 text-accent" />
             </motion.div>
           ) : (
             <motion.div
@@ -341,7 +341,7 @@ function MissionItem({ mission, index, isCompact = false }: { mission: DailyMiss
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.6, opacity: 0 }}
             >
-              <Circle className="w-4 h-4 text-[#A4ADBB]/40 group-hover:text-[#78A9FF] transition-colors" />
+              <Circle className="w-4 h-4 text-muted-foreground/40 group-hover:text-accent transition-colors" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -353,8 +353,8 @@ function MissionItem({ mission, index, isCompact = false }: { mission: DailyMiss
             className={cn(
               "text-xs font-medium transition-colors truncate",
               mission.completed
-                ? "text-[#A4ADBB]/70 line-through"
-                : "text-[#F5F7FB]"
+                ? "text-muted-foreground/70 line-through"
+                : "text-foreground"
             )}
           >
             {mission.title}
@@ -363,8 +363,8 @@ function MissionItem({ mission, index, isCompact = false }: { mission: DailyMiss
             className={cn(
               "text-[10px] font-semibold px-1.5 py-0.5 rounded border whitespace-nowrap",
               mission.completed
-                ? "text-[#78A9FF]/80 bg-[#78A9FF]/5 border-[#78A9FF]/15"
-                : "text-[#78A9FF] bg-[#78A9FF]/10 border-[#78A9FF]/20"
+                ? "text-accent/80 bg-accent/5 border-accent/15"
+                : "text-accent bg-accent/10 border-accent/20"
             )}
           >
             +{mission.reward_xp} XP
@@ -373,18 +373,15 @@ function MissionItem({ mission, index, isCompact = false }: { mission: DailyMiss
 
         {/* Progress Bar & Numerical Readout */}
         <div className="space-y-1">
-          <div className="relative h-1.5 w-full bg-[#171D28] rounded-full overflow-hidden border border-[#2B3342]/40">
+          <div className="relative h-1.5 w-full bg-surface rounded-full overflow-hidden border border-border/40">
             <motion.div
-              className={cn(
-                "absolute top-0 left-0 bottom-0 rounded-full transition-colors",
-                mission.completed ? "bg-[#78A9FF]" : "bg-[#78A9FF]"
-              )}
+              className="absolute top-0 left-0 bottom-0 rounded-full transition-colors bg-accent"
               initial={{ width: 0 }}
               animate={{ width: `${progressPercentage}%` }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             />
           </div>
-          <div className="flex justify-between items-center text-[10px] text-[#A4ADBB]">
+          <div className="flex justify-between items-center text-[10px] text-muted-foreground">
             <span>{getMissionUnitLabel(mission.mission_type, mission.current_value, mission.target_value, mission.completed)}</span>
             <span>{Math.round(progressPercentage)}%</span>
           </div>

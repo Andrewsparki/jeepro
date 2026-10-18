@@ -48,7 +48,7 @@ const backdropVariants: Variants = {
   animate: {
     opacity: 1,
     transition: {
-      duration: 0.24,
+      duration: 0.22,
       ease: [0.16, 1, 0.3, 1],
     },
   },
@@ -68,14 +68,14 @@ const modalShellVariants: Variants = {
     }
     return custom.isFullscreen
       ? { opacity: 0, scale: 0.985, y: 0 }
-      : { opacity: 0, scale: 0.96, y: 12 };
+      : { opacity: 0, scale: 0.96, y: 10 };
   },
   animate: (custom: { isFullscreen: boolean; shouldReduceMotion: boolean }) => ({
     opacity: 1,
     scale: 1,
     y: 0,
     transition: {
-      duration: custom.shouldReduceMotion ? 0.15 : 0.25,
+      duration: custom.shouldReduceMotion ? 0.15 : 0.35,
       ease: [0.16, 1, 0.3, 1],
     },
   }),
@@ -177,14 +177,16 @@ export function AiStudyAssistantModal() {
 
   const shouldReduceMotion = useReducedMotion() ?? false;
   const [isExiting, setIsExiting] = useState(false);
+  const [openingCount, setOpeningCount] = useState(0);
   const wasOpenRef = useRef(false);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
 
-  // Focus input and remember trigger element when opened
+  // Focus input, increment opening count for keyframes, and remember trigger element when opened
   useEffect(() => {
     if (isOpen) {
       wasOpenRef.current = true;
       setIsExiting(false);
+      setOpeningCount((prev) => prev + 1);
       previousActiveElementRef.current = (document.activeElement as HTMLElement) || null;
       setTimeout(() => {
         inputRef.current?.focus();
@@ -283,7 +285,7 @@ export function AiStudyAssistantModal() {
               initial="initial"
               animate="animate"
               exit="exit"
-              className="fixed inset-0 bg-[#07090E]/60 backdrop-blur-xl"
+              className="fixed inset-0 bg-background/80 backdrop-blur-xl"
               onClick={() => setIsOpen(false)}
             />
 
@@ -303,28 +305,65 @@ export function AiStudyAssistantModal() {
                 maxHeight: isFullscreen ? "100dvh" : "800px",
                 width: isFullscreen ? "100vw" : "min(94vw, 896px)",
               }}
-              className={`relative flex flex-col min-h-0 min-w-0 bg-[#0B0D13]/75 text-[#F5F7FB] shadow-[0_24px_60px_rgba(0,0,0,0.7),0_0_40px_rgba(120,169,255,0.06)] backdrop-blur-3xl ring-1 ring-[#78A9FF]/20 overflow-hidden ${
+              className={`relative flex flex-col min-h-0 min-w-0 bg-card/90 text-foreground shadow-[0_24px_60px_rgba(0,0,0,0.7),0_0_40px_var(--accent-glow)] backdrop-blur-3xl ring-1 ring-accent/20 overflow-hidden ${
                 isFullscreen
                   ? "rounded-none border-none"
-                  : "rounded-2xl border border-[#2B3342]/70"
+                  : "rounded-2xl border border-border/70"
               }`}
             >
+            {/* Cinematic Opening Border Light Sweep (plays on each opening) */}
+            {!shouldReduceMotion && (
+              <div 
+                key={`ai-border-trace-${openingCount}`}
+                className="absolute inset-0 pointer-events-none rounded-[inherit] overflow-hidden z-20"
+              >
+                <div 
+                  className="absolute -inset-[150%] animate-ai-border-trace opacity-0 pointer-events-none"
+                  style={{
+                    background: `conic-gradient(from 0deg, transparent 0deg, transparent 50deg, var(--accent) 75deg, rgba(255, 255, 255, 0.95) 88deg, var(--accent) 100deg, transparent 130deg, transparent 360deg)`,
+                    mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                    maskComposite: "exclude",
+                    WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                    WebkitMaskComposite: "xor",
+                    padding: "1.5px",
+                    borderRadius: "inherit",
+                  }}
+                />
+              </div>
+            )}
+
             {/* Header (Fixed shrink-0): Frosted glass */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#2B3342]/50 bg-[#121722]/50 backdrop-blur-md shrink-0 select-none">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#78A9FF]/20 to-[#4378FF]/30 border border-[#78A9FF]/30 flex items-center justify-center shadow-[0_0_15px_rgba(120,169,255,0.15)] shrink-0">
-                  <Sparkles className="h-5 w-5 text-[#78A9FF]" />
+            <div className="relative flex items-center justify-between px-5 py-3.5 border-b border-border/50 bg-surface/50 backdrop-blur-md shrink-0 select-none overflow-hidden">
+              {/* Cinematic Header Light Scan (150-500ms reveal) */}
+              {!shouldReduceMotion && (
+                <div
+                  key={`ai-header-scan-${openingCount}`}
+                  className="absolute inset-0 pointer-events-none animate-ai-header-scan opacity-0 z-10"
+                  style={{
+                    background: `linear-gradient(90deg, transparent 0%, rgba(var(--accent-rgb), 0.15) 35%, rgba(255, 255, 255, 0.6) 50%, rgba(var(--accent-rgb), 0.15) 65%, transparent 100%)`,
+                  }}
+                />
+              )}
+
+              <div className="flex items-center gap-3 min-w-0 z-10">
+                <div 
+                  key={`ai-icon-${openingCount}`}
+                  className={`h-9 w-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center shadow-[0_0_15px_var(--accent-glow)] shrink-0 ${
+                    !shouldReduceMotion ? "animate-ai-icon-ping" : ""
+                  }`}
+                >
+                  <Sparkles className="h-5 w-5 text-accent" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-sm sm:text-base font-semibold text-[#F5F7FB] tracking-tight truncate">
+                    <h2 className="text-sm sm:text-base font-semibold text-foreground tracking-tight truncate">
                       JEE Pro AI Assistant
                     </h2>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-[#78A9FF]/10 text-[#78A9FF] border border-[#78A9FF]/20 shrink-0">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-accent/10 text-accent border border-accent/20 shrink-0">
                       Gemini 3.6 Flash
                     </span>
                   </div>
-                  <p className="text-xs text-[#A4ADBB] truncate hidden sm:block">
+                  <p className="text-xs text-muted-foreground truncate hidden sm:block">
                     Physics • Chemistry • Mathematics Solver & Conceptual Tutor
                   </p>
                 </div>
@@ -336,7 +375,7 @@ export function AiStudyAssistantModal() {
                   <button
                     onClick={clearChat}
                     title="Clear Conversation"
-                    className="p-2 rounded-lg text-[#A4ADBB] hover:text-[#F5F7FB] hover:bg-[#1A2232] transition-colors"
+                    className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors cursor-pointer"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -345,11 +384,11 @@ export function AiStudyAssistantModal() {
                 {/* Fullscreen Toggle */}
                 <button
                   onClick={() => setIsFullscreen(!isFullscreen)}
-                  className="p-2 rounded-lg text-[#A4ADBB] hover:text-[#F5F7FB] hover:bg-[#1A2232] transition-colors"
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors cursor-pointer"
                   title={isFullscreen ? "Exit Fullscreen (Esc)" : "Fullscreen Mode"}
                 >
                   {isFullscreen ? (
-                    <Minimize2 className="h-4 w-4 text-[#78A9FF]" />
+                    <Minimize2 className="h-4 w-4 text-accent" />
                   ) : (
                     <Maximize2 className="h-4 w-4" />
                   )}
@@ -358,7 +397,7 @@ export function AiStudyAssistantModal() {
                 {/* Close Button */}
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-2 rounded-lg text-[#A4ADBB] hover:text-[#F5F7FB] hover:bg-[#1A2232] transition-colors"
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors cursor-pointer"
                   title="Close"
                 >
                   <X className="h-5 w-5" />
@@ -368,14 +407,14 @@ export function AiStudyAssistantModal() {
 
             {/* Context Sub-bar (if active) */}
             {(contextData?.subject || contextData?.chapter) && (
-              <div className="px-5 py-2 bg-[#121722]/90 border-b border-[#2B3342]/50 flex items-center gap-2 text-xs text-[#A4ADBB] shrink-0 min-w-0">
-                <BookOpen className="h-3.5 w-3.5 text-[#78A9FF] shrink-0" />
+              <div className="px-5 py-2 bg-surface/90 border-b border-border/50 flex items-center gap-2 text-xs text-muted-foreground shrink-0 min-w-0">
+                <BookOpen className="h-3.5 w-3.5 text-accent shrink-0" />
                 <span className="shrink-0">Context:</span>
                 {contextData.subject && (
-                  <span className="font-medium text-[#78A9FF] truncate">{contextData.subject}</span>
+                  <span className="font-medium text-accent truncate">{contextData.subject}</span>
                 )}
                 {contextData.chapter && (
-                  <span className="text-[#F5F7FB] truncate">› {contextData.chapter}</span>
+                  <span className="text-foreground truncate">› {contextData.chapter}</span>
                 )}
               </div>
             )}
@@ -400,19 +439,19 @@ export function AiStudyAssistantModal() {
               <div ref={scrollContentRef} className={`mx-auto w-full space-y-5 ${isFullscreen ? "max-w-5xl px-2 sm:px-6" : ""}`}>
                 {messages.length === 0 ? (
                   <div className="py-12 flex flex-col justify-center items-center text-center px-4 max-w-lg mx-auto">
-                    <div className="h-14 w-14 rounded-2xl bg-[#171E2C] border border-[#2B3342] flex items-center justify-center mb-4 shadow-inner">
-                      <Lightbulb className="h-7 w-7 text-[#78A9FF]" />
+                    <div className="h-14 w-14 rounded-2xl bg-surface border border-border flex items-center justify-center mb-4 shadow-inner">
+                      <Lightbulb className="h-7 w-7 text-accent" />
                     </div>
-                    <h3 className="text-lg font-semibold text-[#F5F7FB] mb-1.5">
+                    <h3 className="text-lg font-semibold text-foreground mb-1.5">
                       How can I help with your JEE prep?
                     </h3>
-                    <p className="text-sm text-[#A4ADBB] mb-6 leading-relaxed">
+                    <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
                       Ask me to break down tricky derivations, solve numericals step-by-step, or clarify mechanisms with LaTeX formulas.
                     </p>
 
                     {/* Suggestions */}
                     <div className="w-full space-y-2 text-left">
-                      <div className="text-[11px] font-mono uppercase tracking-wider text-[#A4ADBB]/70 px-1 font-semibold">
+                      <div className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground/70 px-1 font-semibold">
                         Suggested topics
                       </div>
                       {SUGGESTED_PROMPTS.map((item, idx) => {
@@ -421,16 +460,16 @@ export function AiStudyAssistantModal() {
                           <button
                             key={idx}
                             onClick={() => sendMessage(item.prompt, contextData)}
-                            className="w-full flex items-start gap-3 p-3 rounded-xl border border-[#2B3342]/70 bg-[#121722]/50 hover:bg-[#1A2232] hover:border-[#78A9FF]/40 transition-all text-left group cursor-pointer"
+                            className="w-full flex items-start gap-3 p-3 rounded-xl border border-border/70 bg-surface/50 hover:bg-surface hover:border-accent/40 transition-all text-left group cursor-pointer"
                           >
-                            <div className="p-1.5 rounded-lg bg-[#1A2232] border border-[#2B3342] text-[#78A9FF] group-hover:scale-105 transition-transform shrink-0">
+                            <div className="p-1.5 rounded-lg bg-surface border border-border text-accent group-hover:scale-105 transition-transform shrink-0">
                               <Icon className="h-4 w-4" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <div className="text-xs font-semibold text-[#78A9FF] mb-0.5">
+                              <div className="text-xs font-semibold text-accent mb-0.5">
                                 {item.label}
                               </div>
-                              <div className="text-xs text-[#A4ADBB] line-clamp-2 group-hover:text-[#F5F7FB] transition-colors">
+                              <div className="text-xs text-muted-foreground line-clamp-2 group-hover:text-foreground transition-colors">
                                 {item.prompt}
                               </div>
                             </div>
@@ -450,8 +489,8 @@ export function AiStudyAssistantModal() {
                         }`}
                       >
                         {isAssistant && (
-                          <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#78A9FF]/20 to-[#4378FF]/30 border border-[#78A9FF]/30 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                            <Bot className="h-4 w-4 text-[#78A9FF]" />
+                          <div className="h-8 w-8 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                            <Bot className="h-4 w-4 text-accent" />
                           </div>
                         )}
 
@@ -462,19 +501,19 @@ export function AiStudyAssistantModal() {
                               : "max-w-[92%] sm:max-w-[85%] px-4 sm:px-5 py-3.5 text-sm leading-relaxed"
                           } ${
                             isAssistant
-                              ? "bg-[#131926]/75 border border-[#2B3342]/70 text-[#F5F7FB] shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
-                              : "bg-gradient-to-r from-[#2563EB]/90 to-[#1D4ED8]/90 text-white font-medium shadow-[0_4px_14px_rgba(37,99,235,0.3)] ml-auto"
+                              ? "bg-card/80 border border-border/70 text-foreground shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
+                              : "bg-accent text-accent-foreground font-medium shadow-[0_4px_14px_var(--accent-glow)] ml-auto"
                           }`}
                         >
                           {isAssistant ? (
                             msg.content ? (
                               <AssistantMessageRenderer content={msg.content} isFullscreen={isFullscreen} />
                             ) : (
-                              <div className="flex items-center gap-2 py-1 text-xs text-[#A4ADBB]">
-                                <span className="h-2 w-2 rounded-full bg-[#78A9FF] animate-pulse" />
-                                <span className="h-2 w-2 rounded-full bg-[#78A9FF] animate-pulse delay-150" />
-                                <span className="h-2 w-2 rounded-full bg-[#78A9FF] animate-pulse delay-300" />
-                                <span className="font-mono text-[11px] text-[#A4ADBB]/80 ml-1">
+                              <div className="flex items-center gap-2 py-1 text-xs text-muted-foreground">
+                                <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
+                                <span className="h-2 w-2 rounded-full bg-accent animate-pulse delay-150" />
+                                <span className="h-2 w-2 rounded-full bg-accent animate-pulse delay-300" />
+                                <span className="font-mono text-[11px] text-muted-foreground/80 ml-1">
                                   Thinking & solving...
                                 </span>
                               </div>
@@ -485,8 +524,8 @@ export function AiStudyAssistantModal() {
                         </div>
 
                         {!isAssistant && (
-                          <div className="h-8 w-8 rounded-xl bg-[#1E2638] border border-[#2B3342] flex items-center justify-center shrink-0 mt-0.5">
-                            <User className="h-4 w-4 text-[#A4ADBB]" />
+                          <div className="h-8 w-8 rounded-xl bg-surface border border-border flex items-center justify-center shrink-0 mt-0.5">
+                            <User className="h-4 w-4 text-muted-foreground" />
                           </div>
                         )}
                       </div>
@@ -505,7 +544,7 @@ export function AiStudyAssistantModal() {
             </div>
 
             {/* Bottom Composer (Fixed shrink-0): Frosted glass */}
-            <div className="p-3 sm:p-4 border-t border-[#2B3342]/50 bg-[#0E121B]/65 backdrop-blur-xl shrink-0">
+            <div className="p-3 sm:p-4 border-t border-border/50 bg-card/65 backdrop-blur-xl shrink-0">
               <div className={`mx-auto w-full ${isFullscreen ? "max-w-5xl px-2 sm:px-6" : ""}`}>
                 <form onSubmit={handleSubmit} className="relative flex items-end gap-2">
                   <div className="relative flex-1 min-w-0">
@@ -516,7 +555,7 @@ export function AiStudyAssistantModal() {
                       onKeyDown={handleKeyDown}
                       placeholder="Ask any physics, chemistry, or math concept/problem... (Shift+Enter for newline)"
                       rows={2}
-                      className="w-full resize-none rounded-xl border border-[#2B3342]/80 bg-[#141A27]/70 backdrop-blur-md px-3.5 py-2.5 text-sm text-[#F5F7FB] placeholder:text-[#A4ADBB]/60 focus:border-[#78A9FF] focus:outline-none focus:ring-1 focus:ring-[#78A9FF]/40 transition-colors custom-scrollbar"
+                      className="w-full resize-none rounded-xl border border-border/80 bg-surface/70 backdrop-blur-md px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/40 transition-colors custom-scrollbar"
                     />
                   </div>
 
@@ -536,7 +575,7 @@ export function AiStudyAssistantModal() {
                       <Button
                         type="submit"
                         disabled={!input.trim()}
-                        className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(37,99,235,0.4)] shrink-0"
+                        className="h-10 w-10 rounded-xl bg-accent hover:opacity-90 text-accent-foreground disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_0_15px_var(--accent-glow)] shrink-0 transition-opacity"
                         title="Send Message"
                       >
                         <Send className="h-4 w-4" />
@@ -544,7 +583,7 @@ export function AiStudyAssistantModal() {
                     )}
                   </div>
                 </form>
-                <div className="flex items-center justify-between mt-2 px-1 text-[11px] font-mono text-[#A4ADBB]/60">
+                <div className="flex items-center justify-between mt-2 px-1 text-[11px] font-mono text-muted-foreground/60">
                   <span>Enter to send • Shift+Enter for new line</span>
                   <span>Markdown & KaTeX rendered</span>
                 </div>

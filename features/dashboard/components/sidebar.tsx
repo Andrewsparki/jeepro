@@ -181,7 +181,7 @@ export function Sidebar() {
                   setIsSocialOpen(!isSocialOpen);
                   playSound("liquid-glass");
                 }}
-                className="flex w-full items-center justify-between px-3 py-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] rounded-md cursor-pointer"
+                className="flex w-full items-center justify-between px-3 py-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase hover:text-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md cursor-pointer"
               >
                 SOCIAL
                 {isSocialOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
@@ -213,19 +213,19 @@ export function Sidebar() {
 
           <div
             className={cn(
-              "w-full relative flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium mt-2 transition-all duration-150 hover:bg-white/[0.03] text-[#A4ADBB]"
+              "w-full relative flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium mt-2 transition-all duration-150 hover:bg-surface-hover/30 text-muted-foreground"
             )}
           >
             <Link
               href="/dashboard/settings?tab=profile"
-              className="flex items-center gap-3 min-w-0 flex-1 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] group"
+              className="flex items-center gap-3 min-w-0 flex-1 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring group"
               title="View profile settings"
             >
-              <div className="h-8 w-8 rounded-full bg-[#78A9FF]/15 flex items-center justify-center border border-[#78A9FF]/25 text-[#78A9FF] font-semibold text-xs uppercase shrink-0 transition-transform group-hover:scale-105">
+              <div className="h-8 w-8 rounded-full bg-accent/15 flex items-center justify-center border border-accent/25 text-accent font-semibold text-xs uppercase shrink-0 transition-transform group-hover:scale-105">
                 {initials}
               </div>
               <div className="flex flex-col items-start truncate max-w-[110px]">
-                <span className="text-sm font-medium text-foreground leading-none mb-1 truncate w-full group-hover:text-[#F5F7FB] transition-colors">
+                <span className="text-sm font-medium text-foreground leading-none mb-1 truncate w-full group-hover:text-foreground transition-colors">
                   {displayName}
                 </span>
                 <span className="text-xs text-muted-foreground leading-none">Pro Plan</span>
@@ -236,7 +236,7 @@ export function Sidebar() {
               <button
                 type="submit"
                 onClick={() => playSound("liquid-glass")}
-                className="p-1.5 rounded-md text-[#A4ADBB] hover:text-[#F5F7FB] hover:bg-white/[0.08] transition-all outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] active:scale-90 cursor-pointer"
+                className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface-hover/50 transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-90 cursor-pointer"
                 title="Log out"
                 aria-label="Log out"
               >

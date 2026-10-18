@@ -7,7 +7,7 @@ export function TypographyArt() {
   return (
     <div className="py-12 px-4 flex flex-col items-center justify-center text-center relative overflow-hidden">
       {/* Soft background aura */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-36 bg-gradient-to-r from-[#78A9FF]/10 via-[#A8C5FF]/10 to-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-36 bg-gradient-to-r from-accent/15 via-secondary-accent/10 to-accent/5 rounded-full blur-3xl pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -24,8 +24,8 @@ export function TypographyArt() {
         </div>
 
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-light tracking-tight text-foreground/90 dark:text-white/90 leading-tight">
-          Crafted in <span className="font-serif italic font-normal text-foreground dark:text-white drop-shadow-[0_0_12px_rgba(120,169,255,0.15)] dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.3)]">silence</span>.<br />
-          Measured in <span className="font-serif italic font-normal text-foreground dark:text-white drop-shadow-[0_0_12px_rgba(120,169,255,0.15)] dark:drop-shadow-[0_0_12px_rgba(255,255,255,0.3)]">progress</span>.
+          Crafted in <span className="font-serif italic font-normal text-foreground dark:text-white drop-shadow-[0_0_12px_var(--accent-glow)]">silence</span>.<br />
+          Measured in <span className="font-serif italic font-normal text-foreground dark:text-white drop-shadow-[0_0_12px_var(--accent-glow)]">progress</span>.
         </h2>
 
         <div className="w-16 h-px bg-gradient-to-r from-transparent via-border dark:via-white/20 to-transparent mt-8" />

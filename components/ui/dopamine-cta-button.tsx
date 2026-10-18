@@ -37,7 +37,7 @@ export function DopamineCTAButton({
       {variant === "aurora" && (
         <div
           aria-hidden="true"
-          className="absolute -inset-0.5 rounded-full blur-md opacity-30 group-hover:opacity-60 transition-opacity duration-300 bg-gradient-to-r from-[#78A9FF] to-[#A8C5FF] -z-10 pointer-events-none"
+          className="absolute -inset-0.5 rounded-full blur-md opacity-30 group-hover:opacity-60 transition-opacity duration-300 bg-gradient-to-r from-accent to-secondary-accent -z-10 pointer-events-none"
         />
       )}
       {variant === "electric-white" && (
@@ -58,14 +58,14 @@ export function DopamineCTAButton({
           href={href}
           onClick={onClick}
           className={cn(
-            "relative w-full sm:w-auto inline-flex items-center justify-center rounded-full font-semibold select-none transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D12]",
+            "relative w-full sm:w-auto inline-flex items-center justify-center rounded-full font-semibold select-none transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             sizeClasses,
-            // Primary Gradient: High-contrast Electric Blue
+            // Primary Gradient: Dynamic Theme Accent
             variant === "aurora" && [
-              "bg-[#78A9FF] hover:bg-[#A8C5FF] text-[#0B0D12] font-bold",
-              "border border-[#78A9FF]/60 hover:border-[#78A9FF]",
-              "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_2px_12px_rgba(120,169,255,0.3)]",
-              "hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_6px_22px_rgba(120,169,255,0.45)]",
+              "bg-accent hover:bg-accent-hover text-accent-foreground font-bold",
+              "border border-accent/60 hover:border-accent",
+              "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_2px_12px_var(--accent-glow)]",
+              "hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_6px_22px_var(--accent-glow)]",
             ],
             // Solid Warm White Variant: Crisp, ultra-clean high-contrast
             variant === "electric-white" && [
@@ -76,8 +76,8 @@ export function DopamineCTAButton({
             ],
             // Secondary Dark Glass: Crisp smoked acrylic glass with subtle top highlight
             variant === "neon-glass" && [
-              "bg-white/[0.04] hover:bg-white/[0.08] text-[#A4ADBB] hover:text-[#F5F7FB]",
-              "border border-[#2B3342] hover:border-white/20 backdrop-blur-xl",
+              "bg-white/[0.04] hover:bg-white/[0.08] text-muted-foreground hover:text-foreground",
+              "border border-border hover:border-white/20 backdrop-blur-xl",
               "shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_2px_8px_rgba(0,0,0,0.3)]",
               "hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_4px_16px_rgba(0,0,0,0.4)]",
             ],
@@ -89,12 +89,12 @@ export function DopamineCTAButton({
 
           {/* Micro-Icon */}
           {isSecondary ? (
-            <Compass className="relative z-10 w-3.5 h-3.5 text-[#A4ADBB] group-hover:text-[#F5F7FB] transition-colors duration-200" />
+            <Compass className="relative z-10 w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors duration-200" />
           ) : (
             <ArrowRight
               className={cn(
                 "relative z-10 w-3.5 h-3.5 stroke-[2.2] group-hover:translate-x-0.5 transition-transform duration-200",
-                variant === "aurora" || variant === "electric-white" ? "text-[#0B0D12]" : "text-[#F5F7FB]"
+                variant === "aurora" || variant === "electric-white" ? "text-accent-foreground" : "text-foreground"
               )}
             />
           )}

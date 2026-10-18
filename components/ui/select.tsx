@@ -20,10 +20,10 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     data-slot="select-trigger"
     className={cn(
-      "flex h-10 w-full items-center justify-between gap-2.5 rounded-xl border border-[#2B3342] bg-[#121722]/90 px-3.5 py-2 text-sm text-[#F5F7FB] shadow-sm backdrop-blur-md transition-all duration-200",
+      "flex h-10 w-full items-center justify-between gap-2.5 rounded-xl border border-border bg-card/90 px-3.5 py-2 text-sm text-foreground shadow-sm backdrop-blur-md transition-all duration-200",
       "placeholder:text-muted-foreground",
-      "hover:border-[#78A9FF]/50 hover:bg-[#121722]",
-      "focus:outline-none focus:ring-2 focus:ring-[#78A9FF]/40 focus:border-[#78A9FF]",
+      "hover:border-accent/50 hover:bg-card",
+      "focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent",
       "disabled:cursor-not-allowed disabled:opacity-50",
       "[&>span]:line-clamp-1",
       className
@@ -31,7 +31,7 @@ const SelectTrigger = React.forwardRef<
     {...props}
   >
     <div className="flex items-center gap-2 truncate">
-      {icon && <span className="shrink-0 text-muted-foreground group-hover:text-[#78A9FF]">{icon}</span>}
+      {icon && <span className="shrink-0 text-muted-foreground group-hover:text-accent">{icon}</span>}
       {children}
     </div>
     {!hideChevron && (
@@ -80,7 +80,7 @@ const SelectContent = React.forwardRef<
       ref={ref}
       data-slot="select-content"
       className={cn(
-        "dropdown-animated-content relative z-50 max-h-80 min-w-[8.5rem] overflow-hidden rounded-xl border border-[#2B3342] bg-[#121722]/95 p-1.5 text-[#F5F7FB] shadow-[0_16px_40px_rgba(0,0,0,0.7),0_0_24px_rgba(120,169,255,0.08)] backdrop-blur-2xl",
+        "dropdown-animated-content relative z-50 max-h-80 min-w-[8.5rem] overflow-hidden rounded-xl border border-border bg-card/95 p-1.5 text-foreground shadow-[0_16px_40px_rgba(0,0,0,0.7),0_0_24px_var(--accent-glow)] backdrop-blur-2xl",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
         className
@@ -125,11 +125,11 @@ const SelectItem = React.forwardRef<
     ref={ref}
     data-slot="select-item"
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center rounded-lg py-2 pl-3 pr-8 text-sm text-[#F5F7FB] outline-none transition-all duration-150 ease-out",
+      "relative flex w-full cursor-pointer select-none items-center rounded-lg py-2 pl-3 pr-8 text-sm text-foreground outline-none transition-all duration-150 ease-out",
       "hover:translate-x-0.5 focus:translate-x-0.5",
-      "focus:bg-[#78A9FF]/15 focus:text-[#78A9FF]",
-      "data-[highlighted]:bg-[#78A9FF]/15 data-[highlighted]:text-[#78A9FF]",
-      "data-[state=checked]:bg-[#78A9FF]/10 data-[state=checked]:font-semibold data-[state=checked]:text-[#78A9FF]",
+      "focus:bg-accent/15 focus:text-accent",
+      "data-[highlighted]:bg-accent/15 data-[highlighted]:text-accent",
+      "data-[state=checked]:bg-accent/10 data-[state=checked]:font-semibold data-[state=checked]:text-accent",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
@@ -137,7 +137,7 @@ const SelectItem = React.forwardRef<
   >
     <span className="absolute right-2.5 flex h-3.5 w-3.5 items-center justify-center transition-transform duration-150">
       <SelectPrimitive.ItemIndicator>
-        <Check className="h-4 w-4 stroke-[2.5] text-[#78A9FF] animate-in fade-in-0 zoom-in-75 duration-150" />
+        <Check className="h-4 w-4 stroke-[2.5] text-accent animate-in fade-in-0 zoom-in-75 duration-150" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -151,7 +151,7 @@ const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[#2B3342]/70", className)}
+    className={cn("-mx-1 my-1 h-px bg-border/70", className)}
     {...props}
   />
 ));

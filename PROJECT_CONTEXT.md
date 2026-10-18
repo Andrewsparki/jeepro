@@ -108,7 +108,7 @@ Unlike conventional edtech apps that feature ad banners, algorithmically driven 
 Mounted in [`providers/index.tsx`](file:///c:/jee-pro/providers/index.tsx) at the root layout:
 
 ```tsx
-<ThemeProvider>              {/* Theme switching: midnight, amoled, titanium */}
+<ThemeProvider>              {/* Global Theme System: obsidian, cyberpunk, midnight, neon-arena, minimal-wave */}
   <SettingsProvider>         {/* User preferences & Web Audio sound effects */}
     <PerformanceProvider>    {/* Performance modes: premium, balanced, battery-saver */}
       <AppBootSequenceProvider>

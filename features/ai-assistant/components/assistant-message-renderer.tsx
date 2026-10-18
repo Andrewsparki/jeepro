@@ -45,7 +45,7 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
   return (
     <div
       className={cn(
-        "assistant-markdown font-sans text-[#F5F7FB] selection:bg-[#78A9FF]/30 subpixel-antialiased",
+        "assistant-markdown font-sans text-foreground selection:bg-accent/30 subpixel-antialiased",
         isFullscreen
           ? "text-[16.5px] sm:text-[17px] leading-[1.75] tracking-[-0.01em]"
           : "text-[14.5px] sm:text-[15px] leading-[1.65] tracking-[-0.005em]",
@@ -68,7 +68,7 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
           h1: ({ children }) => (
             <h1
               className={cn(
-                "font-bold text-foreground tracking-tight border-b border-[#2B3342]/60 text-[#78A9FF] first:mt-0",
+                "font-bold text-foreground tracking-tight border-b border-border/60 text-accent first:mt-0",
                 isFullscreen
                   ? "text-xl sm:text-2xl mt-6 mb-3 pb-1.5"
                   : "text-lg mt-4 mb-2 pb-1"
@@ -80,7 +80,7 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
           h2: ({ children }) => (
             <h2
               className={cn(
-                "font-semibold text-foreground tracking-tight text-[#94BCFF] first:mt-0",
+                "font-semibold text-foreground tracking-tight text-accent/90 first:mt-0",
                 isFullscreen
                   ? "text-lg sm:text-xl mt-5 mb-2.5"
                   : "text-base mt-3.5 mb-1.5"
@@ -92,7 +92,7 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
           h3: ({ children }) => (
             <h3
               className={cn(
-                "font-semibold text-foreground text-[#BACDFE] first:mt-0",
+                "font-semibold text-secondary-accent first:mt-0",
                 isFullscreen
                   ? "text-base sm:text-lg mt-4 mb-2"
                   : "text-sm mt-3 mb-1"
@@ -104,7 +104,7 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
           p: ({ children }) => (
             <p
               className={cn(
-                "first:mt-0 last:mb-0 text-[#E1E7F2]",
+                "first:mt-0 last:mb-0 text-foreground/90",
                 isFullscreen ? "my-3.5 leading-[1.72]" : "my-2 leading-relaxed"
               )}
             >
@@ -112,15 +112,15 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
             </p>
           ),
           strong: ({ children }) => (
-            <strong className="font-semibold text-white">{children}</strong>
+            <strong className="font-semibold text-foreground">{children}</strong>
           ),
           em: ({ children }) => (
-            <em className="italic text-[#BACDFE]/90">{children}</em>
+            <em className="italic text-secondary-accent/90">{children}</em>
           ),
           ul: ({ children }) => (
             <ul
               className={cn(
-                "ml-6 list-disc marker:text-[#78A9FF]/80 text-[#E1E7F2]",
+                "ml-6 list-disc marker:text-accent/80 text-foreground/90",
                 isFullscreen ? "my-3.5 space-y-2" : "my-2.5 space-y-1"
               )}
             >
@@ -130,7 +130,7 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
           ol: ({ children }) => (
             <ol
               className={cn(
-                "ml-6 list-decimal marker:font-mono marker:text-[#78A9FF]/80 text-[#E1E7F2]",
+                "ml-6 list-decimal marker:font-mono marker:text-accent/80 text-foreground/90",
                 isFullscreen ? "my-3.5 space-y-2" : "my-2.5 space-y-1"
               )}
             >
@@ -145,7 +145,7 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
           blockquote: ({ children }) => (
             <blockquote
               className={cn(
-                "border-l-3 border-[#78A9FF]/80 bg-[#161D2B]/70 rounded-r-xl italic text-[#BACDFE]",
+                "border-l-3 border-accent/80 bg-surface/70 rounded-r-xl italic text-foreground/90",
                 isFullscreen ? "my-4 pl-4 py-2.5 text-base" : "my-3 pl-3.5 py-1.5 text-sm"
               )}
             >
@@ -158,7 +158,7 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
               return (
                 <code
                   className={cn(
-                    "rounded-md bg-[#1B2232] font-mono font-medium text-[#78A9FF] border border-[#2B3342]/80",
+                    "rounded-md bg-surface font-mono font-medium text-accent border border-border/80",
                     isFullscreen ? "px-2 py-0.5 text-[14px]" : "px-1.5 py-0.5 text-[13px]"
                   )}
                   {...props}
@@ -170,16 +170,16 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
             return (
               <div
                 className={cn(
-                  "overflow-hidden rounded-xl border border-[#2B3342] bg-[#0E131E] shadow-sm",
+                  "overflow-hidden rounded-xl border border-border bg-card shadow-sm",
                   isFullscreen ? "my-4" : "my-3"
                 )}
               >
-                <div className="flex items-center justify-between px-4 py-2 border-b border-[#2B3342]/60 bg-[#141A28] text-[11px] font-mono text-[#A4ADBB]">
+                <div className="flex items-center justify-between px-4 py-2 border-b border-border/60 bg-surface text-[11px] font-mono text-muted-foreground">
                   <span>{className?.replace("language-", "") || "code"}</span>
                 </div>
                 <div
                   className={cn(
-                    "overflow-x-auto p-4 font-mono text-[#E1E7F2] custom-scrollbar",
+                    "overflow-x-auto p-4 font-mono text-foreground/90 custom-scrollbar",
                     isFullscreen ? "text-[13.5px] leading-relaxed" : "text-xs"
                   )}
                 >
@@ -191,7 +191,7 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
           table: ({ children }) => (
             <div
               className={cn(
-                "w-full overflow-x-auto rounded-xl border border-[#2B3342] custom-scrollbar",
+                "w-full overflow-x-auto rounded-xl border border-border custom-scrollbar",
                 isFullscreen ? "my-4 text-sm" : "my-3 text-xs"
               )}
             >
@@ -199,12 +199,12 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
             </div>
           ),
           thead: ({ children }) => (
-            <thead className="bg-[#141A28] border-b border-[#2B3342] text-[#F5F7FB] font-semibold">
+            <thead className="bg-surface border-b border-border text-foreground font-semibold">
               {children}
             </thead>
           ),
           tbody: ({ children }) => (
-            <tbody className="divide-y divide-[#2B3342]/60 bg-[#0E131E]/50">{children}</tbody>
+            <tbody className="divide-y divide-border/60 bg-card/50">{children}</tbody>
           ),
           tr: ({ children }) => <tr className="hover:bg-white/[0.02] transition-colors">{children}</tr>,
           th: ({ children }) => (
@@ -213,17 +213,17 @@ export const AssistantMessageRenderer = React.memo(function AssistantMessageRend
             </th>
           ),
           td: ({ children }) => (
-            <td className={cn("text-[#E1E7F2]", isFullscreen ? "px-4 py-2.5" : "px-3.5 py-2")}>
+            <td className={cn("text-foreground/90", isFullscreen ? "px-4 py-2.5" : "px-3.5 py-2")}>
               {children}
             </td>
           ),
-          hr: () => <hr className="my-5 border-[#2B3342]/60" />,
+          hr: () => <hr className="my-5 border-border/60" />,
           a: ({ href, children }) => (
             <a
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#78A9FF] underline underline-offset-2 hover:text-[#94BCFF] transition-colors font-medium"
+              className="text-accent underline underline-offset-2 hover:opacity-80 transition-opacity font-medium"
             >
               {children}
             </a>

@@ -39,7 +39,7 @@ export function StudyTimer() {
             {/* CSS-animated pulse glow — no JS-driven boxShadow */}
             <div className="relative">
               <div className="absolute -inset-1 rounded-full animate-timer-pulse opacity-60" 
-                style={{ background: "radial-gradient(circle, rgba(59,130,246,0.4) 0%, transparent 70%)" }}
+                style={{ background: "radial-gradient(circle, var(--accent-glow) 0%, transparent 70%)" }}
               />
               <div className="relative flex items-center gap-4 bg-background/80 backdrop-blur-xl border border-glass-border rounded-full pl-5 pr-2 py-2">
                 

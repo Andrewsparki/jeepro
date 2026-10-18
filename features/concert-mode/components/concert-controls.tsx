@@ -161,19 +161,19 @@ export function ConcertControls({
         </button>
       </div>
 
-      {/* Hero Track Identity (Center Floating) */}
-      <div className="absolute top-20 md:top-24 inset-x-0 flex flex-col items-center justify-center text-center px-4 pointer-events-none z-20">
-        <div className="relative mb-3">
+      {/* Hero Track Identity (Positioned above circle, clean responsive text wrapping) */}
+      <div className="absolute top-12 sm:top-14 md:top-16 inset-x-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none z-20">
+        <div className="relative mb-2">
           <div
-            className={`w-14 h-14 md:w-16 md:h-16 rounded-full bg-gradient-to-tr from-[#121722] via-[#171D28] to-[#2B3342] border flex items-center justify-center shadow-2xl transition-all duration-500 ${
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-[#121722] via-[#171D28] to-[#2B3342] border flex items-center justify-center shadow-2xl transition-all duration-500 ${
               isPlaying ? "animate-[spin_10s_linear_infinite]" : ""
             }`}
             style={{
               borderColor: `${currentTheme.primaryAccent}66`,
-              boxShadow: `0 0 35px ${currentTheme.primaryAccent}33`,
+              boxShadow: `0 0 25px ${currentTheme.primaryAccent}33`,
             }}
           >
-            <Disc3 className="w-8 h-8" style={{ color: currentTheme.primaryAccent }} />
+            <Disc3 className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: currentTheme.primaryAccent }} />
           </div>
           {isPlaying && (
             <div
@@ -183,11 +183,11 @@ export function ConcertControls({
           )}
         </div>
 
-        <h1 className="text-xl md:text-3xl font-bold tracking-tight text-[#F5F7FB] drop-shadow-md max-w-xl truncate px-4">
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-[#F5F7FB] drop-shadow-md max-w-2xl px-4 line-clamp-2 leading-snug">
           {activeTrack ? activeTrack.name : "Miguel Phonk ft. Matadora"}
         </h1>
         <p
-          className="text-xs md:text-sm font-medium tracking-wide mt-1 uppercase font-mono transition-colors duration-500 max-w-lg truncate px-4"
+          className="text-xs sm:text-xs md:text-sm font-medium tracking-wide mt-1 uppercase font-mono transition-colors duration-500 max-w-xl px-4 line-clamp-1 opacity-90"
           style={{ color: currentTheme.primaryAccent }}
         >
           {activeTrack ? activeTrack.artist : "Ultra Slowed // Live Arena Phonk"}

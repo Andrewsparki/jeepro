@@ -103,7 +103,14 @@ export function PipTimerContent({
       ? "#10b981"
       : phase === "longBreak"
       ? "#3b82f6"
-      : "#818cf8";
+      : "var(--accent, #78A9FF)";
+
+  const accentGlow =
+    phase === "shortBreak"
+      ? "rgba(16, 185, 129, 0.2)"
+      : phase === "longBreak"
+      ? "rgba(59, 130, 246, 0.2)"
+      : "var(--accent-glow, rgba(120, 169, 255, 0.2))";
 
   return (
     <div
@@ -143,7 +150,7 @@ export function PipTimerContent({
           letterSpacing: "-0.02em",
           lineHeight: 1,
           color: "#f4f4f5",
-          textShadow: `0 0 40px ${accent}33`,
+          textShadow: `0 0 40px ${accentGlow}`,
         }}
       >
         00:00
@@ -209,15 +216,15 @@ export function PipTimerContent({
             borderRadius: "50%",
             border: isActive
               ? "1px solid rgba(255,255,255,0.1)"
-              : `1px solid ${accent}66`,
+              : "1px solid var(--accent, #78A9FF)",
             background: isActive ? "rgba(255,255,255,0.08)" : accent,
-            color: isActive ? "#e4e4e7" : "#0a0a0f",
+            color: isActive ? "#e4e4e7" : "var(--accent-foreground, #0a0a0f)",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             transition: "all 150ms ease",
-            boxShadow: isActive ? "none" : `0 0 20px ${accent}44`,
+            boxShadow: isActive ? "none" : `0 0 20px ${accentGlow}`,
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.opacity = "0.85";

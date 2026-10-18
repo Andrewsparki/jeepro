@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "locomotive-scroll/locomotive-scroll.css";
 
-@custom-variant dark (&:where(.dark, .midnight, .amoled, .titanium, :is(.dark, .midnight, .amoled, .titanium) *));
+@custom-variant dark (&:where(.dark, .obsidian, .cyberpunk, .midnight, .neon-arena, .minimal-wave, .amoled, .titanium, :is(.dark, .obsidian, .cyberpunk, .midnight, .neon-arena, .minimal-wave, .amoled, .titanium) *));
 
 :root {
   /* Base Variables - Structure, Animation, Motion */
@@ -44,13 +44,14 @@
   --accent-foreground: #0B0D12;
 }
 
-/* Midnight / Obsidian Theme (Default) */
+/* 1. Obsidian Blue (Default JEE Pro Signature Theme) */
 :root,
-.midnight,
+.obsidian,
 .dark {
   --bg-primary: #0B0D12;
   --bg-secondary: #121722;
   --bg-elevated: #171D28;
+  --bg-card: #121722;
 
   --surface: rgba(120, 169, 255, 0.04);
   --surface-hover: rgba(120, 169, 255, 0.08);
@@ -90,11 +91,349 @@
   --muted: rgba(245, 247, 251, 0.06);
 }
 
-/* AMOLED Theme */
+/* 2. Cyberpunk Theme — High Voltage Neon Pink & Acid Cyan */
+.cyberpunk {
+  --bg-primary: #090514;
+  --bg-secondary: #120B24;
+  --bg-elevated: #1B1033;
+  --bg-card: #120B24;
+
+  --surface: rgba(255, 42, 133, 0.05);
+  --surface-hover: rgba(255, 42, 133, 0.09);
+  --surface-active: rgba(255, 42, 133, 0.15);
+
+  --glass: rgba(9, 5, 20, 0.80);
+  --glass-strong: rgba(18, 11, 36, 0.95);
+  --glass-border: #3D1C4D;
+
+  --text-primary: #FAF5FF;
+  --text-secondary: #BCA8CF;
+  --text-muted: #7E6B93;
+
+  --accent: #FF2A85;
+  --accent-hover: #FF5C9F;
+  --accent-rgb: 255, 42, 133;
+  --accent-soft: rgba(255, 42, 133, 0.14);
+  --accent-glow: rgba(255, 42, 133, 0.35);
+  --accent-foreground: #FFFFFF;
+
+  --secondary-accent: #00F0FF;
+  --secondary-accent-soft: rgba(0, 240, 255, 0.14);
+
+  --success: #00F0FF;
+  --warning: #FFE600;
+  --danger: #FF2A85;
+
+  --shadow-soft: 0 0 0 1px rgba(255, 42, 133, 0.06), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 0 0 1px rgba(255, 42, 133, 0.25), 0 12px 32px rgba(0, 0, 0, 0.55);
+  --shadow-medium: 0 0 0 1px rgba(61, 28, 77, 0.85), 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-strong: 0 0 0 1px rgba(61, 28, 77, 1), 0 16px 48px rgba(0, 0, 0, 0.8);
+  --shadow-glow: 0 0 24px rgba(255, 42, 133, 0.28);
+
+  --card-highlight-start: rgba(255, 42, 133, 0.06);
+  --card-highlight-end: rgba(0, 240, 255, 0.02);
+
+  --muted: rgba(250, 245, 255, 0.06);
+}
+
+/* 3. Midnight Theme — Deep Space Ultraviolet & Indigo Mist */
+.midnight {
+  --bg-primary: #05070D;
+  --bg-secondary: #0D101C;
+  --bg-elevated: #141829;
+  --bg-card: #0D101C;
+
+  --surface: rgba(157, 123, 255, 0.04);
+  --surface-hover: rgba(157, 123, 255, 0.08);
+  --surface-active: rgba(157, 123, 255, 0.13);
+
+  --glass: rgba(5, 7, 13, 0.80);
+  --glass-strong: rgba(13, 16, 28, 0.95);
+  --glass-border: #232742;
+
+  --text-primary: #F3F1FD;
+  --text-secondary: #A8A6C8;
+  --text-muted: #6B688E;
+
+  --accent: #9D7BFF;
+  --accent-hover: #BA9EFF;
+  --accent-rgb: 157, 123, 255;
+  --accent-soft: rgba(157, 123, 255, 0.13);
+  --accent-glow: rgba(157, 123, 255, 0.32);
+  --accent-foreground: #05070D;
+
+  --secondary-accent: #5856D6;
+  --secondary-accent-soft: rgba(88, 86, 214, 0.14);
+
+  --success: #4ADE80;
+  --warning: #FBBF24;
+  --danger: #F87171;
+
+  --shadow-soft: 0 0 0 1px rgba(157, 123, 255, 0.04), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 0 0 1px rgba(157, 123, 255, 0.2), 0 12px 32px rgba(0, 0, 0, 0.55);
+  --shadow-medium: 0 0 0 1px rgba(35, 39, 66, 0.85), 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-strong: 0 0 0 1px rgba(35, 39, 66, 1), 0 16px 48px rgba(0, 0, 0, 0.8);
+  --shadow-glow: 0 0 24px rgba(157, 123, 255, 0.25);
+
+  --card-highlight-start: rgba(157, 123, 255, 0.05);
+  --card-highlight-end: rgba(88, 86, 214, 0.01);
+
+  --muted: rgba(243, 241, 253, 0.06);
+}
+
+/* 4. Neon Arena Theme — Stadium Rave Emerald Laser & Teal Strobes */
+.neon-arena {
+  --bg-primary: #040D0A;
+  --bg-secondary: #0A1713;
+  --bg-elevated: #10241E;
+  --bg-card: #0A1713;
+
+  --surface: rgba(0, 245, 160, 0.04);
+  --surface-hover: rgba(0, 245, 160, 0.08);
+  --surface-active: rgba(0, 245, 160, 0.13);
+
+  --glass: rgba(4, 13, 10, 0.82);
+  --glass-strong: rgba(10, 23, 19, 0.95);
+  --glass-border: #1B382E;
+
+  --text-primary: #F0FFF8;
+  --text-secondary: #9EC4B5;
+  --text-muted: #5C8274;
+
+  --accent: #00F5A0;
+  --accent-hover: #46FFBA;
+  --accent-rgb: 0, 245, 160;
+  --accent-soft: rgba(0, 245, 160, 0.12);
+  --accent-glow: rgba(0, 245, 160, 0.32);
+  --accent-foreground: #040D0A;
+
+  --secondary-accent: #00D9F5;
+  --secondary-accent-soft: rgba(0, 217, 245, 0.12);
+
+  --success: #00F5A0;
+  --warning: #F5D90A;
+  --danger: #FF5252;
+
+  --shadow-soft: 0 0 0 1px rgba(0, 245, 160, 0.04), 0 2px 8px rgba(0, 0, 0, 0.45);
+  --shadow-hover: 0 0 0 1px rgba(0, 245, 160, 0.22), 0 12px 32px rgba(0, 0, 0, 0.55);
+  --shadow-medium: 0 0 0 1px rgba(27, 56, 46, 0.85), 0 8px 24px rgba(0, 0, 0, 0.65);
+  --shadow-strong: 0 0 0 1px rgba(27, 56, 46, 1), 0 16px 48px rgba(0, 0, 0, 0.85);
+  --shadow-glow: 0 0 24px rgba(0, 245, 160, 0.26);
+
+  --card-highlight-start: rgba(0, 245, 160, 0.05);
+  --card-highlight-end: rgba(0, 217, 245, 0.01);
+
+  --muted: rgba(240, 255, 248, 0.06);
+}
+
+/* 5. Minimal Wave Theme — Strict Monochrome (Black, White & Grayscale Only) */
+.minimal-wave {
+  --bg-primary: #080808;
+  --bg-secondary: #121212;
+  --bg-elevated: #181818;
+  --bg-card: #141414;
+
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --surface-active: rgba(255, 255, 255, 0.14);
+
+  --glass: rgba(14, 14, 14, 0.85);
+  --glass-strong: rgba(20, 20, 20, 0.96);
+  --glass-border: #262626;
+
+  --text-primary: #FAFAFA;
+  --text-secondary: #A3A3A3;
+  --text-muted: #666666;
+
+  --accent: #FFFFFF;
+  --accent-hover: #E5E5E5;
+  --accent-rgb: 255, 255, 255;
+  --accent-soft: rgba(255, 255, 255, 0.08);
+  --accent-glow: rgba(255, 255, 255, 0.16);
+  --accent-foreground: #080808;
+
+  --secondary-accent: #A3A3A3;
+  --secondary-accent-soft: rgba(163, 163, 163, 0.12);
+
+  --success: #FAFAFA;
+  --warning: #A3A3A3;
+  --danger: #737373;
+  --destructive: #262626;
+  --destructive-foreground: #FAFAFA;
+
+  --shadow-soft: 0 0 0 1px rgba(255, 255, 255, 0.04), 0 2px 8px rgba(0, 0, 0, 0.6);
+  --shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 12px 32px rgba(0, 0, 0, 0.7);
+  --shadow-medium: 0 0 0 1px #262626, 0 8px 24px rgba(0, 0, 0, 0.7);
+  --shadow-strong: 0 0 0 1px #333333, 0 16px 48px rgba(0, 0, 0, 0.85);
+  --shadow-glow: 0 0 20px rgba(255, 255, 255, 0.12);
+
+  --card-highlight-start: rgba(255, 255, 255, 0.05);
+  --card-highlight-end: rgba(255, 255, 255, 0);
+
+  --muted: rgba(255, 255, 255, 0.04);
+  --border: #262626;
+  --ring: #FFFFFF;
+}
+
+/* =========================================================================
+   Minimal Wave — Strict Platform-Wide Monochrome Enforcement
+   Zero Chromatic Colors (No Blue, Cyan, Green, Amber, Red, Purple, Pink)
+   ========================================================================= */
+
+/* 1. All Chromatic Text Colors -> Controlled Neutral Grayscales */
+.minimal-wave [class*="text-blue-"],
+.minimal-wave [class*="text-sky-"],
+.minimal-wave [class*="text-cyan-"],
+.minimal-wave [class*="text-indigo-"],
+.minimal-wave [class*="text-emerald-"],
+.minimal-wave [class*="text-green-"],
+.minimal-wave [class*="text-teal-"] {
+  color: #FAFAFA !important;
+}
+
+.minimal-wave [class*="text-amber-"],
+.minimal-wave [class*="text-yellow-"],
+.minimal-wave [class*="text-orange-"] {
+  color: #D4D4D4 !important;
+}
+
+.minimal-wave [class*="text-rose-"],
+.minimal-wave [class*="text-red-"],
+.minimal-wave [class*="text-pink-"],
+.minimal-wave [class*="text-purple-"],
+.minimal-wave [class*="text-violet-"],
+.minimal-wave [class*="text-fuchsia-"] {
+  color: #A3A3A3 !important;
+}
+
+/* 2. All Chromatic Background Colors -> Layered Neutral Grayscales */
+.minimal-wave [class*="bg-blue-"],
+.minimal-wave [class*="bg-sky-"],
+.minimal-wave [class*="bg-cyan-"],
+.minimal-wave [class*="bg-indigo-"],
+.minimal-wave [class*="bg-emerald-"],
+.minimal-wave [class*="bg-green-"],
+.minimal-wave [class*="bg-teal-"] {
+  background-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+.minimal-wave [class*="bg-amber-"],
+.minimal-wave [class*="bg-yellow-"],
+.minimal-wave [class*="bg-orange-"] {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.minimal-wave [class*="bg-rose-500"],
+.minimal-wave [class*="bg-red-500"],
+.minimal-wave [class*="bg-rose-600"],
+.minimal-wave [class*="bg-red-600"] {
+  background-color: #383838 !important;
+  color: #FAFAFA !important;
+}
+
+.minimal-wave [class*="bg-rose-"],
+.minimal-wave [class*="bg-red-"],
+.minimal-wave [class*="bg-pink-"],
+.minimal-wave [class*="bg-purple-"],
+.minimal-wave [class*="bg-violet-"],
+.minimal-wave [class*="bg-fuchsia-"] {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* 3. All Chromatic Borders -> Restrained Neutral Border Grays */
+.minimal-wave [class*="border-blue-"],
+.minimal-wave [class*="border-sky-"],
+.minimal-wave [class*="border-cyan-"],
+.minimal-wave [class*="border-indigo-"],
+.minimal-wave [class*="border-emerald-"],
+.minimal-wave [class*="border-green-"],
+.minimal-wave [class*="border-amber-"],
+.minimal-wave [class*="border-yellow-"],
+.minimal-wave [class*="border-orange-"],
+.minimal-wave [class*="border-rose-"],
+.minimal-wave [class*="border-red-"],
+.minimal-wave [class*="border-purple-"],
+.minimal-wave [class*="border-violet-"] {
+  border-color: #2D2D2D !important;
+}
+
+/* 4. Chromatic Gradients -> Neutral Grayscale Gradients */
+.minimal-wave [class*="from-amber-"],
+.minimal-wave [class*="from-blue-"],
+.minimal-wave [class*="from-emerald-"],
+.minimal-wave [class*="from-rose-"],
+.minimal-wave [class*="from-purple-"],
+.minimal-wave [class*="from-sky-"] {
+  --tw-gradient-from: rgba(255, 255, 255, 0.12) var(--tw-gradient-from-position) !important;
+}
+
+.minimal-wave [class*="via-amber-"],
+.minimal-wave [class*="via-blue-"],
+.minimal-wave [class*="via-emerald-"],
+.minimal-wave [class*="via-rose-"],
+.minimal-wave [class*="via-purple-"] {
+  --tw-gradient-stops: var(--tw-gradient-from), rgba(255, 255, 255, 0.06) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+.minimal-wave [class*="to-amber-"],
+.minimal-wave [class*="to-blue-"],
+.minimal-wave [class*="to-emerald-"],
+.minimal-wave [class*="to-rose-"],
+.minimal-wave [class*="to-purple-"] {
+  --tw-gradient-to: rgba(255, 255, 255, 0.02) var(--tw-gradient-to-position) !important;
+}
+
+/* 5. Colored Box Shadows -> Subtle Monochrome Glows / Neutral Shadows */
+.minimal-wave [class*="shadow-"][class*="rgba(120,169,255"],
+.minimal-wave [class*="shadow-"][class*="rgba(56,189,248"],
+.minimal-wave [class*="shadow-"][class*="rgba(59,130,246"],
+.minimal-wave [class*="shadow-"][class*="rgba(16,185,129"],
+.minimal-wave [class*="shadow-"][class*="rgba(245,158,11"],
+.minimal-wave [class*="shadow-"][class*="rgba(37,99,235"],
+.minimal-wave [class*="shadow-"][class*="rgba(168,85,247"] {
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 6. Colored Drop-Shadows -> Grayscale Drop Shadows */
+.minimal-wave [class*="drop-shadow-"][class*="rgba("] {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.15)) !important;
+}
+
+/* 7. SVGs, Charts & Badges Grayscale Filtering */
+.minimal-wave svg {
+  filter: grayscale(100%);
+}
+
+.minimal-wave .recharts-wrapper {
+  filter: grayscale(100%);
+}
+
+.minimal-wave .recharts-surface text {
+  fill: #A3A3A3 !important;
+}
+
+.minimal-wave .recharts-cartesian-grid line {
+  stroke: #262626 !important;
+}
+
+.minimal-wave img {
+  filter: grayscale(100%);
+}
+
+.minimal-wave canvas {
+  filter: grayscale(100%);
+}
+
+.minimal-wave [class*="text-rose-500"] {
+  filter: grayscale(100%);
+}
+
+/* Legacy Theme Fallbacks */
 .amoled {
   --bg-primary: #000000;
   --bg-secondary: #0B0D12;
   --bg-elevated: #121722;
+  --bg-card: #0B0D12;
 
   --surface: rgba(120, 169, 255, 0.02);
   --surface-hover: rgba(120, 169, 255, 0.05);
@@ -134,11 +473,11 @@
   --muted: rgba(245, 247, 251, 0.04);
 }
 
-/* Titanium Theme */
 .titanium {
   --bg-primary: #0F172A;
   --bg-secondary: #1E293B;
   --bg-elevated: #334155;
+  --bg-card: #1E293B;
 
   --surface: rgba(255, 255, 255, 0.04);
   --surface-hover: rgba(255, 255, 255, 0.08);
@@ -172,7 +511,6 @@
   --muted: rgba(255, 255, 255, 0.06);
 }
 
-/* Light Theme - Modern Academic & Productivity Design System */
 .light {
   --bg-primary: #F8F9FA;
   --bg-secondary: #F1F3F5;
@@ -240,6 +578,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-elevated: var(--bg-elevated);
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
   --color-surface-active: var(--surface-active);
@@ -925,6 +1266,71 @@ html[data-disable-hover="true"] [class*="hover:scale-"]:hover {
   }
 }
 
+/* AI System Online Cinematic Opening Animations */
+@keyframes ai-border-trace {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ai-header-scan {
+  0% {
+    opacity: 0;
+    transform: translateX(-120%) skewX(-25deg);
+  }
+  25% {
+    opacity: 0.95;
+  }
+  70% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(180%) skewX(-25deg);
+  }
+}
+
+@keyframes ai-icon-ping {
+  0% {
+    transform: scale(0.92);
+    box-shadow: 0 0 0 rgba(var(--accent-rgb), 0);
+  }
+  40% {
+    transform: scale(1.08);
+    box-shadow: 0 0 25px rgba(var(--accent-rgb), 0.75);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px var(--accent-glow);
+  }
+}
+
+.animate-ai-border-trace {
+  animation: ai-border-trace 0.65s cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.animate-ai-header-scan {
+  animation: ai-header-scan 0.55s 0.12s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.animate-ai-icon-ping {
+  animation: ai-icon-ping 0.55s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, box-shadow;
+}
+
 .animate-sheen-sweep {
   animation: sheen-sweep 4.5s ease-in-out infinite;
   will-change: transform;
@@ -938,7 +1344,10 @@ html[data-disable-hover="true"] [class*="hover:scale-"]:hover {
 @media (prefers-reduced-motion: reduce) {
 
   .animate-sheen-sweep,
-  .animate-cta-pulse {
+  .animate-cta-pulse,
+  .animate-ai-border-trace,
+  .animate-ai-header-scan,
+  .animate-ai-icon-ping {
     animation: none !important;
   }
 }

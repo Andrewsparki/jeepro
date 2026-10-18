@@ -401,7 +401,7 @@ export default function FocusPage() {
           className={cn(
             "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(90vw,720px)] h-[min(90vw,720px)] rounded-full transition-all duration-1000",
             (timerMode !== "pomodoro" || phase === "study") &&
-              "bg-[radial-gradient(circle_at_50%_50%,rgba(120,169,255,0.24)_0%,rgba(99,102,241,0.10)_38%,transparent_70%)]",
+              "bg-[radial-gradient(circle_at_50%_50%,var(--accent-glow)_0%,rgba(var(--accent-rgb),0.10)_38%,transparent_70%)]",
             timerMode === "pomodoro" && phase === "shortBreak" &&
               "bg-[radial-gradient(circle_at_50%_50%,rgba(93,201,139,0.22)_0%,rgba(56,189,248,0.08)_38%,transparent_70%)]",
             timerMode === "pomodoro" && phase === "longBreak" &&

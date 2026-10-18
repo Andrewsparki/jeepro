@@ -185,11 +185,11 @@ export const FocusTimer = React.memo(function FocusTimer({
 
   // Determine ring color based on phase
   let ringColorTheme = {
-    hex: "#78A9FF",
-    trackHex: "rgba(120, 169, 255, 0.12)", // Electric blue tint for track
+    hex: "var(--accent)",
+    trackHex: "var(--accent-soft)",
     gradientId: "study-gradient",
-    glowClass: "drop-shadow-[0_0_15px_rgba(120,169,255,0.4)]",
-    ambientClass: "drop-shadow-[0_0_30px_rgba(120,169,255,0.2)]",
+    glowClass: "drop-shadow-[0_0_15px_var(--accent-glow)]",
+    ambientClass: "drop-shadow-[0_0_30px_var(--accent-glow)]",
   };
   
   if (phase === "shortBreak") {
@@ -241,8 +241,8 @@ export const FocusTimer = React.memo(function FocusTimer({
             <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
           </filter>
           <linearGradient id="study-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#78A9FF" />
-            <stop offset="100%" stopColor="#A8C5FF" />
+            <stop offset="0%" stopColor="var(--accent)" />
+            <stop offset="100%" stopColor="var(--secondary-accent, var(--accent))" />
           </linearGradient>
           <linearGradient id="shortBreak-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#5DC98B" />
@@ -361,7 +361,7 @@ export const FocusTimer = React.memo(function FocusTimer({
           className={cn(
             "relative flex items-center justify-center font-mono font-semibold tabular-nums leading-none transition-all duration-500",
             isActive 
-              ? "drop-shadow-[0_0_24px_rgba(120,169,255,0.3)] text-[#F5F7FB]" 
+              ? "drop-shadow-[0_0_24px_var(--accent-glow)] text-foreground" 
               : "drop-shadow-md text-foreground/95",
             hasHours
               ? "text-[2.65rem] xs:text-[3.2rem] sm:text-[3.9rem] md:text-[4.4rem]"

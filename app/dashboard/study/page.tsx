@@ -43,7 +43,7 @@ export default function StudyHomePage() {
         {loading ? (
           <div className="grid gap-6 md:grid-cols-3">
             {[1, 2, 3].map(i => (
-              <Skeleton key={i} className="rounded-xl border border-white/[0.08] bg-[#090C15] p-6 h-48" />
+              <Skeleton key={i} className="rounded-xl border border-border bg-card p-6 h-48" />
             ))}
           </div>
         ) : (
@@ -61,21 +61,21 @@ export default function StudyHomePage() {
                   transition={{ delay: index * 0.08, duration: 0.3 }}
                 >
                   <Link href={`/dashboard/study/${subject.slug}`}>
-                    <div className="group relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#090C15] hover:border-white/[0.18] p-6 transition-all h-full flex flex-col shadow-sm">
+                    <div className="group relative overflow-hidden rounded-xl border border-border bg-card hover:border-accent/40 p-6 transition-all h-full flex flex-col shadow-sm">
                       <div className="flex items-center justify-between mb-5">
-                        <div className="p-3 rounded-lg bg-[#78A9FF]/10 border border-[#78A9FF]/20 text-[#78A9FF]">
-                          <BookOpen className="w-5 h-5 text-[#78A9FF]" />
+                        <div className="p-3 rounded-lg bg-accent/10 border border-accent/20 text-accent">
+                          <BookOpen className="w-5 h-5 text-accent" />
                         </div>
-                        <span className="text-xl font-mono font-bold text-white">{progress}%</span>
+                        <span className="text-xl font-mono font-bold text-foreground">{progress}%</span>
                       </div>
                       
                       <div className="mb-6">
-                        <h3 className="text-xl font-bold tracking-tight text-white mb-2 group-hover:text-zinc-200 transition-colors">
+                        <h3 className="text-xl font-bold tracking-tight text-foreground mb-2 group-hover:text-accent transition-colors">
                           {subject.name}
                         </h3>
-                        <p className="text-xs text-zinc-400 flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground flex items-center justify-between">
                           <span>{masteredTopics} / {totalTopics} Topics Mastered</span>
-                          <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-white" />
+                          <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-accent" />
                         </p>
                       </div>
                       
@@ -85,7 +85,7 @@ export default function StudyHomePage() {
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
                             transition={{ duration: 0.8, ease: "easeOut" }}
-                            className="h-full bg-[#78A9FF] rounded-full"
+                            className="h-full bg-accent rounded-full shadow-[0_0_8px_var(--accent-glow)]"
                           />
                         </div>
                       </div>

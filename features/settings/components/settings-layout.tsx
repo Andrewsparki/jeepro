@@ -112,17 +112,17 @@ export function SettingsLayout({
   return (
     <div className="w-full space-y-6 pb-20">
       {/* ── Page Header ─────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#2B3342]/70">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-border">
         <div className="space-y-1">
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F5F7FB]">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
               Settings
             </h1>
-            <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-medium text-[#78A9FF] bg-[#78A9FF]/10 border border-[#78A9FF]/20">
+            <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-medium text-accent bg-accent/10 border border-accent/20">
               Preferences
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#A4ADBB] max-w-xl">
+          <p className="text-xs sm:text-sm text-muted-foreground max-w-xl">
             Configure your student credentials, study environment, haptics, and data management.
           </p>
         </div>
@@ -130,7 +130,7 @@ export function SettingsLayout({
 
       {/* ── Mobile Horizontal Navigation Tabs (< lg) ────────────────────── */}
       <div className="block lg:hidden">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar p-1.5 rounded-xl bg-[#121722] border border-[#2B3342]/80">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar p-1.5 rounded-xl bg-card border border-border">
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             const isActive = activeTab === cat.id;
@@ -141,13 +141,13 @@ export function SettingsLayout({
                 type="button"
                 onClick={() => handleSelectTab(cat.id)}
                 className={cn(
-                  "relative flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg transition-all whitespace-nowrap select-none cursor-pointer shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF]",
+                  "relative flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg transition-all whitespace-nowrap select-none cursor-pointer shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-accent",
                   isActive
-                    ? "bg-[#78A9FF] text-[#0B0D12] font-bold shadow-xs"
-                    : "text-[#A4ADBB] hover:text-[#F5F7FB] hover:bg-white/[0.04]"
+                    ? "bg-accent text-accent-foreground font-bold shadow-xs"
+                    : "text-muted-foreground hover:text-foreground hover:bg-surface-hover"
                 )}
               >
-                <Icon className={cn("w-3.5 h-3.5", isActive ? "text-[#0B0D12]" : "text-[#78A9FF]")} />
+                <Icon className={cn("w-3.5 h-3.5", isActive ? "text-accent-foreground" : "text-accent")} />
                 <span>{cat.label}</span>
               </button>
             );
@@ -158,8 +158,8 @@ export function SettingsLayout({
       {/* ── Desktop Two-Column Layout (>= lg) ───────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Secondary Sidebar Navigation */}
-        <aside className="hidden lg:block lg:col-span-4 sticky top-6 space-y-1 bg-[#121722] border border-[#2B3342]/80 rounded-xl p-2 shadow-xs">
-          <div className="px-3 pt-2 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-[#A4ADBB]/70">
+        <aside className="hidden lg:block lg:col-span-4 sticky top-6 space-y-1 bg-card border border-border rounded-xl p-2 shadow-xs">
+          <div className="px-3 pt-2 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
             Navigation
           </div>
           {CATEGORIES.map((cat) => {
@@ -172,18 +172,18 @@ export function SettingsLayout({
                 type="button"
                 onClick={() => handleSelectTab(cat.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-150 outline-none select-none cursor-pointer focus-visible:ring-2 focus-visible:ring-[#78A9FF] group",
+                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-150 outline-none select-none cursor-pointer focus-visible:ring-2 focus-visible:ring-accent group",
                   isActive
-                    ? "bg-[#171D28] text-[#F5F7FB] border border-[#2B3342] shadow-xs"
-                    : "text-[#A4ADBB] hover:text-[#F5F7FB] hover:bg-white/[0.03] border border-transparent"
+                    ? "bg-accent/10 text-foreground border border-accent/30 shadow-xs"
+                    : "text-muted-foreground hover:text-foreground hover:bg-surface-hover border border-transparent"
                 )}
               >
                 <div
                   className={cn(
                     "w-7 h-7 rounded-md flex items-center justify-center shrink-0 border transition-colors",
                     isActive
-                      ? "bg-[#78A9FF]/15 border-[#78A9FF]/30 text-[#78A9FF]"
-                      : "bg-[#171D28] border-[#2B3342]/70 text-[#A4ADBB] group-hover:text-[#F5F7FB]"
+                      ? "bg-accent/15 border-accent/30 text-accent"
+                      : "bg-surface border-border text-muted-foreground group-hover:text-foreground"
                   )}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -193,7 +193,7 @@ export function SettingsLayout({
                   <span
                     className={cn(
                       "text-xs font-semibold tracking-tight block truncate",
-                      isActive ? "text-[#F5F7FB]" : "text-[#A4ADBB] group-hover:text-[#F5F7FB]"
+                      isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
                     )}
                   >
                     {cat.label}
@@ -201,7 +201,7 @@ export function SettingsLayout({
                 </div>
 
                 {isActive && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#78A9FF] shadow-[0_0_8px_#78A9FF] shrink-0" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_var(--accent)] shrink-0" />
                 )}
               </button>
             );
@@ -210,12 +210,12 @@ export function SettingsLayout({
 
         {/* Right Active Category View Pane */}
         <main className="lg:col-span-8 min-w-0 space-y-6">
-          <div className="flex items-center justify-between pb-3.5 border-b border-[#2B3342]/60">
+          <div className="flex items-center justify-between pb-3.5 border-b border-border">
             <div>
-              <h2 className="text-lg font-bold tracking-tight text-[#F5F7FB]">
+              <h2 className="text-lg font-bold tracking-tight text-foreground">
                 {currentCategory.label}
               </h2>
-              <p className="text-xs text-[#A4ADBB]">
+              <p className="text-xs text-muted-foreground">
                 {currentCategory.description}
               </p>
             </div>

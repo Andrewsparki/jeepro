@@ -43,22 +43,22 @@ export function ProgressRing({
       <div 
         className="absolute inset-0 rounded-full blur-[20px] pointer-events-none opacity-40 transition-opacity duration-700"
         style={{
-          background: "radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(37, 99, 235, 0.08) 60%, transparent 100%)"
+          background: "radial-gradient(circle, var(--accent-glow) 0%, rgba(var(--accent-rgb), 0.08) 60%, transparent 100%)"
         }}
       />
 
       <svg width={size} height={size} className="transform -rotate-90 relative z-10 overflow-visible">
         <defs>
-          {/* Premium Blue Gradient: #2563EB -> #3B82F6 -> #60A5FA */}
+          {/* Active Global Theme Gradient */}
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#2563EB" />
-            <stop offset="50%" stopColor="#3B82F6" />
-            <stop offset="100%" stopColor="#60A5FA" />
+            <stop offset="0%" stopColor="var(--secondary-accent, var(--accent))" />
+            <stop offset="50%" stopColor="var(--accent)" />
+            <stop offset="100%" stopColor="var(--secondary-accent, var(--accent))" />
           </linearGradient>
 
-          {/* Dark Background Track Gradient */}
+          {/* Theme Background Track Gradient */}
           <linearGradient id={trackGradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(37, 99, 235, 0.12)" />
+            <stop offset="0%" stopColor="var(--accent-soft)" />
             <stop offset="100%" stopColor="rgba(255, 255, 255, 0.03)" />
           </linearGradient>
 
@@ -84,7 +84,7 @@ export function ProgressRing({
           cx={center}
           cy={center}
           r={radius}
-          stroke="#3B82F6"
+          stroke="var(--accent)"
           strokeWidth={strokeWidth + 3}
           strokeOpacity={0.16}
           fill="transparent"
@@ -117,7 +117,7 @@ export function ProgressRing({
             cx={center}
             cy={center}
             r={radius}
-            stroke="#93C5FD"
+            stroke="var(--secondary-accent, var(--accent))"
             strokeWidth={strokeWidth - 2}
             strokeOpacity={0.7}
             fill="transparent"

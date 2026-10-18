@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { playHapticSound, SoundType } from "@/lib/sound-effects";
 import { dispatchInteractionSound, SemanticSoundEvent } from "@/lib/sound-engine";
 
+import { VisualThemeId, DEFAULT_THEME, THEME_IDS } from "@/types/theme";
+
 export interface UserSettings {
   // Study & Focus Experience
   focusMode: boolean;
@@ -16,7 +18,7 @@ export interface UserSettings {
   breakReminder: boolean;
 
   // Appearance & Viewports
-  activeTheme: "midnight" | "amoled" | "titanium" | "light";
+  activeTheme: VisualThemeId;
   ambientParticles: boolean;
   viewStyle: "carousel" | "grid";
   detailType: "page" | "modal";
@@ -36,7 +38,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   sounds: true,
   soundVolume: 0.8,
   breakReminder: true,
-  activeTheme: "midnight",
+  activeTheme: DEFAULT_THEME,
   ambientParticles: true,
   viewStyle: "carousel",
   detailType: "page",
@@ -94,15 +96,24 @@ const SETTING_LABELS: Record<keyof UserSettings, string> = {
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
   const [mounted, setMounted] = useState(false);
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount & synchronize theme
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
         const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored);
+          if (parsed.activeTheme) {
+            if (parsed.activeTheme === "amoled") parsed.activeTheme = "obsidian";
+            else if (parsed.activeTheme === "titanium") parsed.activeTheme = "minimal-wave";
+            else if (parsed.activeTheme === "light") parsed.activeTheme = "obsidian";
+            else if (!THEME_IDS.includes(parsed.activeTheme)) {
+              parsed.activeTheme = DEFAULT_THEME;
+            }
+            setTheme(parsed.activeTheme);
+          }
           setSettings((prev) => ({ ...prev, ...parsed }));
         }
       } catch {
@@ -112,7 +123,14 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     }, 0);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [setTheme]);
+
+  // Keep settings.activeTheme in sync if theme is switched externally
+  useEffect(() => {
+    if (theme && THEME_IDS.includes(theme as VisualThemeId)) {
+      setSettings((prev) => (prev.activeTheme === theme ? prev : { ...prev, activeTheme: theme as VisualThemeId }));
+    }
+  }, [theme]);
 
   const playSound = useCallback((type: SoundType = "click") => {
     playHapticSound(type, settings.sounds, settings.soundVolume);

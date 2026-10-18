@@ -112,7 +112,7 @@ export function FocusControls({
               "h-13 w-13 sm:h-15 sm:w-15 rounded-full flex items-center justify-center transition-all duration-300 relative group shrink-0",
               isActive 
                 ? "bg-white/12 text-foreground hover:bg-white/18 border border-white/15 shadow-md" 
-                : "bg-accent text-[#0B0D12] font-bold border border-accent/40 shadow-[0_0_25px_rgba(var(--accent-rgb,120,169,255),0.35)]"
+                : "bg-accent text-accent-foreground font-bold border border-accent/40 shadow-[0_0_25px_var(--accent-glow)]"
             )}
             title={isActive ? "Pause (Space)" : "Start (Space)"}
             aria-label={isActive ? "Pause Timer" : "Start Timer"}

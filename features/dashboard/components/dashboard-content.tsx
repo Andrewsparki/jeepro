@@ -164,8 +164,16 @@ function DashboardSkeleton() {
   );
 }
 
-export function DashboardContent() {
-  const { criticalMetrics, secondaryMetrics, isCriticalLoading } = useDashboardData();
+export function DashboardContent({
+  initialMetrics,
+}: {
+  initialMetrics?: CompleteDashboardMetrics | null;
+} = {}) {
+  const dashboardContext = useDashboardData();
+  const criticalMetrics = dashboardContext.criticalMetrics || initialMetrics;
+  const secondaryMetrics = dashboardContext.secondaryMetrics || initialMetrics;
+  const isCriticalLoading = !criticalMetrics && dashboardContext.isCriticalLoading;
+
   const { profile, user } = useAuth();
   const { ambientLighting, pageTransitions } = usePerformance();
 

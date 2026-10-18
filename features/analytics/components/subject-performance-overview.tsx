@@ -43,9 +43,9 @@ export function SubjectPerformanceOverview({ syllabus, progress }: SubjectPerfor
       const inProgressPercentage = totalTopics > 0 ? Math.round((inProgressTopics / totalTopics) * 100) : 0;
 
       let themeColor = "var(--accent)";
-      let borderGlow = "rgba(120, 169, 255, 0.2)";
+      let borderGlow = "var(--accent-glow)";
       let tint: "blue" | "emerald" | "purple" = "blue";
-      let badgeClass = "text-[#78A9FF] bg-[#78A9FF]/10 border-[#78A9FF]/20";
+      let badgeClass = "text-accent bg-accent/10 border-accent/20";
 
       if (sub.name.toLowerCase().includes("phys")) {
         themeColor = "#818cf8"; // Indigo / Electric Blue

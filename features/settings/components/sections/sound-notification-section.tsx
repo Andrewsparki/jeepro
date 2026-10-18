@@ -52,10 +52,10 @@ export function SoundNotificationSection() {
                 }}
                 onMouseUp={() => playSound("soft-tap")}
                 onTouchEnd={() => playSound("soft-tap")}
-                className="w-full accent-[#78A9FF] cursor-pointer h-1.5 rounded-lg bg-[#171D28] border border-[#2B3342]"
+                className="w-full accent-accent cursor-pointer h-1.5 rounded-lg bg-surface border border-border"
                 aria-label="Master Interaction Volume"
               />
-              <span className="text-xs font-mono font-bold text-[#F5F7FB] w-9 text-right shrink-0">
+              <span className="text-xs font-mono font-bold text-foreground w-9 text-right shrink-0">
                 {Math.round((settings.soundVolume ?? 0.8) * 100)}%
               </span>
             </div>

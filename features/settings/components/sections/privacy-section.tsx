@@ -151,12 +151,12 @@ export function PrivacySection() {
             type="button"
             onClick={handleExportData}
             disabled={isExporting}
-            className="px-3.5 py-2 rounded-lg bg-[#171D28] hover:bg-white/[0.05] border border-[#2B3342] text-[#F5F7FB] text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="px-3.5 py-2 rounded-lg bg-surface hover:bg-white/[0.05] border border-border text-foreground text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             {isExporting ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#78A9FF]" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-accent" />
             ) : (
-              <Download className="w-3.5 h-3.5 text-[#78A9FF]" />
+              <Download className="w-3.5 h-3.5 text-accent" />
             )}
             <span>Export JSON</span>
           </button>
@@ -171,7 +171,7 @@ export function PrivacySection() {
             type="button"
             onClick={handleCloudSync}
             disabled={isSyncing}
-            className="px-3.5 py-2 rounded-lg bg-[#171D28] hover:bg-white/[0.05] border border-[#2B3342] text-[#F5F7FB] text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="px-3.5 py-2 rounded-lg bg-surface hover:bg-white/[0.05] border border-border text-foreground text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             {isSyncing ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin text-[#5DC98B]" />
@@ -190,19 +190,19 @@ export function PrivacySection() {
           <button
             type="button"
             onClick={openPreferencesModal}
-            className="px-3.5 py-2 rounded-lg bg-[#171D28] hover:bg-white/[0.05] border border-[#2B3342] text-[#F5F7FB] text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 rounded-lg bg-surface hover:bg-white/[0.05] border border-border text-foreground text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
           >
-            <Sliders className="w-3.5 h-3.5 text-[#78A9FF]" />
+            <Sliders className="w-3.5 h-3.5 text-accent" />
             <span>Customize Cookies</span>
           </button>
         </SettingRow>
       </GlassSection>
 
       {/* ── 2. Danger Zone (Destructive Actions) ──────────────────────────── */}
-      <div className="rounded-xl bg-[#121722] border border-[#F17C7C]/30 overflow-hidden">
+      <div className="rounded-xl bg-card border border-[#F17C7C]/30 overflow-hidden">
         <div className="p-5 sm:p-6 border-b border-[#F17C7C]/20 bg-[#F17C7C]/5 flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[#171D28] border border-[#F17C7C]/30 text-[#F17C7C] flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-surface border border-[#F17C7C]/30 text-[#F17C7C] flex items-center justify-center shrink-0">
               <AlertTriangle className="w-4 h-4" />
             </div>
             <div>
@@ -219,14 +219,14 @@ export function PrivacySection() {
           </div>
         </div>
 
-        <div className="divide-y divide-[#2B3342]/50">
+        <div className="divide-y divide-border/50">
           {/* Reset Account Progress */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 px-5 sm:px-6 gap-3 sm:gap-4 hover:bg-white/[0.015] transition-colors">
             <div className="space-y-0.5 max-w-lg">
-              <span className="text-sm font-medium text-[#F5F7FB] block">
+              <span className="text-sm font-medium text-foreground block">
                 Reset Account Progress
               </span>
-              <p className="text-xs text-[#A4ADBB] leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 Permanently reset all syllabus completion checks, XP milestones, formula mastery states, and active streaks.
               </p>
             </div>
@@ -248,10 +248,10 @@ export function PrivacySection() {
           {/* Clear Study Sessions */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 px-5 sm:px-6 gap-3 sm:gap-4 hover:bg-white/[0.015] transition-colors">
             <div className="space-y-0.5 max-w-lg">
-              <span className="text-sm font-medium text-[#F5F7FB] block">
+              <span className="text-sm font-medium text-foreground block">
                 Clear Study Session Logs
               </span>
-              <p className="text-xs text-[#A4ADBB] leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 Delete historical study durations and timeline records without resetting chapter syllabus checkmarks.
               </p>
             </div>
@@ -270,14 +270,14 @@ export function PrivacySection() {
 
       {/* ── 3. Reset Confirmation Modal ───────────────────────────────────── */}
       <Dialog open={isResetModalOpen} onOpenChange={setIsResetModalOpen}>
-        <DialogContent className="max-w-md bg-[#121722] border border-[#2B3342] text-[#F5F7FB] p-6 rounded-xl">
+        <DialogContent className="max-w-md bg-card border border-border text-foreground p-6 rounded-xl">
           <DialogHeader className="space-y-2">
             <DialogTitle className="text-lg font-bold text-[#F17C7C] flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-[#F17C7C]" />
               <span>Confirm Complete Progress Reset</span>
             </DialogTitle>
-            <DialogDescription className="text-xs text-[#A4ADBB] leading-relaxed">
-              This action permanently wipes all your topic checkpoints, XP gains, and continuous streak data. To proceed, type <span className="font-mono font-bold text-white bg-[#171D28] px-1.5 py-0.5 rounded border border-[#2B3342]">RESET</span> below.
+            <DialogDescription className="text-xs text-muted-foreground leading-relaxed">
+              This action permanently wipes all your topic checkpoints, XP gains, and continuous streak data. To proceed, type <span className="font-mono font-bold text-foreground bg-surface px-1.5 py-0.5 rounded border border-border">RESET</span> below.
             </DialogDescription>
           </DialogHeader>
 
@@ -287,7 +287,7 @@ export function PrivacySection() {
               value={confirmInput}
               onChange={(e) => setConfirmInput(e.target.value)}
               placeholder="Type RESET to confirm"
-              className="w-full bg-[#171D28] border border-[#2B3342] text-[#F5F7FB] placeholder-[#A4ADBB]/40 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-[#F17C7C] focus:ring-1 focus:ring-[#F17C7C]"
+              className="w-full bg-surface border border-border text-foreground placeholder-muted-foreground/40 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-[#F17C7C] focus:ring-1 focus:ring-[#F17C7C]"
             />
           </div>
 
@@ -295,7 +295,7 @@ export function PrivacySection() {
             <button
               type="button"
               onClick={() => setIsResetModalOpen(false)}
-              className="px-4 py-2 rounded-lg bg-[#171D28] hover:bg-white/[0.06] text-[#A4ADBB] text-xs font-medium border border-[#2B3342] transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-lg bg-surface hover:bg-white/[0.06] text-muted-foreground text-xs font-medium border border-border transition-colors cursor-pointer"
             >
               Cancel
             </button>

@@ -6,11 +6,14 @@ import { PremiumSwitch } from "../ui/premium-switch";
 import { SegmentedControl } from "../ui/segmented-control";
 import { useSettings } from "@/providers/settings-provider";
 
+import { VisualThemeId, VISUAL_THEMES } from "@/types/theme";
+
 const THEMES = [
-  { id: "midnight", label: "Midnight", color: "#78A9FF" },
-  { id: "amoled", label: "AMOLED", color: "#000000" },
-  { id: "titanium", label: "Titanium", color: "#64748B" },
-  { id: "light", label: "Daylight", color: "#3B82F6" },
+  { id: "obsidian", label: "Obsidian Blue", color: VISUAL_THEMES.obsidian.primaryAccent },
+  { id: "cyberpunk", label: "Cyberpunk", color: VISUAL_THEMES.cyberpunk.primaryAccent },
+  { id: "midnight", label: "Midnight", color: VISUAL_THEMES.midnight.primaryAccent },
+  { id: "neon-arena", label: "Neon Arena", color: VISUAL_THEMES["neon-arena"].primaryAccent },
+  { id: "minimal-wave", label: "Minimal Wave", color: VISUAL_THEMES["minimal-wave"].primaryAccent },
 ] as const;
 
 const VIEW_STYLES = [

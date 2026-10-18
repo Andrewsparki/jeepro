@@ -49,7 +49,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-[#0B0D12]/75 backdrop-blur-md modal-animated-overlay",
+        "fixed inset-0 z-50 bg-background/80 backdrop-blur-md modal-animated-overlay",
         className
       )}
       {...props}

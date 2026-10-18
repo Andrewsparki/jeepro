@@ -34,11 +34,11 @@ function ItemIcon({ type, id }: { type: string; id: string }) {
   const config = ICON_MAP[id];
   if (config) {
     const IconComp = config.icon;
-    return <IconComp className="w-4 h-4 text-[#A4ADBB] transition-colors group-hover:text-[#78A9FF] group-aria-selected:text-[#78A9FF]" />;
+    return <IconComp className="w-4 h-4 text-muted-foreground transition-colors group-hover:text-accent group-aria-selected:text-accent" />;
   }
-  if (type === "subject") return <Book className="w-4 h-4 text-[#A4ADBB] transition-colors group-hover:text-[#78A9FF] group-aria-selected:text-[#78A9FF]" />;
-  if (type === "chapter") return <FileText className="w-4 h-4 text-[#A4ADBB] transition-colors group-hover:text-[#78A9FF] group-aria-selected:text-[#78A9FF]" />;
-  return <ChevronRight className="w-4 h-4 text-[#A4ADBB] transition-colors group-hover:text-[#78A9FF] group-aria-selected:text-[#78A9FF]" />;
+  if (type === "subject") return <Book className="w-4 h-4 text-muted-foreground transition-colors group-hover:text-accent group-aria-selected:text-accent" />;
+  if (type === "chapter") return <FileText className="w-4 h-4 text-muted-foreground transition-colors group-hover:text-accent group-aria-selected:text-accent" />;
+  return <ChevronRight className="w-4 h-4 text-muted-foreground transition-colors group-hover:text-accent group-aria-selected:text-accent" />;
 }
 
 export function CommandPalette() {
@@ -145,7 +145,7 @@ export function CommandPalette() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-[#0B0D12]/80 backdrop-blur-md"
+            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md"
             onClick={() => setIsOpen(false)}
           />
           
@@ -159,7 +159,7 @@ export function CommandPalette() {
               className="w-full max-w-2xl pointer-events-auto"
             >
               <Command
-                className="overflow-hidden rounded-2xl border border-[#2B3342] bg-[#0B0D12]/95 text-[#F5F7FB] shadow-[0_24px_60px_rgba(0,0,0,0.8),0_0_30px_rgba(120,169,255,0.06)] backdrop-blur-2xl ring-1 ring-[#78A9FF]/15 focus-within:border-[#78A9FF]/40 focus-within:ring-1 focus-within:ring-[#78A9FF]/30 focus-within:shadow-[0_24px_70px_rgba(0,0,0,0.85),0_0_40px_rgba(120,169,255,0.18),0_0_15px_rgba(120,169,255,0.10)] transition-all duration-300 ease-out"
+                className="overflow-hidden rounded-2xl border border-border bg-card/95 text-foreground shadow-[0_24px_60px_rgba(0,0,0,0.8),0_0_30px_var(--accent-glow)] backdrop-blur-2xl ring-1 ring-accent/15 focus-within:border-accent/40 focus-within:ring-1 focus-within:ring-accent/30 focus-within:shadow-[0_24px_70px_rgba(0,0,0,0.85),0_0_40px_var(--accent-glow)] transition-all duration-300 ease-out"
                 shouldFilter={true}
                 onKeyDown={(e) => {
                   if (e.key === "Escape") {
@@ -170,45 +170,45 @@ export function CommandPalette() {
                 }}
               >
                 {/* Search Bar Header */}
-                <div className="group/search flex items-center border-b border-[#2B3342]/70 px-4 bg-[#121722]/50 focus-within:bg-[#121722]/80 focus-within:border-[#78A9FF]/30 transition-colors duration-300">
-                  <Search className="mr-3 h-5 w-5 shrink-0 text-[#78A9FF]/60 group-focus-within/search:text-[#78A9FF] transition-colors duration-300" />
+                <div className="group/search flex items-center border-b border-border/70 px-4 bg-surface/50 focus-within:bg-surface/80 focus-within:border-accent/30 transition-colors duration-300">
+                  <Search className="mr-3 h-5 w-5 shrink-0 text-accent/60 group-focus-within/search:text-accent transition-colors duration-300" />
                   <Command.Input
                     autoFocus
                     value={search}
                     onValueChange={setSearch}
                     placeholder="Search chapters, tools, or navigation..."
-                    className="flex h-14 w-full bg-transparent py-3 text-sm font-medium text-[#F5F7FB] outline-none border-none ring-0 shadow-none focus:outline-none focus:border-none focus:ring-0 focus:shadow-none focus-visible:outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:shadow-none !outline-none !shadow-none !border-none !ring-0 placeholder:text-[#A4ADBB]/60 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-14 w-full bg-transparent py-3 text-sm font-medium text-foreground outline-none border-none ring-0 shadow-none focus:outline-none focus:border-none focus:ring-0 focus:shadow-none focus-visible:outline-none focus-visible:border-none focus-visible:ring-0 focus-visible:shadow-none !outline-none !shadow-none !border-none !ring-0 placeholder:text-muted-foreground/60 disabled:cursor-not-allowed disabled:opacity-50"
                     style={{ outline: "none", boxShadow: "none" }}
                   />
                   <div className="flex items-center gap-1.5 ml-2">
-                    <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded-md border border-[#2B3342] bg-[#171D28] px-1.5 font-mono text-[10px] font-semibold text-[#A4ADBB]">
+                    <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded-md border border-border bg-surface px-1.5 font-mono text-[10px] font-semibold text-muted-foreground">
                       ESC
                     </kbd>
                   </div>
                 </div>
                 
                 <Command.List className="max-h-[360px] overflow-y-auto overflow-x-hidden p-2 custom-scrollbar">
-                  <Command.Empty className="py-12 text-center text-sm text-[#A4ADBB]">
+                  <Command.Empty className="py-12 text-center text-sm text-muted-foreground">
                     No results found.
                   </Command.Empty>
 
                   {!search && (
                     <Command.Group 
                       heading="Suggestions" 
-                      className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#A4ADBB]/80 px-2.5 pt-3 pb-1 [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:pb-2 [&_[cmdk-group-heading]]:text-[#A4ADBB]/70"
+                      className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/80 px-2.5 pt-3 pb-1 [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:pb-2 [&_[cmdk-group-heading]]:text-muted-foreground/70"
                     >
                       <Command.Item 
                         onSelect={() => executeAction("start-session")}
-                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#F5F7FB] transition-colors duration-150 ease-out outline-none aria-selected:bg-[rgba(120,169,255,0.12)] aria-selected:text-[#F5F7FB] hover:bg-[rgba(120,169,255,0.08)]"
+                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-150 ease-out outline-none aria-selected:bg-accent/15 aria-selected:text-foreground hover:bg-accent/10"
                       >
-                        <Play className="h-4 w-4 text-[#78A9FF] shrink-0" />
+                        <Play className="h-4 w-4 text-accent shrink-0" />
                         <span className="font-semibold">Start Study Session</span>
                       </Command.Item>
                       <Command.Item 
                         onSelect={() => executeAction("resume")}
-                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#F5F7FB] transition-colors duration-150 ease-out outline-none aria-selected:bg-[rgba(120,169,255,0.12)] aria-selected:text-[#F5F7FB] hover:bg-[rgba(120,169,255,0.08)]"
+                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-150 ease-out outline-none aria-selected:bg-accent/15 aria-selected:text-foreground hover:bg-accent/10"
                       >
-                        <Clock className="h-4 w-4 text-[#A4ADBB] group-aria-selected:text-[#78A9FF] shrink-0 transition-colors" />
+                        <Clock className="h-4 w-4 text-muted-foreground group-aria-selected:text-accent shrink-0 transition-colors" />
                         <span>Resume Last Session</span>
                       </Command.Item>
                     </Command.Group>
@@ -216,14 +216,14 @@ export function CommandPalette() {
 
                   <Command.Group 
                     heading="Navigation & Tools" 
-                    className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#A4ADBB]/80 px-2.5 pt-3 pb-1 [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:pb-2 [&_[cmdk-group-heading]]:text-[#A4ADBB]/70"
+                    className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/80 px-2.5 pt-3 pb-1 [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:pb-2 [&_[cmdk-group-heading]]:text-muted-foreground/70"
                   >
                     {navAndToolItems.map((item) => (
                       <Command.Item
                         key={item.id}
                         value={`${item.title} ${item.keywords?.join(" ")}`}
                         onSelect={() => handleSelect(item)}
-                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#F5F7FB] transition-colors duration-150 ease-out outline-none aria-selected:bg-[rgba(120,169,255,0.12)] aria-selected:text-[#F5F7FB] hover:bg-[rgba(120,169,255,0.08)]"
+                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-150 ease-out outline-none aria-selected:bg-accent/15 aria-selected:text-foreground hover:bg-accent/10"
                       >
                         <ItemIcon type={item.type} id={item.id} />
                         <span className="truncate">{item.title}</span>
@@ -233,14 +233,14 @@ export function CommandPalette() {
 
                   <Command.Group 
                     heading="Syllabus Chapters" 
-                    className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#A4ADBB]/80 px-2.5 pt-3 pb-1 [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:pb-2 [&_[cmdk-group-heading]]:text-[#A4ADBB]/70"
+                    className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/80 px-2.5 pt-3 pb-1 [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:pb-2 [&_[cmdk-group-heading]]:text-muted-foreground/70"
                   >
                     {chapterItems.map((item) => (
                       <Command.Item
                         key={item.id}
                         value={`${item.title} ${item.keywords?.join(" ")}`}
                         onSelect={() => handleSelect(item)}
-                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#F5F7FB] transition-colors duration-150 ease-out outline-none aria-selected:bg-[rgba(120,169,255,0.12)] aria-selected:text-[#F5F7FB] hover:bg-[rgba(120,169,255,0.08)]"
+                        className="group flex cursor-pointer select-none items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground transition-colors duration-150 ease-out outline-none aria-selected:bg-accent/15 aria-selected:text-foreground hover:bg-accent/10"
                       >
                         <ItemIcon type={item.type} id={item.id} />
                         <span className="truncate">{item.title}</span>
@@ -251,19 +251,19 @@ export function CommandPalette() {
                 </Command.List>
 
                 {/* Footer Bar */}
-                <div className="flex items-center justify-between border-t border-[#2B3342]/70 px-4 py-2.5 bg-[#121722]/50 text-[11px] font-mono text-[#A4ADBB]/80">
+                <div className="flex items-center justify-between border-t border-border/70 px-4 py-2.5 bg-surface/50 text-[11px] font-mono text-muted-foreground/80">
                   <div className="flex items-center gap-3">
                     <span className="flex items-center gap-1.5">
-                      <kbd className="rounded border border-[#2B3342] bg-[#171D28] px-1 py-0.5 text-[10px]">↑</kbd>
-                      <kbd className="rounded border border-[#2B3342] bg-[#171D28] px-1 py-0.5 text-[10px]">↓</kbd>
+                      <kbd className="rounded border border-border bg-surface px-1 py-0.5 text-[10px]">↑</kbd>
+                      <kbd className="rounded border border-border bg-surface px-1 py-0.5 text-[10px]">↓</kbd>
                       Navigate
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <kbd className="rounded border border-[#2B3342] bg-[#171D28] px-1 py-0.5 text-[10px]">↵</kbd>
+                      <kbd className="rounded border border-border bg-surface px-1 py-0.5 text-[10px]">↵</kbd>
                       Select
                     </span>
                   </div>
-                  <span className="text-[#78A9FF]/80 font-semibold tracking-wide">JEE PRO SEARCH</span>
+                  <span className="text-accent/80 font-semibold tracking-wide">JEE PRO SEARCH</span>
                 </div>
               </Command>
             </motion.div>

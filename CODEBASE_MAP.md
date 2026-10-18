@@ -117,7 +117,7 @@ c:\jee-pro\
 | **Modify the study timer or Picture-in-Picture logic** | `features/focus/components/focus-chamber.tsx`, `features/focus/hooks/use-pip-timer.ts`, `features/focus/store/focus-store.ts` |
 | **Add a new navigation link to the floating navbar** | `components/layout/navbar.tsx`, `constants/navigation.ts` |
 | **Update authentication logic or user onboarding** | `features/auth/components/*`, `lib/supabase/middleware.ts`, `app/(auth)/*` |
-| **Change theme colors, surface styles, or tokens** | `app/globals.css`, `providers/theme-provider.tsx` |
+| **Change theme colors, surface styles, or tokens** | `types/theme.ts`, `app/globals.css`, `providers/theme-provider.tsx` |
 | **Add an admin tool or moderation capability** | `app/admin/*`, `features/admin/*`, `app/api/admin/*`, `supabase/migrations/*` |
 | **Create a new database table or RLS policy** | `supabase/migrations/<new_migration>.sql`, `types/database.ts` |
 | **Update sound effects or notification chimes** | `lib/sound-effects.ts`, `lib/sound-engine.ts`, `providers/settings-provider.tsx` |

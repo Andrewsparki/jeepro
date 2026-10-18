@@ -141,7 +141,7 @@ function NavigationProgressContent() {
 
       {/* Animated progress bar */}
       <motion.div
-        className="h-full rounded-r-full bg-[#78A9FF] relative"
+        className="h-full rounded-r-full bg-accent relative"
         initial={{ width: "0%", opacity: 1 }}
         animate={{
           width: shouldReduceMotion ? "100%" : `${progress}%`,
@@ -158,7 +158,7 @@ function NavigationProgressContent() {
           },
         }}
         style={{
-          boxShadow: "0 0 10px rgba(120, 169, 255, 0.75), 0 0 3px rgba(120, 169, 255, 0.9)",
+          boxShadow: "0 0 10px var(--accent-glow), 0 0 3px var(--accent)",
         }}
       />
     </div>

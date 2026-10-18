@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useSyncExternalStore } from "react";
 import { useSettings } from "@/providers/settings-provider";
 import { usePerformance } from "@/lib/performance-context";
+import { THEME_PARTICLE_PALETTES, VisualThemeId } from "@/types/theme";
 
 function subscribeReducedMotion(callback: () => void) {
   if (typeof window === "undefined") return () => {};
@@ -33,12 +34,6 @@ interface Particle {
   colorIndex: 0 | 1 | 2;
 }
 
-const PARTICLE_PALETTES = [
-  "120, 169, 255", // #78A9FF — Signature Electric Blue
-  "168, 197, 255", // #A8C5FF — Secondary Electric Ice
-  "197, 214, 245", // #C5D6F5 — Muted Starlight
-] as const;
-
 interface FloatingParticlesProps {
   className?: string;
   zIndexClass?: string;
@@ -59,6 +54,10 @@ export function FloatingParticles({ className, zIndexClass = "-z-40" }: Floating
   );
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const activeThemeRef = useRef(settings.activeTheme);
+  useEffect(() => {
+    activeThemeRef.current = settings.activeTheme;
+  }, [settings.activeTheme]);
 
   const isEnabled = mounted && settings.ambientParticles && enableParticles && !isReducedMotion;
 
@@ -171,7 +170,9 @@ export function FloatingParticles({ className, zIndexClass = "-z-40" }: Floating
         // Breathing softly glowing pulse
         const pulse = 0.8 + 0.3 * Math.sin(p.phase);
         const currentAlpha = Math.max(0, Math.min(1, p.baseAlpha * pulse));
-        const colorRgb = PARTICLE_PALETTES[p.colorIndex];
+        const currentThemeId = (activeThemeRef.current as VisualThemeId) || "obsidian";
+        const activePalette = THEME_PARTICLE_PALETTES[currentThemeId] || THEME_PARTICLE_PALETTES.obsidian;
+        const colorRgb = activePalette[p.colorIndex];
 
         // Soft outer atmospheric glow halo
         ctx.beginPath();

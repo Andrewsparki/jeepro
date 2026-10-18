@@ -25,32 +25,32 @@ export function GlassSection({
   return (
     <section
       className={cn(
-        "relative rounded-xl bg-[#121722] border border-[#2B3342] overflow-hidden transition-all duration-200",
+        "relative rounded-xl bg-secondary border border-border overflow-hidden transition-all duration-200",
         className
       )}
       {...props}
     >
       {/* Section Header */}
-      <div className="flex items-start justify-between gap-4 p-5 sm:p-6 border-b border-[#2B3342]/70 bg-[#151B27]/40">
+      <div className="flex items-start justify-between gap-4 p-5 sm:p-6 border-b border-border/70 bg-surface/50">
         <div className="flex items-center gap-3">
           {Icon && (
-            <div className="w-9 h-9 rounded-lg bg-[#171D28] border border-[#2B3342] text-[#78A9FF] flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-surface border border-border text-accent flex items-center justify-center shrink-0">
               <Icon className="w-4 h-4" />
             </div>
           )}
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-semibold tracking-tight text-[#F5F7FB]">
+              <h3 className="text-base font-semibold tracking-tight text-foreground">
                 {title}
               </h3>
               {badge && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-[#78A9FF]/10 text-[#78A9FF] border border-[#78A9FF]/20">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-accent/10 text-accent border border-accent/20">
                   {badge}
                 </span>
               )}
             </div>
             {description && (
-              <p className="text-xs text-[#A4ADBB] font-normal leading-relaxed">
+              <p className="text-xs text-muted-foreground font-normal leading-relaxed">
                 {description}
               </p>
             )}
@@ -63,7 +63,7 @@ export function GlassSection({
       </div>
 
       {/* Settings Rows Group */}
-      <div className="flex flex-col divide-y divide-[#2B3342]/50">
+      <div className="flex flex-col divide-y divide-border/50">
         {children}
       </div>
     </section>
@@ -95,22 +95,22 @@ export function SettingRow({
     >
       <div
         className={cn(
-          "flex flex-col sm:flex-row sm:items-center justify-between py-3.5 px-5 sm:px-6 gap-3 sm:gap-6 transition-colors duration-150 hover:bg-white/[0.015]",
+          "flex flex-col sm:flex-row sm:items-center justify-between py-3.5 px-5 sm:px-6 gap-3 sm:gap-6 transition-colors duration-150 hover:bg-surface-hover/30",
           className
         )}
       >
         <div className="flex items-start sm:items-center gap-3.5 min-w-0 pr-2">
           {Icon && (
-            <div className="w-8 h-8 rounded-lg bg-[#171D28] border border-[#2B3342]/80 text-[#78A9FF] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+            <div className="w-8 h-8 rounded-lg bg-surface border border-border/80 text-accent flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
               <Icon className="w-4 h-4" />
             </div>
           )}
           <div className="flex flex-col gap-0.5 min-w-0">
-            <span className="text-[13px] sm:text-sm font-medium text-[#F5F7FB] tracking-tight leading-snug">
+            <span className="text-[13px] sm:text-sm font-medium text-foreground tracking-tight leading-snug">
               {title}
             </span>
             {description && (
-              <span className="text-xs text-[#A4ADBB] leading-relaxed font-normal">
+              <span className="text-xs text-muted-foreground leading-relaxed font-normal">
                 {description}
               </span>
             )}

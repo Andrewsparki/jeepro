@@ -28,7 +28,7 @@ export function ChapterProgressCard({ completionPercentage }: ChapterProgressCar
           </div>
           <p className="text-3xl font-semibold tracking-tight">3<span className="text-lg text-muted-foreground font-medium"> / 5 hrs</span></p>
           <div className="w-full h-1.5 bg-muted/20 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-500 w-[60%] rounded-full" />
+            <div className="h-full bg-accent shadow-[0_0_8px_var(--accent-glow)] w-[60%] rounded-full" />
           </div>
         </div>
 

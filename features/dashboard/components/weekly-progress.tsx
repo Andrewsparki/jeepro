@@ -179,7 +179,7 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
 
         {/* Inline Edit Form Overlay */}
         {isEditing ? (
-          <form onSubmit={handleSave} className="mb-2 p-3 rounded-xl bg-[#0B0D12] border border-[#2B3342] shadow-xl animate-in fade-in zoom-in-95 duration-150 relative z-30">
+          <form onSubmit={handleSave} className="mb-2 p-3 rounded-xl bg-card border border-border shadow-xl animate-in fade-in zoom-in-95 duration-150 relative z-30">
             <div className="flex items-center justify-between mb-2">
               <label htmlFor="weekly-goal-input" className="text-xs font-semibold text-foreground">
                 Set Weekly Goal (Hours)
@@ -193,7 +193,7 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
                     className={cn(
                       "px-1.5 py-0.5 text-[10px] font-mono rounded border transition-colors cursor-pointer",
                       inputVal === String(preset)
-                        ? "bg-[#78A9FF]/20 text-[#78A9FF] border-[#78A9FF]/40 font-bold"
+                        ? "bg-accent/20 text-accent border-accent/40 font-bold"
                         : "bg-white/[0.03] text-muted-foreground border-white/[0.06] hover:text-foreground"
                     )}
                   >
@@ -216,7 +216,7 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
                     setInputVal(e.target.value);
                     if (validationError) setValidationError(null);
                   }}
-                  className="w-full h-8 px-2.5 rounded-lg bg-[#121722] border border-[#2B3342] text-sm font-mono text-foreground focus:outline-none focus:border-[#78A9FF] focus:ring-1 focus:ring-[#78A9FF]"
+                  className="w-full h-8 px-2.5 rounded-lg bg-surface border border-border text-sm font-mono text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                   placeholder="e.g. 25"
                 />
                 <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-mono text-muted-foreground pointer-events-none">
@@ -226,7 +226,7 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
 
               <button
                 type="submit"
-                className="h-8 px-3 rounded-lg bg-[#78A9FF] hover:bg-[#A8C5FF] text-[#0B0D12] text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                className="h-8 px-3 rounded-lg bg-accent hover:opacity-90 text-accent-foreground text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
                 title="Save target"
               >
                 <Check className="w-3.5 h-3.5" />
@@ -273,13 +273,13 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
           <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
             <defs>
               <linearGradient id="gradCyan" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#38bdf8" stopOpacity={0.24} />
-                <stop offset="100%" stopColor="#38bdf8" stopOpacity={0} />
+                <stop offset="0%" stopColor="var(--accent, #38bdf8)" stopOpacity={0.24} />
+                <stop offset="100%" stopColor="var(--accent, #38bdf8)" stopOpacity={0} />
               </linearGradient>
 
               <linearGradient id="gradPurple" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#a855f7" stopOpacity={0.12} />
-                <stop offset="100%" stopColor="#a855f7" stopOpacity={0} />
+                <stop offset="0%" stopColor="var(--secondary-accent, #a855f7)" stopOpacity={0.12} />
+                <stop offset="100%" stopColor="var(--secondary-accent, #a855f7)" stopOpacity={0} />
               </linearGradient>
             </defs>
 
@@ -304,17 +304,17 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_var(--accent-glow)]" />
                             <span className="text-xs font-semibold text-foreground">Actual</span>
                           </div>
-                          <span className="text-xs font-bold text-sky-500 dark:text-sky-400">{payload[1]?.value}h</span>
+                          <span className="text-xs font-bold text-accent">{payload[1]?.value}h</span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-secondary-accent shadow-[0_0_8px_var(--secondary-accent)]" />
                             <span className="text-xs font-semibold text-foreground">Target</span>
                           </div>
-                          <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{payload[0]?.value}h</span>
+                          <span className="text-xs font-bold text-secondary-accent">{payload[0]?.value}h</span>
                         </div>
                       </div>
                     </div>
@@ -347,7 +347,7 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
               type="monotone"
               dataKey="target"
               name="Target"
-              stroke="#a855f7"
+              stroke="var(--secondary-accent, #a855f7)"
               strokeWidth={2}
               dot={false}
               activeDot={false}
@@ -360,10 +360,10 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
               type="monotone"
               dataKey="actual"
               name="Actual"
-              stroke="#38bdf8"
+              stroke="var(--accent, #38bdf8)"
               strokeWidth={2.5}
-              dot={{ r: 3, fill: '#0f172a', strokeWidth: 1.5, stroke: '#38bdf8' }}
-              activeDot={{ r: 5, fill: '#fff', stroke: '#38bdf8', strokeWidth: 2 }}
+              dot={{ r: 3, fill: 'var(--bg-primary, #0f172a)', strokeWidth: 1.5, stroke: 'var(--accent, #38bdf8)' }}
+              activeDot={{ r: 5, fill: '#fff', stroke: 'var(--accent, #38bdf8)', strokeWidth: 2 }}
               isAnimationActive={animate}
               animationDuration={1050}
               animationEasing="ease-out"
@@ -375,11 +375,11 @@ export const WeeklyProgress = React.memo(function WeeklyProgress({
       {/* Footer legend */}
       <div className="flex justify-center items-center gap-6 mt-1 border-t border-border/50 pt-3 relative z-10">
         <div className="flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
+          <div className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_var(--accent-glow)]" />
           <span className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground/70">Actual</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+          <div className="w-1.5 h-1.5 rounded-full bg-secondary-accent shadow-[0_0_8px_var(--secondary-accent)]" />
           <span className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground/70">Target</span>
         </div>
       </div>
