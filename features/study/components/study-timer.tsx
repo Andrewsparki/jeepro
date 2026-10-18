@@ -47,7 +47,7 @@ export function StudyTimer() {
                   {/* CSS-animated recording dot — no Framer Motion */}
                   <div className="h-2 w-2 rounded-full bg-rose-500 animate-recording-dot" />
                   
-                  <span className="font-mono text-sm font-semibold tracking-wider text-foreground">
+                  <span className="font-mono text-sm font-semibold tabular-nums tracking-tight text-foreground">
                     {formatTime(elapsedSeconds)}
                   </span>
                 </div>

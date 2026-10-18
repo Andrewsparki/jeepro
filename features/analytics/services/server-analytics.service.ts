@@ -1,4 +1,5 @@
 import fs from "fs";
+import { promises as fsPromises } from "fs";
 import path from "path";
 import {
   AnalyticsEvent,
@@ -16,6 +17,8 @@ const PERSIST_FILE = path.join(process.cwd(), ".analytics-store.json");
 
 let memoryEvents: AnalyticsEvent[] = [];
 let hasLoaded = false;
+let isPersisting = false;
+let persistTimeout: NodeJS.Timeout | null = null;
 
 function ensureLoaded(): void {
   if (hasLoaded) return;
@@ -34,16 +37,25 @@ function ensureLoaded(): void {
   }
 }
 
-function persistEventsDebounced(): void {
-  try {
-    fs.writeFileSync(PERSIST_FILE, JSON.stringify(memoryEvents.slice(0, 1000)), "utf8");
-  } catch {
-    // Ignore write errors in ephemeral/serverless environments
-  }
+function scheduleAsyncPersist(): void {
+  if (persistTimeout) return;
+  persistTimeout = setTimeout(async () => {
+    persistTimeout = null;
+    if (isPersisting) return;
+    isPersisting = true;
+    try {
+      const payload = JSON.stringify(memoryEvents.slice(0, 1000));
+      await fsPromises.writeFile(PERSIST_FILE, payload, "utf8");
+    } catch {
+      // Ignore write errors in ephemeral/serverless environments
+    } finally {
+      isPersisting = false;
+    }
+  }, 2000);
 }
 
 /**
- * Persists an incoming analytics event to the in-memory store and debounced local file.
+ * Persists an incoming analytics event to the in-memory store and debounced async file.
  */
 export function recordAnalyticsEvent(event: AnalyticsEvent): void {
   ensureLoaded();
@@ -57,9 +69,7 @@ export function recordAnalyticsEvent(event: AnalyticsEvent): void {
     memoryEvents = memoryEvents.slice(0, MAX_EVENTS_RETAINED);
   }
 
-  if (memoryEvents.length % 5 === 0) {
-    persistEventsDebounced();
-  }
+  scheduleAsyncPersist();
 }
 
 /**

@@ -60,6 +60,14 @@ export default function FocusPage() {
   const { isPipSupported, isPipOpen, pipContainer, openPip, closePip } = usePipTimer();
   const [showFallbackFloat, setShowFallbackFloat] = useState(false);
 
+  // Finalize any active global floating session when navigating to Focus page to prevent overlapping timers
+  useEffect(() => {
+    if (isGlobalSessionActive) {
+      void endGlobalSession();
+      toast.info("Active study session was saved before opening Focus mode.");
+    }
+  }, []);
+
   // Helper functions for exact elapsed time:
   // getSessionElapsed STRICTLY accumulates time only when in 'study' phase!
   const getSessionElapsed = () =>

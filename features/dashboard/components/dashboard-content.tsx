@@ -14,6 +14,7 @@ import { LevelUpToast } from "@/features/gamification/components/level-up-toast"
 import { MilestoneCelebration } from "@/features/gamification/components/milestone-celebration";
 import { DailyMissionsCard } from "@/features/daily-missions/components/daily-missions-card";
 import { useDashboardData } from "@/features/dashboard/context/dashboard-data-context";
+import { usePerformance } from "@/lib/performance-context";
 
 // Above-the-fold components
 import { DashboardHero } from "@/features/dashboard/components/dashboard-hero";
@@ -21,7 +22,13 @@ import { QuickActions } from "@/features/dashboard/components/quick-actions";
 import { TodaysTimeline } from "@/features/dashboard/components/todays-timeline";
 import { ContinueLearning } from "@/features/dashboard/components/continue-learning";
 import { MotivationalQuotes } from "@/features/dashboard/components/motivational-quotes";
-import { WeeklyProgress } from "@/features/dashboard/components/weekly-progress";
+
+const WeeklyProgress = dynamic(
+  () => import("@/features/dashboard/components/weekly-progress").then((mod) => mod.WeeklyProgress),
+  {
+    loading: () => <Skeleton className="h-[340px] w-full rounded-3xl" />,
+  }
+);
 
 // Below-the-fold components
 const JourneyTracker = dynamic(
@@ -160,12 +167,14 @@ function DashboardSkeleton() {
 export function DashboardContent() {
   const { criticalMetrics, secondaryMetrics, isCriticalLoading } = useDashboardData();
   const { profile, user } = useAuth();
+  const { ambientLighting, pageTransitions } = usePerformance();
 
   const controls = useAnimation();
   const [shouldAnimate, setShouldAnimate] = useState<boolean>(false);
 
   // Initialize browser-dependent entrance effects only after hydration
   useEffect(() => {
+    if (!pageTransitions) return;
     if (hasSessionEntrancePlayed) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     try {
@@ -179,7 +188,7 @@ export function DashboardContent() {
     } catch {
       // Ignore storage access errors
     }
-  }, [controls]);
+  }, [controls, pageTransitions]);
 
   if (isCriticalLoading || !criticalMetrics) {
     return <DashboardSkeleton />;
@@ -200,10 +209,12 @@ export function DashboardContent() {
 
       <div className="relative flex flex-col gap-6 md:gap-8 pb-10 max-w-7xl mx-auto">
         {/* Subtle Obsidian + Electric Blue Atmospheric Background Lighting */}
-        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] -z-10 overflow-hidden select-none">
-          <div className="absolute -top-[100px] left-[15%] w-[480px] h-[300px] bg-[radial-gradient(ellipse_at_center,rgba(67,120,255,0.08),transparent_70%)] blur-[70px] transform-gpu" />
-          <div className="absolute top-[30px] right-[18%] w-[420px] h-[260px] bg-[radial-gradient(ellipse_at_center,rgba(120,169,255,0.05),transparent_70%)] blur-[80px] transform-gpu" />
-        </div>
+        {ambientLighting && (
+          <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] -z-10 overflow-hidden select-none">
+            <div className="absolute -top-[100px] left-[15%] w-[480px] h-[300px] bg-[radial-gradient(ellipse_at_center,rgba(67,120,255,0.08),transparent_70%)] blur-[70px] transform-gpu" />
+            <div className="absolute top-[30px] right-[18%] w-[420px] h-[260px] bg-[radial-gradient(ellipse_at_center,rgba(120,169,255,0.05),transparent_70%)] blur-[80px] transform-gpu" />
+          </div>
+        )}
 
         {/* ROW 1: Hero & Metric Cards */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">

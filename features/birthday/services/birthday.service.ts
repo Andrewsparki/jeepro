@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import { isBirthdayTodayIST, getISTYear, getISTHour, getLocalISTDateString } from "@/lib/date-utils";
 
 export interface BirthdayRewardConfig {
   rewardType: "xp" | "badge" | "streak_protection" | "cosmetic";
@@ -102,15 +103,9 @@ export class BirthdayService {
 
       const birthdayStr = data.birthday as string | null;
       const lastClaimedYear = data.birthday_last_claimed_year as number | null;
-      const currentYear = new Date().getFullYear();
+      const currentYear = getISTYear();
 
-      let isBirthdayToday = false;
-      if (birthdayStr) {
-        const today = new Date();
-        const bday = new Date(birthdayStr);
-        isBirthdayToday = today.getMonth() === bday.getMonth() && today.getDate() === bday.getDate();
-      }
-
+      const isBirthdayToday = isBirthdayTodayIST(birthdayStr);
       const canClaim = isBirthdayToday && (lastClaimedYear === null || lastClaimedYear < currentYear);
 
       return {
@@ -134,7 +129,7 @@ export class BirthdayService {
       const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
       if (!resolvedUserId) return false;
 
-      const todayStr = new Date().toISOString().split("T")[0];
+      const todayStr = getLocalISTDateString();
 
       const { error } = await supabase
         .from("profiles")
@@ -188,7 +183,7 @@ export class BirthdayService {
    * Leverages canonical database tables, achievements evaluator, and streak engine with zero fabricated data.
    */
   static async getUserYearRecap(userId?: string): Promise<UserBirthdayRecapData> {
-    const currentYear = new Date().getFullYear();
+    const currentYear = getISTYear();
     const milestoneTitle = `Birthday Scholar · ${currentYear}`;
 
     try {
@@ -271,9 +266,9 @@ export class BirthdayService {
           longestSessionMinutes = sessionMins;
         }
 
-        // Time of day tendency
+        // Time of day tendency (IST)
         if (s.started_at) {
-          const startHour = new Date(s.started_at).getHours();
+          const startHour = getISTHour(s.started_at);
           if (startHour >= 22 || startHour < 5) hourDistribution.night++;
           else if (startHour >= 5 && startHour < 12) hourDistribution.early++;
           else if (startHour >= 12 && startHour < 17) hourDistribution.afternoon++;
@@ -403,10 +398,7 @@ export class BirthdayService {
       if (sessions.length > 0) {
         const uniqueDayStrings = Array.from(
           new Set(
-            sessions.map((s) => {
-              const d = new Date(s.started_at);
-              return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
-            })
+            sessions.map((s) => getLocalISTDateString(s.started_at))
           )
         ).sort();
 
@@ -558,7 +550,7 @@ export class BirthdayService {
         return { success: false, xpEarned: 0 };
       }
 
-      const currentYear = new Date().getFullYear();
+      const currentYear = getISTYear();
 
       // 1. Record claim in database atomically
       const { error: updateError } = await supabase

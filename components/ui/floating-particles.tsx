@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useSyncExternalStore } from "react";
 import { useSettings } from "@/providers/settings-provider";
+import { usePerformance } from "@/lib/performance-context";
 
 function subscribeReducedMotion(callback: () => void) {
   if (typeof window === "undefined") return () => {};
@@ -43,8 +44,14 @@ interface FloatingParticlesProps {
   zIndexClass?: string;
 }
 
+const emptySubscribe = () => () => {};
+const getMountedSnapshot = () => true;
+const getMountedServerSnapshot = () => false;
+
 export function FloatingParticles({ className, zIndexClass = "-z-40" }: FloatingParticlesProps = {}) {
+  const mounted = useSyncExternalStore(emptySubscribe, getMountedSnapshot, getMountedServerSnapshot);
   const { settings } = useSettings();
+  const { particles: enableParticles } = usePerformance();
   const isReducedMotion = useSyncExternalStore(
     subscribeReducedMotion,
     getReducedMotionSnapshot,
@@ -53,7 +60,7 @@ export function FloatingParticles({ className, zIndexClass = "-z-40" }: Floating
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const isEnabled = settings.ambientParticles && !isReducedMotion;
+  const isEnabled = mounted && settings.ambientParticles && enableParticles && !isReducedMotion;
 
   useEffect(() => {
     // If disabled or reduced motion, completely abort and destroy canvas resources
@@ -214,8 +221,8 @@ export function FloatingParticles({ className, zIndexClass = "-z-40" }: Floating
     };
   }, [isEnabled]);
 
-  // If user disabled particles or reduced motion, render nothing to avoid DOM weight
-  if (!isEnabled) {
+  // Only render canvas after client-side hydration mount and when enabled
+  if (!mounted || !isEnabled) {
     return null;
   }
 

@@ -54,6 +54,12 @@ export class SessionService {
       throw new Error(`Invalid durationSeconds: ${sessionData.durationSeconds}`);
     }
 
+    // Enforce 60s minimum duration to prevent 0-second XP exploits and junk records
+    if (sessionData.durationSeconds < 60) {
+      console.info('[SessionService] Session duration under 60 seconds; ignoring short session.');
+      return;
+    }
+
     try {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();

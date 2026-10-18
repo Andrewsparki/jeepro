@@ -19,7 +19,9 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/groups') ||
     pathname.startsWith('/leaderboard') ||
     pathname.startsWith('/achievements')
-  const isAdminRoute = pathname.startsWith('/admin')
+  const isAdminPageRoute = pathname.startsWith('/admin')
+  const isAdminApiRoute = pathname.startsWith('/api/admin')
+  const isAdminRoute = isAdminPageRoute || isAdminApiRoute
   const isAuthRoute =
     pathname.startsWith('/login') ||
     pathname.startsWith('/signup') ||
@@ -42,6 +44,22 @@ export async function updateSession(request: NextRequest) {
 
   // Fast-path 2: Unauthenticated visit to protected route without auth cookies -> instant 0ms redirect to login
   if (isProtectedRoute && !hasAuthCookie) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    url.searchParams.set('next', request.nextUrl.pathname + request.nextUrl.search)
+    return NextResponse.redirect(url)
+  }
+
+  // Fast-path 2b: Unauthenticated request to admin API route without auth cookies -> instant 0ms 401
+  if (isAdminApiRoute && !hasAuthCookie) {
+    return NextResponse.json(
+      { error: "Unauthorized: Authentication required" },
+      { status: 401 }
+    )
+  }
+
+  // Fast-path 2c: Unauthenticated visit to admin page route without auth cookies -> instant 0ms redirect to login
+  if (isAdminPageRoute && !hasAuthCookie) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     url.searchParams.set('next', request.nextUrl.pathname + request.nextUrl.search)
@@ -110,6 +128,12 @@ export async function updateSession(request: NextRequest) {
   // ── Admin Route Protection ──────────────────────────────────────────
   if (isAdminRoute) {
     if (!user) {
+      if (isAdminApiRoute) {
+        return NextResponse.json(
+          { error: "Unauthorized: Authentication required" },
+          { status: 401 }
+        )
+      }
       // Redirect unauthenticated users to login
       const url = request.nextUrl.clone()
       url.pathname = '/login'
@@ -145,6 +169,12 @@ export async function updateSession(request: NextRequest) {
     const hasModeratorAccess = profile?.role === 'moderator' && isModeratorRoute
 
     if (!hasAdminAccess && !hasModeratorAccess) {
+      if (isAdminApiRoute) {
+        return NextResponse.json(
+          { error: "Forbidden: Administrator privileges required" },
+          { status: 403 }
+        )
+      }
       // Unauthorized authenticated users get redirected to dashboard
       const url = request.nextUrl.clone()
       url.pathname = '/dashboard'

@@ -19,13 +19,21 @@ import { BirthdayModeProvider } from "@/features/birthday/context/birthday-mode-
 import {
   BreakRoomProvider,
   BreakRoomKeyboardListener,
-  BreakRoomModal,
 } from "@/features/break-room";
 import {
   ConcertModeProvider,
   ConcertKeyboardListener,
-  ConcertModal,
 } from "@/features/concert-mode";
+
+const BreakRoomModal = dynamic(
+  () => import("@/features/break-room").then((mod) => mod.BreakRoomModal),
+  { ssr: false }
+);
+
+const ConcertModal = dynamic(
+  () => import("@/features/concert-mode").then((mod) => mod.ConcertModal),
+  { ssr: false }
+);
 import {
   CookieConsentProvider,
   CookieConsentBanner,

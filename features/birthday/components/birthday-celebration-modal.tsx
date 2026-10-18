@@ -10,6 +10,7 @@ import {
   BirthdayService,
   UserBirthdayRecapData,
 } from "../services/birthday.service";
+import { getISTYear } from "@/lib/date-utils";
 import { BirthdayRecapStory } from "./birthday-recap-story";
 
 interface BirthdayCelebrationModalProps {
@@ -27,7 +28,7 @@ export function BirthdayCelebrationModal({
   initialRecapData,
 }: BirthdayCelebrationModalProps) {
   const { user } = useAuth();
-  const currentYear = new Date().getFullYear();
+  const currentYear = getISTYear();
 
   const [recapData, setRecapData] = useState<UserBirthdayRecapData | null>(initialRecapData || null);
   const [isLoading, setIsLoading] = useState(!initialRecapData);

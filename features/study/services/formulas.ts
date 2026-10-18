@@ -181,7 +181,14 @@ export async function getFormulasByChapter(chapterId: string, topicId?: string):
         title: String(row.title ?? ""),
         formula: String(row.formula ?? ""),
         description: typeof row.description === "string" ? row.description : "",
-        variables: Array.isArray(row.variables) ? row.variables.map(String) : [],
+        variables: Array.isArray(row.variables)
+          ? (row.variables as unknown as FormulaVariable[]).map((v) => ({
+              name: typeof v === "object" && v && "name" in v ? String(v.name) : String(v),
+              symbol: typeof v === "object" && v && "symbol" in v ? String(v.symbol) : "",
+              unit: typeof v === "object" && v && "unit" in v ? String(v.unit) : undefined,
+              description: typeof v === "object" && v && "description" in v ? String(v.description) : undefined,
+            }))
+          : [],
         difficulty: typeof row.difficulty === "string" ? row.difficulty : "Medium",
         tags: Array.isArray(row.tags) ? row.tags.map(String) : [],
         commonMistakes: Array.isArray(row.common_mistakes) ? row.common_mistakes.map(String) : [],

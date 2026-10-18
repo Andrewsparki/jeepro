@@ -31,7 +31,7 @@ function normalizeMathDelimiters(raw: string): string {
   return text;
 }
 
-export function AssistantMessageRenderer({
+export const AssistantMessageRenderer = React.memo(function AssistantMessageRenderer({
   content,
   className,
   isFullscreen = false,
@@ -234,4 +234,6 @@ export function AssistantMessageRenderer({
       </ReactMarkdown>
     </div>
   );
-}
+});
+
+AssistantMessageRenderer.displayName = "AssistantMessageRenderer";

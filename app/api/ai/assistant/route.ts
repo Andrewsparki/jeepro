@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthUser } from "@/lib/supabase/server";
 import { getGeminiClient, JEE_ASSISTANT_SYSTEM_INSTRUCTION } from "@/features/ai-assistant/services/gemini.service";
+import { checkAiRateLimit } from "@/features/ai-assistant/services/ai-rate-limiter.service";
 
 // Maximum length of a single prompt and bounded history turns to minimize token consumption
 const MAX_PROMPT_LENGTH = 3000;
@@ -61,7 +62,27 @@ export async function POST(req: Request) {
       );
     }
 
-    // 4. Format conversation contents for Gemini SDK
+    // 4. Enforce per-user rate limiting (10 requests per minute)
+    const rateLimit = await checkAiRateLimit(user.id, 10, 60);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded. You can send up to 10 questions per minute. Please wait a moment before sending another prompt.",
+          resetAt: rateLimit.resetAt,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.retryAfterSeconds),
+            "X-RateLimit-Limit": "10",
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": rateLimit.resetAt,
+          },
+        }
+      );
+    }
+
+    // 5. Format conversation contents for Gemini SDK
     // Keep history strictly within recent turns to reduce token usage
     const contents: Array<{ role: "user" | "model"; parts: Array<{ text: string }> }> = [];
 
@@ -139,6 +160,9 @@ export async function POST(req: Request) {
         "Content-Type": "text/plain; charset=utf-8",
         "Cache-Control": "no-cache, no-transform",
         "X-Content-Type-Options": "nosniff",
+        "X-RateLimit-Limit": "10",
+        "X-RateLimit-Remaining": String(rateLimit.remaining),
+        "X-RateLimit-Reset": rateLimit.resetAt,
       },
     });
   } catch (err: any) {

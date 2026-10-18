@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/client";
 import { getChapterUuid, getTopicUuid } from "@/features/syllabus/services/mapping.service";
 import { NotificationService } from "@/features/notifications/services/notification.service";
 import { getLocalISTDateString, calculateStreakFromSessions } from "@/lib/date-utils";
+import { updateMissionProgress } from "@/features/daily-missions/services/missions.service";
 
 const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
@@ -326,7 +327,11 @@ export async function updateSubjectProgress(subjectSlug: string, status: Progres
   return (data || []) as UserTopicProgress[];
 }
 
-export async function getStudySessions(limit?: number, userId?: string): Promise<StudySession[]> {
+export async function getStudySessions(
+  limit?: number,
+  userId?: string,
+  offset?: number
+): Promise<StudySession[]> {
   const supabase = createClient();
   const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
   if (!resolvedUserId) return [];
@@ -338,7 +343,11 @@ export async function getStudySessions(limit?: number, userId?: string): Promise
     .order("started_at", { ascending: false });
 
   if (typeof limit === "number" && limit > 0) {
-    query = query.limit(limit);
+    if (typeof offset === "number" && offset > 0) {
+      query = query.range(offset, offset + limit - 1);
+    } else {
+      query = query.limit(limit);
+    }
   }
 
   const { data, error } = await query;
@@ -348,78 +357,7 @@ export async function getStudySessions(limit?: number, userId?: string): Promise
     return [];
   }
 
-  return data as StudySession[];
-}
-
-import { updateMissionProgress } from "@/features/daily-missions/services/missions.service";
-import { calculateSessionXP, ActivityType } from "@/features/progress/config/xp-config";
-
-export async function saveStudySession({
-  durationSeconds,
-  startedAt,
-  endedAt,
-  chapterId,
-  topicId,
-  activityType
-}: {
-  durationSeconds: number;
-  startedAt: string;
-  endedAt: string;
-  chapterId?: string;
-  topicId?: string;
-  activityType?: string;
-}): Promise<StudySession | null> {
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    console.error("saveStudySession: No authenticated user");
-    return null;
-  }
-  
-  const chapterUuid = await getChapterUuid(chapterId);
-  const topicUuid = await getTopicUuid(topicId);
-
-  const xpEarned = calculateSessionXP(durationSeconds, activityType as ActivityType | undefined);
-
-  const { data, error } = await supabase
-    .from("study_sessions")
-    .insert({
-      user_id: user.id,
-      duration_seconds: durationSeconds,
-      started_at: startedAt,
-      ended_at: endedAt,
-      chapter_id: chapterUuid && isUuid(chapterUuid) ? chapterUuid : null,
-      topic_id: topicUuid && isUuid(topicUuid) ? topicUuid : null,
-      activity_type: activityType || "deep_work",
-      xp_earned: xpEarned,
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error("Error saving study session:", error.message, error.details, error.hint);
-    return null;
-  }
-
-  invalidateDashboardMetricsCache(user.id);
-
-  // Hook into Daily Missions
-  try {
-    const durationMins = Math.floor(durationSeconds / 60);
-    if (durationMins > 0) {
-      await updateMissionProgress("study_duration", durationMins, user.id);
-    }
-    await updateMissionProgress("focus_sessions", 1, user.id);
-  } catch (err) {
-    console.error("Error updating mission progress for session:", err);
-  }
-
-  // Hook into Achievements
-  import("@/features/achievements/services/achievements.service")
-    .then(({ AchievementsService }) => AchievementsService.evaluateAchievements(user.id))
-    .catch((err) => console.error("Error evaluating achievements after session:", err));
-
-  return data as StudySession;
+  return (data as StudySession[]) || [];
 }
 
 import { getSyllabus, getChapterBySlug, getSubjectBySlug, type Subject } from "@/features/syllabus/services/syllabus";

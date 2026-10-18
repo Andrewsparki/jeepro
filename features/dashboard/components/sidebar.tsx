@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Lenis from "lenis";
+import { usePerformance } from "@/lib/performance-context";
 import { SidebarItem } from "./sidebar-item";
 import { BrandLogo } from "./brand-logo";
 import {
@@ -68,6 +70,73 @@ export function Sidebar() {
     { href: "/dashboard/achievements", label: "Achievements", icon: <Award className="h-5 w-5" /> },
   ];
 
+  const { smoothScroll } = usePerformance();
+  const navContainerRef = useRef<HTMLDivElement>(null);
+  const lenisRef = useRef<Lenis | null>(null);
+
+  // Initialize smooth Locomotive/Lenis scrolling on the sidebar navigation container
+  useEffect(() => {
+    const container = navContainerRef.current;
+    if (!container || typeof window === "undefined") return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (prefersReducedMotion || !smoothScroll) {
+      return;
+    }
+
+    const lenis = new Lenis({
+      wrapper: container,
+      content: container.firstElementChild as HTMLElement || container,
+      lerp: 0.1,
+      duration: 1.1,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+      autoResize: true,
+    });
+
+    lenisRef.current = lenis;
+
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    // Re-calculate dimensions when social accordion expands or collapses
+    const resizeObserver = new ResizeObserver(() => {
+      lenis.resize();
+    });
+    if (container.firstElementChild) {
+      resizeObserver.observe(container.firstElementChild);
+    }
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      resizeObserver.disconnect();
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, [smoothScroll]);
+
+  // Notify lenis when accordion changes
+  useEffect(() => {
+    if (lenisRef.current) {
+      // Allow DOM transition to start/finish and resize
+      const timer = setTimeout(() => {
+        lenisRef.current?.resize();
+      }, 220);
+      return () => clearTimeout(timer);
+    }
+  }, [isSocialOpen]);
+
   return (
     <motion.aside
       initial={false}
@@ -94,7 +163,11 @@ export function Sidebar() {
           <ThemeSwitcher className="shrink-0" />
         </div>
 
-        <div data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto py-6 px-4 custom-scrollbar">
+        <div
+          ref={navContainerRef}
+          data-lenis-prevent
+          className="flex-1 min-h-0 overflow-y-auto overscroll-contain py-6 px-4 custom-scrollbar"
+        >
           <LayoutGroup id="sidebar-nav">
             <nav className="flex flex-col gap-1">
               {mainNav.map((item) => (

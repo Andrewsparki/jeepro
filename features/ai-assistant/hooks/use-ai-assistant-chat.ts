@@ -102,6 +102,8 @@ export function useAiAssistantChat() {
 
         const decoder = new TextDecoder();
         let accumulatedText = "";
+        let lastUpdateTime = 0;
+        const BATCH_INTERVAL_MS = 50;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -110,12 +112,23 @@ export function useAiAssistantChat() {
           const chunk = decoder.decode(value, { stream: true });
           accumulatedText += chunk;
 
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === assistantMessageId ? { ...msg, content: accumulatedText } : msg
-            )
-          );
+          const now = performance.now();
+          if (now - lastUpdateTime >= BATCH_INTERVAL_MS) {
+            lastUpdateTime = now;
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === assistantMessageId ? { ...msg, content: accumulatedText } : msg
+              )
+            );
+          }
         }
+
+        // Final flush on stream complete
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessageId ? { ...msg, content: accumulatedText } : msg
+          )
+        );
       } catch (err: any) {
         if (err.name === "AbortError") {
           return;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
 import { motion, AnimatePresence } from "framer-motion";
@@ -50,6 +50,39 @@ export function CommandPalette() {
   const { setIsOpen: setIsAiOpen } = useAiAssistant();
   
   const [search, setSearch] = useState("");
+  const previousActiveElementRef = useRef<HTMLElement | null>(null);
+
+  // Restore focus to the trigger element when the command palette closes
+  useEffect(() => {
+    if (isOpen) {
+      previousActiveElementRef.current = (document.activeElement as HTMLElement) || null;
+    } else if (previousActiveElementRef.current) {
+      const el = previousActiveElementRef.current;
+      previousActiveElementRef.current = null;
+      requestAnimationFrame(() => {
+        el.focus?.();
+      });
+    }
+  }, [isOpen]);
+
+  // Handle Escape key: active only while open and intercepts in capture phase to protect underlying overlays
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown, true);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, [isOpen, setIsOpen]);
 
   const userPseudonym = useMemo(
     () => (user?.id ? pseudonymiseUserId(user.id) : undefined),
@@ -128,6 +161,13 @@ export function CommandPalette() {
               <Command
                 className="overflow-hidden rounded-2xl border border-[#2B3342] bg-[#0B0D12]/95 text-[#F5F7FB] shadow-[0_24px_60px_rgba(0,0,0,0.8),0_0_30px_rgba(120,169,255,0.06)] backdrop-blur-2xl ring-1 ring-[#78A9FF]/15 focus-within:border-[#78A9FF]/40 focus-within:ring-1 focus-within:ring-[#78A9FF]/30 focus-within:shadow-[0_24px_70px_rgba(0,0,0,0.85),0_0_40px_rgba(120,169,255,0.18),0_0_15px_rgba(120,169,255,0.10)] transition-all duration-300 ease-out"
                 shouldFilter={true}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsOpen(false);
+                  }
+                }}
               >
                 {/* Search Bar Header */}
                 <div className="group/search flex items-center border-b border-[#2B3342]/70 px-4 bg-[#121722]/50 focus-within:bg-[#121722]/80 focus-within:border-[#78A9FF]/30 transition-colors duration-300">

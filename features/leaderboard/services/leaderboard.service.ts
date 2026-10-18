@@ -20,9 +20,19 @@ export function calculateLevelFromXP(xp: number): number {
   return level;
 }
 
+const LEADERBOARD_CACHE = new Map<string, { data: LeaderboardEntry[]; timestamp: number }>();
+const USER_RANK_CACHE = new Map<string, { data: CurrentUserRank | null; timestamp: number }>();
+const CACHE_TTL_MS = 60 * 1000;
+
 export class LeaderboardService {
   private static async getAuthUser() {
     const supabase = createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session?.user) {
+      return session.user;
+    }
     const {
       data: { user },
       error,
@@ -40,9 +50,19 @@ export class LeaderboardService {
     scope: LeaderboardScope = "global",
     period: LeaderboardPeriod = "all_time",
     limit = 50,
-    offset = 0
+    offset = 0,
+    forceRefresh = false
   ): Promise<LeaderboardEntry[]> {
     const user = await this.getAuthUser();
+    const cacheKey = `${user.id}:${scope}:${period}:${limit}:${offset}`;
+
+    if (!forceRefresh) {
+      const cached = LEADERBOARD_CACHE.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+        return cached.data;
+      }
+    }
+
     const supabase = createClient();
 
     try {
@@ -55,7 +75,7 @@ export class LeaderboardService {
       });
 
       if (!error && Array.isArray(data)) {
-        return (data as RawLeaderboardRpcRow[]).map((row) => ({
+        const entries = (data as RawLeaderboardRpcRow[]).map((row) => ({
           rank: Number(row.rank),
           userId: row.user_id,
           fullName: row.full_name || "JEE Aspirant",
@@ -66,6 +86,8 @@ export class LeaderboardService {
           level: Number(row.level || calculateLevelFromXP(Number(row.total_xp || 0))),
           isCurrentUser: row.user_id === user.id,
         }));
+        LEADERBOARD_CACHE.set(cacheKey, { data: entries, timestamp: Date.now() });
+        return entries;
       }
 
       // If RPC fails (e.g., function pending migration execution in dev), fall back to graceful query
@@ -75,7 +97,9 @@ export class LeaderboardService {
     }
 
     // 2. Resilient fallback path
-    return this.getLeaderboardFallback(user.id, scope, period, limit, offset);
+    const fallbackEntries = await this.getLeaderboardFallback(user.id, scope, period, limit, offset);
+    LEADERBOARD_CACHE.set(cacheKey, { data: fallbackEntries, timestamp: Date.now() });
+    return fallbackEntries;
   }
 
   /**
@@ -83,9 +107,19 @@ export class LeaderboardService {
    */
   static async getCurrentUserRank(
     scope: LeaderboardScope = "global",
-    period: LeaderboardPeriod = "all_time"
+    period: LeaderboardPeriod = "all_time",
+    forceRefresh = false
   ): Promise<CurrentUserRank | null> {
     const user = await this.getAuthUser();
+    const cacheKey = `${user.id}:${scope}:${period}`;
+
+    if (!forceRefresh) {
+      const cached = USER_RANK_CACHE.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+        return cached.data;
+      }
+    }
+
     const supabase = createClient();
 
     try {
@@ -96,7 +130,7 @@ export class LeaderboardService {
 
       if (!error && Array.isArray(data) && data.length > 0) {
         const row = data[0] as RawLeaderboardRpcRow;
-        return {
+        const rank = {
           rank: Number(row.rank),
           userId: row.user_id,
           fullName: row.full_name || "You",
@@ -107,13 +141,22 @@ export class LeaderboardService {
           level: Number(row.level || calculateLevelFromXP(Number(row.total_xp || 0))),
           totalUsers: Number(row.total_users || 1),
         };
+        USER_RANK_CACHE.set(cacheKey, { data: rank, timestamp: Date.now() });
+        return rank;
       }
     } catch (err) {
       console.warn("RPC get_user_leaderboard_rank failed:", err);
     }
 
     // Fallback: calculate current user's personal XP from their own study sessions
-    return this.getCurrentUserRankFallback(user.id);
+    const fallbackRank = await this.getCurrentUserRankFallback(user.id);
+    USER_RANK_CACHE.set(cacheKey, { data: fallbackRank, timestamp: Date.now() });
+    return fallbackRank;
+  }
+
+  static invalidateCache() {
+    LEADERBOARD_CACHE.clear();
+    USER_RANK_CACHE.clear();
   }
 
   /**

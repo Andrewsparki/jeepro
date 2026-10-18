@@ -86,9 +86,12 @@ export function AnalyticsTracker() {
     if (lastInteractionTimestampRef.current === 0) lastInteractionTimestampRef.current = initialNow;
     isDocumentVisibleRef.current = typeof document !== "undefined" && document.visibilityState === "visible";
 
-    // Track user activity to determine active vs idle state
+    // Track user activity to determine active vs idle state (throttled to max once per 2 seconds)
     const handleUserInteraction = () => {
       const now = Date.now();
+      if (!isIdleRef.current && now - lastInteractionTimestampRef.current < 2000) {
+        return;
+      }
       lastInteractionTimestampRef.current = now;
 
       if (isIdleRef.current) {

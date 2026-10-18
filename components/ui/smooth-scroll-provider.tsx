@@ -11,6 +11,7 @@ import React, {
 import { usePathname } from "next/navigation";
 import LocomotiveScroll from "locomotive-scroll";
 import type { ILenisScrollToOptions } from "locomotive-scroll";
+import { usePerformance } from "@/lib/performance-context";
 
 export interface ScrollToOptions extends ILenisScrollToOptions {
   offset?: number;
@@ -148,6 +149,8 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     thumbRef.current.style.height = `${thumbH}px`;
   }, []);
 
+  const { smoothScroll } = usePerformance();
+
   // Initialize Locomotive Scroll asynchronously after first painted frame
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -159,12 +162,12 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     let resizeRafId: number | null = null;
 
     initTimer = setTimeout(() => {
-      // Respect user reduced-motion preference
+      // Respect user reduced-motion preference & performance smoothScroll toggle
       const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
       ).matches;
 
-      if (prefersReducedMotion) {
+      if (prefersReducedMotion || !smoothScroll) {
         return;
       }
 
@@ -251,7 +254,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       isStoppedRef.current = false;
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     };
-  }, [updateThumbPosition]);
+  }, [updateThumbPosition, smoothScroll]);
 
   // Route change: immediately reset scroll, clear any orphaned locks, and recalculate heights
   useEffect(() => {

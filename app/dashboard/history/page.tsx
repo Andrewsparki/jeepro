@@ -62,13 +62,26 @@ function HistorySkeleton() {
 }
 
 import { useStudySession } from "@/features/study/context/study-session-context";
+import { useOptionalDashboardData } from "@/features/dashboard/context/dashboard-data-context";
+
+const PAGE_SIZE = 50;
 
 export default function HistoryPage() {
   const { refreshKey } = useStudySession();
+  const dashboardData = useOptionalDashboardData();
   const { alert, confirm } = useDialog();
-  const [sessions, setSessions] = useState<StudySession[]>([]);
-  const [syllabus, setSyllabus] = useState<Subject[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const [sessions, setSessions] = useState<StudySession[]>(
+    () => dashboardData?.criticalMetrics?.study_sessions.slice(0, PAGE_SIZE) ?? []
+  );
+  const [syllabus, setSyllabus] = useState<Subject[]>(
+    () => dashboardData?.criticalMetrics?.syllabus ?? []
+  );
+  const [loading, setLoading] = useState(
+    () => !dashboardData?.criticalMetrics
+  );
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   
   // Filtering & Sorting State
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,17 +93,51 @@ export default function HistoryPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
+    // If dashboard cache already has fresh metrics, use them immediately
+    if (dashboardData?.criticalMetrics) {
+      setSessions(dashboardData.criticalMetrics.study_sessions.slice(0, PAGE_SIZE));
+      setSyllabus(dashboardData.criticalMetrics.syllabus);
+      setHasMore(dashboardData.criticalMetrics.study_sessions.length >= PAGE_SIZE);
+      setLoading(false);
+      return;
+    }
+
     async function loadData() {
       const [sessionsData, syllabusData] = await Promise.all([
-        getStudySessions(),
+        getStudySessions(PAGE_SIZE, undefined, 0),
         getSyllabus()
       ]);
       setSessions(sessionsData);
       setSyllabus(syllabusData);
+      setHasMore(sessionsData.length >= PAGE_SIZE);
       setLoading(false);
     }
     loadData();
-  }, [refreshKey]);
+  }, [refreshKey, dashboardData?.criticalMetrics]);
+
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+    try {
+      const olderSessions = await getStudySessions(PAGE_SIZE, undefined, sessions.length);
+      if (olderSessions.length === 0) {
+        setHasMore(false);
+      } else {
+        setSessions((prev) => {
+          const existingIds = new Set(prev.map((s) => s.id));
+          const fresh = olderSessions.filter((s) => !existingIds.has(s.id));
+          return [...prev, ...fresh];
+        });
+        if (olderSessions.length < PAGE_SIZE) {
+          setHasMore(false);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load older sessions:", err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   const getSubjectName = useCallback((chapterId?: string | null) => {
     if (!chapterId) return "General";
@@ -175,8 +222,9 @@ export default function HistoryPage() {
     if (success) {
       setSelectedIds(new Set());
       // Re-fetch data
-      const [sessionsData] = await Promise.all([getStudySessions()]);
+      const sessionsData = await getStudySessions(PAGE_SIZE, undefined, 0);
       setSessions(sessionsData);
+      setHasMore(sessionsData.length >= PAGE_SIZE);
     } else {
       await alert({ title: "Error", message: "Failed to delete sessions." });
     }
@@ -194,9 +242,8 @@ export default function HistoryPage() {
     const success = await clearAllStudySessions();
     if (success) {
       setSelectedIds(new Set());
-      // Re-fetch data
-      const [sessionsData] = await Promise.all([getStudySessions()]);
-      setSessions(sessionsData);
+      setSessions([]);
+      setHasMore(false);
     } else {
       await alert({ title: "Error", message: "Failed to clear history." });
     }
@@ -350,6 +397,19 @@ export default function HistoryPage() {
               ))
             )}
           </AnimatePresence>
+
+          {hasMore && processedSessions.length > 0 && (
+            <div className="flex justify-center pt-4 pb-2">
+              <Button
+                variant="outline"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="rounded-full px-8 py-2 text-xs font-semibold border-white/10 hover:border-accent/40 hover:bg-accent/10 transition-colors"
+              >
+                {isLoadingMore ? "Loading older sessions..." : "Load Older Sessions"}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </DashboardShell>

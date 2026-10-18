@@ -82,8 +82,8 @@ export function useLeaderboard() {
     const fetchId = ++activeFetchIdRef.current;
     try {
       const [leaderboardData, rankData] = await Promise.all([
-        LeaderboardService.getLeaderboard(scope, period, 50, 0),
-        LeaderboardService.getCurrentUserRank(scope, period),
+        LeaderboardService.getLeaderboard(scope, period, 50, 0, true),
+        LeaderboardService.getCurrentUserRank(scope, period, true),
       ]);
       if (fetchId === activeFetchIdRef.current) {
         setEntries(leaderboardData);

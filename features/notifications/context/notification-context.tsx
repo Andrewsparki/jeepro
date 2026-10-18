@@ -104,6 +104,58 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     const supabase = createClient();
     const channelName = `notifications-${userId}-${Date.now()}`;
 
+    const handleChange = (payload: {
+      eventType: string;
+      new: Record<string, unknown>;
+      old: Record<string, unknown>;
+    }) => {
+      if (payload.eventType === "INSERT") {
+        const raw = payload.new;
+        const isTargetedToUser =
+          raw.user_id === userId || raw.target_user_id === userId;
+        const isGlobalAnnouncement =
+          raw.target_type === "all" && (!raw.user_id || raw.user_id === userId);
+
+        if (!isTargetedToUser && !isGlobalAnnouncement) return;
+
+        const newItem = parseNotificationPayload(raw);
+
+        setNotifications((prev) => {
+          if (prev.some((n) => n.id === newItem.id)) {
+            return prev;
+          }
+          return [newItem, ...prev];
+        });
+
+        if (!newItem.seen_at) {
+          setUnreadCount((prev) => prev + 1);
+          playNotificationSound();
+        }
+      } else if (payload.eventType === "UPDATE") {
+        const raw = payload.new;
+        const isTargetedToUser =
+          raw.user_id === userId || raw.target_user_id === userId;
+        const isGlobalAnnouncement =
+          raw.target_type === "all" && (!raw.user_id || raw.user_id === userId);
+
+        if (!isTargetedToUser && !isGlobalAnnouncement) return;
+
+        const updated = parseNotificationPayload(raw);
+
+        setNotifications((prev) => {
+          const exists = prev.some((n) => n.id === updated.id);
+          if (!exists) return prev;
+          const next = prev.map((n) => (n.id === updated.id ? updated : n));
+          setUnreadCount(next.filter((n) => !n.seen_at).length);
+          return next;
+        });
+      } else if (payload.eventType === "DELETE") {
+        const deleted = payload.old as unknown as { id: string };
+        if (!deleted?.id) return;
+        setNotifications((prev) => prev.filter((n) => n.id !== deleted.id));
+      }
+    };
+
     const channel = supabase
       .channel(channelName)
       .on(
@@ -112,44 +164,29 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
           event: "*",
           schema: "public",
           table: "notifications",
+          filter: `user_id=eq.${userId}`,
         },
-        (payload: { eventType: string; new: Record<string, unknown>; old: Record<string, unknown> }) => {
-          if (payload.eventType === "INSERT") {
-            const raw = payload.new;
-            const isForUser =
-              !raw.user_id ||
-              raw.user_id === userId ||
-              raw.target_user_id === userId ||
-              raw.target_type === "all";
-
-            if (!isForUser) return;
-
-            const newItem = parseNotificationPayload(raw);
-
-            setNotifications((prev) => {
-              if (prev.some((n) => n.id === newItem.id)) {
-                return prev;
-              }
-              return [newItem, ...prev];
-            });
-
-            if (!newItem.seen_at) {
-              setUnreadCount((prev) => prev + 1);
-              playNotificationSound();
-            }
-          } else if (payload.eventType === "UPDATE") {
-            const updated = parseNotificationPayload(payload.new);
-
-            setNotifications((prev) => {
-              const next = prev.map((n) => (n.id === updated.id ? updated : n));
-              setUnreadCount(next.filter((n) => !n.seen_at).length);
-              return next;
-            });
-          } else if (payload.eventType === "DELETE") {
-            const deleted = payload.old as unknown as { id: string };
-            setNotifications((prev) => prev.filter((n) => n.id !== deleted.id));
-          }
-        }
+        handleChange
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter: `target_user_id=eq.${userId}`,
+        },
+        handleChange
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter: `target_type=eq.all`,
+        },
+        handleChange
       )
       .subscribe();
 

@@ -55,8 +55,19 @@ export function useAchievements(options?: UseAchievementsOptions) {
     }
   }, [userId]);
 
+  const hasValidInitialData = useRef(
+    Boolean(options?.initialAchievements && options.initialAchievements.length > 0)
+  );
+
   useEffect(() => {
     if (isAuthLoading || !userId) return;
+
+    // If valid initial prefetch data was provided by the server, reuse it instead of issuing a redundant request
+    if (hasValidInitialData.current) {
+      hasValidInitialData.current = false;
+      setIsFetching(false);
+      return;
+    }
 
     let ignore = false;
     async function init() {

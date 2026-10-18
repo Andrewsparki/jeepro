@@ -18,10 +18,13 @@ import { StudyExperienceSection } from "./sections/study-experience-section";
 import { SoundNotificationSection } from "./sections/sound-notification-section";
 import { PrivacySection } from "./sections/privacy-section";
 import { AboutSection } from "./sections/about-section";
+import { PerformanceSection } from "./sections/performance-section";
+import { Zap } from "lucide-react";
 
 export type SettingsTabId =
   | "account"
   | "appearance"
+  | "performance"
   | "study"
   | "notifications"
   | "privacy"
@@ -46,6 +49,12 @@ const CATEGORIES: SettingsCategory[] = [
     label: "Appearance",
     description: "Themes, layouts, and display viewports",
     icon: Palette,
+  },
+  {
+    id: "performance",
+    label: "Performance & Effects",
+    description: "Hardware presets, animations, and low-end PC optimization",
+    icon: Zap,
   },
   {
     id: "study",
@@ -76,6 +85,7 @@ const CATEGORIES: SettingsCategory[] = [
 const SECTION_COMPONENTS: Record<SettingsTabId, React.ComponentType> = {
   account: ProfileSection,
   appearance: AppearanceSection,
+  performance: PerformanceSection,
   study: StudyExperienceSection,
   notifications: SoundNotificationSection,
   privacy: PrivacySection,

@@ -215,11 +215,11 @@ export function FallbackFloatingTimer({
                   <div className="flex flex-col items-center px-5 pt-3 pb-2">
                     <span
                       ref={timeDisplayRef}
-                      className="text-4xl font-medium tabular-nums leading-none tracking-tighter text-[#f4f4f5]"
+                      className="text-4xl font-mono font-semibold tabular-nums leading-none tracking-tight text-[#f4f4f5]"
                       style={{
                         fontFamily:
-                          "var(--font-sans), system-ui, sans-serif",
-                        letterSpacing: "-0.04em",
+                          "var(--font-mono), monospace",
+                        letterSpacing: "-0.02em",
                         textShadow: `0 0 30px ${accent}33`,
                       }}
                     >

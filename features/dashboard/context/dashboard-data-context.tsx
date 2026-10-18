@@ -237,12 +237,28 @@ export function DashboardDataProvider({
     await loadMetrics({ silent: false });
   }, [loadMetrics, userId]);
 
+  // Coalesce burst refresh events (session completion, XP award, mission progress, achievement unlock, refreshKey)
+  const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const scheduleCoalescedRefresh = useCallback(() => {
+    if (refreshTimerRef.current) {
+      clearTimeout(refreshTimerRef.current);
+    }
+    refreshTimerRef.current = setTimeout(() => {
+      refreshTimerRef.current = null;
+      if (userId) {
+        invalidateDashboardMetricsCache(userId);
+      }
+      void loadMetrics({ silent: true });
+    }, 250);
+  }, [loadMetrics, userId]);
+
   // Listen for real-time study session and achievement completion events to refresh seamlessly in background
   useEffect(() => {
     if (!userId) return;
 
     const handleDataChange = () => {
-      void loadMetrics({ silent: true });
+      scheduleCoalescedRefresh();
     };
 
     window.addEventListener("jee-pro:study-session-completed", handleDataChange);
@@ -250,20 +266,23 @@ export function DashboardDataProvider({
     window.addEventListener("jee-pro:achievement-progress-updated", handleDataChange);
 
     return () => {
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+      }
       window.removeEventListener("jee-pro:study-session-completed", handleDataChange);
       window.removeEventListener("jee-pro:achievement-unlocked", handleDataChange);
       window.removeEventListener("jee-pro:achievement-progress-updated", handleDataChange);
     };
-  }, [userId, loadMetrics]);
+  }, [userId, scheduleCoalescedRefresh]);
 
   // Handle client-side session ends triggered via refreshKey
   const lastRefreshKeyRef = useRef(refreshKey);
   useEffect(() => {
     if (refreshKey > lastRefreshKeyRef.current && userId) {
       lastRefreshKeyRef.current = refreshKey;
-      void loadMetrics({ silent: true });
+      scheduleCoalescedRefresh();
     }
-  }, [refreshKey, userId, loadMetrics]);
+  }, [refreshKey, userId, scheduleCoalescedRefresh]);
 
   // Cold start initialization: if metrics exist, revalidate quietly in background (stale-while-revalidate)
   const hasInitializedRef = useRef(false);

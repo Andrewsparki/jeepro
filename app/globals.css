@@ -442,6 +442,26 @@ body.with-scroll-bars-hidden {
   border: none !important;
 }
 
+/* Performance & Low-End Mode Hardware Optimizations */
+html[data-disable-blur="true"] * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html[data-disable-shadows="true"] {
+  --shadow-soft: 0 0 0 1px rgba(43, 51, 66, 0.4);
+  --shadow-hover: 0 0 0 1px rgba(120, 169, 255, 0.2);
+  --shadow-medium: 0 0 0 1px rgba(43, 51, 66, 0.6);
+  --shadow-strong: 0 0 0 1px rgba(43, 51, 66, 0.8);
+  --shadow-glow: none;
+}
+
+html[data-disable-hover="true"] .transform-gpu:hover,
+html[data-disable-hover="true"] [class*="hover:scale-"]:hover {
+  transform: none !important;
+  transition-duration: 0ms !important;
+}
+
 @theme {
   --animate-marquee: marquee 30s linear infinite;
 

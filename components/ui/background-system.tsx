@@ -1,12 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { FloatingParticles } from "@/components/ui/floating-particles";
+import { usePerformance } from "@/lib/performance-context";
+
+// Routes that have a dedicated Obsidian AmbientBackground with layered particles
+const AMBIENT_BG_ROUTES = new Set([
+  "/",
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+  "/about",
+  "/pricing",
+  "/privacy",
+]);
 
 export function BackgroundSystem() {
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
   const { theme } = useTheme();
+  const { ambientLighting } = usePerformance();
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 0);
@@ -14,6 +30,10 @@ export function BackgroundSystem() {
   }, []);
 
   if (!mounted) return <div className="fixed inset-0 bg-background -z-50" />;
+
+  // Prevent duplicate background simulation and particle canvas on routes with dedicated AmbientBackground
+  const hasAmbientBackground = pathname ? AMBIENT_BG_ROUTES.has(pathname) : false;
+  if (hasAmbientBackground) return null;
 
   const isLight = theme === "light";
 
@@ -23,7 +43,7 @@ export function BackgroundSystem() {
       <FloatingParticles />
 
       {/* Dark mode glows & vignette (preserved 100% for dark themes) */}
-      {!isLight && (
+      {!isLight && ambientLighting && (
         <div className="absolute inset-0">
           {/* Primary ambient glow — static */}
           <div
@@ -52,7 +72,7 @@ export function BackgroundSystem() {
       )}
 
       {/* Light mode refined architectural ambient mesh */}
-      {isLight && (
+      {isLight && ambientLighting && (
         <div className="absolute inset-0">
           <div
             className="absolute inset-0 opacity-70"

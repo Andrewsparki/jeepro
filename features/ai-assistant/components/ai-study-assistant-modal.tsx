@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { motion, AnimatePresence, useReducedMotion, Variants } from "framer-motion";
 import { 
   Sparkles, 
   Send, 
@@ -42,6 +42,71 @@ const SUGGESTED_PROMPTS = [
     prompt: "Explain the mechanism of nucleophilic aromatic substitution (SNAr) with electron-withdrawing groups.",
   },
 ];
+
+const backdropVariants: Variants = {
+  initial: { opacity: 0 },
+  animate: {
+    opacity: 1,
+    transition: {
+      duration: 0.24,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  },
+  exit: (custom: { shouldReduceMotion: boolean }) => ({
+    opacity: 0,
+    transition: {
+      duration: custom.shouldReduceMotion ? 0.15 : 0.22,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  }),
+};
+
+const modalShellVariants: Variants = {
+  initial: (custom: { isFullscreen: boolean; shouldReduceMotion: boolean }) => {
+    if (custom.shouldReduceMotion) {
+      return { opacity: 0 };
+    }
+    return custom.isFullscreen
+      ? { opacity: 0, scale: 0.985, y: 0 }
+      : { opacity: 0, scale: 0.96, y: 12 };
+  },
+  animate: (custom: { isFullscreen: boolean; shouldReduceMotion: boolean }) => ({
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      duration: custom.shouldReduceMotion ? 0.15 : 0.25,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  }),
+  exit: (custom: { isFullscreen: boolean; shouldReduceMotion: boolean }) => {
+    if (custom.shouldReduceMotion) {
+      return {
+        opacity: 0,
+        transition: { duration: 0.15, ease: "linear" },
+      };
+    }
+    return custom.isFullscreen
+      ? {
+          opacity: 0,
+          scale: 0.985,
+          y: 0,
+          transition: {
+            duration: 0.22,
+            ease: [0.16, 1, 0.3, 1],
+          },
+        }
+      : {
+          opacity: 0,
+          scale: 0.96,
+          y: -10, // subtle upward movement on normal modal exit
+          transition: {
+            duration: 0.22,
+            ease: [0.16, 1, 0.3, 1],
+          },
+        };
+  },
+};
 
 export function AiStudyAssistantModal() {
   const { isOpen, setIsOpen, contextData } = useAiAssistant();
@@ -110,18 +175,42 @@ export function AiStudyAssistantModal() {
     };
   }, [isOpen]);
 
-  // Focus input when opened
+  const shouldReduceMotion = useReducedMotion() ?? false;
+  const [isExiting, setIsExiting] = useState(false);
+  const wasOpenRef = useRef(false);
+  const previousActiveElementRef = useRef<HTMLElement | null>(null);
+
+  // Focus input and remember trigger element when opened
   useEffect(() => {
     if (isOpen) {
+      wasOpenRef.current = true;
+      setIsExiting(false);
+      previousActiveElementRef.current = (document.activeElement as HTMLElement) || null;
       setTimeout(() => {
         inputRef.current?.focus();
       }, 150);
+    } else if (wasOpenRef.current) {
+      setIsExiting(true);
     }
   }, [isOpen]);
 
-  // Lock background document scrolling while the assistant is open
+  const handleExitComplete = useCallback(() => {
+    wasOpenRef.current = false;
+    setIsExiting(false);
+    if (previousActiveElementRef.current) {
+      const el = previousActiveElementRef.current;
+      previousActiveElementRef.current = null;
+      requestAnimationFrame(() => {
+        el.focus?.();
+      });
+    }
+  }, []);
+
+  const isScrollLocked = isOpen || isExiting;
+
+  // Lock background document scrolling while the assistant is open or animating out
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isScrollLocked) return;
 
     const scrollY = window.scrollY;
     const originalOverflow = document.body.style.overflow;
@@ -141,17 +230,20 @@ export function AiStudyAssistantModal() {
       document.body.style.width = originalWidth;
       window.scrollTo(0, scrollY);
     };
-  }, [isOpen]);
+  }, [isScrollLocked]);
 
   // Handle ESC key
   useEffect(() => {
+    if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
+      if (e.key === "Escape") {
         if (isFullscreen) {
           e.preventDefault();
           e.stopPropagation();
           setIsFullscreen(false);
         } else {
+          e.preventDefault();
+          e.stopPropagation();
           setIsOpen(false);
         }
       }
@@ -173,46 +265,50 @@ export function AiStudyAssistantModal() {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <FixedPortal>
-      <AnimatePresence>
-        <div 
-          className={`fixed inset-0 z-50 flex items-center justify-center overflow-hidden ${
-            isFullscreen ? "p-0" : "p-3 sm:p-5 md:p-6"
-          }`}
-        >
-          {/* Backdrop: translucent dark frost with backdrop blur */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-[#07090E]/60 backdrop-blur-xl"
-            onClick={() => setIsOpen(false)}
-          />
-
-          {/* Modal / Fullscreen Container: Glassmorphic translucent shell */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: 10 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            data-lenis-prevent="true"
-            data-lenis-prevent-wheel="true"
-            data-lenis-prevent-touch="true"
-            style={{
-              height: isFullscreen ? "100dvh" : "min(88dvh, 800px)",
-              maxHeight: isFullscreen ? "100dvh" : "800px",
-              width: isFullscreen ? "100vw" : "min(94vw, 896px)",
-            }}
-            className={`relative flex flex-col min-h-0 min-w-0 bg-[#0B0D13]/75 text-[#F5F7FB] shadow-[0_24px_60px_rgba(0,0,0,0.7),0_0_40px_rgba(120,169,255,0.06)] backdrop-blur-3xl ring-1 ring-[#78A9FF]/20 overflow-hidden ${
-              isFullscreen
-                ? "rounded-none border-none"
-                : "rounded-2xl border border-[#2B3342]/70"
+      <AnimatePresence onExitComplete={handleExitComplete}>
+        {isOpen && (
+          <motion.div 
+            key="ai-assistant-wrapper"
+            className={`fixed inset-0 z-50 flex items-center justify-center overflow-hidden ${
+              isFullscreen ? "p-0" : "p-3 sm:p-5 md:p-6"
             }`}
           >
+            {/* Backdrop: translucent dark frost with backdrop blur */}
+            <motion.div
+              key="ai-assistant-backdrop"
+              variants={backdropVariants}
+              custom={{ shouldReduceMotion }}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="fixed inset-0 bg-[#07090E]/60 backdrop-blur-xl"
+              onClick={() => setIsOpen(false)}
+            />
+
+            {/* Modal / Fullscreen Container: Glassmorphic translucent shell */}
+            <motion.div
+              key="ai-assistant-shell"
+              variants={modalShellVariants}
+              custom={{ isFullscreen, shouldReduceMotion }}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              data-lenis-prevent="true"
+              data-lenis-prevent-wheel="true"
+              data-lenis-prevent-touch="true"
+              style={{
+                height: isFullscreen ? "100dvh" : "min(88dvh, 800px)",
+                maxHeight: isFullscreen ? "100dvh" : "800px",
+                width: isFullscreen ? "100vw" : "min(94vw, 896px)",
+              }}
+              className={`relative flex flex-col min-h-0 min-w-0 bg-[#0B0D13]/75 text-[#F5F7FB] shadow-[0_24px_60px_rgba(0,0,0,0.7),0_0_40px_rgba(120,169,255,0.06)] backdrop-blur-3xl ring-1 ring-[#78A9FF]/20 overflow-hidden ${
+                isFullscreen
+                  ? "rounded-none border-none"
+                  : "rounded-2xl border border-[#2B3342]/70"
+              }`}
+            >
             {/* Header (Fixed shrink-0): Frosted glass */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#2B3342]/50 bg-[#121722]/50 backdrop-blur-md shrink-0 select-none">
               <div className="flex items-center gap-3 min-w-0">
@@ -455,8 +551,9 @@ export function AiStudyAssistantModal() {
               </div>
             </div>
           </motion.div>
-        </div>
-      </AnimatePresence>
-    </FixedPortal>
-  );
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </FixedPortal>
+);
 }

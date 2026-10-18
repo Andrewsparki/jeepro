@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { isCurrentUserAdmin } from "@/features/admin/services/admin-auth.service";
 import { AnalyticsEvent } from "@/features/analytics/types/analytics.types";
 import {
   recordAnalyticsEvent,
@@ -51,6 +53,26 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json(
+      { error: "Unauthorized: Authentication required" },
+      { status: 401 }
+    );
+  }
+
+  const isAdmin = await isCurrentUserAdmin();
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: "Forbidden: Administrator privileges required" },
+      { status: 403 }
+    );
+  }
+
   const url = new URL(req.url);
   const range = url.searchParams.get("range") || "all"; // 'today' | '7d' | '30d' | 'all'
   const filterUserPseudonym = url.searchParams.get("userPseudonym");

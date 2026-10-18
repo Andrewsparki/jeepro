@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import { BirthdayService, UserBirthdayRecapData } from "../services/birthday.service";
+import { isBirthdayTodayIST, getISTYear, getLocalISTDateString } from "@/lib/date-utils";
 
 interface BirthdayModeContextType {
   isBirthdayToday: boolean;
@@ -68,7 +69,7 @@ export function BirthdayModeProvider({ children }: { children: React.ReactNode }
         try {
           localStorage.setItem(
             BIRTHDAY_MODE_ACTIVE_KEY,
-            new Date().toISOString().split("T")[0]
+            getLocalISTDateString()
           );
         } catch {
           // ignore localStorage error
@@ -88,15 +89,9 @@ export function BirthdayModeProvider({ children }: { children: React.ReactNode }
     if (profile) {
       const birthdayStr = profile.birthday;
       const lastClaimedYear = profile.birthday_last_claimed_year;
-      const currentYear = new Date().getFullYear();
+      const currentYear = getISTYear();
 
-      let isToday = false;
-      if (birthdayStr) {
-        const today = new Date();
-        const bday = new Date(birthdayStr);
-        isToday = today.getMonth() === bday.getMonth() && today.getDate() === bday.getDate();
-      }
-
+      const isToday = isBirthdayTodayIST(birthdayStr);
       const canClaim = isToday && (lastClaimedYear === null || lastClaimedYear === undefined || lastClaimedYear < currentYear);
       processBirthdayInfo({ isBirthdayToday: isToday, canClaim });
     } else {

@@ -13,6 +13,7 @@ import { ConcertStageLights } from "./concert-stage-lights";
 import { ConcertControls } from "./concert-controls";
 import { TrackSelectorDrawer } from "./track-selector-drawer";
 import { VisualThemeId, VISUAL_THEMES } from "../types/themes";
+import { usePerformance } from "@/lib/performance-context";
 import {
   getAllTracksFromDB,
   saveTrackToDB,
@@ -329,6 +330,8 @@ export function ConcertModal() {
     handlePrevTrack,
   ]);
 
+  const { concertVisualComplexity } = usePerformance();
+  const effectiveReducedMotion = reducedMotion || !concertVisualComplexity;
   const currentTheme = VISUAL_THEMES[currentThemeId] || VISUAL_THEMES.obsidian;
 
   return (
@@ -347,7 +350,7 @@ export function ConcertModal() {
           <ConcertStageLights
             getFrequencySnapshot={getFrequencySnapshot}
             isPlaying={isPlaying}
-            reducedMotion={reducedMotion}
+            reducedMotion={effectiveReducedMotion}
             theme={currentTheme}
           />
 
@@ -355,7 +358,7 @@ export function ConcertModal() {
           <SpectrumCanvas
             getFrequencySnapshot={getFrequencySnapshot}
             isPlaying={isPlaying}
-            reducedMotion={reducedMotion}
+            reducedMotion={effectiveReducedMotion}
             theme={currentTheme}
           />
 

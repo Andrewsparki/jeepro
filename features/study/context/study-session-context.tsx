@@ -45,6 +45,24 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
   const triggerRefresh = useCallback(() => setRefreshKey(prev => prev + 1), []);
 
   const startSession = useCallback((subjectId?: string, chapterId?: string, topicId?: string, activityType?: ActivityType) => {
+    // If an existing session is already running, cleanly finalize it before starting a new one
+    if (session) {
+      const endTime = Date.now();
+      const prevDuration = Math.floor((endTime - session.startTime) / 1000);
+      if (prevDuration >= 60) {
+        void SessionService.endSession({
+          durationSeconds: prevDuration,
+          startedAt: new Date(session.startTime).toISOString(),
+          endedAt: new Date(endTime).toISOString(),
+          subjectId: session.subjectId,
+          chapterId: session.chapterId,
+          sectionId: session.topicId,
+          activityType: session.activityType,
+          completionPercentage: 0,
+        }).then(() => triggerRefresh()).catch(() => {});
+      }
+    }
+
     playSound("pop-up");
     setSession({
       startTime: Date.now(),
@@ -71,7 +89,7 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
         activityType,
       },
     });
-  }, [playSound]);
+  }, [session, playSound, triggerRefresh]);
 
   const isSavingRef = useRef(false);
 
@@ -87,7 +105,8 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
       const endTime = Date.now();
       const duration = Math.floor((endTime - currentSession.startTime) / 1000);
 
-      if (duration >= 0) {
+      // Enforce 60-second minimum duration for persistence and rewards
+      if (duration >= 60) {
         try {
           await SessionService.endSession({
             durationSeconds: duration,
@@ -118,6 +137,8 @@ export function StudySessionProvider({ children }: { children: ReactNode }) {
         });
 
         triggerRefresh();
+      } else {
+        toast.info("Session ended (< 1 min, not recorded)");
       }
     } finally {
       isSavingRef.current = false;

@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { motion, useSpring, useTransform } from "framer-motion";
 import { useLighting } from "./lighting-provider";
+import { usePerformance } from "@/lib/performance-context";
 
 export function AnimatedNumber({ value }: { value: number }) {
   const { isTouch } = useLighting();
+  const { animatedStats } = usePerformance();
   
   // Spring to animate the value
   const springValue = useSpring(0, {
@@ -28,7 +30,7 @@ export function AnimatedNumber({ value }: { value: number }) {
     return () => clearTimeout(t);
   }, []);
 
-  if (!mounted || isTouch) {
+  if (!mounted || isTouch || !animatedStats) {
     return <span>{value}</span>;
   }
 

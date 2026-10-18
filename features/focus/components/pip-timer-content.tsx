@@ -136,10 +136,11 @@ export function PipTimerContent({
       <div
         ref={timeDisplayRef}
         style={{
+          fontFamily: "var(--font-mono), monospace",
           fontSize: "52px",
-          fontWeight: 500,
+          fontWeight: 600,
           fontVariantNumeric: "tabular-nums",
-          letterSpacing: "-0.04em",
+          letterSpacing: "-0.02em",
           lineHeight: 1,
           color: "#f4f4f5",
           textShadow: `0 0 40px ${accent}33`,

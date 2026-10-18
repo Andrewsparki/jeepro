@@ -73,20 +73,28 @@ const LevelProgressChart = dynamic(
 
 import { motion, useReducedMotion } from "framer-motion";
 import { useStudySession } from "@/features/study/context/study-session-context";
+import { useOptionalDashboardData } from "@/features/dashboard/context/dashboard-data-context";
 
 export default function AnalyticsPage() {
   const { refreshKey } = useStudySession();
-  const [metrics, setMetrics] = useState<Awaited<ReturnType<typeof getDashboardMetrics>> | null>(null);
+  const dashboardData = useOptionalDashboardData();
+  const [metrics, setMetrics] = useState<Awaited<ReturnType<typeof getDashboardMetrics>> | null>(
+    () => dashboardData?.metrics ?? null
+  );
   const [chartsReady, setChartsReady] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
+    if (dashboardData?.metrics) {
+      setMetrics(dashboardData.metrics);
+      return;
+    }
     async function loadData() {
       const data = await getDashboardMetrics();
       setMetrics(data);
     }
     loadData();
-  }, [refreshKey]);
+  }, [refreshKey, dashboardData?.metrics]);
 
   useEffect(() => {
     let idleId: number | ReturnType<typeof setTimeout> | undefined;

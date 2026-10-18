@@ -56,6 +56,9 @@ export function getXPForActivity(activity?: ActivityType | null): number {
  * Session XP = (Duration in minutes * Per minute multiplier) + Activity Bonus
  */
 export function calculateSessionXP(durationSeconds: number, activityType?: ActivityType | null): number {
+  if (durationSeconds < 60) {
+    return 0;
+  }
   const minutes = Math.floor(durationSeconds / 60);
   const durationXP = minutes * XP_CONFIG.PER_MINUTE_MULTIPLIER;
   const bonusXP = getXPForActivity(activityType);

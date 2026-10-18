@@ -67,7 +67,7 @@ c:\jee-pro\
 | **`features/marketing/`** | Public landing page sections and marketing components | `components/hero-section.tsx`, `components/subjects-section.tsx`, `components/daily-ritual.tsx`, `components/focus-section.tsx`, `components/features-section.tsx`, `components/cta-section.tsx` |
 | **`features/admin/`** | Admin center UI, user editing, audit log tables, broadcast forms | `components/admin-overview.tsx`, `components/user-management.tsx`, `services/admin-service.ts` |
 | **`features/planner/`** | Study schedule calendar, event creation, revision reminders | `components/planner-workspace.tsx`, `services/planner-service.ts` |
-| **`features/settings/`** | Dual-pane configuration hub: profile, appearance, study, sound & alerts, data & privacy, and platform info | `components/settings-layout.tsx`, `components/sections/*` |
+| **`features/settings/`** | Dual-pane configuration hub: profile, appearance, performance & effects, study, sound & alerts, data & privacy, and platform info | `components/settings-layout.tsx`, `components/sections/*` |
 | **`features/support/`** | Ticket creation, user issue reporting, status tracking | `components/support-portal.tsx`, `services/support-service.ts` |
 | **`features/whats-new/`** | Update announcement modals, release notes, seen tracking | `components/whats-new-modal.tsx`, `services/whats-new-service.ts` |
 | **`features/search/`** | Global `Cmd+K` command palette for instant navigation | `context/command-palette-context.tsx`, `components/command-palette.tsx` |

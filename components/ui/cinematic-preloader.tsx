@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from "react";
 import { useAuth } from "@/features/auth/components/auth-provider";
+import { usePerformance } from "@/lib/performance-context";
 
 const AUTH_BOOT_PATHS = [
   "/dashboard",
@@ -92,7 +93,9 @@ export function AppBootGuard({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAuthRoute = isAuthenticatedBootRoute(pathname);
   const { isLoading: isAuthLoading } = useOptionalAuth();
-  const shouldReduceMotion = useReducedMotion();
+  const rawShouldReduceMotion = useReducedMotion();
+  const { loadingScreenAnimations } = usePerformance();
+  const shouldReduceMotion = rawShouldReduceMotion || !loadingScreenAnimations;
 
   const previousPathRef = useRef<string | null>(null);
   const hasBootedForCurrentSessionRef = useRef(false);
@@ -201,7 +204,9 @@ export function CinematicPreloader({
   isStalled?: boolean;
   onRetry?: () => void;
 }) {
-  const shouldReduceMotion = useReducedMotion();
+  const rawShouldReduceMotion = useReducedMotion();
+  const { loadingScreenAnimations } = usePerformance();
+  const shouldReduceMotion = rawShouldReduceMotion || !loadingScreenAnimations;
 
   return (
     <div

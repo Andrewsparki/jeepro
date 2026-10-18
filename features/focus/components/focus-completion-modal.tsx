@@ -100,7 +100,7 @@ export function FocusCompletionModal({
                     <Clock className="w-4 h-4 text-blue-400" />
                     <span className="text-[11px] uppercase tracking-wider font-medium">Duration</span>
                   </div>
-                  <span className="text-3xl font-light tabular-nums tracking-tighter text-foreground">
+                  <span className="text-3xl font-mono font-medium tabular-nums tracking-tight text-foreground">
                     {formatTime(durationSeconds)}
                   </span>
                 </motion.div>

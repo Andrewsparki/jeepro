@@ -46,6 +46,57 @@ export function isTodayIST(dateInput: Date | string): boolean {
 }
 
 /**
+ * Returns the current calendar year in IST.
+ */
+export function getISTYear(dateInput: Date | string = new Date()): number {
+  const dateStr = getLocalISTDateString(dateInput);
+  return parseInt(dateStr.split("-")[0], 10);
+}
+
+/**
+ * Returns the hour of day (0-23) in IST.
+ */
+export function getISTHour(dateInput: Date | string = new Date()): number {
+  try {
+    const date = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+    const hourStr = new Intl.DateTimeFormat("en-US", {
+      timeZone: DEFAULT_TIMEZONE,
+      hour: "numeric",
+      hour12: false,
+    }).format(date);
+    const parsed = parseInt(hourStr, 10);
+    return parsed === 24 ? 0 : parsed;
+  } catch {
+    const d = typeof dateInput === "string" ? new Date(dateInput) : dateInput;
+    return d.getHours();
+  }
+}
+
+/**
+ * Compares a date-only birthday string (e.g. 'YYYY-MM-DD' or 'MM-DD') with today in IST
+ * without UTC drift or timezone parsing artifacts.
+ */
+export function isBirthdayTodayIST(birthdayStr: string | null | undefined): boolean {
+  if (!birthdayStr) return false;
+  const parts = birthdayStr.split("-");
+  if (parts.length < 2) return false;
+
+  // Handle both 'YYYY-MM-DD' and 'MM-DD'
+  const bMonth = parts.length >= 3 ? parseInt(parts[1], 10) : parseInt(parts[0], 10);
+  const rawDay = parts.length >= 3 ? parts[2] : parts[1];
+  const bDay = parseInt(rawDay.slice(0, 2), 10);
+
+  if (isNaN(bMonth) || isNaN(bDay)) return false;
+
+  const todayStr = getLocalISTDateString();
+  const todayParts = todayStr.split("-");
+  const todayMonth = parseInt(todayParts[1], 10);
+  const todayDay = parseInt(todayParts[2], 10);
+
+  return bMonth === todayMonth && bDay === todayDay;
+}
+
+/**
  * Calculates consecutive daily study streak in IST.
  * If the user has studied today, the streak counts today + consecutive previous days.
  * If the user has not studied today yet, the streak checks yesterday to preserve active streak.

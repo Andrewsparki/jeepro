@@ -43,7 +43,7 @@ const RollingDigit = React.memo(function RollingDigit({
   }
 
   return (
-    <span className="relative inline-flex items-center justify-center overflow-hidden w-[0.58em] h-[1.1em] select-none">
+    <span className="relative inline-flex items-center justify-center overflow-hidden w-[0.62em] h-[1.12em] select-none font-mono">
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
           key={char}
@@ -56,7 +56,7 @@ const RollingDigit = React.memo(function RollingDigit({
             damping: 42,
             mass: 0.45,
           }}
-          className="absolute inset-0 flex items-center justify-center tabular-nums leading-none"
+          className="absolute inset-0 flex items-center justify-center font-mono font-semibold tabular-nums leading-none"
         >
           {char}
         </motion.span>
@@ -359,7 +359,7 @@ export const FocusTimer = React.memo(function FocusTimer({
       <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none px-4">
         <div 
           className={cn(
-            "relative flex items-center justify-center font-medium tabular-nums leading-none tracking-tighter transition-all duration-500",
+            "relative flex items-center justify-center font-mono font-semibold tabular-nums leading-none transition-all duration-500",
             isActive 
               ? "drop-shadow-[0_0_24px_rgba(120,169,255,0.3)] text-[#F5F7FB]" 
               : "drop-shadow-md text-foreground/95",
@@ -368,8 +368,8 @@ export const FocusTimer = React.memo(function FocusTimer({
               : "text-[4.2rem] xs:text-[4.8rem] sm:text-[5.5rem] md:text-[6.2rem]"
           )}
           style={{ 
-            fontFamily: "var(--font-sans), system-ui, sans-serif",
-            letterSpacing: "-0.04em"
+            fontFamily: "var(--font-mono), monospace",
+            letterSpacing: "-0.03em"
           }}
         >
           {formattedTime.split("").reverse().map((char, index) => (
@@ -377,7 +377,7 @@ export const FocusTimer = React.memo(function FocusTimer({
           )).reverse()}
 
           {mode === 'stopwatch' && (
-            <motion.span className="text-[0.45em] text-muted-foreground/60 font-normal tabular-nums ml-1 select-none self-end pb-[0.1em]">
+            <motion.span className="text-[0.45em] text-muted-foreground/60 font-mono font-medium tabular-nums ml-1 select-none self-end pb-[0.1em]">
               {msStringMotion}
             </motion.span>
           )}
