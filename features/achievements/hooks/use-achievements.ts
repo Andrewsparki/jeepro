@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, useDeferredValue } from "react";
+import { useState, useEffect, useCallback, useMemo, useDeferredValue, useRef } from "react";
 import { AchievementsService } from "../services/achievements.service";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import {
