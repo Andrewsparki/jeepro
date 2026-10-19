@@ -184,13 +184,13 @@ export function ConcertControls({
         </div>
 
         <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-[#F5F7FB] drop-shadow-md max-w-2xl px-4 line-clamp-2 leading-snug">
-          {activeTrack ? activeTrack.name : "Miguel Phonk ft. Matadora"}
+          {activeTrack ? activeTrack.name : "Relax"}
         </h1>
         <p
           className="text-xs sm:text-xs md:text-sm font-medium tracking-wide mt-1 uppercase font-mono transition-colors duration-500 max-w-xl px-4 line-clamp-1 opacity-90"
           style={{ color: currentTheme.primaryAccent }}
         >
-          {activeTrack ? activeTrack.artist : "Ultra Slowed // Live Arena Phonk"}
+          {activeTrack ? activeTrack.artist : "Atmospheric // Focus Stream"}
         </p>
       </div>
 

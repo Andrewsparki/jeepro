@@ -12,10 +12,10 @@ export interface TrackItem {
 
 export const DEFAULT_TRACKS: TrackItem[] = [
   {
-    id: "default-miguel-phonk",
-    name: "Miguel Phonk ft. Matadora",
-    artist: "Ultra Slowed // Live Arena Phonk",
-    url: "/audio/miguel-phonk-matadora.m4a",
+    id: "default-relax",
+    name: "Relax",
+    artist: "Atmospheric // Focus Stream",
+    url: "/audio/relax.wav",
     isCustom: false,
   },
 ];

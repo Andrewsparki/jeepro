@@ -8,7 +8,8 @@ import {
   Moon, 
   Activity, 
   Layers, 
-  Check 
+  Check,
+  type LucideIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/providers/settings-provider";
@@ -25,7 +26,7 @@ import {
 interface ThemeOption {
   id: VisualThemeId;
   name: string;
-  icon: React.ComponentType<{ className?: string; size?: number }>;
+  icon: LucideIcon | React.ComponentType<{ className?: string; size?: number; style?: React.CSSProperties }>;
   primaryColor: string;
   secondaryColor: string;
   swatches: [string, string];
