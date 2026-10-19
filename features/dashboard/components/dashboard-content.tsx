@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LevelUpToast } from "@/features/gamification/components/level-up-toast";
 import { MilestoneCelebration } from "@/features/gamification/components/milestone-celebration";
 import { DailyMissionsCard } from "@/features/daily-missions/components/daily-missions-card";
-import { useDashboardData } from "@/features/dashboard/context/dashboard-data-context";
+import { useDashboardData, type CompleteDashboardMetrics } from "@/features/dashboard/context/dashboard-data-context";
 import { usePerformance } from "@/lib/performance-context";
 
 // Above-the-fold components
