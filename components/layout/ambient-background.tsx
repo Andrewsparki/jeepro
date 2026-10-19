@@ -26,18 +26,19 @@ export function AmbientBackground({ variant = "obsidian" }: AmbientBackgroundPro
     <FixedPortal>
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-[#0B0D12] select-none transform-gpu"
+        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-background select-none transform-gpu"
         style={{ contain: "paint layout" }}
       >
-        {/* 1. Neutral Obsidian & Subtle Electric Blue Atmospheric Gradients */}
+        {/* 1. Theme-Aware Atmospheric Gradients */}
         <div
           className={
             isDefaultVariant
-              ? "absolute inset-0 bg-[radial-gradient(ellipse_100%_100%_at_50%_-10%,#121722_0%,#0B0D12_70%,#06070A_100%)]"
-              : "absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,rgba(120,169,255,0.035)_0%,rgba(11,13,18,0.95)_60%,#0B0D12_100%)]"
+              ? "absolute inset-0 bg-[radial-gradient(ellipse_100%_100%_at_50%_-10%,var(--bg-secondary)_0%,var(--bg-primary)_70%,rgba(0,0,0,0.95)_100%)]"
+              : "absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-20%,var(--accent-soft)_0%,var(--bg-primary)_60%,var(--bg-primary)_100%)]"
           }
+          style={{ opacity: 0.5 }}
         />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_120%,rgba(168,197,255,0.02)_0%,transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_120%,var(--secondary-accent-soft)_0%,transparent_70%)]" style={{ opacity: 0.3 }} />
 
         {/* 2. Microscopic Floating Particles Canvas */}
         <FloatingParticles zIndexClass="z-0" />
@@ -46,13 +47,13 @@ export function AmbientBackground({ variant = "obsidian" }: AmbientBackgroundPro
         <div
           className="absolute inset-0 opacity-[0.035]"
           style={{
-            backgroundImage: `radial-gradient(rgba(245, 247, 251, 0.6) 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(var(--foreground) 1px, transparent 1px)`,
             backgroundSize: "32px 32px",
           }}
         />
 
         {/* 4. Subtle Peripheral Vignette */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,rgba(11,13,18,0.85)_100%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_55%,var(--bg-primary)_100%)] opacity-80 pointer-events-none" />
       </div>
     </FixedPortal>
   );

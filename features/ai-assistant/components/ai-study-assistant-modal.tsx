@@ -48,7 +48,7 @@ const backdropVariants: Variants = {
   animate: {
     opacity: 1,
     transition: {
-      duration: 0.22,
+      duration: 0.28,
       ease: [0.16, 1, 0.3, 1],
     },
   },
@@ -68,14 +68,14 @@ const modalShellVariants: Variants = {
     }
     return custom.isFullscreen
       ? { opacity: 0, scale: 0.985, y: 0 }
-      : { opacity: 0, scale: 0.96, y: 10 };
+      : { opacity: 0, scale: 0.96, y: 12 };
   },
   animate: (custom: { isFullscreen: boolean; shouldReduceMotion: boolean }) => ({
     opacity: 1,
     scale: 1,
     y: 0,
     transition: {
-      duration: custom.shouldReduceMotion ? 0.15 : 0.35,
+      duration: custom.shouldReduceMotion ? 0.15 : 0.4,
       ease: [0.16, 1, 0.3, 1],
     },
   }),
@@ -314,19 +314,15 @@ export function AiStudyAssistantModal() {
             {/* Cinematic Opening Border Light Sweep (plays on each opening) */}
             {!shouldReduceMotion && (
               <div 
-                key={`ai-border-trace-${openingCount}`}
+                key={`ai-border-sweep-${openingCount}`}
                 className="absolute inset-0 pointer-events-none rounded-[inherit] overflow-hidden z-20"
               >
+                {/* Top Border Electric Beam Streak */}
                 <div 
-                  className="absolute -inset-[150%] animate-ai-border-trace opacity-0 pointer-events-none"
+                  className="absolute top-0 left-0 right-0 h-[2px] animate-ai-border-sweep opacity-0 pointer-events-none"
                   style={{
-                    background: `conic-gradient(from 0deg, transparent 0deg, transparent 50deg, var(--accent) 75deg, rgba(255, 255, 255, 0.95) 88deg, var(--accent) 100deg, transparent 130deg, transparent 360deg)`,
-                    mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                    maskComposite: "exclude",
-                    WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                    WebkitMaskComposite: "xor",
-                    padding: "1.5px",
-                    borderRadius: "inherit",
+                    background: `linear-gradient(90deg, transparent 0%, rgba(var(--accent-rgb), 0.2) 20%, var(--accent) 50%, #FFFFFF 60%, var(--accent) 70%, transparent 100%)`,
+                    boxShadow: `0 0 16px var(--accent-glow), 0 0 8px var(--accent)`,
                   }}
                 />
               </div>
@@ -334,13 +330,13 @@ export function AiStudyAssistantModal() {
 
             {/* Header (Fixed shrink-0): Frosted glass */}
             <div className="relative flex items-center justify-between px-5 py-3.5 border-b border-border/50 bg-surface/50 backdrop-blur-md shrink-0 select-none overflow-hidden">
-              {/* Cinematic Header Light Scan (150-500ms reveal) */}
+              {/* Cinematic Header Light Scan (100-550ms sweep) */}
               {!shouldReduceMotion && (
                 <div
                   key={`ai-header-scan-${openingCount}`}
-                  className="absolute inset-0 pointer-events-none animate-ai-header-scan opacity-0 z-10"
+                  className="absolute inset-0 pointer-events-none animate-ai-header-sweep opacity-0 z-10"
                   style={{
-                    background: `linear-gradient(90deg, transparent 0%, rgba(var(--accent-rgb), 0.15) 35%, rgba(255, 255, 255, 0.6) 50%, rgba(var(--accent-rgb), 0.15) 65%, transparent 100%)`,
+                    background: `linear-gradient(90deg, transparent 0%, rgba(var(--accent-rgb), 0.1) 30%, rgba(255, 255, 255, 0.45) 50%, rgba(var(--accent-rgb), 0.1) 70%, transparent 100%)`,
                   }}
                 />
               )}
@@ -349,7 +345,7 @@ export function AiStudyAssistantModal() {
                 <div 
                   key={`ai-icon-${openingCount}`}
                   className={`h-9 w-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center shadow-[0_0_15px_var(--accent-glow)] shrink-0 ${
-                    !shouldReduceMotion ? "animate-ai-icon-ping" : ""
+                    !shouldReduceMotion ? "animate-ai-icon-online" : ""
                   }`}
                 >
                   <Sparkles className="h-5 w-5 text-accent" />
@@ -360,7 +356,7 @@ export function AiStudyAssistantModal() {
                       JEE Pro AI Assistant
                     </h2>
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-accent/10 text-accent border border-accent/20 shrink-0">
-                      Gemini 3.6 Flash
+                      Gemini 3.8 Flash
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground truncate hidden sm:block">

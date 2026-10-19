@@ -6,11 +6,15 @@ import { Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { FixedPortal } from "@/components/ui/fixed-portal";
+import { useFocusStore } from "@/features/focus/store/focus-store";
 
 export function StudyTimer() {
   const { isActive, endSession } = useStudySession();
   const elapsedSeconds = useStudyTimer();
   const pathname = usePathname();
+  const isFocusTimerRunning = useFocusStore(
+    (s) => s.isActive || s.sessionAccumulated > 0 || s.phaseAccumulated > 0
+  );
 
   const formatTime = (totalSeconds: number) => {
     const hrs = Math.floor(totalSeconds / 3600);
@@ -23,7 +27,7 @@ export function StudyTimer() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const isHidden = pathname === "/dashboard/focus";
+  const isHidden = pathname === "/dashboard/focus" || isFocusTimerRunning;
 
   return (
     <FixedPortal>

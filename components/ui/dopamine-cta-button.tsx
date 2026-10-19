@@ -69,10 +69,10 @@ export function DopamineCTAButton({
             ],
             // Solid Warm White Variant: Crisp, ultra-clean high-contrast
             variant === "electric-white" && [
-              "bg-[#F5F7FB] hover:bg-white text-[#0B0D12] font-semibold",
-              "border border-white/90",
-              "shadow-[inset_0_1px_0_rgba(255,255,255,1),0_2px_12px_rgba(245,247,251,0.2)]",
-              "hover:shadow-[inset_0_1px_0_rgba(255,255,255,1),0_4px_20px_rgba(245,247,251,0.35)]",
+              "bg-foreground hover:bg-foreground/90 text-background font-semibold",
+              "border border-foreground/90",
+              "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_2px_12px_var(--accent-glow)]",
+              "hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_4px_20px_var(--accent-glow)]",
             ],
             // Secondary Dark Glass: Crisp smoked acrylic glass with subtle top highlight
             variant === "neon-glass" && [

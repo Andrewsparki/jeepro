@@ -37,20 +37,19 @@ const tintGradientMap: Record<string, string> = {
 export const GlassCard = React.memo(function GlassCard({
   children,
   className,
-  interactive,
+  interactive = false,
   hoverTint,
   style,
   ...props
 }: GlassCardProps) {
-  const tintClass = hoverTint && hoverTint !== "none" ? tintClassMap[hoverTint] : "hover:shadow-hover hover:border-border dark:hover:border-white/10";
+  const hasHoverEffect = Boolean(interactive || (hoverTint && hoverTint !== "none"));
+  const tintClass = hoverTint && hoverTint !== "none" ? tintClassMap[hoverTint] : "hover:shadow-hover hover:border-border";
   const gradientClass = hoverTint && hoverTint !== "none" ? tintGradientMap[hoverTint] : "from-accent/5";
-
-  const hasHoverEffect = interactive || hoverTint !== "none";
 
   return (
     <motion.div
-      whileHover={interactive ? { y: -4 } : {}}
-      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={interactive ? { y: -3 } : undefined}
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
         "relative premium-card overflow-hidden transition-[box-shadow,border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] transform-gpu",
         hasHoverEffect && "group",
@@ -64,13 +63,15 @@ export const GlassCard = React.memo(function GlassCard({
       {hasHoverEffect && (
         <div 
           className={cn(
-            "pointer-events-none absolute inset-0 bg-gradient-to-br to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] z-0",
+            "pointer-events-none absolute inset-0 bg-gradient-to-br to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] z-0",
             gradientClass
           )}
         />
       )}
       {/* Content */}
-      {children}
+      <div className="relative z-10 w-full h-full flex flex-col min-h-0">
+        {children}
+      </div>
     </motion.div>
   );
 });

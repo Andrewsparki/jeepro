@@ -4,16 +4,18 @@ import { GlassCard, HoverTint } from "./glass-card"
 
 export interface CardProps extends React.ComponentProps<"div"> {
   hoverTint?: HoverTint;
+  interactive?: boolean;
 }
 
-function Card({ className, hoverTint, ...props }: CardProps) {
+function Card({ className, hoverTint, interactive = false, ...props }: CardProps) {
   // We use our premium GlassCard for the base Card
   return (
     <GlassCard
       data-slot="card"
+      interactive={interactive}
       hoverTint={hoverTint}
       className={cn(
-        "flex flex-col gap-6 py-6 text-card-foreground shadow-sm", // Removed duplicate rounded-xl, bg, border as GlassCard handles them beautifully
+        "flex flex-col gap-6 py-6 text-card-foreground shadow-sm", // Standardized elevated surface
         className
       )}
       // We pass down props, but cast to any because GlassCard uses HTMLMotionProps

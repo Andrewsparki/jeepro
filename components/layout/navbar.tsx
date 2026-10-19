@@ -137,8 +137,8 @@ export function Navbar() {
         <div
           className={cn(
             "pointer-events-auto flex items-center justify-between gap-1 sm:gap-4 rounded-full p-1.5 sm:p-2 max-w-5xl w-full transform-gpu",
-            "bg-[#0B0D12]/85 backdrop-blur-md border border-[#2B3342] shadow-[0_16px_40px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.06)]",
-            scrolled && "bg-[#0B0D12]/95 border-[#2B3342] shadow-[0_20px_50px_rgba(0,0,0,0.85)]",
+            "bg-background/85 backdrop-blur-md border border-border shadow-[0_16px_40px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.06)]",
+            scrolled && "bg-background/95 border-border shadow-[0_20px_50px_rgba(0,0,0,0.85)]",
             "transition-colors duration-200"
           )}
         >
@@ -147,11 +147,11 @@ export function Navbar() {
             href="/" 
             onClick={(e) => handleNavClick(e, navItems[0])}
             aria-label="JEE Pro Home"
-            className="flex items-center gap-2 pl-2 sm:pl-3 pr-1 sm:pr-2 py-1 text-[#F5F7FB] hover:opacity-90 transition-opacity select-none group shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D12] rounded-lg"
+            className="flex items-center gap-2 pl-2 sm:pl-3 pr-1 sm:pr-2 py-1 text-foreground hover:opacity-90 transition-opacity select-none group shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-lg"
           >
-            <div className="w-2 h-2 rounded-full bg-[#78A9FF] shadow-[0_0_8px_#78A9FF] group-hover:scale-125 transition-transform" />
-            <span className="font-black text-xs sm:text-sm tracking-tight text-[#F5F7FB]">
-              JEE <span className="font-semibold text-[#A4ADBB]">PRO</span>
+            <div className="w-2 h-2 rounded-full bg-accent shadow-[0_0_8px_var(--accent-glow)] group-hover:scale-125 transition-transform" />
+            <span className="font-black text-xs sm:text-sm tracking-tight text-foreground">
+              JEE <span className="font-semibold text-muted-foreground">PRO</span>
             </span>
           </Link>
 
@@ -174,15 +174,15 @@ export function Navbar() {
                   onClick={(e) => handleNavClick(e, item)}
                   className={cn(
                     "relative text-xs sm:text-sm font-medium tracking-tight transition-colors duration-200 flex items-center gap-1.5 sm:gap-2 rounded-full whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 z-10 select-none",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D12]",
-                    isRouteActive ? "text-[#0B0D12] font-semibold" : "text-[#A4ADBB] hover:text-[#F5F7FB]"
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    isRouteActive ? "text-accent-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {/* Physical Sliding Capsule (layoutId) */}
                   {isRouteActive && (
                     <motion.div
                       layoutId="navbar-active-capsule"
-                      className="absolute inset-0 rounded-full bg-[#F5F7FB] shadow-md -z-10"
+                      className="absolute inset-0 rounded-full bg-foreground shadow-md -z-10"
                       transition={{
                         type: "spring",
                         stiffness: 450,
@@ -191,7 +191,7 @@ export function Navbar() {
                     />
                   )}
 
-                  <Icon className={cn("w-3.5 h-3.5 transition-colors duration-200", isRouteActive ? "text-[#0B0D12] stroke-[2.5]" : "text-[#A4ADBB]")} />
+                  <Icon className={cn("w-3.5 h-3.5 transition-colors duration-200", isRouteActive ? "text-accent-foreground stroke-[2.5]" : "text-muted-foreground")} />
                   <span>{item.title}</span>
                 </Link>
               );
@@ -201,13 +201,13 @@ export function Navbar() {
           {/* Right Side: Auth Actions */}
           <div className="flex items-center gap-1 sm:gap-2 pr-1 shrink-0">
             {/* Subtle Divider */}
-            <div className="w-[1px] h-4 bg-[#2B3342] mx-0.5 sm:mx-1 hidden xs:block" />
+            <div className="w-[1px] h-4 bg-border mx-0.5 sm:mx-1 hidden xs:block" />
 
             {/* Sign In */}
             <Link
               href="/login"
               onClick={() => playSound("swish")}
-              className="hidden sm:inline-flex text-xs sm:text-sm font-semibold text-[#A4ADBB] hover:text-[#F5F7FB] px-2.5 sm:px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#78A9FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0D12] rounded-full"
+              className="hidden sm:inline-flex text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground px-2.5 sm:px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-full"
             >
               Sign in
             </Link>

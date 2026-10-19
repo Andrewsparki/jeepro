@@ -105,8 +105,8 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
         </div>
       </div>
 
-      <div className="flex-1 w-full min-h-0 relative z-10 px-4 pb-4">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="flex-1 w-full min-h-[300px] relative z-10 px-4 pb-4">
+        <ResponsiveContainer width="100%" height="100%" minHeight={300}>
           <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
             <defs>
               <linearGradient id="colorSessions" x1="0" y1="0" x2="0" y2="1">
@@ -163,7 +163,6 @@ export function SessionsBarChart({ sessions }: SessionsBarChartProps) {
               isAnimationActive={!shouldReduceMotion}
               animationDuration={850}
               animationEasing="ease-out"
-              style={{ filter: 'url(#neonGlowBar)' }}
             />
           </BarChart>
         </ResponsiveContainer>

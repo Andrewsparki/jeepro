@@ -35,26 +35,30 @@ export default function FocusPage() {
     defaultBreakTime, 
     pomodoroCycles,
     isImmersive,
-    toggleImmersive
+    toggleImmersive,
+    isActive,
+    setIsActive,
+    phase,
+    setPhase,
+    pomodoroCount,
+    setPomodoroCount,
+    sessionAccumulated,
+    setSessionAccumulated,
+    phaseAccumulated,
+    setPhaseAccumulated,
+    lastResumeTime,
+    setLastResumeTime,
+    initialStartTime,
+    setInitialStartTime,
+    totalCompletedSittingSeconds,
+    setTotalCompletedSittingSeconds,
+    isCompletionModalOpen,
+    setIsCompletionModalOpen,
+    restartTimer,
   } = useFocusStore();
 
   const { triggerRefresh, isActive: isGlobalSessionActive, endSession: endGlobalSession } = useStudySession();
   const { playSound } = useSettings();
-
-  // Local state for timer (absolute time)
-  const [isActive, setIsActive] = useState(false);
-  const [phase, setPhase] = useState<"study" | "shortBreak" | "longBreak">("study");
-  const [pomodoroCount, setPomodoroCount] = useState(0);
-  
-  // Track total elapsed seconds for the current phase/session
-  const [sessionAccumulated, setSessionAccumulated] = useState<number>(0);
-  const [phaseAccumulated, setPhaseAccumulated] = useState<number>(0);
-  const [lastResumeTime, setLastResumeTime] = useState<number | null>(null);
-  const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
-  const [totalCompletedSittingSeconds, setTotalCompletedSittingSeconds] = useState<number>(0);
-  
-  // Overall session start for saving
-  const [initialStartTime, setInitialStartTime] = useState<Date | null>(null);
 
   // ── Picture-in-Picture / Floating Timer ──
   const { isPipSupported, isPipOpen, pipContainer, openPip, closePip } = usePipTimer();
@@ -82,12 +86,16 @@ export default function FocusPage() {
     return defaultBreakTime * 4;
   };
 
-  const persistStudySession = async (durationSeconds: number, startTimeOverride?: Date) => {
+  const persistStudySession = async (durationSeconds: number, startTimeOverride?: string) => {
     const exactDuration = Math.floor(durationSeconds);
     if (exactDuration < 60) return;
 
     const endedAt = new Date();
-    const startedAt = startTimeOverride || initialStartTime || new Date(endedAt.getTime() - exactDuration * 1000);
+    const startedAt = startTimeOverride
+      ? new Date(startTimeOverride)
+      : initialStartTime
+      ? new Date(initialStartTime)
+      : new Date(endedAt.getTime() - exactDuration * 1000);
 
     try {
       await SessionService.endSession({
@@ -114,13 +122,7 @@ export default function FocusPage() {
 
   const handleRestart = (silent?: boolean) => {
     if (!silent) playSound("pop-down");
-    setIsActive(false);
-    setSessionAccumulated(0);
-    setPhaseAccumulated(0);
-    setLastResumeTime(null);
-    setInitialStartTime(null);
-    setPhase("study");
-    setTotalCompletedSittingSeconds(0);
+    restartTimer();
   };
 
   const handleEndSession = async (overrideSessionElapsed?: number) => {
@@ -214,8 +216,8 @@ export default function FocusPage() {
         }
       }
       playSound("pop-up");
-      if (phase === "study" && sessionAccumulated === 0) {
-        setInitialStartTime(new Date());
+      if (phase === "study" && sessionAccumulated === 0 && !initialStartTime) {
+        setInitialStartTime(new Date().toISOString());
       }
       setLastResumeTime(Date.now());
       setIsActive(true);
@@ -246,7 +248,8 @@ export default function FocusPage() {
     setPhase("shortBreak");
   };
 
-  // Safe unmount & beforeunload persistence so active focus study time is never lost
+  // Safe window beforeunload persistence: saves session ONLY if browser tab/window is closing,
+  // NOT on internal React router unmount (so the timer keeps ticking across internal routes!)
   const sessionRef = useRef({
     isActive,
     phase,
@@ -272,7 +275,7 @@ export default function FocusPage() {
         acc + (wasActive && currentPhase === "study" && lrt ? (Date.now() - lrt) / 1000 : 0);
       if (activeSeconds >= 60) {
         const endedAt = new Date();
-        const startedAt = ist || new Date(endedAt.getTime() - activeSeconds * 1000);
+        const startedAt = ist ? new Date(ist) : new Date(endedAt.getTime() - activeSeconds * 1000);
         SessionService.endSession({
           durationSeconds: Math.floor(activeSeconds),
           startedAt: startedAt.toISOString(),
@@ -284,7 +287,6 @@ export default function FocusPage() {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      handleBeforeUnload();
     };
   }, []);
 

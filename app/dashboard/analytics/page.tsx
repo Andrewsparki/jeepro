@@ -187,10 +187,10 @@ export default function AnalyticsPage() {
           className="absolute top-0 left-1/2 -translate-x-1/2 w-[min(1150px,96vw)] h-[440px] opacity-35 dark:opacity-25"
           style={{
             background:
-              "radial-gradient(ellipse 75% 55% at 50% 0%, rgba(120, 169, 255, 0.24) 0%, rgba(99, 102, 241, 0.08) 45%, transparent 75%)",
+              "radial-gradient(ellipse 75% 55% at 50% 0%, var(--accent-glow) 0%, var(--secondary-accent-soft) 45%, transparent 75%)",
           }}
         />
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#78A9FF]/30 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/30 to-transparent" />
       </div>
 
       <div className="flex flex-col gap-10 pb-16 max-w-7xl mx-auto w-full relative">
@@ -203,8 +203,8 @@ export default function AnalyticsPage() {
         >
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-[#78A9FF]/10 text-[#78A9FF] border border-[#78A9FF]/20 shadow-[0_0_12px_rgba(120,169,255,0.18)]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#78A9FF] animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-accent-soft text-accent border border-accent/20 shadow-[0_0_12px_var(--accent-glow)]">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
                 COMMAND CENTER // LIVE TELEMETRY
               </span>
               <span className="text-[11px] font-mono text-muted-foreground/60 hidden sm:inline">
@@ -221,7 +221,7 @@ export default function AnalyticsPage() {
 
           <div className="flex flex-wrap items-center gap-2 self-start md:self-end">
             <div className="px-3.5 py-1.5 rounded-xl bg-white/[0.03] border border-border/60 text-xs text-muted-foreground flex items-center gap-2.5 shadow-xs font-mono">
-              <CalendarCheck className="w-4 h-4 text-[#78A9FF]" />
+              <CalendarCheck className="w-4 h-4 text-accent" />
               <span>
                 Today: <strong className="text-foreground">{todayStudyTimeFormatted}</strong>
               </span>
@@ -251,9 +251,9 @@ export default function AnalyticsPage() {
               subtext={`Avg ${avgSessionMinutes}m per sitting`}
               badge="Hours Logged"
               delay={0.08}
-              icon={<Clock className="w-5 h-5 text-blue-400" />}
-              iconColorClass="text-blue-400 bg-blue-500/10 border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
-              hoverTint="blue"
+              icon={<Clock className="w-5 h-5 text-accent" />}
+              iconColorClass="text-accent bg-accent-soft border-accent/20 shadow-[0_0_15px_var(--accent-glow)]"
+              hoverTint="none"
             />
             <AnimatedStatCard
               title="Study Sessions"
@@ -261,9 +261,9 @@ export default function AnalyticsPage() {
               subtext={`Peak block: ${longestSessionFormatted}`}
               badge="Focus Blocks"
               delay={0.16}
-              icon={<Target className="w-5 h-5 text-emerald-400" />}
-              iconColorClass="text-emerald-400 bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-              hoverTint="emerald"
+              icon={<Target className="w-5 h-5 text-accent" />}
+              iconColorClass="text-accent bg-accent-soft border-accent/20 shadow-[0_0_15px_var(--accent-glow)]"
+              hoverTint="none"
             />
             <AnimatedStatCard
               title="Total XP Earned"
@@ -271,9 +271,9 @@ export default function AnalyticsPage() {
               subtext={`Level ${xpDetails.currentLevel} • Tier ${Math.ceil(xpDetails.currentLevel / 5)}`}
               badge="Scholar XP"
               delay={0.24}
-              icon={<Trophy className="w-5 h-5 text-amber-400" />}
-              iconColorClass="text-amber-400 bg-amber-500/10 border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
-              hoverTint="amber"
+              icon={<Trophy className="w-5 h-5 text-accent" />}
+              iconColorClass="text-accent bg-accent-soft border-accent/20 shadow-[0_0_15px_var(--accent-glow)]"
+              hoverTint="none"
             />
             <AnimatedStatCard
               title="Active Streak"
@@ -282,9 +282,9 @@ export default function AnalyticsPage() {
               subtext={currentStreak > 0 ? "Daily rhythm active" : "Log a session today"}
               badge="Momentum"
               delay={0.32}
-              icon={<Flame className="w-5 h-5 text-orange-400" />}
-              iconColorClass="text-orange-400 bg-orange-500/10 border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
-              hoverTint="orange"
+              icon={<Flame className="w-5 h-5 text-accent" />}
+              iconColorClass="text-accent bg-accent-soft border-accent/20 shadow-[0_0_15px_var(--accent-glow)]"
+              hoverTint="none"
             />
           </div>
         </section>
@@ -298,7 +298,7 @@ export default function AnalyticsPage() {
           aria-label="Core Performance Trajectory"
         >
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-bold text-[#78A9FF] tracking-wider">
+            <span className="text-xs font-mono font-bold text-accent tracking-wider">
               [01 // CORE TRAJECTORY & MILESTONE SPOTLIGHT]
             </span>
           </div>
@@ -326,8 +326,8 @@ export default function AnalyticsPage() {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Compass className="w-4 h-4 text-[#78A9FF]" />
-                <span className="text-xs font-mono font-bold text-[#78A9FF] tracking-wider">
+                <Compass className="w-4 h-4 text-accent" />
+                <span className="text-xs font-mono font-bold text-accent tracking-wider">
                   [02 // SYLLABUS MASTERY RADAR]
                 </span>
               </div>
@@ -349,7 +349,7 @@ export default function AnalyticsPage() {
           aria-label="Focus Consistency and Velocity"
         >
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-bold text-[#78A9FF] tracking-wider">
+            <span className="text-xs font-mono font-bold text-accent tracking-wider">
               [03 // VELOCITY & FOCUS DISCIPLINE]
             </span>
           </div>
@@ -371,7 +371,7 @@ export default function AnalyticsPage() {
           aria-label="Cognitive Distribution and Flow"
         >
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-bold text-[#78A9FF] tracking-wider">
+            <span className="text-xs font-mono font-bold text-accent tracking-wider">
               [04 // COGNITIVE DISTRIBUTION & TOPIC FLOW]
             </span>
           </div>
@@ -391,7 +391,7 @@ export default function AnalyticsPage() {
           aria-label="XP Growth and Streak Progression"
         >
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-bold text-[#78A9FF] tracking-wider">
+            <span className="text-xs font-mono font-bold text-accent tracking-wider">
               [05 // XP GROWTH TRAJECTORY & STREAK CALENDAR]
             </span>
           </div>
@@ -411,7 +411,7 @@ export default function AnalyticsPage() {
           aria-label="Study Heatmap and Activity Timeline"
         >
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono font-bold text-[#78A9FF] tracking-wider">
+            <span className="text-xs font-mono font-bold text-accent tracking-wider">
               [06 // LONGITUDINAL STUDY MATRIX & ACTIVITY TIMELINE]
             </span>
           </div>

@@ -358,45 +358,86 @@
 }
 
 /* 4. Chromatic Gradients -> Neutral Grayscale Gradients */
+.minimal-wave [class*="from-orange-"],
 .minimal-wave [class*="from-amber-"],
+.minimal-wave [class*="from-yellow-"],
 .minimal-wave [class*="from-blue-"],
 .minimal-wave [class*="from-emerald-"],
+.minimal-wave [class*="from-green-"],
+.minimal-wave [class*="from-teal-"],
+.minimal-wave [class*="from-cyan-"],
+.minimal-wave [class*="from-sky-"],
+.minimal-wave [class*="from-indigo-"],
 .minimal-wave [class*="from-rose-"],
+.minimal-wave [class*="from-red-"],
 .minimal-wave [class*="from-purple-"],
-.minimal-wave [class*="from-sky-"] {
+.minimal-wave [class*="from-violet-"] {
   --tw-gradient-from: rgba(255, 255, 255, 0.12) var(--tw-gradient-from-position) !important;
 }
 
+.minimal-wave [class*="via-orange-"],
 .minimal-wave [class*="via-amber-"],
+.minimal-wave [class*="via-yellow-"],
 .minimal-wave [class*="via-blue-"],
 .minimal-wave [class*="via-emerald-"],
+.minimal-wave [class*="via-green-"],
+.minimal-wave [class*="via-teal-"],
+.minimal-wave [class*="via-cyan-"],
+.minimal-wave [class*="via-sky-"],
+.minimal-wave [class*="via-indigo-"],
 .minimal-wave [class*="via-rose-"],
-.minimal-wave [class*="via-purple-"] {
+.minimal-wave [class*="via-purple-"],
+.minimal-wave [class*="via-violet-"] {
   --tw-gradient-stops: var(--tw-gradient-from), rgba(255, 255, 255, 0.06) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
 }
 
+.minimal-wave [class*="to-orange-"],
 .minimal-wave [class*="to-amber-"],
+.minimal-wave [class*="to-yellow-"],
 .minimal-wave [class*="to-blue-"],
 .minimal-wave [class*="to-emerald-"],
+.minimal-wave [class*="to-green-"],
+.minimal-wave [class*="to-teal-"],
+.minimal-wave [class*="to-cyan-"],
+.minimal-wave [class*="to-sky-"],
+.minimal-wave [class*="to-indigo-"],
 .minimal-wave [class*="to-rose-"],
-.minimal-wave [class*="to-purple-"] {
+.minimal-wave [class*="to-purple-"],
+.minimal-wave [class*="to-violet-"] {
   --tw-gradient-to: rgba(255, 255, 255, 0.02) var(--tw-gradient-to-position) !important;
 }
 
 /* 5. Colored Box Shadows -> Subtle Monochrome Glows / Neutral Shadows */
-.minimal-wave [class*="shadow-"][class*="rgba(120,169,255"],
-.minimal-wave [class*="shadow-"][class*="rgba(56,189,248"],
-.minimal-wave [class*="shadow-"][class*="rgba(59,130,246"],
-.minimal-wave [class*="shadow-"][class*="rgba(16,185,129"],
-.minimal-wave [class*="shadow-"][class*="rgba(245,158,11"],
-.minimal-wave [class*="shadow-"][class*="rgba(37,99,235"],
-.minimal-wave [class*="shadow-"][class*="rgba(168,85,247"] {
+.minimal-wave [class*="shadow-"][class*="rgba("] {
   box-shadow: 0 0 16px rgba(255, 255, 255, 0.08) !important;
 }
 
 /* 6. Colored Drop-Shadows -> Grayscale Drop Shadows */
 .minimal-wave [class*="drop-shadow-"][class*="rgba("] {
   filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.15)) !important;
+}
+
+/* 7. Zero GlassCard / Card Hover Tint Overlays */
+.minimal-wave .premium-card [class*="bg-gradient-to-br"][class*="from-"] {
+  background-image: none !important;
+  opacity: 0 !important;
+}
+
+/* 8. Neutralize Icon Fills in Minimal Wave */
+.minimal-wave [class*="fill-orange-"],
+.minimal-wave [class*="fill-blue-"],
+.minimal-wave [class*="fill-amber-"],
+.minimal-wave [class*="fill-emerald-"],
+.minimal-wave [class*="fill-rose-"],
+.minimal-wave [class*="fill-purple-"] {
+  fill: currentColor !important;
+}
+
+/* 9. Inline Radial Background Overrides in Minimal Wave */
+.minimal-wave [style*="rgba(249,115,22"],
+.minimal-wave [style*="rgba(120,169,255"],
+.minimal-wave [style*="rgba(99,102,241"] {
+  filter: grayscale(100%) !important;
 }
 
 /* 7. SVGs, Charts & Badges Grayscale Filtering */
@@ -1267,48 +1308,57 @@ html[data-disable-hover="true"] [class*="hover:scale-"]:hover {
 }
 
 /* AI System Online Cinematic Opening Animations */
-@keyframes ai-border-trace {
+@keyframes ai-backdrop-cinematic {
   0% {
     opacity: 0;
-    transform: rotate(0deg);
   }
-  20% {
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes ai-border-sweep {
+  0% {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+  }
+  15% {
     opacity: 1;
   }
   75% {
-    opacity: 0.9;
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes ai-header-scan {
-  0% {
-    opacity: 0;
-    transform: translateX(-120%) skewX(-25deg);
-  }
-  25% {
     opacity: 0.95;
   }
-  70% {
-    opacity: 0.8;
-  }
   100% {
     opacity: 0;
-    transform: translateX(180%) skewX(-25deg);
+    transform: translate3d(200%, 0, 0);
   }
 }
 
-@keyframes ai-icon-ping {
+@keyframes ai-header-sweep {
+  0% {
+    opacity: 0;
+    transform: translate3d(-150%, 0, 0) skewX(-20deg);
+  }
+  20% {
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(250%, 0, 0) skewX(-20deg);
+  }
+}
+
+@keyframes ai-icon-online {
   0% {
     transform: scale(0.92);
     box-shadow: 0 0 0 rgba(var(--accent-rgb), 0);
   }
-  40% {
-    transform: scale(1.08);
-    box-shadow: 0 0 25px rgba(var(--accent-rgb), 0.75);
+  35% {
+    transform: scale(1.1);
+    box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.7);
   }
   100% {
     transform: scale(1);
@@ -1316,18 +1366,18 @@ html[data-disable-hover="true"] [class*="hover:scale-"]:hover {
   }
 }
 
-.animate-ai-border-trace {
-  animation: ai-border-trace 0.65s cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+.animate-ai-border-sweep {
+  animation: ai-border-sweep 0.55s 0.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform, opacity;
 }
 
-.animate-ai-header-scan {
-  animation: ai-header-scan 0.55s 0.12s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.animate-ai-header-sweep {
+  animation: ai-header-sweep 0.52s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform, opacity;
 }
 
-.animate-ai-icon-ping {
-  animation: ai-icon-ping 0.55s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.animate-ai-icon-online {
+  animation: ai-icon-online 0.5s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform, box-shadow;
 }
 
@@ -1345,9 +1395,9 @@ html[data-disable-hover="true"] [class*="hover:scale-"]:hover {
 
   .animate-sheen-sweep,
   .animate-cta-pulse,
-  .animate-ai-border-trace,
-  .animate-ai-header-scan,
-  .animate-ai-icon-ping {
+  .animate-ai-border-sweep,
+  .animate-ai-header-sweep,
+  .animate-ai-icon-online {
     animation: none !important;
   }
 }

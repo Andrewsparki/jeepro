@@ -108,14 +108,14 @@ export function StudyHeatmap({ sessions, weeksCount = 12 }: StudyHeatmapProps) {
   const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <GlassCard hoverTint="orange" className="flex flex-col h-full relative overflow-hidden group">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+    <GlassCard hoverTint="none" className="flex flex-col h-full relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-br from-accent-soft via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 px-6 pt-6 relative z-10">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.2)] border border-orange-500/20">
-            <Flame className="w-5 h-5" />
+          <div className="p-2.5 bg-accent-soft rounded-xl text-accent shadow-[0_0_15px_var(--accent-glow)] border border-accent/20">
+            <Flame className="w-5 h-5 fill-current" />
           </div>
           <div>
             <h3 className="font-bold text-xl tracking-tight text-foreground">Study Activity Heatmap</h3>
@@ -125,13 +125,13 @@ export function StudyHeatmap({ sessions, weeksCount = 12 }: StudyHeatmapProps) {
 
         {/* Quick Stats Badges */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface/60 border border-white/5 text-xs font-semibold">
-            <Calendar className="w-3.5 h-3.5 text-blue-400" />
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface/60 border border-border/40 text-xs font-semibold">
+            <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="text-foreground">{stats.activeDays}</span>
             <span className="text-muted-foreground font-normal">Active Days</span>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface/60 border border-white/5 text-xs font-semibold">
-            <Clock className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface/60 border border-border/40 text-xs font-semibold">
+            <Clock className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="text-foreground">{stats.totalHours}h</span>
             <span className="text-muted-foreground font-normal">Logged</span>
           </div>

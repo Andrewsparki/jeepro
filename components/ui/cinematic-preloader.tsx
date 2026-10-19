@@ -210,16 +210,16 @@ export function CinematicPreloader({
 
   return (
     <div
-      className="absolute inset-0 overflow-hidden bg-[#0B0D12] text-[#F5F7FB] flex flex-col items-center justify-center select-none"
+      className="absolute inset-0 overflow-hidden bg-background text-foreground flex flex-col items-center justify-center select-none"
       role="status"
       aria-live="polite"
       aria-busy={visible}
     >
       {/* Subtle Specular Top Highlight */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#78A9FF]/30 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)]/30 to-transparent pointer-events-none" />
 
       {/* Radial Background Atmospheric Sheen */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(120,169,255,0.06),transparent_65%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,var(--accent-soft),transparent_65%)] pointer-events-none" />
 
       {/* Centerpiece Container with coordinated entrance */}
       <motion.div
@@ -246,7 +246,7 @@ export function CinematicPreloader({
               repeat: Number.POSITIVE_INFINITY,
               ease: "easeInOut",
             }}
-            className="absolute -inset-3 rounded-2xl bg-[#78A9FF]/20 blur-xl pointer-events-none"
+            className="absolute -inset-3 rounded-2xl bg-[var(--accent)]/20 blur-xl pointer-events-none"
           />
 
           {/* Obsidian Squircle Container */}
@@ -254,11 +254,11 @@ export function CinematicPreloader({
             initial={shouldReduceMotion ? {} : { scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-[#121722] border border-[#2B3342] shadow-[0_12px_36px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.12)]"
+            className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-card border border-border shadow-[0_12px_36px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.12)]"
           >
             <svg
               viewBox="0 0 24 24"
-              className="w-8 h-8 text-white overflow-visible"
+              className="w-8 h-8 text-foreground overflow-visible"
               fill="none"
               strokeWidth="2"
               strokeLinecap="round"
@@ -268,7 +268,7 @@ export function CinematicPreloader({
               {/* Layer 1: Top syllabus cap (Electric Blue apex) */}
               <motion.path
                 d="M12 2L2 7l10 5 10-5-10-5z"
-                stroke="#78A9FF"
+                stroke="var(--accent)"
                 initial={shouldReduceMotion ? {} : { pathLength: 0, opacity: 0, y: -4 }}
                 animate={
                   shouldReduceMotion
@@ -298,7 +298,7 @@ export function CinematicPreloader({
               {/* Layer 2: Middle problem-solving tier */}
               <motion.path
                 d="M2 12l10 5 10-5"
-                stroke="#E2E8F0"
+                stroke="var(--foreground)"
                 initial={shouldReduceMotion ? {} : { pathLength: 0, opacity: 0 }}
                 animate={
                   shouldReduceMotion
@@ -326,7 +326,7 @@ export function CinematicPreloader({
               {/* Layer 3: Bottom revision foundation */}
               <motion.path
                 d="M2 17l10 5 10-5"
-                stroke="#94A3B8"
+                stroke="var(--muted-foreground)"
                 initial={shouldReduceMotion ? {} : { pathLength: 0, opacity: 0, y: 4 }}
                 animate={
                   shouldReduceMotion
@@ -363,13 +363,13 @@ export function CinematicPreloader({
           transition={{ duration: 0.5, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
           className="space-y-2"
         >
-          <div className="flex items-center justify-center gap-2.5 font-mono text-xs font-bold tracking-[0.28em] text-[#A4ADBB] uppercase">
+          <div className="flex items-center justify-center gap-2.5 font-mono text-xs font-bold tracking-[0.28em] text-muted-foreground uppercase">
             <span>JEE</span>
-            <span className="text-[#F5F7FB] font-extrabold">PRO</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#78A9FF] shadow-[0_0_10px_#78A9FF] animate-pulse ml-0.5" />
+            <span className="text-foreground font-extrabold">PRO</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_10px_var(--accent-glow)] animate-pulse ml-0.5" />
           </div>
 
-          <h1 className="text-sm font-medium text-[#F5F7FB]/95 tracking-tight">
+          <h1 className="text-sm font-medium text-foreground/95 tracking-tight">
             {isStalled ? "Connecting to workspace..." : "Preparing your workspace"}
           </h1>
         </motion.div>
@@ -379,12 +379,12 @@ export function CinematicPreloader({
           initial={shouldReduceMotion ? {} : { opacity: 0, scaleX: 0.8 }}
           animate={{ opacity: 1, scaleX: 1 }}
           transition={{ duration: 0.4, delay: 0.22, ease: "easeOut" }}
-          className="w-48 max-w-[70vw] h-[3px] rounded-full bg-white/[0.08] overflow-hidden relative shadow-inner"
+          className="w-48 max-w-[70vw] h-[3px] rounded-full bg-surface overflow-hidden relative shadow-inner"
           role="progressbar"
           aria-label="Loading workspace"
         >
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-transparent via-[#78A9FF] to-white/90 shadow-[0_0_12px_rgba(120,169,255,0.8),0_0_4px_#78A9FF]"
+            className="h-full rounded-full bg-gradient-to-r from-transparent via-[var(--accent)] to-[var(--foreground)]/90 shadow-[0_0_12px_var(--accent-glow)]"
             initial={shouldReduceMotion ? { width: "100%" } : { x: "-100%", width: "35%" }}
             animate={
               shouldReduceMotion
@@ -417,11 +417,11 @@ export function CinematicPreloader({
             animate={{ opacity: 1, y: 0 }}
             className="pt-2 flex flex-col items-center gap-2.5"
           >
-            <p className="text-xs text-zinc-400">Connection is taking longer than expected.</p>
+            <p className="text-xs text-muted-foreground">Connection is taking longer than expected.</p>
             <button
               type="button"
               onClick={onRetry}
-              className="px-3.5 py-1.5 rounded-lg border border-white/[0.14] bg-white/[0.05] hover:bg-white/[0.1] text-xs font-medium text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="px-3.5 py-1.5 rounded-lg border border-border bg-surface hover:bg-surface-hover text-xs font-medium text-foreground transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               Reload workspace
             </button>

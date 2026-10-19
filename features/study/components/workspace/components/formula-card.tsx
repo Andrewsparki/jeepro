@@ -110,7 +110,19 @@ export function FormulaCard({ formula, onDelete }: FormulaCardProps) {
                 <Trash2 className="w-4 h-4" />
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hidden sm:flex">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 rounded-full hidden sm:flex"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (typeof navigator !== "undefined" && navigator.clipboard) {
+                  navigator.clipboard.writeText(`${formula.title}: ${formula.formula}`);
+                  toast.success("Formula copied to clipboard");
+                }
+              }}
+              title="Copy Formula"
+            >
               <Share2 className="w-4 h-4 text-muted-foreground" />
             </Button>
           </div>
@@ -178,7 +190,7 @@ export function FormulaCard({ formula, onDelete }: FormulaCardProps) {
                         <div className="flex flex-col min-w-0 flex-1">
                           <span className="text-sm font-medium truncate">{v.name}</span>
                           <div className="flex items-center gap-2 text-[10px] text-muted-foreground flex-wrap">
-                            {v.unit && <span className="uppercase tracking-wider text-[#78A9FF]">{v.unit}</span>}
+                            {v.unit && <span className="uppercase tracking-wider text-accent">{v.unit}</span>}
                             {v.description && <span>{v.description}</span>}
                           </div>
                         </div>
@@ -196,7 +208,7 @@ export function FormulaCard({ formula, onDelete }: FormulaCardProps) {
                       <Lightbulb className="w-3.5 h-3.5" />
                       Validity & Memory Notes
                     </h4>
-                    <p className="text-sm text-[#F5F7FB]/90 leading-relaxed">
+                    <p className="text-sm text-foreground/90 leading-relaxed">
                       {formula.memoryTrick}
                     </p>
                   </div>
@@ -209,7 +221,7 @@ export function FormulaCard({ formula, onDelete }: FormulaCardProps) {
                       <AlertTriangle className="w-3.5 h-3.5" />
                       Common Mistakes
                     </h4>
-                    <ul className="text-sm text-[#F5F7FB]/90 leading-relaxed list-disc list-inside space-y-1">
+                    <ul className="text-sm text-foreground/90 leading-relaxed list-disc list-inside space-y-1">
                       {formula.commonMistakes.map((mistake, idx) => (
                         <li key={idx} className="leading-snug">{mistake}</li>
                       ))}

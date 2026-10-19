@@ -37,24 +37,24 @@ export function StreakCalendar({ sessions }: StreakCalendarProps) {
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <GlassCard hoverTint="orange" className="p-6 flex flex-col h-full group relative overflow-hidden">
+    <GlassCard hoverTint="none" className="p-6 flex flex-col h-full group relative overflow-hidden">
       <div 
         className="absolute top-0 right-0 w-44 h-44 rounded-full pointer-events-none opacity-40 group-hover:opacity-75 transition-opacity duration-700 transform-gpu" 
         style={{
-          background: "radial-gradient(circle at 100% 0%, rgba(249,115,22,0.18) 0%, transparent 70%)"
+          background: "radial-gradient(circle at 100% 0%, var(--accent-glow) 0%, transparent 70%)"
         }}
       />
       
       <div className="flex items-center justify-between mb-6 relative z-10">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.15)] border border-orange-500/20">
+          <div className="p-2.5 bg-accent-soft rounded-xl text-accent shadow-[0_0_15px_var(--accent-glow)] border border-accent/20">
             <Calendar className="w-5 h-5" />
           </div>
           <h3 className="font-bold text-xl tracking-tight text-foreground">Streak Calendar</h3>
         </div>
         
-        <div className="flex items-center gap-1.5 px-3 py-1 bg-orange-500/10 rounded-full border border-orange-500/20 text-orange-500">
-          <Flame className="w-4 h-4 fill-orange-500" />
+        <div className="flex items-center gap-1.5 px-3 py-1 bg-accent-soft rounded-full border border-accent/20 text-accent">
+          <Flame className="w-4 h-4 fill-current" />
           <span className="font-bold text-sm">{currentStreak}</span>
         </div>
       </div>
@@ -87,9 +87,9 @@ export function StreakCalendar({ sessions }: StreakCalendarProps) {
                 <div className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300",
                   isActive 
-                    ? "bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow-[0_0_15px_rgba(249,115,22,0.4)] scale-110" 
+                    ? "bg-accent text-accent-foreground shadow-[0_0_15px_var(--accent-glow)] scale-110 font-bold" 
                     : isCurrent 
-                      ? "border-2 border-orange-500/50 text-orange-400"
+                      ? "border-2 border-accent/50 text-accent"
                       : "text-muted-foreground hover:bg-muted"
                 )}>
                   {format(day, "d")}

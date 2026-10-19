@@ -88,40 +88,24 @@ export function DashboardDataProvider({
   const { user, isLoading: isAuthLoading } = useAuth();
   const userId = user?.id;
 
-  // Instant zero-delay hydration: check initialMetrics -> in-memory cache -> sessionStorage
-  const [criticalMetrics, setCriticalMetrics] = useState<CriticalDashboardMetrics | null>(() => {
-    if (initialMetrics) return initialMetrics;
-    const sessionCached = readSessionCache(userId);
-    if (sessionCached) return sessionCached;
-    if (userId) {
-      return getCachedCriticalMetrics(userId) || getCachedDashboardMetrics(userId);
-    }
-    return null;
-  });
+  // Initial state strictly mirrors server render: only initialMetrics (provided by SSR) is safe.
+  // Never read client-only storages (sessionStorage or in-memory caches) during useState initialization,
+  // because that produces differing markup between SSR HTML (skeleton) and client hydration (loaded UI).
+  const [criticalMetrics, setCriticalMetrics] = useState<CriticalDashboardMetrics | null>(
+    () => initialMetrics ?? null
+  );
 
-  const [secondaryMetrics, setSecondaryMetrics] = useState<SecondaryDashboardMetrics | null>(() => {
-    if (initialMetrics) return initialMetrics;
-    const sessionCached = readSessionCache(userId);
-    if (sessionCached) return sessionCached;
-    if (userId) {
-      return getCachedDashboardMetrics(userId);
-    }
-    return null;
-  });
+  const [secondaryMetrics, setSecondaryMetrics] = useState<SecondaryDashboardMetrics | null>(
+    () => initialMetrics ?? null
+  );
 
-  const [isCriticalLoading, setIsCriticalLoading] = useState<boolean>(() => {
-    if (initialMetrics) return false;
-    if (readSessionCache(userId)) return false;
-    if (userId && (getCachedCriticalMetrics(userId) || getCachedDashboardMetrics(userId))) return false;
-    return true;
-  });
+  const [isCriticalLoading, setIsCriticalLoading] = useState<boolean>(
+    () => !initialMetrics
+  );
 
-  const [isSecondaryLoading, setIsSecondaryLoading] = useState<boolean>(() => {
-    if (initialMetrics) return false;
-    if (readSessionCache(userId)) return false;
-    if (userId && getCachedDashboardMetrics(userId)) return false;
-    return true;
-  });
+  const [isSecondaryLoading, setIsSecondaryLoading] = useState<boolean>(
+    () => !initialMetrics
+  );
 
   // Adjust state during render if initialMetrics prop updates (React recommended prop-sync pattern)
   const [prevInitial, setPrevInitial] = useState(initialMetrics);
@@ -132,6 +116,29 @@ export function DashboardDataProvider({
     setIsCriticalLoading(false);
     setIsSecondaryLoading(false);
   }
+
+  // Post-hydration cache restoration: if server did not provide initialMetrics, restore from client cache
+  useEffect(() => {
+    if (!initialMetrics) {
+      const sessionCached = readSessionCache(userId);
+      if (sessionCached) {
+        setCriticalMetrics((prev) => prev ?? sessionCached);
+        setSecondaryMetrics((prev) => prev ?? sessionCached);
+        setIsCriticalLoading(false);
+        setIsSecondaryLoading(false);
+        return;
+      }
+      if (userId) {
+        const cached = getCachedDashboardMetrics(userId);
+        if (cached) {
+          setCriticalMetrics((prev) => prev ?? cached);
+          setSecondaryMetrics((prev) => prev ?? cached);
+          setIsCriticalLoading(false);
+          setIsSecondaryLoading(false);
+        }
+      }
+    }
+  }, [initialMetrics, userId]);
 
   // Synchronous seeder for server-provided initialMetrics: eliminates loading states & skeleton flash
   const seedMetrics = useCallback(

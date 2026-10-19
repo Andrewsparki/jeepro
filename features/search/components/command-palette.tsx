@@ -13,6 +13,7 @@ import { FixedPortal } from "@/components/ui/fixed-portal";
 import { useAuth } from "@/features/auth/components/auth-provider";
 import { trackSearchUsage, pseudonymiseUserId } from "@/features/analytics/services/telemetry.service";
 import { useAiAssistant } from "@/features/ai-assistant/context/ai-assistant-context";
+import { useSubSmoothScroll } from "@/components/ui/sub-smooth-scroll";
 
 const ICON_MAP: Record<string, { icon: React.ComponentType<{ className?: string }> }> = {
   "tool-notes": { icon: FileText },
@@ -51,6 +52,13 @@ export function CommandPalette() {
   
   const [search, setSearch] = useState("");
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
+
+  // SubSmoothScroll hook providing Locomotive/Lenis-style momentum scrolling to the results container
+  const { containerRef: listContainerRef } = useSubSmoothScroll<HTMLDivElement>({
+    enabled: isOpen,
+    lerp: 0.12,
+    wheelMultiplier: 1.05,
+  });
 
   // Restore focus to the trigger element when the command palette closes
   useEffect(() => {
@@ -187,7 +195,10 @@ export function CommandPalette() {
                   </div>
                 </div>
                 
-                <Command.List className="max-h-[360px] overflow-y-auto overflow-x-hidden p-2 custom-scrollbar">
+                <Command.List 
+                  ref={listContainerRef}
+                  className="max-h-[360px] overflow-y-auto overflow-x-hidden p-2 custom-scrollbar overscroll-contain"
+                >
                   <Command.Empty className="py-12 text-center text-sm text-muted-foreground">
                     No results found.
                   </Command.Empty>

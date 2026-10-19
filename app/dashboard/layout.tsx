@@ -7,6 +7,7 @@ import { CommandPaletteProvider } from "@/features/search/context/command-palett
 import { DashboardMainContent } from "@/features/dashboard/components/dashboard-main-content";
 import { NotificationProvider } from "@/features/notifications/context/notification-context";
 import { DashboardDataProvider } from "@/features/dashboard/context/dashboard-data-context";
+import { FocusFloatingTimer } from "@/features/focus/components/focus-floating-timer";
 
 // Lazy-load CommandPalette to defer cmdk and 95KB syllabus JSON from initial dashboard route chunks
 const CommandPalette = dynamic(
@@ -36,6 +37,7 @@ export default function DashboardLayout({
               </DashboardMainContent>
             </div>
             <StudyTimer />
+            <FocusFloatingTimer />
             <CommandPalette />
           </DashboardDataProvider>
         </StudySessionProvider>

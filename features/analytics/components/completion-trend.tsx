@@ -96,19 +96,19 @@ export function CompletionTrend({ progress }: CompletionTrendProps) {
         </div>
       </div>
       
-      <div className={cn("flex-1 w-full min-h-0 relative z-10 pb-4 px-4", data.length === 0 || maxCount === 0 ? "flex items-center justify-center" : "")}>
+      <div className={cn("flex-1 w-full min-h-[290px] relative z-10 pb-4 px-4", data.length === 0 || maxCount === 0 ? "flex items-center justify-center" : "")}>
         {data.length === 0 || maxCount === 0 ? (
           <div className="flex flex-col items-center justify-center text-muted-foreground">
             <CheckCircle2 className="w-12 h-12 mb-3 opacity-20" />
             <p className="text-sm font-semibold uppercase tracking-widest">No topics mastered yet</p>
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minHeight={290}>
             <ComposedChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 25 }}>
               <defs>
                 <linearGradient id="colorCompletion" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#22C55E" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#22C55E" stopOpacity={0} />
+                  <stop offset="0%" stopColor="var(--success, #22C55E)" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="var(--success, #22C55E)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} opacity={0.3} />
@@ -136,16 +136,16 @@ export function CompletionTrend({ progress }: CompletionTrendProps) {
                  content={({ active, payload }) => {
                    if (active && payload && payload.length) {
                      return (
-                       <div className="bg-popover/95 border border-border/70 text-popover-foreground p-3 rounded-xl shadow-strong z-50 min-w-[120px]">
-                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                       <div className="bg-popover/95 border border-border/70 text-popover-foreground p-3 rounded-xl shadow-strong z-50 min-w-[120px] backdrop-blur-md">
+                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2 font-mono">
                            {payload[0].payload.displayDate}
                          </p>
                          <div className="flex items-center justify-between gap-4">
                            <div className="flex items-center gap-1.5">
-                             <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+                             <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--success, #22C55E)', boxShadow: '0 0 8px var(--success, #22C55E)' }} />
                              <span className="text-xs font-semibold text-foreground">Topics</span>
                            </div>
-                           <span className="text-xs font-bold text-green-600 dark:text-green-500">{payload[0]?.value}</span>
+                           <span className="text-xs font-bold font-mono text-foreground">{payload[0]?.value}</span>
                          </div>
                        </div>
                      );
@@ -164,10 +164,10 @@ export function CompletionTrend({ progress }: CompletionTrendProps) {
               <Line 
                  type="monotone" 
                  dataKey="count" 
-                 stroke="#22C55E" 
+                 stroke="var(--success, #22C55E)" 
                  strokeWidth={2.5} 
-                 dot={{ r: 3, fill: '#0f172a', strokeWidth: 1.5, stroke: '#22C55E' }} 
-                 activeDot={{ r: 5, fill: '#fff', stroke: '#22C55E', strokeWidth: 2 }} 
+                 dot={{ r: 3, fill: '#0f172a', strokeWidth: 1.5, stroke: 'var(--success, #22C55E)' }} 
+                 activeDot={{ r: 5, fill: '#fff', stroke: 'var(--success, #22C55E)', strokeWidth: 2 }} 
                  isAnimationActive={true}
                  animationDuration={800}
                  animationEasing="ease-out"
