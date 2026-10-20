@@ -1,9 +1,11 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import physicsData from "../data/jee-main/physics.json";
 import chemistryData from "../data/jee-main/chemistry.json";
 import mathData from "../data/jee-main/mathematics.json";
 
 let cachedTopicMap: Record<string, string> | null = null;
+let cachedReverseTopicMap: Record<string, string> | null = null;
 let cachedChapterMap: Record<string, string> | null = null;
 let cachedSubjectMap: Record<string, string> | null = null;
 let prefetchPromise: Promise<void> | null = null;
@@ -36,13 +38,13 @@ const RAW_SUBJECTS: RawSubject[] = [
  * Pre-fetches mapping data from Supabase and in-memory caches it using O(1) indexed HashMaps.
  * Uses a singleton promise to deduplicate concurrent requests.
  */
-export async function prefetchMapping(): Promise<void> {
-  if (cachedTopicMap && cachedChapterMap && cachedSubjectMap) return;
+export async function prefetchMapping(client?: SupabaseClient): Promise<void> {
+  if (cachedTopicMap && cachedReverseTopicMap && cachedChapterMap && cachedSubjectMap) return;
 
   if (!prefetchPromise) {
     prefetchPromise = (async () => {
       try {
-        const supabase = createClient();
+        const supabase = client || createClient();
 
         const [subjectsRes, chaptersRes, topicsRes] = await Promise.all([
           supabase.from("subjects").select("id, slug"),
@@ -77,29 +79,37 @@ export async function prefetchMapping(): Promise<void> {
         }
 
         cachedTopicMap = {};
+        cachedReverseTopicMap = {};
         if (topicsRes.data) {
-          // Construct composite index map: "chapterId::title" -> topicId for O(1) lookup
+          // Construct composite index map: "chapterId::normalizedTitle" -> topicId
           const topicsByChapterAndTitle = new Map<string, string>();
+          const topicsByNormalizedTitle = new Map<string, string>();
+
           topicsRes.data.forEach(
             (t: { id: string; chapter_id: string; title: string }) => {
-              topicsByChapterAndTitle.set(`${t.chapter_id}::${t.title}`, t.id);
+              const normTitle = (t.title || "").trim().toLowerCase();
+              topicsByChapterAndTitle.set(`${t.chapter_id}::${normTitle}`, t.id);
+              if (!topicsByNormalizedTitle.has(normTitle)) {
+                topicsByNormalizedTitle.set(normTitle, t.id);
+              }
             }
           );
 
           // Map all topics in O(1) without repeated nested array searches
           RAW_SUBJECTS.forEach((sub) =>
             sub.chapters.forEach((ch) => {
-              const dbChapId = cachedChapterMap![ch.slug];
-              if (dbChapId) {
-                ch.topics.forEach((t) => {
-                  const dbTopicId = topicsByChapterAndTitle.get(
-                    `${dbChapId}::${t.name}`
-                  );
-                  if (dbTopicId) {
-                    cachedTopicMap![t.id] = dbTopicId;
-                  }
-                });
-              }
+              const dbChapId = cachedChapterMap![ch.slug] || cachedChapterMap![ch.id];
+              ch.topics.forEach((t) => {
+                const normName = (t.name || "").trim().toLowerCase();
+                let dbTopicId = dbChapId ? topicsByChapterAndTitle.get(`${dbChapId}::${normName}`) : undefined;
+                if (!dbTopicId) {
+                  dbTopicId = topicsByNormalizedTitle.get(normName);
+                }
+                if (dbTopicId) {
+                  cachedTopicMap![t.id] = dbTopicId;
+                  cachedReverseTopicMap![dbTopicId] = t.id;
+                }
+              });
             })
           );
         }
@@ -108,6 +118,7 @@ export async function prefetchMapping(): Promise<void> {
         cachedSubjectMap = cachedSubjectMap || {};
         cachedChapterMap = cachedChapterMap || {};
         cachedTopicMap = cachedTopicMap || {};
+        cachedReverseTopicMap = cachedReverseTopicMap || {};
       }
     })().finally(() => {
       prefetchPromise = null;
@@ -139,6 +150,13 @@ export function getTopicUuidSync(
   if (!jsonId) return null;
   if (isUuid(jsonId)) return jsonId;
   return cachedTopicMap?.[jsonId] || null;
+}
+
+export function getJsonTopicIdFromUuidSync(
+  uuid: string | null | undefined
+): string | null {
+  if (!uuid) return null;
+  return cachedReverseTopicMap?.[uuid] || null;
 }
 
 /**

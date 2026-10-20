@@ -127,7 +127,8 @@ export default function FocusPage() {
 
   const handleEndSession = async (overrideSessionElapsed?: number) => {
     const finalElapsed = typeof overrideSessionElapsed === 'number' ? overrideSessionElapsed : getSessionElapsed();
-    const totalSittingTime = totalCompletedSittingSeconds + (finalElapsed >= 60 ? finalElapsed : 0);
+    const exactDuration = Math.floor(finalElapsed);
+    const totalSittingTime = totalCompletedSittingSeconds + (exactDuration >= 60 ? exactDuration : 0);
 
     setIsActive(false);
     setSessionAccumulated(0);
@@ -144,10 +145,10 @@ export default function FocusPage() {
       handleRestart(true);
     } else {
       playSound("chime");
-      if (finalElapsed >= 60) {
-        await persistStudySession(finalElapsed);
+      if (exactDuration >= 60) {
+        await persistStudySession(exactDuration);
       }
-      setTotalCompletedSittingSeconds(totalSittingTime);
+      setTotalCompletedSittingSeconds(totalSittingTime > 0 ? totalSittingTime : exactDuration);
       setIsCompletionModalOpen(true);
     }
   };
@@ -155,6 +156,7 @@ export default function FocusPage() {
   function handleTimerComplete() {
     playSound("chime");
     const currentStudySeconds = getSessionElapsed();
+    const exactDuration = Math.floor(currentStudySeconds);
     
     setIsActive(false);
     setLastResumeTime(null);
@@ -168,9 +170,9 @@ export default function FocusPage() {
         setPomodoroCount(nextCount);
 
         // Auto-save the completed Pomodoro study session block so progress is never lost
-        if (currentStudySeconds >= 60) {
-          persistStudySession(currentStudySeconds);
-          setTotalCompletedSittingSeconds((prev) => prev + currentStudySeconds);
+        if (exactDuration >= 60) {
+          persistStudySession(exactDuration);
+          setTotalCompletedSittingSeconds((prev) => prev + exactDuration);
         }
         setSessionAccumulated(0);
         setInitialStartTime(null);
@@ -185,7 +187,7 @@ export default function FocusPage() {
       }
     } else {
       // Countdown ended
-      handleEndSession(currentStudySeconds);
+      handleEndSession(exactDuration);
     }
   }
 

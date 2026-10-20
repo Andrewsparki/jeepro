@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { SessionService } from '@/features/study-engine/services/session.service';
 
 export type TimerMode = 'countdown' | 'stopwatch' | 'pomodoro' | 'custom';
 export type AmbientSound = 'rain' | 'library' | 'forest' | 'ocean' | 'brown' | 'white' | 'none';
@@ -163,16 +164,32 @@ export const useFocusStore = create<FocusState>()(
 
       handleTimerComplete: () => {
         const state = get();
+        if (!state.isActive && state.sessionAccumulated === 0) return;
+
         const now = Date.now();
         const lrt = state.lastResumeTime || now;
         const delta = state.isActive ? (now - lrt) / 1000 : 0;
         const currentStudySeconds =
           state.phase === 'study' ? state.sessionAccumulated + delta : state.sessionAccumulated;
+        const exactStudyDuration = Math.floor(currentStudySeconds);
 
         if (state.timerMode === 'pomodoro') {
           if (state.phase === 'study') {
             const nextCount = state.pomodoroCount + 1;
             const nextPhase = nextCount % state.pomodoroCycles === 0 ? 'longBreak' : 'shortBreak';
+
+            if (exactStudyDuration >= 60) {
+              const endedAt = new Date();
+              const startedAt = state.initialStartTime
+                ? new Date(state.initialStartTime)
+                : new Date(endedAt.getTime() - exactStudyDuration * 1000);
+              SessionService.endSession({
+                durationSeconds: exactStudyDuration,
+                startedAt: startedAt.toISOString(),
+                endedAt: endedAt.toISOString(),
+              }).catch((e) => console.error("Pomodoro session save error:", e));
+            }
+
             set({
               isActive: false,
               lastResumeTime: null,
@@ -182,7 +199,7 @@ export const useFocusStore = create<FocusState>()(
               pomodoroCount: nextCount,
               phase: nextPhase,
               totalCompletedSittingSeconds:
-                state.totalCompletedSittingSeconds + (currentStudySeconds >= 60 ? currentStudySeconds : 0),
+                state.totalCompletedSittingSeconds + (exactStudyDuration >= 60 ? exactStudyDuration : 0),
             });
           } else {
             set({
@@ -194,12 +211,29 @@ export const useFocusStore = create<FocusState>()(
           }
         } else {
           // Countdown complete
+          const totalDuration = state.totalCompletedSittingSeconds + (exactStudyDuration >= 60 ? exactStudyDuration : 0);
+          const finalDurationToRecord = totalDuration > 0 ? totalDuration : exactStudyDuration;
+
+          if (exactStudyDuration >= 60) {
+            const endedAt = new Date();
+            const startedAt = state.initialStartTime
+              ? new Date(state.initialStartTime)
+              : new Date(endedAt.getTime() - exactStudyDuration * 1000);
+            SessionService.endSession({
+              durationSeconds: exactStudyDuration,
+              startedAt: startedAt.toISOString(),
+              endedAt: endedAt.toISOString(),
+            }).catch((e) => console.error("Countdown session save error:", e));
+          }
+
           set({
             isActive: false,
             lastResumeTime: null,
             phaseAccumulated: 0,
-            sessionAccumulated: currentStudySeconds,
-            isCompletionModalOpen: currentStudySeconds >= 60,
+            sessionAccumulated: 0,
+            initialStartTime: null,
+            totalCompletedSittingSeconds: finalDurationToRecord,
+            isCompletionModalOpen: finalDurationToRecord >= 60,
           });
         }
       },

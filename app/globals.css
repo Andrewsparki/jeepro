@@ -1307,78 +1307,269 @@ html[data-disable-hover="true"] [class*="hover:scale-"]:hover {
   }
 }
 
-/* AI System Online Cinematic Opening Animations */
-@keyframes ai-backdrop-cinematic {
+/* =========================================================================
+   JEE PRO // LUXURY MOTION DESIGN — AI Assistant Brand Ident
+   Refined Motion-Choreography & Kinematics (After Effects Keyframed)
+   ========================================================================= */
+
+/* Scene 1: The Cut — Leading Light Beam Streak sweeping across */
+@keyframes ai-luxury-streak-sweep {
   0% {
+    transform: translate3d(-100%, -50%, 0);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  24% {
+    transform: translate3d(50%, -50%, 0);
+    opacity: 1;
+  }
+  38% {
+    transform: translate3d(140%, -50%, 0);
+    opacity: 0.7;
+  }
+  48% {
+    transform: translate3d(200%, -50%, 0);
     opacity: 0;
   }
   100% {
-    opacity: 1;
+    transform: translate3d(200%, -50%, 0);
+    opacity: 0;
   }
 }
 
-@keyframes ai-border-sweep {
+/* Scene 1: Horizon Line — Wakes in beam's path and steadies */
+@keyframes ai-luxury-horizon {
   0% {
+    transform: scaleX(0);
     opacity: 0;
-    transform: translate3d(-100%, 0, 0);
   }
-  15% {
+  12% {
+    transform: scaleX(0.15);
+    opacity: 0.3;
+  }
+  26% {
+    transform: scaleX(1);
+    opacity: 0.9;
+  }
+  40% {
+    transform: scaleX(1);
+    opacity: 0.4;
+  }
+  73% {
+    transform: scaleX(1);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+/* Scene 2: The Mark — Path Stroke Draw */
+@keyframes ai-luxury-stroke-draw {
+  0%, 18% {
+    stroke-dashoffset: 240;
+    opacity: 0;
+  }
+  22% {
+    opacity: 1;
+  }
+  38% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  46% {
+    stroke-dashoffset: 0;
+    opacity: 0.4;
+  }
+  56%, 100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+/* Scene 2: The Mark — Solid Emblem Unmask, Dimensional Push & Settle */
+@keyframes ai-luxury-mark-fill {
+  0%, 20% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+    transform: translate3d(-8px, 0, 0) scale(0.92);
+  }
+  26% {
+    opacity: 1;
+  }
+  40% {
+    clip-path: inset(0 0% 0 0);
+    transform: translate3d(1px, 0, 0) scale(1.025);
+  }
+  48%, 73% {
+    clip-path: inset(0 0% 0 0);
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  86% {
+    clip-path: inset(0 0% 0 0);
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.98);
+  }
+  100% {
+    clip-path: inset(0 0% 0 0);
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.98);
+  }
+}
+
+/* Scene 2: Satellite Micro-Diamond — Staggered Orbit Snap */
+@keyframes ai-luxury-satellite-snap {
+  0%, 34% {
+    opacity: 0;
+    transform: scale(0) rotate(-45deg);
+  }
+  42% {
+    opacity: 1;
+    transform: scale(1.3) rotate(8deg);
+  }
+  48%, 73% {
+    opacity: 0.95;
+    transform: scale(1) rotate(0deg);
+  }
+  86% {
+    opacity: 0;
+    transform: scale(0.7) translate3d(0, -4px, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}
+
+/* Scene 3: Typography — Per-Character Staggered Baseline Rise */
+@keyframes ai-luxury-char-rise {
+  0% {
+    transform: translate3d(0, 120%, 0);
+    opacity: 0;
+  }
+  25% {
     opacity: 1;
   }
   75% {
-    opacity: 0.95;
+    transform: translate3d(0, -1.5px, 0);
+    opacity: 1;
   }
   100% {
-    opacity: 0;
-    transform: translate3d(200%, 0, 0);
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
   }
 }
 
-@keyframes ai-header-sweep {
-  0% {
+/* Scene 3: Typography — JEE PRO Tracking Refinement */
+@keyframes ai-luxury-jee-tracking {
+  0%, 37% {
+    letter-spacing: 0.36em;
+  }
+  54%, 73% {
+    letter-spacing: 0.28em;
+  }
+  86% {
+    letter-spacing: 0.26em;
+  }
+  100% {
+    letter-spacing: 0.26em;
+  }
+}
+
+/* Scene 3: Typography — AI ASSISTANT Subtitle Delayed Follow-Through */
+@keyframes ai-luxury-assistant-follow {
+  0%, 48% {
+    transform: translate3d(0, 110%, 0);
     opacity: 0;
-    transform: translate3d(-150%, 0, 0) skewX(-20deg);
+    letter-spacing: 0.50em;
   }
-  20% {
-    opacity: 0.9;
-  }
-  70% {
+  56% {
     opacity: 0.85;
   }
+  66%, 73% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.6;
+    letter-spacing: 0.42em;
+  }
+  86% {
+    transform: translate3d(0, -4px, 0);
+    opacity: 0;
+    letter-spacing: 0.44em;
+  }
+  100% {
+    transform: translate3d(0, -4px, 0);
+    opacity: 0;
+  }
+}
+
+/* Scene 4: Ident Dissolve & Micro-Ascent */
+@keyframes ai-luxury-ident-exit {
+  0%, 73% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  86% {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.985);
+  }
   100% {
     opacity: 0;
-    transform: translate3d(250%, 0, 0) skewX(-20deg);
+    transform: translate3d(0, -6px, 0) scale(0.985);
   }
 }
 
-@keyframes ai-icon-online {
-  0% {
-    transform: scale(0.92);
-    box-shadow: 0 0 0 rgba(var(--accent-rgb), 0);
-  }
-  35% {
-    transform: scale(1.1);
-    box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.7);
+/* Scene 4: The Entrance — Top Shutter Sliding Up */
+@keyframes ai-shutter-up {
+  0%, 73% {
+    transform: translate3d(0, 0%, 0);
   }
   100% {
-    transform: scale(1);
-    box-shadow: 0 0 15px var(--accent-glow);
+    transform: translate3d(0, -100%, 0);
   }
 }
 
-.animate-ai-border-sweep {
-  animation: ai-border-sweep 0.55s 0.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, opacity;
+/* Scene 4: The Entrance — Bottom Shutter Sliding Down */
+@keyframes ai-shutter-down {
+  0%, 73% {
+    transform: translate3d(0, 0%, 0);
+  }
+  100% {
+    transform: translate3d(0, 100%, 0);
+  }
 }
 
-.animate-ai-header-sweep {
-  animation: ai-header-sweep 0.52s 0.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, opacity;
+/* Shutter Hairline: Flares at split and dissolves at outer boundary */
+@keyframes ai-shutter-hairline {
+  0%, 71% {
+    opacity: 0;
+  }
+  73% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
-.animate-ai-icon-online {
-  animation: ai-icon-online 0.5s 0.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, box-shadow;
+/* Modal Interface Unmasking (synchronized with shutter opening) */
+@keyframes ai-assistant-reveal {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.985);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
 }
 
 .animate-sheen-sweep {
@@ -1391,13 +1582,25 @@ html[data-disable-hover="true"] [class*="hover:scale-"]:hover {
   will-change: transform, opacity;
 }
 
+/* AI Assistant Window Maximize / Restore Fluid Transition (Apple/HONOR/Xiaomi Style) */
+.ai-window-fluid-transition {
+  transition-property: width, height, max-width, max-height, border-radius, border-color, box-shadow;
+  transition-duration: 420ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: width, height, border-radius;
+  transform: translateZ(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
 
   .animate-sheen-sweep,
-  .animate-cta-pulse,
-  .animate-ai-border-sweep,
-  .animate-ai-header-sweep,
-  .animate-ai-icon-online {
+  .animate-cta-pulse {
     animation: none !important;
+  }
+
+  .ai-window-fluid-transition {
+    transition-duration: 150ms !important;
+    transition-timing-function: linear !important;
+    will-change: auto !important;
   }
 }

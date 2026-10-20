@@ -8,6 +8,8 @@ import { useFocusStore } from "../store/focus-store";
 import { useSettings } from "@/providers/settings-provider";
 import { FixedPortal } from "@/components/ui/fixed-portal";
 import { SessionService } from "@/features/study-engine/services/session.service";
+import { FocusCompletionModal } from "./focus-completion-modal";
+import { calculateSessionXP } from "@/features/progress/config/xp-config";
 import { cn } from "@/lib/utils";
 
 export function FocusFloatingTimer() {
@@ -25,12 +27,16 @@ export function FocusFloatingTimer() {
     phaseAccumulated,
     lastResumeTime,
     initialStartTime,
+    setInitialStartTime,
     setIsActive,
     setPhaseAccumulated,
     setSessionAccumulated,
     setLastResumeTime,
     restartTimer,
     handleTimerComplete,
+    totalCompletedSittingSeconds,
+    setTotalCompletedSittingSeconds,
+    isCompletionModalOpen,
     setIsCompletionModalOpen,
   } = useFocusStore();
 
@@ -168,6 +174,9 @@ export function FocusFloatingTimer() {
 
     setIsActive(false);
     setLastResumeTime(null);
+    setSessionAccumulated(0);
+    setPhaseAccumulated(0);
+    setInitialStartTime(null);
 
     if (exactDuration >= 60) {
       const endedAt = new Date();
@@ -181,10 +190,11 @@ export function FocusFloatingTimer() {
       } catch (e) {
         console.error("Focus floating timer save failed:", e);
       }
+      setTotalCompletedSittingSeconds(exactDuration);
       setIsCompletionModalOpen(true);
+    } else {
+      restartTimer();
     }
-
-    restartTimer();
   };
 
   const handleExpandToFocus = () => {
@@ -320,6 +330,16 @@ export function FocusFloatingTimer() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <FocusCompletionModal
+        isOpen={isCompletionModalOpen && pathname !== "/dashboard/focus"}
+        onOpenChange={(open) => {
+          setIsCompletionModalOpen(open);
+          if (!open) restartTimer();
+        }}
+        durationSeconds={totalCompletedSittingSeconds}
+        xpEarned={calculateSessionXP(totalCompletedSittingSeconds)}
+      />
     </FixedPortal>
   );
 }

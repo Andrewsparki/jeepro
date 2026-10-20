@@ -5,7 +5,6 @@ import {
   getCriticalDashboardMetrics,
   getSecondaryDashboardMetrics,
   getCachedDashboardMetrics,
-  getCachedCriticalMetrics,
   invalidateDashboardMetricsCache,
   CriticalDashboardMetrics,
   SecondaryDashboardMetrics,
@@ -120,40 +119,27 @@ export function DashboardDataProvider({
   // Post-hydration cache restoration: if server did not provide initialMetrics, restore from client cache
   useEffect(() => {
     if (!initialMetrics) {
-      const sessionCached = readSessionCache(userId);
-      if (sessionCached) {
-        setCriticalMetrics((prev) => prev ?? sessionCached);
-        setSecondaryMetrics((prev) => prev ?? sessionCached);
-        setIsCriticalLoading(false);
-        setIsSecondaryLoading(false);
-        return;
-      }
-      if (userId) {
-        const cached = getCachedDashboardMetrics(userId);
-        if (cached) {
-          setCriticalMetrics((prev) => prev ?? cached);
-          setSecondaryMetrics((prev) => prev ?? cached);
+      queueMicrotask(() => {
+        const sessionCached = readSessionCache(userId);
+        if (sessionCached) {
+          setCriticalMetrics((prev) => prev ?? sessionCached);
+          setSecondaryMetrics((prev) => prev ?? sessionCached);
           setIsCriticalLoading(false);
           setIsSecondaryLoading(false);
+          return;
         }
-      }
+        if (userId) {
+          const cached = getCachedDashboardMetrics(userId);
+          if (cached) {
+            setCriticalMetrics((prev) => prev ?? cached);
+            setSecondaryMetrics((prev) => prev ?? cached);
+            setIsCriticalLoading(false);
+            setIsSecondaryLoading(false);
+          }
+        }
+      });
     }
   }, [initialMetrics, userId]);
-
-  // Synchronous seeder for server-provided initialMetrics: eliminates loading states & skeleton flash
-  const seedMetrics = useCallback(
-    (metrics: CompleteDashboardMetrics) => {
-      setCriticalMetrics(metrics);
-      setSecondaryMetrics(metrics);
-      setIsCriticalLoading(false);
-      setIsSecondaryLoading(false);
-
-      if (userId) {
-        writeSessionCache(userId, metrics);
-      }
-    },
-    [userId]
-  );
 
   const fetchCriticalOnly = useCallback(async () => {
     if (isAuthLoading || !userId) return null;
@@ -237,6 +223,30 @@ export function DashboardDataProvider({
     [userId, isAuthLoading]
   );
 
+  // Synchronous seeder for server-provided initialMetrics: eliminates loading states & skeleton flash
+  const seedMetrics = useCallback(
+    (metrics: CompleteDashboardMetrics) => {
+      setCriticalMetrics(metrics);
+      setSecondaryMetrics(metrics);
+      setIsCriticalLoading(false);
+      setIsSecondaryLoading(false);
+
+      const isSuspectEmpty =
+        metrics.masteredTopics === 0 &&
+        metrics.study_sessions.length === 0 &&
+        (metrics.xpDetails?.totalXP || 0) > 0;
+
+      if (userId && !isSuspectEmpty) {
+        writeSessionCache(userId, metrics);
+      }
+
+      if (isSuspectEmpty) {
+        void loadMetrics({ silent: true });
+      }
+    },
+    [userId, loadMetrics]
+  );
+
   const refreshMetrics = useCallback(async () => {
     if (userId) {
       invalidateDashboardMetricsCache(userId);
@@ -269,6 +279,7 @@ export function DashboardDataProvider({
     };
 
     window.addEventListener("jee-pro:study-session-completed", handleDataChange);
+    window.addEventListener("jee-pro:progress-updated", handleDataChange);
     window.addEventListener("jee-pro:achievement-unlocked", handleDataChange);
     window.addEventListener("jee-pro:achievement-progress-updated", handleDataChange);
 
@@ -277,6 +288,7 @@ export function DashboardDataProvider({
         clearTimeout(refreshTimerRef.current);
       }
       window.removeEventListener("jee-pro:study-session-completed", handleDataChange);
+      window.removeEventListener("jee-pro:progress-updated", handleDataChange);
       window.removeEventListener("jee-pro:achievement-unlocked", handleDataChange);
       window.removeEventListener("jee-pro:achievement-progress-updated", handleDataChange);
     };

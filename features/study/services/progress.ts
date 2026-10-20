@@ -1,5 +1,6 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
-import { getChapterUuid, getTopicUuid } from "@/features/syllabus/services/mapping.service";
+import { getTopicUuid } from "@/features/syllabus/services/mapping.service";
 import { NotificationService } from "@/features/notifications/services/notification.service";
 import { getLocalISTDateString, calculateStreakFromSessions } from "@/lib/date-utils";
 import { updateMissionProgress } from "@/features/daily-missions/services/missions.service";
@@ -104,9 +105,9 @@ export async function resetAccountProgress(): Promise<boolean> {
   }
 }
 
-export async function getUserProgress(userId?: string): Promise<UserTopicProgress[]> {
+export async function getUserProgress(userId?: string, client?: SupabaseClient): Promise<UserTopicProgress[]> {
   try {
-    const supabase = createClient();
+    const supabase = client || createClient();
     
     const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
     if (!resolvedUserId) return [];
@@ -330,9 +331,10 @@ export async function updateSubjectProgress(subjectSlug: string, status: Progres
 export async function getStudySessions(
   limit?: number,
   userId?: string,
-  offset?: number
+  offset?: number,
+  client?: SupabaseClient
 ): Promise<StudySession[]> {
-  const supabase = createClient();
+  const supabase = client || createClient();
   const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
   if (!resolvedUserId) return [];
 
@@ -403,19 +405,29 @@ export type CompleteDashboardMetrics = CriticalDashboardMetrics & SecondaryDashb
  * Fast above-the-fold critical metrics loader.
  * Queries only user_topic_progress and study_sessions and calculates streak/stats.
  */
-export async function getCriticalDashboardMetrics(userId?: string): Promise<CriticalDashboardMetrics> {
-  const supabase = createClient();
+export async function getCriticalDashboardMetrics(userId?: string, client?: SupabaseClient): Promise<CriticalDashboardMetrics> {
+  const supabase = client || createClient();
   const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
 
   const [progress, sessions] = await Promise.all([
-    getUserProgress(resolvedUserId),
-    getStudySessions(undefined, resolvedUserId),
+    getUserProgress(resolvedUserId, supabase),
+    getStudySessions(undefined, resolvedUserId, undefined, supabase),
   ]);
 
-  const syllabus = await getSyllabus(progress);
+  const syllabus = await getSyllabus(progress, supabase);
 
-  const masteredCount = progress.filter((p) => p.status === "Mastered").length;
-  const inProgressCount = progress.filter((p) => p.status === "In Progress").length;
+  const masteredTopicsSet = new Set(
+    progress
+      .filter((p) => p.status?.toLowerCase() === "mastered")
+      .map((p) => p.topic_id)
+  );
+  const inProgressTopicsSet = new Set(
+    progress
+      .filter((p) => p.status?.toLowerCase() === "in progress")
+      .map((p) => p.topic_id)
+  );
+  const masteredCount = masteredTopicsSet.size;
+  const inProgressCount = inProgressTopicsSet.size;
 
   // Overall totals
   const totalDurationSeconds = sessions.reduce((acc, s) => acc + s.duration_seconds, 0);
@@ -432,7 +444,7 @@ export async function getCriticalDashboardMetrics(userId?: string): Promise<Crit
     todayStudyHours > 0 ? `${todayStudyHours}h ${todayStudyMinutes}m` : `${todayStudyMinutes}m`;
 
   const topicsCompletedToday = progress.filter(
-    (p) => p.status === "Mastered" && p.completed_at && getLocalISTDateString(p.completed_at) === todayDateStr
+    (p) => p.status?.toLowerCase() === "mastered" && p.completed_at && getLocalISTDateString(p.completed_at) === todayDateStr
   ).length;
 
   // Streak Calculation in consistent IST
@@ -492,14 +504,15 @@ export async function getSecondaryDashboardMetrics(
   preloadedSessions?: StudySession[],
   preloadedProgress?: UserTopicProgress[],
   preloadedSyllabus?: Subject[],
-  currentStreak: number = 0
+  currentStreak: number = 0,
+  client?: SupabaseClient
 ): Promise<SecondaryDashboardMetrics> {
-  const supabase = createClient();
+  const supabase = client || createClient();
   const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
 
-  const sessions = preloadedSessions ?? (await getStudySessions(undefined, resolvedUserId));
-  const progress = preloadedProgress ?? (await getUserProgress(resolvedUserId));
-  const syllabus = preloadedSyllabus ?? (await getSyllabus(progress));
+  const sessions = preloadedSessions ?? (await getStudySessions(undefined, resolvedUserId, undefined, supabase));
+  const progress = preloadedProgress ?? (await getUserProgress(resolvedUserId, supabase));
+  const syllabus = preloadedSyllabus ?? (await getSyllabus(progress, supabase));
 
   const [allEvents, allCompletedMissions, realAchievements, dailyMissions, rpcTotalXPRes] = await Promise.all([
     getPlannerEvents(),
@@ -579,6 +592,13 @@ export function invalidateDashboardMetricsCache(userId?: string): void {
   } else {
     metricsMemoryCache.clear();
   }
+  if (typeof window !== "undefined") {
+    try {
+      window.dispatchEvent(new CustomEvent("jee-pro:progress-updated", { detail: { userId } }));
+    } catch {
+      // ignore
+    }
+  }
 }
 
 export function getCachedDashboardMetrics(userId?: string): CompleteDashboardMetrics | null {
@@ -595,24 +615,29 @@ export function getCachedCriticalMetrics(userId?: string): CriticalDashboardMetr
   return entry.critical;
 }
 
-export async function getDashboardMetrics(userId?: string, options?: { forceFresh?: boolean }): Promise<CompleteDashboardMetrics> {
-  const resolvedUserId = userId || (await createClient().auth.getUser()).data.user?.id;
+export async function getDashboardMetrics(
+  userId?: string,
+  options?: { forceFresh?: boolean; client?: SupabaseClient }
+): Promise<CompleteDashboardMetrics> {
+  const supabase = options?.client || createClient();
+  const resolvedUserId = userId || (await supabase.auth.getUser()).data.user?.id;
   const now = Date.now();
 
-  if (resolvedUserId && !options?.forceFresh) {
+  if (resolvedUserId && !options?.forceFresh && !options?.client && typeof window !== "undefined") {
     const cached = metricsMemoryCache.get(resolvedUserId);
     if (cached && now - cached.timestamp < CACHE_TTL_MS) {
       return cached.data;
     }
   }
 
-  const critical = await getCriticalDashboardMetrics(resolvedUserId);
+  const critical = await getCriticalDashboardMetrics(resolvedUserId, supabase);
   const secondary = await getSecondaryDashboardMetrics(
     resolvedUserId,
     critical.study_sessions,
     critical.progress,
     critical.syllabus,
-    critical.currentStreak
+    critical.currentStreak,
+    supabase
   );
 
   const completeData: CompleteDashboardMetrics = {
@@ -620,7 +645,7 @@ export async function getDashboardMetrics(userId?: string, options?: { forceFres
     ...secondary,
   };
 
-  if (resolvedUserId) {
+  if (resolvedUserId && typeof window !== "undefined") {
     metricsMemoryCache.set(resolvedUserId, {
       data: completeData,
       critical,

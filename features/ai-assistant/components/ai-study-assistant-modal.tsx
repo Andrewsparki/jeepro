@@ -21,6 +21,7 @@ import {
 import { useAiAssistant } from "../context/ai-assistant-context";
 import { useAiAssistantChat } from "../hooks/use-ai-assistant-chat";
 import { AssistantMessageRenderer } from "./assistant-message-renderer";
+import { AiCinematicIntro } from "./ai-cinematic-intro";
 import { Button } from "@/components/ui/button";
 import { FixedPortal } from "@/components/ui/fixed-portal";
 import { useSubSmoothScroll } from "@/components/ui/sub-smooth-scroll";
@@ -160,6 +161,21 @@ export function AiStudyAssistantModal() {
     }
   }, [messages, isLoading, resizeScroll, scrollToBottom]);
 
+  // Re-measure dimensions and preserve scroll anchoring during maximize/restore window transitions
+  useEffect(() => {
+    resizeScroll();
+    const timer = setTimeout(() => {
+      resizeScroll();
+      if (isNearBottomRef.current) {
+        const el = scrollContainerRef.current;
+        if (el) {
+          scrollToBottom(el.scrollHeight, { immediate: false });
+        }
+      }
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [isFullscreen, resizeScroll, scrollToBottom]);
+
   // Isolate wheel & trackpad events from global scroll interrupters
   useEffect(() => {
     const el = scrollContainerRef.current;
@@ -177,16 +193,32 @@ export function AiStudyAssistantModal() {
 
   const shouldReduceMotion = useReducedMotion() ?? false;
   const [isExiting, setIsExiting] = useState(false);
-  const [openingCount, setOpeningCount] = useState(0);
-  const wasOpenRef = useRef(false);
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  const [isIntroActive, setIsIntroActive] = useState(isOpen && !shouldReduceMotion);
+  const [introKey, setIntroKey] = useState(0);
+  const wasOpenRef = useRef(isOpen);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
 
-  // Focus input, increment opening count for keyframes, and remember trigger element when opened
+  // Synchronously compute intro activation when isOpen changes during render
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen) {
+      if (!shouldReduceMotion) {
+        setIsIntroActive(true);
+        setIntroKey((k) => k + 1);
+      } else {
+        setIsIntroActive(false);
+      }
+    } else {
+      setIsIntroActive(false);
+    }
+  }
+
+  // Manage focus, active element restoration, and exit lifecycle
   useEffect(() => {
     if (isOpen) {
       wasOpenRef.current = true;
       setIsExiting(false);
-      setOpeningCount((prev) => prev + 1);
       previousActiveElementRef.current = (document.activeElement as HTMLElement) || null;
       setTimeout(() => {
         inputRef.current?.focus();
@@ -195,6 +227,10 @@ export function AiStudyAssistantModal() {
       setIsExiting(true);
     }
   }, [isOpen]);
+
+  const handleIntroComplete = useCallback(() => {
+    setIsIntroActive(false);
+  }, []);
 
   const handleExitComplete = useCallback(() => {
     wasOpenRef.current = false;
@@ -273,11 +309,9 @@ export function AiStudyAssistantModal() {
         {isOpen && (
           <motion.div 
             key="ai-assistant-wrapper"
-            className={`fixed inset-0 z-50 flex items-center justify-center overflow-hidden ${
-              isFullscreen ? "p-0" : "p-3 sm:p-5 md:p-6"
-            }`}
+            className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden p-0"
           >
-            {/* Backdrop: translucent dark frost with backdrop blur */}
+            {/* Backdrop: translucent dark frost with coordinated immersion transition */}
             <motion.div
               key="ai-assistant-backdrop"
               variants={backdropVariants}
@@ -285,11 +319,18 @@ export function AiStudyAssistantModal() {
               initial="initial"
               animate="animate"
               exit="exit"
-              className="fixed inset-0 bg-background/80 backdrop-blur-xl"
+              style={{
+                transition: shouldReduceMotion
+                  ? "none"
+                  : "background-color 420ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 420ms cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+              className={`fixed inset-0 ${
+                isFullscreen ? "bg-background/95 backdrop-blur-2xl" : "bg-background/80 backdrop-blur-xl"
+              }`}
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Modal / Fullscreen Container: Glassmorphic translucent shell */}
+            {/* Modal / Fullscreen Container: Glassmorphic translucent shell with fluid window transitions */}
             <motion.div
               key="ai-assistant-shell"
               variants={modalShellVariants}
@@ -301,55 +342,50 @@ export function AiStudyAssistantModal() {
               data-lenis-prevent-wheel="true"
               data-lenis-prevent-touch="true"
               style={{
+                width: isFullscreen ? "100vw" : "min(calc(100vw - clamp(1.25rem, 3vw, 2.5rem)), 896px)",
+                maxWidth: isFullscreen ? "100vw" : "896px",
                 height: isFullscreen ? "100dvh" : "min(88dvh, 800px)",
                 maxHeight: isFullscreen ? "100dvh" : "800px",
-                width: isFullscreen ? "100vw" : "min(94vw, 896px)",
+                borderRadius: isFullscreen ? "0px" : "1.25rem",
+                borderColor: isFullscreen ? "transparent" : undefined,
               }}
-              className={`relative flex flex-col min-h-0 min-w-0 bg-card/90 text-foreground shadow-[0_24px_60px_rgba(0,0,0,0.7),0_0_40px_var(--accent-glow)] backdrop-blur-3xl ring-1 ring-accent/20 overflow-hidden ${
+              className={`relative flex flex-col min-h-0 min-w-0 bg-card/90 text-foreground backdrop-blur-3xl ring-1 ring-accent/20 overflow-hidden ai-window-fluid-transition ${
                 isFullscreen
-                  ? "rounded-none border-none"
-                  : "rounded-2xl border border-border/70"
+                  ? "border border-transparent shadow-[0_0_0_rgba(0,0,0,0)]"
+                  : "border border-border/70 shadow-[0_24px_60px_rgba(0,0,0,0.7),0_0_40px_var(--accent-glow)]"
               }`}
             >
-            {/* Cinematic Opening Border Light Sweep (plays on each opening) */}
-            {!shouldReduceMotion && (
-              <div 
-                key={`ai-border-sweep-${openingCount}`}
-                className="absolute inset-0 pointer-events-none rounded-[inherit] overflow-hidden z-20"
-              >
-                {/* Top Border Electric Beam Streak */}
-                <div 
-                  className="absolute top-0 left-0 right-0 h-[2px] animate-ai-border-sweep opacity-0 pointer-events-none"
-                  style={{
-                    background: `linear-gradient(90deg, transparent 0%, rgba(var(--accent-rgb), 0.2) 20%, var(--accent) 50%, #FFFFFF 60%, var(--accent) 70%, transparent 100%)`,
-                    boxShadow: `0 0 16px var(--accent-glow), 0 0 8px var(--accent)`,
-                  }}
-                />
-              </div>
+            {/* Cinematic Motion-Graphics Intro (JEE PRO // INTELLIGENCE TAKES FORM) */}
+            {isIntroActive && !shouldReduceMotion && (
+              <AiCinematicIntro
+                key={`ai-intro-${introKey}`}
+                onComplete={handleIntroComplete}
+                onClose={() => setIsOpen(false)}
+                isFullscreen={isFullscreen}
+              />
             )}
 
-            {/* Header (Fixed shrink-0): Frosted glass */}
-            <div className="relative flex items-center justify-between px-5 py-3.5 border-b border-border/50 bg-surface/50 backdrop-blur-md shrink-0 select-none overflow-hidden">
-              {/* Cinematic Header Light Scan (100-550ms sweep) */}
-              {!shouldReduceMotion && (
-                <div
-                  key={`ai-header-scan-${openingCount}`}
-                  className="absolute inset-0 pointer-events-none animate-ai-header-sweep opacity-0 z-10"
-                  style={{
-                    background: `linear-gradient(90deg, transparent 0%, rgba(var(--accent-rgb), 0.1) 30%, rgba(255, 255, 255, 0.45) 50%, rgba(var(--accent-rgb), 0.1) 70%, transparent 100%)`,
-                  }}
-                />
-              )}
-
-              <div className="flex items-center gap-3 min-w-0 z-10">
-                <div 
-                  key={`ai-icon-${openingCount}`}
-                  className={`h-9 w-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center shadow-[0_0_15px_var(--accent-glow)] shrink-0 ${
-                    !shouldReduceMotion ? "animate-ai-icon-online" : ""
-                  }`}
-                >
-                  <Sparkles className="h-5 w-5 text-accent" />
-                </div>
+            {/* Modal Body Container (emerges through Scene 4 shutter transition) */}
+            <div
+              className={`relative flex flex-col flex-1 min-h-0 min-w-0 overflow-hidden ${
+                isIntroActive && !shouldReduceMotion ? "pointer-events-none" : ""
+              }`}
+              style={
+                isIntroActive && !shouldReduceMotion
+                  ? {
+                      animation:
+                        "ai-assistant-reveal 0.45s 1.28s cubic-bezier(0.19, 1, 0.22, 1) both",
+                      willChange: "opacity, transform, filter",
+                    }
+                  : undefined
+              }
+            >
+              {/* Header (Fixed shrink-0): Frosted glass */}
+              <div className="relative flex items-center justify-between px-5 py-3.5 border-b border-border/50 bg-surface/50 backdrop-blur-md shrink-0 select-none overflow-hidden">
+                <div className="flex items-center gap-3 min-w-0 z-10">
+                  <div className="h-9 w-9 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center shadow-[0_0_15px_var(--accent-glow)] shrink-0">
+                    <Sparkles className="h-5 w-5 text-accent" />
+                  </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <h2 className="text-sm sm:text-base font-semibold text-foreground tracking-tight truncate">
@@ -377,17 +413,40 @@ export function AiStudyAssistantModal() {
                   </button>
                 )}
                 
-                {/* Fullscreen Toggle */}
+                {/* Fullscreen / Restore Toggle Button */}
                 <button
                   onClick={() => setIsFullscreen(!isFullscreen)}
-                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors cursor-pointer"
+                  className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface transition-colors cursor-pointer group flex items-center justify-center overflow-hidden"
                   title={isFullscreen ? "Exit Fullscreen (Esc)" : "Fullscreen Mode"}
+                  aria-label={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
                 >
-                  {isFullscreen ? (
-                    <Minimize2 className="h-4 w-4 text-accent" />
-                  ) : (
-                    <Maximize2 className="h-4 w-4" />
-                  )}
+                  <div className="relative w-4 h-4 flex items-center justify-center">
+                    <AnimatePresence initial={false} mode="wait">
+                      {isFullscreen ? (
+                        <motion.div
+                          key="icon-restore"
+                          initial={{ opacity: 0, scale: 0.75, rotate: -45 }}
+                          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                          exit={{ opacity: 0, scale: 0.75, rotate: 45 }}
+                          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          <Minimize2 className="h-4 w-4 text-accent" />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="icon-maximize"
+                          initial={{ opacity: 0, scale: 0.75, rotate: 45 }}
+                          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                          exit={{ opacity: 0, scale: 0.75, rotate: -45 }}
+                          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          <Maximize2 className="h-4 w-4 transition-colors group-hover:text-accent" />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </button>
 
                 {/* Close Button */}
@@ -432,7 +491,12 @@ export function AiStudyAssistantModal() {
               }}
               className="w-full min-w-0 overflow-x-hidden p-4 sm:p-6 space-y-5 custom-scrollbar touch-pan-y focus-visible:outline-none"
             >
-              <div ref={scrollContentRef} className={`mx-auto w-full space-y-5 ${isFullscreen ? "max-w-5xl px-2 sm:px-6" : ""}`}>
+              <div
+                ref={scrollContentRef}
+                className={`mx-auto w-full space-y-5 max-w-5xl transition-[padding] duration-420 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  isFullscreen ? "px-2 sm:px-6" : "px-0"
+                }`}
+              >
                 {messages.length === 0 ? (
                   <div className="py-12 flex flex-col justify-center items-center text-center px-4 max-w-lg mx-auto">
                     <div className="h-14 w-14 rounded-2xl bg-surface border border-border flex items-center justify-center mb-4 shadow-inner">
@@ -541,7 +605,11 @@ export function AiStudyAssistantModal() {
 
             {/* Bottom Composer (Fixed shrink-0): Frosted glass */}
             <div className="p-3 sm:p-4 border-t border-border/50 bg-card/65 backdrop-blur-xl shrink-0">
-              <div className={`mx-auto w-full ${isFullscreen ? "max-w-5xl px-2 sm:px-6" : ""}`}>
+              <div
+                className={`mx-auto w-full max-w-5xl transition-[padding] duration-420 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  isFullscreen ? "px-2 sm:px-6" : "px-0"
+                }`}
+              >
                 <form onSubmit={handleSubmit} className="relative flex items-end gap-2">
                   <div className="relative flex-1 min-w-0">
                     <textarea
@@ -584,6 +652,7 @@ export function AiStudyAssistantModal() {
                   <span>Markdown & KaTeX rendered</span>
                 </div>
               </div>
+            </div>
             </div>
           </motion.div>
         </motion.div>

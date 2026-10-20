@@ -78,23 +78,57 @@ import { useOptionalDashboardData } from "@/features/dashboard/context/dashboard
 export default function AnalyticsPage() {
   const { refreshKey } = useStudySession();
   const dashboardData = useOptionalDashboardData();
-  const [metrics, setMetrics] = useState<Awaited<ReturnType<typeof getDashboardMetrics>> | null>(
-    () => dashboardData?.metrics ?? null
-  );
+  const [standaloneMetrics, setStandaloneMetrics] = useState<Awaited<ReturnType<typeof getDashboardMetrics>> | null>(null);
+  const metrics = dashboardData?.metrics ?? standaloneMetrics;
   const [chartsReady, setChartsReady] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
+  // If mounted outside DashboardDataProvider, fetch standalone metrics
   useEffect(() => {
-    if (dashboardData?.metrics) {
-      setMetrics(dashboardData.metrics);
-      return;
+    if (!dashboardData) {
+      void getDashboardMetrics(undefined, { forceFresh: true }).then((data) => setStandaloneMetrics(data));
     }
-    async function loadData() {
-      const data = await getDashboardMetrics();
-      setMetrics(data);
+  }, [dashboardData]);
+
+  // If metrics were seeded with 0 sessions while user is logged in, trigger fresh fetch
+  useEffect(() => {
+    if (
+      dashboardData?.metrics &&
+      dashboardData.metrics.study_sessions.length === 0 &&
+      (dashboardData.metrics.xpDetails?.totalXP || 0) > 0
+    ) {
+      void dashboardData.refreshMetrics();
     }
-    loadData();
-  }, [refreshKey, dashboardData?.metrics]);
+  }, [dashboardData]);
+
+  // When study sessions complete or refreshKey updates, revalidate metrics
+  useEffect(() => {
+    if (refreshKey > 0) {
+      if (dashboardData?.refreshMetrics) {
+        void dashboardData.refreshMetrics();
+      } else {
+        void getDashboardMetrics(undefined, { forceFresh: true }).then((data) => setStandaloneMetrics(data));
+      }
+    }
+  }, [refreshKey, dashboardData]);
+
+  // Listen for real-time study session and progress completion events
+  useEffect(() => {
+    const handleDataChange = () => {
+      if (dashboardData?.refreshMetrics) {
+        void dashboardData.refreshMetrics();
+      } else {
+        void getDashboardMetrics(undefined, { forceFresh: true }).then((data) => setStandaloneMetrics(data));
+      }
+    };
+
+    window.addEventListener("jee-pro:study-session-completed", handleDataChange);
+    window.addEventListener("jee-pro:progress-updated", handleDataChange);
+    return () => {
+      window.removeEventListener("jee-pro:study-session-completed", handleDataChange);
+      window.removeEventListener("jee-pro:progress-updated", handleDataChange);
+    };
+  }, [dashboardData]);
 
   useEffect(() => {
     let idleId: number | ReturnType<typeof setTimeout> | undefined;

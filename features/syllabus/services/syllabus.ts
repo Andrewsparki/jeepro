@@ -1,5 +1,6 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getUserProgress, ProgressStatus, UserTopicProgress } from "@/features/study/services/progress";
-import { prefetchMapping, getTopicUuidSync } from "@/features/syllabus/services/mapping.service";
+import { prefetchMapping, getTopicUuidSync, getJsonTopicIdFromUuidSync } from "@/features/syllabus/services/mapping.service";
 
 import physicsData from "../data/jee-main/physics.json";
 import chemistryData from "../data/jee-main/chemistry.json";
@@ -105,23 +106,49 @@ const ALL_SUBJECTS = [
   transformSubjectData(mathData as unknown as JsonSubject)
 ];
 
-export async function getSyllabus(initialProgress?: UserTopicProgress[]): Promise<Subject[]> {
+function normalizeProgressStatus(status?: string | null): ProgressStatus {
+  if (!status) return "Not Started";
+  const lower = status.toLowerCase().trim();
+  if (lower === "mastered" || lower === "completed") return "Mastered";
+  if (lower === "in progress" || lower === "inprogress" || lower === "started") return "In Progress";
+  if (lower === "needs revision" || lower === "needs_revision" || lower === "revision") return "Needs Revision";
+  return "Not Started";
+}
+
+export async function getSyllabus(initialProgress?: UserTopicProgress[], client?: SupabaseClient): Promise<Subject[]> {
   try {
     // Ensure UUID mapping cache is warm before resolving topic IDs
-    await prefetchMapping();
+    await prefetchMapping(client);
 
-    const progress = initialProgress ?? (await getUserProgress());
-    // progress records are keyed by DB UUID (user_topic_progress.topic_id)
-    const progressMap = new Map(progress.map(p => [p.topic_id, p.status]));
+    const progress = initialProgress ?? (await getUserProgress(undefined, client));
+    // progress records can be keyed by DB UUID or JSON slug
+    const progressMap = new Map<string, ProgressStatus>();
+    for (const p of progress) {
+      if (p.topic_id) {
+        progressMap.set(p.topic_id, normalizeProgressStatus(p.status));
+      }
+    }
     
-    // Build a JSON-topic-ID → status map by resolving each JSON ID to its DB UUID
+    // Build a JSON-topic-ID → status map using both direct match, forward UUID lookup, and reverse UUID lookup
     const resolvedStatusMap = new Map<string, ProgressStatus>();
+
+    // 1. Map directly from progressMap reverse lookup
+    for (const [key, status] of progressMap.entries()) {
+      const jsonId = getJsonTopicIdFromUuidSync(key);
+      if (jsonId) {
+        resolvedStatusMap.set(jsonId, status);
+      }
+    }
+
+    // 2. Map for every topic in ALL_SUBJECTS using forward resolution
     for (const subject of ALL_SUBJECTS) {
       for (const chapter of subject.chapters) {
         for (const topic of chapter.topics) {
+          if (resolvedStatusMap.has(topic.id)) continue;
           const uuid = getTopicUuidSync(topic.id);
-          if (uuid && progressMap.has(uuid)) {
-            resolvedStatusMap.set(topic.id, progressMap.get(uuid)!);
+          const status = (uuid && progressMap.get(uuid)) || progressMap.get(topic.id);
+          if (status) {
+            resolvedStatusMap.set(topic.id, status);
           }
         }
       }
